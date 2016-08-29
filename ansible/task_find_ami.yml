@@ -1,0 +1,20 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  vars:
+    aws_region: us-west-2
+  tasks:
+    - name: Find latest base AMI
+      ec2_ami_find:
+        region: "{{ aws_region }}"
+        owner: self
+        ami_tags:
+          os: rhel
+          image_type: base
+        sort: name
+        sort_order: descending
+        sort_end: 1
+      register: find_ami

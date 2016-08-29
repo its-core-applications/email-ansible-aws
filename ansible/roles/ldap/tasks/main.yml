@@ -1,0 +1,27 @@
+---
+
+- name: Create /etc/systemd/system/slapd.service.d
+  file:
+    dest: /etc/systemd/system/slapd.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  tags: configuration
+
+- name: Adjust slapd ulimit
+  copy:
+    dest: /etc/systemd/system/slapd.service.d/ulimit.conf
+    src: ulimit.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration
+
+- name: Enable slapd
+  service: name=slapd enabled=yes
+  tags: configuration
+
+- name: Start slapd
+  service: name=slapd state=started
+  tags: configuration

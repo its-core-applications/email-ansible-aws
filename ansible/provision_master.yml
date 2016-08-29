@@ -1,0 +1,32 @@
+---
+
+- include: task_find_ami.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Create master
+      ec2:
+        group: main-default
+        key_name: "{{ aws_ssh_key }}"
+        instance_type: t2.large
+        region: "{{ aws_region }}"
+        image: "{{ find_ami.results.0.ami_id }}"
+        instance_profile_name: master
+        termination_protection: yes
+        instance_tags:
+          Class: master
+        exact_count: 1
+        count_tag:
+          Class: master
+      # this is just to force a consistent result structure
+      with_items:
+        - dummy
+      register: ec2
+
+
+- include: task_wait_for_launched.yml
+
+- include: bootstrap_master.yml

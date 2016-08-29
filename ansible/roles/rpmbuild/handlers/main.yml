@@ -1,0 +1,6 @@
+---
+
+- name: Update yum repository
+  become: false
+  command: createrepo --database ~/rpmbuild/RPMS
+  notify: s3upload

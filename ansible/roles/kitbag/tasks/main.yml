@@ -1,0 +1,25 @@
+---
+
+- name: Install kitbag
+  copy:
+    dest: /usr/local/collaboration/dispatch/kitbag
+    src: kitbag
+    owner: collaborate
+    group: collaboration
+    mode: 0755
+
+- name: Configure kitbag
+  template:
+    dest: /usr/local/collaboration/dispatch/kitbag.conf
+    src: kitbag.conf.j2
+    owner: collaborate
+    group: collaboration
+    mode: 0644
+
+- name: Schedule kitbag
+  copy:
+    dest: /etc/cron.daily/kitbag
+    src: kitbag.cron
+    owner: root
+    group: root
+    mode: 0755

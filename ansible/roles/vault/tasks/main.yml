@@ -1,0 +1,42 @@
+---
+
+- name: Download vault
+  get_url:
+    url: https://releases.hashicorp.com/vault/0.6.1/vault_0.6.1_linux_amd64.zip
+    dest: /var/tmp/vault.zip
+    checksum: sha256:4f248214e4e71da68a166de60cc0c1485b194f4a2197da641187b745c8d5b8be
+  tags: packageinstall
+
+- name: Install vault
+  unarchive:
+    src: /var/tmp/vault.zip
+    dest: /usr/bin
+    copy: false
+  notify: Restart vault
+  tags: packageinstall
+
+- name: Configure vault server
+  copy:
+    dest: /etc/vault.hcl
+    src: vault.hcl
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart vault
+  tags: configuration
+
+- name: Configure vault service
+  copy:
+    dest: /etc/systemd/system/vault.service
+    src: vault.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart vault
+  tags: configuration
+
+- name: Enable vault service
+  service:
+    name: vault
+    enabled: true
+  tags: configuration

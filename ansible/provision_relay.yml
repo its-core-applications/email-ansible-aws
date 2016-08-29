@@ -1,0 +1,87 @@
+---
+
+- include: task_find_ami.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Gather VPC subnet facts
+      ec2_vpc_subnet_facts:
+        region: "{{ aws_region }}"
+        filters:
+          vpc-id: "{{ aws_vpn_vpc }}"
+      register: ec2_subnets
+
+    - name: Create relay hosts
+      ec2:
+        group: [ vpn-default, relay ]
+        key_name: "{{ aws_ssh_key }}"
+        instance_type: m4.large
+        region: "{{ aws_region }}"
+        vpc_subnet_id: "{{ item.id }}"
+        image: "{{ find_ami.results.0.ami_id }}"
+        instance_profile_name: standard
+        instance_tags:
+          Class: relay
+          az: "{{ item.availability_zone }}"
+        exact_count: 1
+        count_tag:
+          Class: relay
+          az: "{{ item.availability_zone }}"
+      with_items: "{{ ec2_subnets.subnets }}"
+      register: ec2
+
+- include: task_wait_for_launched.yml
+
+- include: relay.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: "Create relay-{{ aws_region }} ELB"
+      ec2_elb_lb:
+        name: "relay-{{ aws_region }}"
+        region: "{{ aws_region }}"
+        state: present
+        scheme: internal
+        idle_timeout: 3600
+        cross_az_load_balancing: yes
+        security_group_names: relay-elb
+        subnets: "{{ ec2_subnets.subnets | map(attribute='id') | list }}"
+        listeners:
+          - protocol: tcp
+            load_balancer_port: 25
+            instance_port: 25
+            proxy_protocol: true
+        health_check:
+          ping_protocol: tcp
+          ping_port: 25
+          response_timeout: 10
+          interval: 30
+          unhealthy_threshold: 2
+          healthy_threshold: 5
+      register: result
+
+    - name: "Set relay-{{ aws_region }}.{{ my_tld }}"
+      route53:
+        command: "create"
+        overwrite: true
+        zone: "{{ my_tld }}"
+        record: "relay-{{ aws_region }}.{{ my_tld }}"
+        type: "A"
+        alias: true
+        alias_hosted_zone_id: "{{ result.elb.hosted_zone_id }}"
+        value: "{{ result.elb.dns_name }}"
+
+    - name: "Add instances to relay-{{ aws_region }}"
+      ec2_elb:
+        ec2_elbs: "relay-{{ aws_region }}"
+        region: "{{ aws_region }}"
+        instance_id: "{{ item }}"
+        state: present
+        wait: false
+      with_items: "{{ groups.tag_Class_relay | map('extract', hostvars, 'ec2_id') | list }}"

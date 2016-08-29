@@ -1,0 +1,16 @@
+[Unit]
+Description=Spamassassin daemon
+After=syslog.target network.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/spamd.pid
+EnvironmentFile=-/etc/sysconfig/spamassassin
+ExecStartPre=-/sbin/portrelease spamd
+ExecStart=/usr/bin/spamd --pidfile /var/run/spamd.pid $SPAMDOPTIONS
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

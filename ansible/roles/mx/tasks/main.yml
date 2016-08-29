@@ -1,0 +1,23 @@
+---
+
+- name: Install ingress-specific filters
+  copy:
+    dest: /etc/mail/filters/{{ item }}
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - 80_clamav
+    - 80_spamassassin
+  tags: configuration
+
+- name: Install ingress-specific templated filters
+  template:
+    dest: "/etc/mail/filters/{{ item }}"
+    src: "{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - 70_pb

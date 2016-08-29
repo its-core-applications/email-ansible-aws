@@ -1,0 +1,28 @@
+/var/log/auth
+/var/log/authpriv
+/var/log/cron
+/var/log/daemon
+/var/log/ftp
+/var/log/kern
+/var/log/local0
+/var/log/local1
+/var/log/local2
+/var/log/local3
+/var/log/local4
+/var/log/local5
+/var/log/local6
+/var/log/local7
+/var/log/lpr
+/var/log/mail
+/var/log/news
+/var/log/syslog
+/var/log/user
+/var/log/uucp
+{
+    missingok
+    create 0644 root root
+    sharedscripts
+    postrotate
+	/bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> /dev/null || true
+    endscript
+}

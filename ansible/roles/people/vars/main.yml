@@ -1,0 +1,40 @@
+---
+
+user_accounts:
+  - name: ezekielh
+    comment: Ezekiel Hendrickson
+    uid: 1913323
+    full_sudo: true
+  - name: carleski
+    comment: Rob Carleski
+    uid: 257994
+    full_sudo: true
+  - name: rsauosci
+    comment: Richard Sawoscinski
+    uid: 874078
+    sudo_box: true
+    sudo_google: true
+  - name: crm
+    comment: Chris Mueller
+    uid: 23449
+    full_sudo: true
+  - name: cohenj
+    comment: Jeffrey Cohen
+    uid: 53720
+    sudo_email: true
+  - name: awilkins
+    comment: Adam Wilkinson
+    uid: 56060
+    sudo_email: true
+  - name: neda
+    comment: Neda Ganjei
+    uid: 23665
+    sudo_box: true
+    sudo_email: true
+    sudo_google: true
+  - name: willrhee
+    comment: Will Rhee
+    uid: 48422
+  - name: kcheek
+    comment: Kevin Cheek
+    uid: 57997

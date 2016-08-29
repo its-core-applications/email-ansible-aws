@@ -1,0 +1,5 @@
+---
+
+kitbag_ftp_base: ftp.box.com/Pyrocumulonimbus/backups
+kitbag_ftp_user: its-collab-pyrocumulonimbus@umich.edu
+kitbag_ftp_passwd: "{{ lookup('hashi_vault', 'secret=secret/box/its-collab-pyrocumulonimbus token={{ vault_token }}' ) }}"

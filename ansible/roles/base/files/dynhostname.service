@@ -1,0 +1,14 @@
+[Unit]
+Description=Set a unique hostname
+After=network-online.target cloud-init.service
+Wants=network-online.target
+Before=rsyslog.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/dynhostname set
+ExecStop=/usr/local/sbin/dynhostname clear
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

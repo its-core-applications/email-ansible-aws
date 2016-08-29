@@ -1,0 +1,43 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "packer/scripts/ansible.sh"
+    },
+    {
+      "type": "ansible-local",
+      "playbook_dir": "ansible",
+      "playbook_file": "ansible/packer.yml"
+    },
+    {
+      "type": "shell",
+      "script": "packer/scripts/cleanup.sh"
+    }
+  ],
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "us-west-2",
+      "ami_name": "ami_rhel7_base_{{ timestamp }}",
+      "instance_type": "t2.micro",
+      "source_ami": "ami-775e4f16",
+      "encrypt_boot": true,
+      "ssh_username": "ec2-user",
+      "ssh_keypair_name": "2015-10-16",
+      "ssh_private_key_file": "id_rsa",
+      "ssh_pty": true,
+      "ami_block_device_mappings": [
+        {
+          "device_name": "/dev/sda1",
+          "volume_type": "gp2",
+          "encrypted": true,
+          "delete_on_termination": true
+        }
+      ],
+      "tags": {
+        "os": "rhel",
+        "image_type": "base"
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+---
+
+- name: Install gam wrapper
+  copy:
+    dest: /usr/bin/gam
+    src: gam.sh
+    owner: root
+    group: root
+    mode: 0755
+

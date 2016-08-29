@@ -1,0 +1,8 @@
+#!/bin/bash
+
+workdir=${homedir}/rbldnsd/{{ rbl_vendor }}
+
+rsync_base="{{ rbl_rsync }}"
+rsync_files="{{ rbl_files }}"
+{% if rbl_files_suffix %}rsync_files_suffix="{{ rbl_files_suffix }}"{% endif %}
+{% if rbl_verify %}verify=1{% endif %}

@@ -1,0 +1,31 @@
+---
+
+- name: Create log storage filesystem
+  filesystem:
+    dev: /dev/xvdd
+    fstype: xfs
+    force: no
+
+- name: Mount log storage filesystem
+  mount:
+    name: /var/log/remote
+    src: /dev/xvdd
+    fstype: xfs
+    state: mounted
+
+- name: Configure rsyslog listener
+  copy:
+    dest: /etc/rsyslog.d/imrelp.conf
+    src: imrelp.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart rsyslog
+
+- name: Configure logrotate for remote logs
+  copy:
+    dest: /etc/logrotate.d/remotesyslog
+    src: logrotate.remote.conf
+    owner: root
+    group: root
+    mode: 0644

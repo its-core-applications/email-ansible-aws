@@ -1,0 +1,88 @@
+---
+
+- name: Install clamav
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - clamav-data-empty
+    - clamav
+    - clamav-server
+  tags: configuration
+
+- name: Create ~clamupdate/.ssh
+  file:
+    dest: /var/lib/clamav/.ssh
+    state: directory
+    owner: clamupdate
+    group: clamupdate
+    mode: 0700
+  tags: configuration
+
+- name: Install private SSH key
+  template:
+    dest: /var/lib/clamav/.ssh/id_rsa
+    src: id_rsa.j2
+    owner: clamupdate
+    group: clamupdate
+    mode: 0400
+  tags: configuration
+
+- name: Configure clamav
+  copy:
+    dest: /etc/clamd.conf
+    src: scan.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart clamd
+  tags: configuration
+
+- name: Create /etc/systemd/system/clamav-daemon.service.d
+  file:
+    dest: /etc/systemd/system/clamav-daemon.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  tags: configuration
+ 
+- name: Configure clamav-daemon service
+  copy:
+    dest: /etc/systemd/system/clamav-daemon.service.d/unit.conf
+    src: unit.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration
+
+- name: Install clam-update-client
+  copy: 
+    dest: /usr/local/sbin/clam-update-client
+    src: clam-update-client
+    owner: root
+    group: root
+    mode: 0755
+  tags: configuration
+
+- name: Configure clam-update-client
+  copy:
+    dest: /usr/local/collaboration/dispatch/clam-update-client.conf
+    src: clam-update-client.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration
+
+- name: Run the update client for ClamAV
+  become_user: clamupdate
+  command: /usr/local/sbin/clam-update-client creates=/var/lib/clamav/current
+  ignore_errors: yes
+  changed_when: true
+  notify: Restart clamd
+  tags: configuration
+
+- name: Enable clamd
+  service: name=clamav-daemon enabled=yes
+  notify: Restart clamd
+  tags: configuration

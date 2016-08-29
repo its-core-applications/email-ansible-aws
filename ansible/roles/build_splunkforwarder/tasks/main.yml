@@ -1,0 +1,17 @@
+---
+
+- name: Download Splunk RPM
+  get_url:
+    url: 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.0&product=universalforwarder&filename=splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm&wget=true'
+    dest: /var/tmp/splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm
+    checksum: md5:92974ecf8383c2d886c4eddb2029aa27
+
+- name: Upload Splunk RPM
+  s3:
+    bucket: "{{ yum_hostname }}"
+    region: "{{ yum_aws_region }}"
+    mode: put
+    permission: public-read
+    object: "{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm"
+    src: /var/tmp/splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm
+    overwrite: never

@@ -1,0 +1,15 @@
+---
+
+- hosts: tag_Class_mx
+  roles:
+    - { role: base, tags: base }
+    - { role: rsyslog_forward, tags: rsyslog_forward }
+    - { role: localnameserver, tags: localnameserver }
+    - role: simta
+      simta_version: 1.0.4
+      simta_config: mx.a.mail
+      simta_ldap: true
+      tags: simta
+    - { role: spamassassin, tags: spamassassin }
+    - { role: clamav, tags: clamav }
+    - { role: mx, tags: mx }

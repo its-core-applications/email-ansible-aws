@@ -1,0 +1,29 @@
+---
+
+- name: Create certificate storage directory
+  file:
+    dest: /etc/pki/collab/private
+    owner: root
+    group: mail
+    mode: 0750
+    state: directory
+  tags: configuration
+
+- name: Install certificate private key
+  template:
+    dest: "/etc/pki/collab/private/{{ certificate }}.key"
+    src: key.j2
+    owner: root
+    group: mail
+    mode: 0640
+  tags: configuration
+
+- name: Install certificate
+  copy:
+    dest: "/etc/pki/collab/private/{{ certificate }}.crt"
+    src: "{{ certificate }}.crt"
+    owner: root
+    group: mail
+    mode: 0644
+  tags: configuration
+

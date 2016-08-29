@@ -1,0 +1,4 @@
+id_rsa
+ansible/keys
+packer/packer_cache
+private/

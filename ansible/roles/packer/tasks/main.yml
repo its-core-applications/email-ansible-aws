@@ -1,0 +1,16 @@
+---
+
+- name: Download packer
+  get_url:
+    url: https://releases.hashicorp.com/packer/0.11.0/packer_0.11.0_linux_amd64.zip
+    dest: /var/tmp/packer.zip
+    checksum: sha256:318ffffa13763eb6f29f28f572656356dc3dbf8d54c01ffddd1c5e2f08593adb
+  tags: packageinstall
+
+- name: Install packer
+  unarchive:
+    src: /var/tmp/packer.zip
+    # We want to overwrite an unrelated packer which is shipped in sbin
+    dest: /usr/sbin
+    copy: false
+  tags: packageinstall

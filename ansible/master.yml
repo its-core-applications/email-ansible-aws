@@ -1,0 +1,16 @@
+---
+- hosts: tag_Class_master
+  roles:
+    - { role: base, tags: base }
+    - { role: master, tags: master }
+    - { role: rsyslog_forward, tags: rsyslog }
+    - { role: comint, tags: comint }
+    - { role: localnameserver, tags: localnameserver }
+    - { role: kitbag, tags: kitbag }
+    - { role: vault, tags: vault }
+    - { role: packer, tags: packer }
+    - { role: nonpeople, tags: nonpeople }
+    - { role: people, tags: people }
+    - { role: duo, tags: duo }
+    - { role: email_rbl-update, tags: email }
+    - { role: google_gam, tags: google }

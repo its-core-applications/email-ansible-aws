@@ -1,0 +1,39 @@
+---
+
+- name: Install build dependencies
+  yum: name={{ item }} state=present
+  with_items:
+    - jemalloc-devel
+  tags: packageinstall
+
+- name: Install spec file 
+  become: false
+  copy: src=redis.spec dest=~/redis.spec
+  tags: build
+
+- name: Fetch sources 
+  become: false
+  shell: spectool -g -R ~/redis.spec
+  tags: build
+
+- name: Install non-fetchable sources
+  become: false
+  copy: src=sources/{{ item }} dest=~/rpmbuild/SOURCES/{{ item }}
+  with_items:
+    - redis-3.0.7-use-system-jemalloc.patch
+    - redis.init
+    - redis-limit-init
+    - redis-limit-systemd
+    - redis.logrotate
+    - redis-sentinel.init
+    - redis-sentinel.service
+    - redis.service
+    - redis-shutdown
+    - redis.tmpfiles
+  tags: build
+
+- name: Build redis RPM
+  become: false
+  shell: rpmbuild -ba ~/redis.spec
+  notify: Update yum repository
+  tags: build

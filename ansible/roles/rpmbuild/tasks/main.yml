@@ -1,0 +1,18 @@
+---
+
+- name: Install basic build dependencies
+  yum: pkg={{ item }} state=present
+  with_items:
+    - git
+    - createrepo
+    - rpmdevtools
+    - autoconf
+    - automake
+    - libtool
+    - setup
+  tags: packageinstall
+
+- name: Set up rpmbuild tree
+  become: false
+  command: rpmdev-setuptree creates=~/rpmbuild/RPMS
+  tags: configuration

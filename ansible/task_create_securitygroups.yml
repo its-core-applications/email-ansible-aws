@@ -1,0 +1,146 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Create default security group
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: main-default
+        description: default VPC security group
+        rules:
+          - proto: icmp
+            from_port: -1
+            to_port: -1
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: udp
+            from_port: 60000
+            to_port: 61000
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+
+    - name: Create VPN default security group
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpn_vpc }}"
+        name: vpn-default
+        description: default VPC security group
+        rules:
+          - proto: icmp
+            from_port: -1
+            to_port: -1
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: udp
+            from_port: 60000
+            to_port: 61000
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+
+    - name: Create security group for mx ELB
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: mx-elb
+        description: allows SMTP from anywhere
+        rules:
+          - proto: tcp
+            from_port: 25
+            to_port: 25
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+
+    - name: Create security group for mx
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: mx
+        description: restricts SMTP to the ELB
+        rules:
+          - proto: tcp
+            from_port: 25
+            to_port: 25
+            group_name: mx-elb
+
+    - name: Create security group for egress
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: egress
+        description: restricts SMTP to ingress hosts 
+        rules:
+          - proto: tcp
+            from_port: 25
+            to_port: 25
+            group_name: mx
+
+    - name: Create security group for relay ELB
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpn_vpc }}"
+        name: relay-elb
+        description: allows SMTP from anywhere
+        rules:
+          - proto: tcp
+            from_port: 25
+            to_port: 25
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+
+    - name: Create security group for relay
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpn_vpc }}"
+        name: relay
+        description: restricts SMTP to the ELB
+        rules:
+          - proto: tcp
+            from_port: 25
+            to_port: 25
+            group_name: relay-elb
+
+    - name: Create security group for rsyslog
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpn_vpc }}"
+        name: rsyslog
+        description: allows rsyslog forwarding from the VPC
+        rules:
+          - proto: tcp
+            from_port: 2514
+            to_port: 2514
+            cidr_ip: 10.236.17.0/24
+          - proto: tcp
+            from_port: 2514
+            to_port: 2514
+            cidr_ip: 172.31.0.0/16
+
+    - name: Create security group for EFS
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: EFS
+        description: allows NFS from the VPC
+        rules:
+          - proto: tcp
+            from_port: 2049
+            to_port: 2049
+            group_name: main-default

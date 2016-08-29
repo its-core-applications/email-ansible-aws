@@ -1,0 +1,9 @@
+# Run the daily, weekly, and monthly jobs
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+# run-parts
+00 0 * * * root run-parts /etc/cron.daily
+30 0 * * 0 root run-parts /etc/cron.weekly
+00 1 1 * * root run-parts /etc/cron.monthly

@@ -1,0 +1,44 @@
+---
+
+- name: Configure static hostname
+  copy:
+    dest: /etc/dynhostname.static
+    content: "mogo.{{ my_tld }}"
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration
+
+- name: Configure aliases
+  copy:
+    dest: /etc/aliases
+    src: aliases
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration
+
+- name: Install extra packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - gitolite3
+    - openldap-clients
+    - simta
+    - nfs-utils
+    - unzip
+  tags: packageinstall
+
+- name: Install extra pip packages
+  pip: name={{ item }} state=latest
+  with_items:
+    - hvac
+  tags: packageinstall
+
+- name: Mount /home
+  mount:
+    name: /home
+    src: "{{ ec2_placement }}.{{ aws_master_efs }}.efs.{{ aws_region }}.amazonaws.com:/"
+    fstype: nfs4
+    opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noatime
+    state: mounted
+  tags: configuration

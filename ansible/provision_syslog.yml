@@ -1,0 +1,70 @@
+---
+
+- include: task_find_ami.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Gather VPC subnet facts
+      ec2_vpc_subnet_facts:
+        region: "{{ aws_region }}"
+        filters:
+          vpc-id: "{{ aws_vpn_vpc }}"
+      register: ec2_subnets
+    - name: Create syslog
+      ec2:
+        group: [ vpn-default, rsyslog ]
+        key_name: "{{ aws_ssh_key }}"
+        instance_type: m4.large
+        region: "{{ aws_region }}"
+        vpc_subnet_id: "{{ ec2_subnets.subnets.0.id }}"
+        image: "{{ find_ami.results.0.ami_id }}"
+        instance_profile_name: standard
+        instance_tags:
+          Class: syslog
+        exact_count: 1
+        count_tag:
+          Class: syslog
+        wait: true
+      # this is just to force a consistent result structure
+      with_items:
+        - dummy
+      register: ec2
+
+- include: task_wait_for_launched.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Attach EBS log volume
+      ec2_vol:
+        name: logs
+        region: "{{ aws_region }}"
+        instance: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_id') | join }}"
+        device_name: xvdd
+        volume_type: gp2
+        volume_size: 100
+        encrypted: true
+        delete_on_termination: false
+
+- include: syslog.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: "Set syslog.{{ my_tld }}"
+      route53:
+        command: "create"
+        overwrite: true
+        zone: "{{ my_tld }}"
+        record: "syslog.{{ my_tld }}"
+        type: "A"
+        ttl: 300
+        value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
+

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+name=kitbag
+confdir=/usr/local/collaboration/dispatch
+
+directories=( /home/* )
+ftp_base=ftp.box.com/Pyrocumulonimbus/backups
+ftp_user=its-collab-pyrocumulonimbus@umich.edu
+ftp_passwd=dead60ff
+
+export TMPDIR=/var/tmp
+. /usr/libexec/comint/setup
+
+ts=$(date +%F)
+
+(
+for dir in ${directories[*]} ; do
+    free=$(df -k --output=avail $tmpdir | tail -1)
+    size=$(du -ks $dir | cut -f1)
+    if [[ $size -gt $(( free / 2 )) ]]; then
+        echo "$dir is ${size}K, and I'm uncomfortable creating a tarball on a filesystem with only ${free}K free"
+        echo "Skipping backup of $dir"
+        echo
+        continue
+    fi
+    tarball=$tmpdir/${dir//\//_}.tar.xz
+    tar -cJf $tarball $dir 2>/dev/null
+    tries=0
+    while [[ $(( tries++ )) -lt 5 ]]; do
+        curl -s -T $tarball -u $ftp_user:$ftp_passwd --ftp-ssl --ftp-create-dirs "ftp://$ftp_base/$host/$ts/"
+        curlexit=$?
+        [[ $curlexit -eq 0 ]] && break
+    done
+    if [[ $curlexit -ne 0 ]]; then
+        echo "Failed to upload tarball for $dir"
+        echo
+    fi
+    rm -f $tarball
+done
+) 2>&1 | eval $notifycmd_warn $notifywho_warn
+
+cleanup

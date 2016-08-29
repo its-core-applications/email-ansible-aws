@@ -1,0 +1,4 @@
+---
+
+- name: Restart spamassassin
+  service: name=spamassassin state=restarted

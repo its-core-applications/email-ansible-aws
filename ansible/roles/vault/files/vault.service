@@ -1,0 +1,11 @@
+[Unit]
+Description=Hashi Vault
+Wants=network.target
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/vault server -config=/etc/vault.hcl
+
+[Install]
+WantedBy=multi-user.target
+

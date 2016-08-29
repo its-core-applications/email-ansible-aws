@@ -1,0 +1,21 @@
+---
+
+- hosts: tag_Class_builder
+  roles:
+    - { role: base, tags: base }
+    - { role: rpmbuild, tags: always }
+    - { role: localrepo, tags: always }
+    - { role: build_splunkforwarder, tags: splunk }
+    - { role: build_comint, tags: comint }
+    - { role: build_jemalloc, tags: jemalloc }
+    - { role: build_simta, tags: simta }
+    - { role: build_spamassassin, tags: spamassassin }
+    - { role: build_clamav, tags: clamav }
+    - { role: build_dash, tags: dash }
+    - { role: build_mscan, tags: mscan }
+    - { role: build_simta-admin, tags: simta-admin }
+    - { role: build_redis, tags: redis }
+    - { role: build_urcl, tags: urcl }
+    - { role: build_penaltybox, tags: penaltybox }
+#    - { role: build_nmh, tags: nmh }
+    - { role: s3repo_build, tags: always }

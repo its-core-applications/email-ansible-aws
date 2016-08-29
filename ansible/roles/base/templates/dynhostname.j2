@@ -1,0 +1,51 @@
+#!/bin/bash
+
+sethostname() {
+    instanceid=$(curl -fs http://169.254.169.254/latest/meta-data/instance-id)
+    echo "Setting FQDN to $1"
+    hostnamectl set-hostname $1
+    aws ec2 create-tags --region={{ aws_region }} --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1 
+}
+
+
+zoneid=$(route53 ls | awk '/ID:/{ id=$NF } /Name: {{ my_tld }}.$/{ print id }')
+
+if [[ -z $zoneid ]]; then
+    echo "Failed to fetch zone ID, not setting hostname"
+    exit 1
+fi
+
+publicname=$(curl -fs http://169.254.169.254/latest/meta-data/public-hostname)
+
+if [[ -s /etc/dynhostname.static ]]; then
+    if [[ $1 != 'clear' ]]; then
+        fqdn=$(cat /etc/dynhostname.static)
+        sethostname $fqdn
+        route53 change_record $zoneid $fqdn CNAME $publicname 300
+    fi
+    exit 0
+fi
+
+if [[ $1 = 'clear' ]]; then
+    route53 del_record $zoneid $(hostname) CNAME $publicname 300
+    exit $?
+fi
+
+try=0
+while [[ -z $name ]]; do
+    name=$(shuf -n 1 /usr/share/hostname-prefixes)-$(shuf -n 1 /usr/share/hostname-suffixes)
+    fqdn=$name.{{ my_tld }}
+    # Try to add it to DNS. This will fail if it already exists, which avoids
+    # any possibility of a race.
+    route53 add_record $zoneid $fqdn CNAME $publicname 300
+    if [[ $? -eq 1 ]]; then
+        if [[ $(( try++ )) -gt 10 ]]; then
+            echo "dynhostname is giving up..."
+            exit 1
+        fi
+        unset name
+        sleep 1
+    fi
+done
+
+sethostname $fqdn

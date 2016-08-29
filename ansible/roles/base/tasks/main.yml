@@ -1,0 +1,126 @@
+---
+
+- name: Disable SELinux
+  selinux: state=disabled
+  tags: configuration
+
+- name: Configure sshd
+  copy:
+    dest: /etc/ssh/sshd_config
+    src: sshd_config
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart sshd
+  tags: configuration
+
+- name: Install basic QoL packages
+  yum: pkg={{ item }} state=present
+  with_items:
+    - awscli
+    - bind-utils
+    - cronie-noanacron
+    - expect
+    - git
+    - krb5-workstation
+    - man
+    - mosh
+    - nc
+    - openldap-clients
+    - python-boto
+    - python-pip
+    - rsyslog-relp
+    - strace
+    - sysstat
+    - telnet
+    - tmux
+    - vim
+    - wget
+  tags: packageinstall
+
+- name: Uninstall unwanted packages
+  yum: pkg={{ item }} state=absent
+  with_items:
+    - cronie-anacron
+    - postfix
+  tags: packageinstall
+
+- name: Upgrade all packages
+  yum: pkg=* state=latest
+  when: inventory_hostname == "127.0.0.1"
+  tags: packageinstall
+
+- name: Configure tmux
+  copy: dest=/etc/tmux.conf src=tmux.conf owner=root group=root mode=0644
+  tags: configuration
+
+- name: Set kernel.core_pattern
+  sysctl: name=kernel.core_pattern reload=yes value='/var/tmp/%e.core.%p' ignoreerrors=yes
+  tags: configuration
+
+- name: Set fs.suid_dumpable
+  sysctl: name=fs.suid_dumpable reload=yes value='2' ignoreerrors=yes
+  tags: configuration
+
+- name: Raise corefile limits
+  copy: dest=/etc/security/limits.d/core.conf src=core.conf owner=root group=root mode=644
+  tags: configuration
+
+- name: Configure systemd-journald
+  copy: dest=/etc/systemd/journald.conf src=journald.conf owner=root group=root mode=0644
+  notify: Restart systemd-journald
+  tags: configuration
+
+- name: Configure rsyslog
+  copy: dest=/etc/rsyslog.conf src=rsyslog.conf owner=root group=root mode=0644
+  notify: Restart rsyslog
+  tags: configuration
+
+- name: Configure cron scheduled jobs
+  copy:
+    dest: /etc/cron.d/dailyjobs
+    src: dailyjobs.cron
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure logrotate
+  copy:
+    dest: /etc/logrotate.conf
+    src: logrotate.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration
+
+- name: Configure logrotate for syslog files
+  copy:
+    dest: /etc/logrotate.d/syslog
+    src: logrotate.syslog
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration
+
+- name: Install data files
+  copy: dest=/usr/share/{{ item }} src={{ item }} owner=root group=root mode=0644
+  with_items:
+    - hostname-prefixes
+    - hostname-suffixes
+  tags: configuration
+
+- name: Install scripts
+  template: dest=/usr/local/sbin/{{ item }} src={{ item }}.j2 owner=root group=root mode=0755
+  with_items:
+    - dynhostname
+  tags: configuration
+
+- name: Install units
+  copy: dest=/etc/systemd/system/{{ item }} src={{ item }} owner=root group=root mode=0644
+  with_items:
+    - dynhostname.service
+  tags: configuration
+
+- name: Enable dynhostname
+  service: name=dynhostname enabled=yes
+  tags: configuration

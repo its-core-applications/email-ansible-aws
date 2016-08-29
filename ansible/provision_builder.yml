@@ -1,0 +1,22 @@
+---
+
+- include: task_find_ami.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Create builder
+      ec2:
+        group: [ main-default ]
+        key_name: "2015-10-16"
+        instance_type: t2.medium
+        region: "{{ aws_region }}"
+        image: "{{ find_ami.results.0.ami_id }}"
+        instance_profile_name: builder
+        instance_tags:
+          Class: builder
+        exact_count: 1
+        count_tag:
+          Class: builder

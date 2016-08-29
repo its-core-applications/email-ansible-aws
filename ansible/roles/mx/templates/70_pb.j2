@@ -1,0 +1,59 @@
+#!/bin/dash
+# penalty box - inbound
+
+PENALTYBOX_PASS=1
+penaltybox_bin=/usr/bin/penaltybox
+penaltybox_args='-h pink.mail.umich.edu'
+pbchecked=0
+
+if ! simrbl -q -l penaltybox-skip.dnswl "$SIMTA_REMOTE_IP" ; then
+    PENALTYBOX_PASS=0
+elif [ "x$SIMTA_DMARC_RESULT" = 'xquarantine' -o "x$SIMTA_DMARC_RESULT" = 'xreject' ]; then
+    logmsg=$($penaltybox_bin $penaltybox_args 'dmarc')
+    pbret=$?
+    pbchecked=1
+elif [ "x$SIMTA_DMARC_RESULT" != 'xpass' -a \
+    "x$SIMTA_SPF_RESULT" != 'xpass' -a \
+    "x$SIMTA_SPF_RESULT" != 'xneutral' -a \
+    "x$SIMTA_SPF_RESULT" != 'xnone' ]; then
+    logmsg=$($penaltybox_bin $penaltybox_args 'spf')
+    pbret=$?
+    pbchecked=1
+elif [ $SIMTA_REVERSE_LOOKUP -ne 0 ]; then
+    logmsg=$($penaltybox_bin $penaltybox_args 'bad reverse')
+    pbret=$?
+    pbchecked=1
+elif [ $SIMTA_WRITE_BEFORE_BANNER -ne 0 ]; then
+    logmsg=$($penaltybox_bin $penaltybox_args 'write before banner')
+    pbret=$?
+    pbchecked=1
+else
+    RBL=$(simrbl \
+        -l {{ trendmicro_key }}.r.mail-abuse.com \
+        -l {{ trendmicro_key }}.q.mail-abuse.com \
+        -l sip24.dnsbl \
+        -l b.barracudacentral.org \
+        -l bl.spamcop.net \
+        -l sip.dnsbl \
+        -l xbl.dnsbl \
+        -l sbl.dnsbl \
+        -l pbl.dnsbl \
+        "$SIMTA_REMOTE_IP")
+    if [ $? -eq 1 ]; then
+        RBL=${RBL#found in }
+        RBL=${RBL%%:*}
+        logmsg=$($penaltybox_bin $penaltybox_args "rbl $RBL")
+        pbret=$?
+        pbchecked=1
+    fi
+fi
+
+if [ $pbchecked -eq 1 ]; then
+    if [ "x$logmsg" != 'x' ]; then
+        log "70_pb: $logmsg"
+    fi
+    if [ $pbret -eq ${MESSAGE_TEMPFAIL} ]; then
+        filter_exit ${MESSAGE_TEMPFAIL}
+    fi
+    PENALTYBOX_PASS=0
+fi

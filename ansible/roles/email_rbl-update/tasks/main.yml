@@ -1,0 +1,31 @@
+---
+
+- name: Install rbl-update script
+  copy:
+    dest: /usr/bin/rbl-update
+    src: rbl-update
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create wrapper scripts for each list
+  template:
+    dest: "/usr/bin/{{ item[0] }}-{{ item[1] }}"
+    src: rbl-update-wrapper.j2
+    owner: root
+    group: root
+    mode: 0755
+  with_nested:
+    -
+      - mx-accept
+      - mx-deny
+      - mx-trust
+      - penaltybox-skip
+      - smtp-deny
+      - spamassassin-reject
+      - ual
+      - ubl
+      - ubl-preemptive
+    -
+      - add
+      - remove

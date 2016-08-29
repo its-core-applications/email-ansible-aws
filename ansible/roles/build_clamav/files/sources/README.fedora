@@ -1,0 +1,116 @@
+A clamav-milter setup consists of the following three components:
+
+* the clamav-milter itself
+
+  --> this is provided by the 'clamav-milter' package plus (alternatively)
+      'clamav-milter-upstart' or 'clamav-milter-sysvinit'
+
+  The main configuration is in /etc/mail/clamav-milter.conf and MUST
+  be changed before first use.
+
+  The -sysvinit package is managed by the traditional tools, but
+  -upstart requires modification of /etc/event.d/clamav-milter to
+  enable automatic startup.  See comments there for more details.
+
+* a clamav scanner daemon
+
+  --> this package is called 'clamav-scanner' plus (alternatively)
+      'clamav-scanner-upstart' or 'clamav-scanner-sysvinit'
+
+  The daemon is configured by /etc/clamd.d/scan.conf (which MUST be
+  edited before first use).
+
+  The -sysvinit package is managed by the traditional tools, but
+  -upstart requires modification of /etc/event.d/clamd.scan to enable
+  automatic startup.  See comments there for more details.
+
+* the MTA (sendmail/postfix)
+
+  --> you should know how to install this...
+
+  When communicating across unix sockets with the clamav-milter, it is
+  suggested to use the /var/run/clamav-milter/clamav-milter.socket
+  path.  You have to add something like
+
+    INPUT_MAIL_FILTER(`clamav', `S=local:/var/run/clamav-milter/clamav-milter.socket, F=, T=S:4m;R:4m')dnl
+
+  to your sendmail.mc.
+
+
+
+It is suggested that components communicate through TCP sockets as
+this eases setup.  Please add corresponding packet filter rules!
+
+
+EXAMPLE
+=======
+
+For clamav-milter, a possible setup might be created by
+
+A)  On the MTA  (assumed hostname 'host-mta')
+
+  1. Add to sendmail.mc
+
+    | INPUT_MAIL_FILTER(`clamav', `S=inet:6666@host-milter, F=, T=S:4m;R:4m')dnl
+
+  2. Rebuild sendmail.cf
+
+
+B)  On the clamav-milter host (assumed hostname 'host-milter')
+
+  1. Install clamav-milter + clamav-milter-upstart packages
+
+  2. Set in /etc/mail/clamav-milter.conf
+
+    | MilterSocket	inet:6666
+    | ClamdSocket	tcp:host-scanner:6665
+
+     and all the other options which are required on your system
+
+  3. Edit /etc/event.d/clamav-milter and uncomment the
+
+    | start on starting local
+
+     line. Restart your system or execute
+
+    | initctl emit starting local
+
+  4. Add something like
+
+    | iptables -N IN-cmilt
+    | iptables -A IN-cmilt -s host-mta -j ACCEPT
+    | iptables -A IN-cmilt -j DROP
+
+    | iptables -A INPUT -p tcp --dport 6666 -j IN-cmilt
+
+     to your firewall setup
+
+C)  On the clamav-scanner host (assumed hostname 'host-scanner')
+
+  1. Install clamav-scanner + clamav-scanner-upstart packages
+
+  2. Add to /etc/clamd.d/scan.conf
+
+    | TCPSocket 6665
+    | TCPAddr   host-scanner
+
+     comment out possible 'LocalSocket' lines and set all the other
+     options which are required on your system
+
+  3. Edit /etc/event.d/clamav-scanner and uncomment the
+
+    | start on starting local
+
+     line. Restart your system or execute
+
+    | initctl emit starting local
+
+  4. Add something like
+
+    | iptables -N IN-cscan
+    | iptables -A IN-cscan -s host-milter -j ACCEPT
+    | iptables -A IN-cscan -j DROP
+
+    | iptables -A INPUT -p tcp --dport 6665 -j IN-csan
+
+     to your firewall setup

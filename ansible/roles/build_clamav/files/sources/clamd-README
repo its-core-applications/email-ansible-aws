@@ -1,0 +1,59 @@
+To create individual clamd-instance take the following files and
+modify/copy them in the suggested way:
+
+clamd.conf:
+  * set LocalSocket (or better: TCPSocket) and User to suitable values;
+    avoid PidFile unless it is required by system monitoring or something
+    else. Logging through syslog is usually better than an individual
+    Logfile.
+  * place this file into /etc/clamd.d with an unique service-name;
+    e.g. as /etc/clamd.d/<SERVICE>.conf
+
+  When using TCPSocket, create iptables rules which are limiting the
+  access by source and/or by using '-m owner'.
+
+  When LogFile feature is wanted, it must be writable for the assigned
+  User. Recommended way to reach this, is to:
+  * make it owned by the User's *group*
+  * assign at least 0620 (u+rw,g+w) permissions
+
+  A suitable command might be
+  | # touch <logfile>
+  | # chgrp <user> <logfile>
+  | # chmod 0620   <logfile>
+  | # restorecon <logfile>
+
+  NEVER use 'clamav' as the user since he can modify the database.
+  This is the user who is running the application; e.g. for mimedefang
+  (http://www.roaringpenguin.com/mimedefang), the user might be
+  'defang'.Theoretically, distinct users could be used, but it must be
+  made sure that the application-user can write into the socket-file,
+  and that the clamd-user can access the files asked by the
+  application to be checked.
+
+clamd.logrotate: (only when LogFile feature is used)
+  * set the correct value for the logfile
+  * place it into /etc/logrotate.d
+
+clamd@<SERVICE>.service: (systemd instance)
+  * instance of clamd@.service
+
+Additionally, when using LocalSocket instead of TCPSocket, the directory
+for the socket file must be created.  For tmpfiles based systems, you
+might want to create a file /usr/lib/tmpfiles.d/clamd.<SERVICE>.conf
+with a content of
+
+ | d /var/run/clamd.<SERVICE> <MODE> <USER> <GROUP>
+
+Adjust <MODE> (0710 should suffice for most cases) and <USER> + <GROUP>
+so that the socket can be accessed by clamd and by the applications
+using clamd. Make sure that the socket is not world accessible; else,
+DOS attacks or worse are trivial.
+
+
+[Disclaimer:
+ this file and the script/configfiles are not part of the official
+ clamav package.
+
+ Please send complaints and comments to
+ mailto:enrico.scholz@informatik.tu-chemnitz.de!]

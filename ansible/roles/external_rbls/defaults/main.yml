@@ -1,0 +1,5 @@
+---
+
+rbl_files_suffix:
+rbl_verify: false
+rbl_cron: "*/15"

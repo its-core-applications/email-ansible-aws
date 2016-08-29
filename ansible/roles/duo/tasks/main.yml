@@ -1,0 +1,35 @@
+---
+
+- name: Add duosecurity yum repository
+  yum_repository:
+    name: duosecurity
+    baseurl: http://pkg.duosecurity.com/RedHat/$releasever/$basearch
+    description: Duo Security repository
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://duo.com/RPM-GPG-KEY-DUO
+  tags: configuration
+
+- name: Install duo_unix
+  yum:
+    pkg: duo_unix
+    state: latest
+  tags: packageinstall
+
+- name: Configure pam_duo
+  template:
+    dest: /etc/duo/pam_duo.conf
+    src: pam_duo.conf.j2
+    owner: root
+    group: root
+    mode: 0600
+  tags: configuration
+
+- name: Configure PAM for sshd
+  copy:
+    dest: /etc/pam.d/sshd
+    src: sshd.pam
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration

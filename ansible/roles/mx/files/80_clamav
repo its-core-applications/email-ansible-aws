@@ -1,0 +1,112 @@
+#!/bin/dash
+# virus scan with clamd and clamdscan
+
+cleanup() {
+    if [ -s $CLAMERR ]; then
+        mv $CLAMTMP /var/tmp/
+    else
+        rm -rf $CLAMTMP
+    fi
+}
+
+CLAMTMP=$(mktemp -d /tmp/80_clamav.XXXXXXXX)
+CLAMOUT=${CLAMTMP}/output
+CLAMERR=${CLAMTMP}/stderr
+CLAMDSCAN=/usr/bin/clamdscan
+CLAMDSCAN_FLAGS="--config-file /etc/clamd.conf --quiet --no-summary -l ${CLAMOUT}"
+
+if [ -s /etc/mail/trusted-users ] && check_env \$SIMTA_AUTH_ID; then
+    fgrep -qw ${SIMTA_AUTH_ID} /etc/mail/trusted-users
+    trusted=$?
+fi
+
+if [ ${trusted:-1} -eq 0 ]; then
+       log "80_clamav ${SIMTA_DFILE}: scan skipped for trusted user ${SIMTA_AUTH_ID}"
+       cleanup
+elif check_dfile; then
+    # read from fast queue
+    ${CLAMDSCAN} ${CLAMDSCAN_FLAGS} ${SIMTA_DFILE} 2>|${CLAMERR}
+    CLAMRET=$?
+
+    case $CLAMRET in
+    0)  
+	cleanup
+	;;
+
+    1)  signame=$(sed -e '1d; s/.*: //; s/ FOUND$//' $CLAMOUT)
+	blacklisted=$(fgrep -owf /etc/mail/clamav-blacklist $CLAMOUT)
+	if [ $? -eq 0 ]; then
+	    log "80_clamav ${SIMTA_DFILE}: Signature ${signame} is on blacklist, ignoring detection"
+	    cleanup
+	fi
+        case $signame in
+            *Phish*)
+                sigtype=phishing
+                ;;
+            Sanesecurity.Auction*)
+                sigtype=phishing
+                ;;
+            Sanesecurity.Blurl*)
+                sigtype=phishing
+                ;;
+            Sanesecurity.Casino*)
+                sigtype=phishing
+                ;;
+            Sanesecurity.Test*)
+                sigtype=phishing
+                ;;
+            UMICH.APER*)
+                sigtype=phishing
+                ;;
+            *)
+                sigtype=virus
+                ;;
+        esac
+	if [ $sigtype = 'phishing' ]; then
+	    egrep -qwf /etc/mail/clamav-delete $CLAMOUT
+            if [ $? -eq 0 ]; then
+                log "80_clamav ${SIMTA_DFILE}: $signame: Phishing deleted"
+                cleanup
+                filter_exit $(( ${MESSAGE_ACCEPT} + ${MESSAGE_DELETE} ))
+            fi
+            egrep -q 'Heuristics.Phishing.Email' $CLAMOUT
+	    if [ $? -eq 0 ]; then
+		log "80_clamav ${SIMTA_DFILE}: $signame: Phishing URL heuristic ignored"
+		cleanup
+	    else
+	        log "80_clamav ${SIMTA_DFILE}: $signame: Phishing rejected"
+	        #echo "http://spambusters.mail.umich.edu/reject_5xx"
+	        cleanup
+	        filter_exit ${MESSAGE_REJECT}
+	    fi
+	else
+	    fgrep -qwf /etc/mail/clamav-reject $CLAMOUT
+	    if [ $? -eq 0 ]; then
+		log "80_clamav ${SIMTA_DFILE}: $signame: Virus rejected"
+		#echo "http://spambusters.mail.umich.edu/reject_5xx"
+		cleanup
+		filter_exit ${MESSAGE_REJECT}
+	    else
+		log "80_clamav ${SIMTA_DFILE}: $signame: Virus deleted"
+		cleanup
+		filter_exit $(( ${MESSAGE_ACCEPT} + ${MESSAGE_DELETE} ))
+	    fi
+	fi
+	;;
+
+    2)
+	log "80_clamav ${SIMTA_DFILE}: clamd error, saved in $CLAMTMP"
+	cleanup
+	filter_exit ${MESSAGE_TEMPFAIL}
+	;;
+
+    *)
+	log "80_clamav ${SIMTA_DFILE}: $CLAMDSCAN returned $CLAMRET"
+	cleanup
+	filter_exit ${MESSAGE_TEMPFAIL}
+	;;
+
+    esac
+fi
+
+cleanup

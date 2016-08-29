@@ -1,0 +1,24 @@
+---
+
+- name: Install spec file 
+  become: false
+  copy: src=dash.spec dest=~/dash.spec
+  tags: build
+
+- name: Fetch sources 
+  become: false
+  shell: spectool -g -R ~/dash.spec
+  tags: build
+
+- name: Install non-fetchable sources
+  become: false
+  copy: src=sources/{{ item }} dest=~/rpmbuild/SOURCES/{{ item }}
+  with_items:
+    - dash-0.5.7-format-security.patch
+  tags: build
+
+- name: Build RPM
+  become: false
+  shell: rpmbuild -ba ~/dash.spec
+  notify: Update yum repository
+  tags: build

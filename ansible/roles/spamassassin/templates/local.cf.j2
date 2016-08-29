@@ -1,0 +1,323 @@
+lock_method flock
+use_learner 0
+normalize_charset 1
+
+required_score 6 
+
+
+# AWS networks
+trusted_networks 172.31.0.0/16
+trusted_networks 10.236.17.0/24
+
+# All UM networks except for wireless
+trusted_networks 67.194.0.0/16
+trusted_networks 141.211.0.0/16
+trusted_networks 141.212.0.0/16
+trusted_networks 141.213.0.0/17
+trusted_networks 141.213.128.0/17
+trusted_networks 141.214.0.0/16
+trusted_networks 141.215.0.0/16
+trusted_networks 141.216.0.0/16
+trusted_networks 192.12.80.0/24
+trusted_networks 192.231.253.0/24
+trusted_networks 198.108.8.0/21
+trusted_networks 198.111.224.0/22
+trusted_networks 198.111.181.0/25
+trusted_networks 207.75.144.0/20
+trusted_networks 2607:f018::/32
+
+# Google networks (updated 2016-03-28)
+# _netblocks.google.com
+trusted_networks 64.18.0.0/20
+trusted_networks 64.233.160.0/19
+trusted_networks 66.102.0.0/20
+trusted_networks 66.249.80.0/20
+trusted_networks 72.14.192.0/18
+trusted_networks 74.125.0.0/16
+trusted_networks 108.177.8.0/21
+trusted_networks 173.194.0.0/16
+trusted_networks 207.126.144.0/20
+trusted_networks 209.85.128.0/17 
+trusted_networks 216.58.192.0/19
+trusted_networks 216.239.32.0/19
+# _netblocks2.google.com
+trusted_networks 2001:4860:4000::/36 
+trusted_networks 2404:6800:4000::/36 
+trusted_networks 2607:f8b0:4000::/36 
+trusted_networks 2800:3f0:4000::/36 
+trusted_networks 2a00:1450:4000::/36 
+trusted_networks 2c0f:fb50:4000::/36
+
+
+# MSAs should not be included in internal_networks, so exclude
+# smtp.mail and mail-relay.itd
+internal_networks !141.211.12.86
+internal_networks !141.211.12.122
+internal_networks !141.211.14.73
+internal_networks !141.211.14.81
+internal_networks !141.211.14.82
+
+# MACC
+internal_networks 141.211.12.0/23
+# ALDF
+internal_networks 141.211.14.0/25
+# ALDF LB
+internal_networks 141.211.14.128/27
+# MACC LB
+internal_networks 141.211.90.64/28
+# ASB
+internal_networks 141.211.125.0/24
+# ASB LB
+internal_networks 141.211.176.128/27
+
+# hawkgirl
+internal_networks 141.211.76.102
+
+
+# Known good domains that don't need to be checked against blacklists
+# This is in addition to the list in 25_uribl.cf, so if you're surprised
+# by an omission check there first.
+uridnsbl_skip_domain akamaihd.net
+uridnsbl_skip_domain amazon.cn
+uridnsbl_skip_domain amazon.co.jp
+uridnsbl_skip_domain amazon.co.uk
+uridnsbl_skip_domain amazon.de
+uridnsbl_skip_domain amazonaws.com
+uridnsbl_skip_domain arizona.edu
+uridnsbl_skip_domain berkeley.edu
+uridnsbl_skip_domain bit.ly
+uridnsbl_skip_domain box.com
+uridnsbl_skip_domain bronto.com
+uridnsbl_skip_domain buzzfeed.com
+uridnsbl_skip_domain campaign-archive1.com
+uridnsbl_skip_domain campaign-archive2.com
+uridnsbl_skip_domain clickhole.com
+uridnsbl_skip_domain cloudfront.net
+uridnsbl_skip_domain cmu.edu
+uridnsbl_skip_domain columbia.edu
+uridnsbl_skip_domain constantcontact.com
+uridnsbl_skip_domain cornell.edu
+uridnsbl_skip_domain cracked.com
+uridnsbl_skip_domain crunchbase.com
+uridnsbl_skip_domain ctctcdn.com
+uridnsbl_skip_domain deadspin.com
+uridnsbl_skip_domain detroitnews.com
+uridnsbl_skip_domain digg.com
+uridnsbl_skip_domain docs.google.com
+uridnsbl_skip_domain doubleclick.net
+uridnsbl_skip_domain dropbox.com
+uridnsbl_skip_domain ello.co
+uridnsbl_skip_domain emltrk.com
+uridnsbl_skip_domain etsy.com
+uridnsbl_skip_domain exacttarget.com
+uridnsbl_skip_domain exct.net
+uridnsbl_skip_domain fbcdn.net
+uridnsbl_skip_domain freep.com
+uridnsbl_skip_domain fyleio.com
+uridnsbl_skip_domain gawker.com
+uridnsbl_skip_domain github.com
+uridnsbl_skip_domain gizmodo.com
+uridnsbl_skip_domain goo.gl
+uridnsbl_skip_domain google.ca
+uridnsbl_skip_domain google.cn
+uridnsbl_skip_domain google.co.jp
+uridnsbl_skip_domain google.co.uk
+uridnsbl_skip_domain google.com.au
+uridnsbl_skip_domain google.com.br
+uridnsbl_skip_domain google.com.hk
+uridnsbl_skip_domain google.de
+uridnsbl_skip_domain google.es
+uridnsbl_skip_domain google.fr
+uridnsbl_skip_domain google.it
+uridnsbl_skip_domain google.nl
+uridnsbl_skip_domain google.pl
+uridnsbl_skip_domain google.ru
+uridnsbl_skip_domain googleapis.com
+uridnsbl_skip_domain googleusercontent.com
+uridnsbl_skip_domain gstatic.com
+uridnsbl_skip_domain harvard.edu
+uridnsbl_skip_domain huffingtonpost.com
+uridnsbl_skip_domain illinois.edu
+uridnsbl_skip_domain images-amazon.com
+uridnsbl_skip_domain imdb.com
+uridnsbl_skip_domain imgur.com
+uridnsbl_skip_domain instagram.com
+uridnsbl_skip_domain io9.com
+uridnsbl_skip_domain jalopnik.com
+uridnsbl_skip_domain jezebel.com
+uridnsbl_skip_domain kotaku.com
+uridnsbl_skip_domain licdn.com
+uridnsbl_skip_domain lifehacker.com
+uridnsbl_skip_domain linkedin.com
+uridnsbl_skip_domain list-manage.com
+uridnsbl_skip_domain list-manage1.com
+uridnsbl_skip_domain list-manage2.com
+uridnsbl_skip_domain mailchimp.com
+uridnsbl_skip_domain mgoblue.com
+uridnsbl_skip_domain mlive.com
+uridnsbl_skip_domain msu.edu
+uridnsbl_skip_domain nyu.edu
+uridnsbl_skip_domain pinterest.com
+uridnsbl_skip_domain princeton.edu
+uridnsbl_skip_domain psu.edu
+uridnsbl_skip_domain quantserve.com
+uridnsbl_skip_domain rackcdn.com
+uridnsbl_skip_domain reddit.com
+uridnsbl_skip_domain returnpath.net
+uridnsbl_skip_domain rlcdn.com
+uridnsbl_skip_domain rs6.net
+uridnsbl_skip_domain sailthru.com
+uridnsbl_skip_domain salon.com
+uridnsbl_skip_domain scorecardresearch.com
+uridnsbl_skip_domain si.edu
+uridnsbl_skip_domain soundcloud.com
+uridnsbl_skip_domain spotify.com
+uridnsbl_skip_domain ssl-images-amazon.com
+uridnsbl_skip_domain stackexchange.com
+uridnsbl_skip_domain stackoverflow.com
+uridnsbl_skip_domain stanford.edu
+uridnsbl_skip_domain t.co
+uridnsbl_skip_domain tamu.edu
+uridnsbl_skip_domain techcrunch.com
+uridnsbl_skip_domain tumblr.com
+uridnsbl_skip_domain twimg.com
+uridnsbl_skip_domain twitch.tv
+uridnsbl_skip_domain ucla.edu
+uridnsbl_skip_domain ucsd.edu
+uridnsbl_skip_domain uiuc.edu
+uridnsbl_skip_domain umflint.edu
+uridnsbl_skip_domain umich.edu
+uridnsbl_skip_domain umn.edu
+uridnsbl_skip_domain unc.edu
+uridnsbl_skip_domain uofmhealth.org
+uridnsbl_skip_domain upenn.edu
+uridnsbl_skip_domain upworthy.com
+uridnsbl_skip_domain utexas.edu
+uridnsbl_skip_domain vimeo.com
+uridnsbl_skip_domain virginia.edu
+uridnsbl_skip_domain washington.edu
+uridnsbl_skip_domain wikimedia.org
+uridnsbl_skip_domain wikipedia.org
+uridnsbl_skip_domain wisc.edu
+uridnsbl_skip_domain yale.edu
+uridnsbl_skip_domain youtu.be
+
+
+# First, kill almost all of the default DNSBLs
+# The only one that should be left is SpamCop
+dns_query_restriction deny barracudacentral.org
+dns_query_restriction deny bondedsender.org
+dns_query_restriction deny dnswl.org
+dns_query_restriction deny habeas.com
+dns_query_restriction deny isipp.com
+dns_query_restriction deny mail-abuse.com
+dns_query_restriction deny mailspike.net
+dns_query_restriction deny senderscore.com
+dns_query_restriction deny sorbs.net
+dns_query_restriction deny spamhaus.org
+dns_query_restriction deny support-intelligence.net
+dns_query_restriction deny surbl.org
+dns_query_restriction deny surriel.com
+dns_query_restriction deny uribl.com
+
+
+# Now, fix the ones that we host locally or subscribe to
+header      RCVD_IN_MAPS_RBL    eval:check_rbl('rblplus', '{{ trendmicro_key }}.r.mail-abuse.com.', '1')
+header      RCVD_IN_MAPS_DUL    eval:check_rbl('rblplus-lastexternal', '{{ trendmicro_key }}.r.mail-abuse.com.', 2 )
+header      RCVD_IN_SBL         eval:check_rbl('sbl', 'sbl.dnsbl', '127.0.0.2')
+header      RCVD_IN_SBL_CSS     eval:check_rbl_sub('sbl', '127.0.0.3')
+header      RCVD_IN_XBL         eval:check_rbl('xbl-lastexternal', 'xbl.dnsbl')
+header      RCVD_IN_PBL         eval:check_rbl('pbl-lastexternal', 'pbl.dnsbl')
+uridnssub   URIBL_SBL           sbl.dnsbl.  A   127.0.0.2
+uridnsbl    URIBL_SBL_A         sbl.dnsbl.  A
+
+
+# Add some DNSBLs that aren't in the default ruleset
+header      __UMICH_RCVD_IN_IVMSIP      eval:check_rbl('sip', 'sip.dnsbl')
+tflags      __UMICH_RCVD_IN_IVMSIP      net
+
+header      __UMICH_RCVD_IN_IVMSIP24    eval:check_rbl('sip24', 'sip24.dnsbl')
+tflags      __UMICH_RCVD_IN_IVMSIP24    net
+
+meta	    UMICH_RCVD_IN_IVMSIP        (__UMICH_RCVD_IN_IVMSIP || __UMICH_RCVD_IN_IVMSIP24)
+describe    UMICH_RCVD_IN_IVMSIP        Received via a relay in invaluement sip or sip24
+
+header      UMICH_RCVD_IN_MXDENY    eval:check_rbl('mxdeny', 'mx-deny.dnsbl')
+tflags      UMICH_RCVD_IN_MXDENY    net
+describe    UMICH_RCVD_IN_MXDENY    Received via a locally blocked relay
+
+header      UMICH_RCVD_IN_SMTPDENY  eval:check_rbl('smtp', 'smtp-deny.dnsbl')
+tflags      UMICH_RCVD_IN_SMTPDENY  net
+describe    UMICH_RCVD_IN_SMTPDENY  Received via a locally blocked relay
+
+urirhsbl    UMICH_URIBL_DENYURLS    deny-urls.dnsbl.    A
+body        UMICH_URIBL_DENYURLS    eval:check_uridnsbl('UMICH_URIBL_DENYURLS')
+tflags      UMICH_URIBL_DENYURLS    net
+describe    UMICH_URIBL_DENYURLS    Contains a locally blocked URL
+
+urirhsbl    UMICH_URIBL_IIA         iia-bad-urls.dnsbl.    A
+body        UMICH_URIBL_IIA         eval:check_uridnsbl('UMICH_URIBL_IIA')
+tflags      UMICH_URIBL_IIA         net
+describe    UMICH_URIBL_IIA         Contains an IIA suspicious URL
+
+urirhsbl    UMICH_URIBL_IIA_REJ     iia-deny-urls.dnsbl.    A
+body        UMICH_URIBL_IIA_REJ     eval:check_uridnsbl('UMICH_URIBL_IIA_REJ')
+tflags      UMICH_URIBL_IIA_REJ     net
+describe    UMICH_URIBL_IIA_REJ     Contains an IIA blocked URL
+
+urirhsbl    UMICH_URIBL_IVMURI      uri.dnsbl.          A
+body        UMICH_URIBL_IVMURI      eval:check_uridnsbl('UMICH_URIBL_IVM')
+tflags      UMICH_URIBL_IVMURI      net
+describe    UMICH_URIBL_IVMURI      Contains a URL on invaluement uribl
+
+
+# Some TLDs are bad TLDs
+blacklist_uri_host date
+blacklist_uri_host download
+blacklist_uri_host link
+blacklist_uri_host loans
+blacklist_uri_host ninja
+blacklist_uri_host party
+blacklist_uri_host review
+blacklist_uri_host rocks
+blacklist_uri_host science
+blacklist_uri_host us
+blacklist_uri_host work
+blacklist_uri_host xyz
+
+# Some hosts are bad hosts
+blacklist_uri_host my-free.website
+
+# Scores
+
+# Local rules
+score   UMICH_RCVD_IN_MXDENY        5
+score   UMICH_RCVD_IN_SMTPDENY      4
+score   UMICH_RCVD_IN_IVMSIP        4
+score   UMICH_URIBL_DENYURLS        4
+score   UMICH_URIBL_IIA             5
+score   UMICH_URIBL_IIA_REJ       0.1
+score   UMICH_URIBL_IVMURI          3
+score   URI_HOST_IN_BLACKLIST       2
+score   HEADER_HOST_IN_BLACKLIST    2
+
+# Rules that default to 0 because SA upstream can't automatically adjust
+# the scoring based on performance against a corpus.
+score RCVD_IN_MAPS_RBL 0.5
+score RCVD_IN_MAPS_DUL 0.5
+score RCVD_IN_MAPS_RSS 0.5
+score RCVD_IN_MAPS_OPS 0.5
+
+# High level of false positives
+score   HELO_DYNAMIC_CHELLO_NL  0.5
+score   HELO_DYNAMIC_DHCP       0.5
+score   HELO_DYNAMIC_DIALIN     0.5
+score   HELO_DYNAMIC_HCC        0.5
+score   HELO_DYNAMIC_HEXIP      0.5
+score   HELO_DYNAMIC_HOME_NL    0.5
+score   HELO_DYNAMIC_IPADDR     0.5
+score   HELO_DYNAMIC_IPADDR2    0.5
+score   HELO_DYNAMIC_SPLIT_IP   0.5
+score   RDNS_NONE               0.5
+score   URI_HEX                 0.5
+

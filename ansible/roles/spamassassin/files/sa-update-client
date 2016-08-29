@@ -1,0 +1,59 @@
+#!/bin/bash
+
+name=sa-update-client
+if [[ -d /usr/local/collaboration ]]; then
+    confdir=/usr/local/collaboration/dispatch
+else
+    confdir=/etc/sysconfig/dispatch
+fi
+
+update_host=simta@alien.mr.itd.umich.edu
+rule_dir=/var/lib/spamassassin/
+ssh_key=/var/spool/simta/.ssh/id_rsa
+tries=5
+sleep=15
+
+. /usr/libexec/comint/setup
+
+success=0
+
+while [[ $tries -gt 0 && $success -ne 1 ]]; do
+    echo -e "\n\nrsync output:\n" >> $tmpfile
+    rsync -rLti \
+        -e "ssh -i $ssh_key -o StrictHostKeyChecking=no" \
+        --copy-dest=$rule_dir \
+        --exclude '/userstate' \
+        ${update_host}:$rule_dir ${tmpdir}/sync/ \
+        > ${tmpdir}/rsyncout 2>>$tmpfile
+    if [[ $? -ne 0 ]]; then
+        rm -rf ${tmpdir}/sync/
+        (( tries-- ))
+    else
+        if grep -q '^>' ${tmpdir}/rsyncout ; then
+            mv $rule_dir ${tmpdir}/old
+            mv ${tmpdir}/sync $rule_dir
+            echo -e "\n\nlint output:\n" >> $tmpfile
+            spamassassin --lint &>> ${tmpdir}/errout
+            if [[ $? -eq 0 ]]; then
+                service spamassassin reload > /dev/null
+                success=1
+            else
+                rm -rf $rule_dir
+                mv ${tmpdir}/old $rule_dir
+                (( tries-- ))
+            fi
+        else
+            success=1
+        fi
+    fi
+    if [[ $success -ne 1 ]]; then
+        sleep $sleep
+    fi
+done
+
+if [[ $success -ne 1 ]]; then
+    cat $tmpfile | eval $notifycmd_warn $notifywho_warn
+    exit 1
+fi
+
+cleanup

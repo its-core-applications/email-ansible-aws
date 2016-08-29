@@ -1,0 +1,93 @@
+---
+
+- name: Install spamassassin
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - spamassassin
+  notify: Restart spamassassin
+  tags: configuration
+
+- name: Configure spamassassin
+  copy:
+    dest: "/etc/mail/spamassassin/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - init.pre
+    - v310.pre
+    - v312.pre
+    - v320.pre
+    - v330.pre
+    - v340.pre
+    - v341.pre
+  notify: Restart spamassassin
+
+- name: Local spamassassin config
+  template:
+    dest: /etc/mail/spamassassin/local.cf
+    src: local.cf.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart spamassassin
+
+- name: Configure spamd
+  copy:
+    dest: /etc/sysconfig/spamassassin
+    src: spamassassin.sysconfig
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart spamassassin
+  tags: configuration
+
+- name: Create /var/spool/simta/.ssh
+  file: 
+    dest: /var/spool/simta/.ssh
+    state: directory
+    owner: simta
+    group: mail
+    mode: 0700
+  tags: configuration
+
+- name: Install ssh key for simta
+  template:
+    dest: /var/spool/simta/.ssh/id_rsa
+    src: id_rsa.j2
+    owner: simta
+    group: mail
+    mode: 0400
+  tags: configuration
+
+- name: Install sa-update-client
+  copy:
+    dest: /usr/local/sbin/sa-update-client
+    src: sa-update-client
+    owner: root
+    group: root
+    mode: 0755
+  tags: configuration
+
+- name: Configure sa-update-client
+  copy:
+    dest: /usr/local/collaboration/dispatch/sa-update-client.conf
+    src: sa-update-client.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration
+
+- name: Update spamassassin rules
+  command: /usr/local/sbin/sa-update-client creates=/var/lib/spamassassin/compiled
+  ignore_errors: yes
+  notify: Restart spamassassin
+  tags: configuration
+
+- name: Enable spamassassin
+  service: name=spamassassin enabled=yes
+  notify: Restart spamassassin
+  tags: configuration

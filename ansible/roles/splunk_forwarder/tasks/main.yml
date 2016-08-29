@@ -1,0 +1,19 @@
+---
+
+- name: Install splunk forwarder
+  yum:
+    pkg: splunkforwarder
+    state: present
+  notify: Restart splunkforwarder
+
+- name: Install systemd unit file for splunk
+  copy:
+    dest: /etc/systemd/system/splunkforwarder.service
+    src: splunkforwarder.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart splunkforwarder
+
+- name: Enable splunk service
+  service: name=splunkforwarder enabled=true

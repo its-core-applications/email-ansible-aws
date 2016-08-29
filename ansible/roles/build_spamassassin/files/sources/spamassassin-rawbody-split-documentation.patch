@@ -1,0 +1,13 @@
+diff --git a/lib/Mail/SpamAssassin/Conf.pm b/lib/Mail/SpamAssassin/Conf.pm
+index 18a876f..1b0ec27 100644
+--- a/lib/Mail/SpamAssassin/Conf.pm
++++ b/lib/Mail/SpamAssassin/Conf.pm
+@@ -2376,6 +2376,8 @@ The 'raw body' of a message is the raw data inside all textual parts. The
+ text will be decoded from base64 or quoted-printable encoding, but HTML
+ tags and line breaks will still be present.  Multiline expressions will
+ need to be used to match strings that are broken by line breaks.
++Note: the text is split into 1 kB - 2kB chunks so your expressions may
++unexpectedly stop matching where they should.
+ 
+ =item rawbody SYMBOLIC_TEST_NAME eval:name_of_eval_method([args])
+ 

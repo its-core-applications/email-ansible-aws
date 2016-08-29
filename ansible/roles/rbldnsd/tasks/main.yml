@@ -1,0 +1,19 @@
+---
+
+- name: Install rbldnsd
+  yum: name=rbldnsd state=present
+  tags: packageinstall
+
+- name: Install comint
+  yum: name=comint state=present
+  tags: packageinstall
+
+- name: Create directories
+  file: dest=/etc/{{ item }} state=directory owner=root group=root mode=775
+  with_items:
+    - rbldnsd
+  tags: configuration
+  
+- name: Configure rbldnsd
+  template: dest=/etc/rbldnsd/config src=rbldnsd.j2 owner=root group=root mode=664
+  tags: configuration

@@ -1,0 +1,18 @@
+- name: Create nonpeople group
+  group:
+    name: nonpeople
+    gid: 1101
+    state: present
+  tags: configuration
+
+- name: Create non-person accounts
+  user:
+    name: "{{ item.name }}"
+    group: nonpeople
+    home: "/home/{{ item.name }}"
+    shell: /bin/sh
+    uid: "{{ item.uid }}"
+    comment: "{{ item.comment }}"
+    state: present
+  with_items: "{{ user_accounts }}"
+  tags: configuration

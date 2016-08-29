@@ -1,0 +1,17 @@
+---
+
+- name: Install sync script for {{ rbl_vendor }}
+  copy: dest=/etc/rbldnsd/{{ rbl_vendor }}-sync src=rbl-sync owner=root group=root mode=774
+  tags: configuration
+
+- name: Configure sync script for {{ rbl_vendor }}
+  template: dest=/etc/rbldnsd/{{ rbl_vendor }}-sync.conf src=rbl-sync.conf.j2 owner=root group=root mode=664
+  tags: configuration
+        
+- name: Update {{ rbl_vendor }} blocklists
+  command: /etc/rbldnsd/{{ rbl_vendor }}-sync
+  tags: sync
+            
+- name: Add cron job to update {{ rbl_vendor }} blocklists
+  cron: name="update {{ rbl_vendor }} blocklists" state=present minute="{{ rbl_cron }}" job="/etc/rbldnsd/{{ rbl_vendor }}-sync"
+  tags: [ configuration, cron ]

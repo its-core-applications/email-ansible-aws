@@ -1,0 +1,9 @@
+---
+
+- name: Create yum repository
+  become: false
+  command: createrepo --database ~/rpmbuild/RPMS
+
+- name: Configure local yum repo
+  copy: dest=/etc/yum.repos.d/local.repo src=local.repo owner=root group=root mode=644
+  tags: configuration

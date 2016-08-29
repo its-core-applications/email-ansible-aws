@@ -1,0 +1,31 @@
+---
+
+- name: Install unbound 
+  yum: pkg=unbound state=latest
+  notify: Restart unbound 
+  tags: packageinstall
+
+- name: Configure unbound
+  copy:
+    dest: /etc/unbound/unbound.conf
+    src: unbound.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart unbound
+  tags: configuration
+
+- name: Enable unbound 
+  service: name=unbound enabled=yes
+  tags: configuration
+
+- meta: flush_handlers
+
+- name: Set 127.0.0.1 as the active nameserver
+  copy:
+    dest: /etc/resolv.conf
+    content: "nameserver 127.0.0.1\n"
+    owner: root
+    group: root
+    mode: 0444
+  tags: configuration

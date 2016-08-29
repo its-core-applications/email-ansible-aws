@@ -1,0 +1,28 @@
+- name: Create staff group
+  group:
+    name: staff
+    gid: 1100
+    state: present
+  tags: configuration
+
+- name: Create user accounts
+  user:
+    name: "{{ item.name }}"
+    group: staff
+    home: "/home/{{ item.name }}"
+    shell: /bin/bash
+    password: "{{ lookup('hashi_vault', 'secret=secret/shadow/{{ item.name }} token={{ vault_token }}' ) }}"
+    uid: "{{ item.uid }}"
+    comment: "{{ item.comment }}"
+    state: present
+  with_items: "{{ user_accounts }}"
+  tags: configuration
+
+- name: Grant sudo access
+  template:
+    dest: /etc/sudoers.d/99_collab
+    src: sudoers_99_collab.j2
+    owner: root
+    group: root
+    mode: 0440
+  tags: configuration

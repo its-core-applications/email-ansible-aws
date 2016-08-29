@@ -1,0 +1,6 @@
+---
+dependencies:
+  - { role: rpmbuild, tags: rpmbuild }
+  - { role: build_jemalloc, tags: jemalloc }
+  - { role: build_denser, tags: denser }
+  - { role: build_libsnet, tags: libsnet }

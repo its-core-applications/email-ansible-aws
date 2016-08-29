@@ -1,0 +1,6 @@
+---
+
+simta_ldap_password: "{{ lookup( 'hashi_vault', 'secret=secret/simta/ldap_password token={{ vault_token }}' ) }}"
+simta_ldap_host: "ldap-mail.itd.umich.edu"
+simta_srs_secret: "{{ lookup( 'hashi_vault', 'secret=secret/simta/srs_secret token={{ vault_token }}' ) }}"
+trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro token={{ vault_token }}' ) }}"
