@@ -1,13 +1,19 @@
 {
+  "variables": {
+    "aws_region": "us-west-2",
+    "image_type": "base",
+    "base_ami": "ami-775e4f16"
+  },
   "provisioners": [
     {
       "type": "shell",
       "script": "packer/scripts/ansible.sh"
     },
     {
-      "type": "ansible-local",
-      "playbook_dir": "ansible",
-      "playbook_file": "ansible/packer.yml"
+      "type": "ansible",
+      "playbook_file": "ansible/{{ user `image_type` }}.yml",
+      "groups": "tag_Class_{{ user `image_type` }}",
+      "host_alias": "{{ user `image_type` }}"
     },
     {
       "type": "shell",
@@ -17,10 +23,10 @@
   "builders": [
     {
       "type": "amazon-ebs",
-      "region": "us-west-2",
-      "ami_name": "ami_rhel7_base_{{ timestamp }}",
+      "region": "{{ user `aws_region` }}",
+      "ami_name": "ami_rhel7_{{ user `image_type` }}_{{ timestamp }}",
       "instance_type": "t2.micro",
-      "source_ami": "ami-775e4f16",
+      "source_ami": "{{ user `base_ami` }}",
       "encrypt_boot": true,
       "ssh_username": "ec2-user",
       "ssh_keypair_name": "2015-10-16",
@@ -36,7 +42,7 @@
       ],
       "tags": {
         "os": "rhel",
-        "image_type": "base"
+        "image_type": "{{ user `image_type` }}"
       }
     }
   ]

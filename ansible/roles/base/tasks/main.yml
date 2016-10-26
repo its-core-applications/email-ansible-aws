@@ -45,9 +45,10 @@
     - postfix
   tags: packageinstall
 
+# Only for the fake hostname that packer uses when building the base image
 - name: Upgrade all packages
   yum: pkg=* state=latest
-  when: inventory_hostname == "127.0.0.1"
+  when: inventory_hostname == "base"
   tags: packageinstall
 
 - name: Configure tmux
