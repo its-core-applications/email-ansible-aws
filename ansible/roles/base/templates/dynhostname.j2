@@ -1,12 +1,14 @@
 #!/bin/bash
 
+region=$(curl -fs http://169.254.169.254/latest/meta-data/placement/availability-zone) 
+region=${region::-1} 
+instanceid=$(curl -fs http://169.254.169.254/latest/meta-data/instance-id)
+
 sethostname() {
-    instanceid=$(curl -fs http://169.254.169.254/latest/meta-data/instance-id)
     echo "Setting FQDN to $1"
     hostnamectl set-hostname $1
-    aws ec2 create-tags --region={{ aws_region }} --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1 
+    aws ec2 create-tags --region=$region --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1 
 }
-
 
 zoneid=$(route53 ls | awk '/ID:/{ id=$NF } /Name: {{ my_tld }}.$/{ print id }')
 
@@ -31,10 +33,20 @@ if [[ $1 = 'clear' ]]; then
     exit $?
 fi
 
+class=$(aws ec2 describe-tags --region=us-west-2 --filter="Name=resource-id,Values=$instanceid" --output=text | awk '$2 == "Class" { print $5 }')
+base={{ my_tld }}
+prefixes=/usr/share/hostname-prefixes
+suffixes=/usr/share/hostname-suffixes
+if [[ $class ]]; then
+    base=${class}.$base
+    [[ -s ${prefixes}-$class ]] && prefixes=${prefixes}-$class
+    [[ -s ${suffixes}-$class ]] && suffixes=${suffixes}-$class
+fi
+
 try=0
 while [[ -z $name ]]; do
-    name=$(shuf -n 1 /usr/share/hostname-prefixes)-$(shuf -n 1 /usr/share/hostname-suffixes)
-    fqdn=$name.{{ my_tld }}
+    name=$(shuf -n 1 $prefixes)-$(shuf -n 1 $suffixes)
+    fqdn=${name}.$base
     # Try to add it to DNS. This will fail if it already exists, which avoids
     # any possibility of a race.
     route53 add_record $zoneid $fqdn CNAME $publicname 300

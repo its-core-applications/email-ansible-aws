@@ -106,6 +106,10 @@
   copy: dest=/usr/share/{{ item }} src={{ item }} owner=root group=root mode=0644
   with_items:
     - hostname-prefixes
+    - hostname-prefixes-egress
+    - hostname-prefixes-mx
+    - hostname-prefixes-relay
+    - hostname-prefixes-smtp
     - hostname-suffixes
   tags: configuration
 
