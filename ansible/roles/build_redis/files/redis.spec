@@ -11,7 +11,7 @@
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 Name:              redis
-Version:           3.2.3
+Version:           3.2.5
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 License:           BSD
@@ -32,7 +32,7 @@ Source9:           %{name}-limit-init
 # Then refresh your patches
 # git format-patch HEAD~<number of expected patches>
 # Update configuration for Fedora
-Patch0001:            redis-3.0.7-use-system-jemalloc.patch
+Patch0001:            redis-3.2.5-use-system-jemalloc.patch
 %if 0%{?with_perftools}
 BuildRequires:     gperftools-devel
 %else

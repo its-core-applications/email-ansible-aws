@@ -20,7 +20,7 @@
   become: false
   copy: src=sources/{{ item }} dest=~/rpmbuild/SOURCES/{{ item }}
   with_items:
-    - redis-3.0.7-use-system-jemalloc.patch
+    - redis-3.2.5-use-system-jemalloc.patch
     - redis.init
     - redis-limit-init
     - redis-limit-systemd
