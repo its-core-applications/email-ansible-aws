@@ -27,6 +27,7 @@
     - mosh
     - nc
     - openldap-clients
+    - pv
     - python-boto
     - python-pip
     - rsyslog-relp
