@@ -15,5 +15,14 @@
     mode: 0644
   notify: Restart splunkforwarder
 
+- name: Configure splunk deploymentclient
+  copy:
+    dest: /opt/splunkforwarder/etc/system/default/deploymentclient.conf
+    src: deploymentclient.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart splunkforwarder
+
 - name: Enable splunk service
   service: name=splunkforwarder enabled=true
