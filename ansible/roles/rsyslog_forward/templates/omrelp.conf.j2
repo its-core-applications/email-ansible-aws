@@ -5,5 +5,12 @@ action(
     target="syslog.{{ my_tld }}"
     port="2514"
     template="RSYSLOG_ForwardFormat"
+    queue.type="LinkedList"
+    queue.filename="forwarding"
+    queue.size="99999"
+    Action.resumeRetryCount="-1"
+    Action.resumeInterval="5"
+    Action.reportSuspension="on"
+    Action.reportSuspensionContinuation="on"
 )
 
