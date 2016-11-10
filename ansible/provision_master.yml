@@ -26,7 +26,16 @@
         - dummy
       register: ec2
 
-
 - include: task_wait_for_launched.yml
 
 - include: bootstrap_master.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:                                                                       +    - name: Reboot new master                                                  +      ec2:
+        region: "{{ aws_region }}"
+        instance_tags:
+          Class: master
+        state: restarted
