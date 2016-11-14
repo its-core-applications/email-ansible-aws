@@ -1,6 +1,10 @@
 ---
 
+
+
 - include: task_find_ami.yml
+  vars:
+    launch_class: mx
 
 - hosts: localhost
   connection: local

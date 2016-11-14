@@ -7,13 +7,13 @@
   vars:
     aws_region: us-west-2
   tasks:
-    - name: Find latest base AMI
+    - name: Find latest AMI
       ec2_ami_find:
         region: "{{ aws_region }}"
         owner: self
         ami_tags:
           os: rhel
-          image_type: base
+          image_type: "{{ launch_class | default('base') }}"
         sort: name
         sort_order: descending
         sort_end: 1

@@ -1,6 +1,8 @@
 ---
 
 - include: task_find_ami.yml
+  vars:
+    launch_class: egress
 
 - hosts: localhost
   connection: local
@@ -31,6 +33,7 @@
           Class: egress
           az: "{{ item.availability_zone }}"
       with_items: "{{ ec2_subnets.subnets }}"
+      register: ec2
 
 - include: task_wait_for_launched.yml
 
