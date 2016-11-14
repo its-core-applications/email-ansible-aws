@@ -5,11 +5,7 @@
     - { role: base, tags: base }
 #    - { role: rsyslog_forward, tags: rsyslog_forward }
     - { role: localnameserver, tags: localnameserver }
-    - role: simta
-      simta_version: 1.0.4
-      simta_config: relay.mail
-      simta_bitbucket: true
-      tags: simta
+    - { role: simta, tags: simta }
 #    - { role: spamassassin, tags: spamassassin }
     - { role: clamav, tags: clamav }
 #    - { role: smtp-relay, tags: smtp-relay }

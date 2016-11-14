@@ -5,7 +5,4 @@
     - { role: base, tags: base }
     - { role: rsyslog_forward, tags: rsyslog_forward }
     - { role: localnameserver, tags: localnameserver }
-    - role: simta
-      simta_version: 1.0.4
-      simta_config: egress.a.mail
-      tags: simta
+    - { role: simta, tags: simta }

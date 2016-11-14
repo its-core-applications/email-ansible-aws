@@ -10,3 +10,4 @@ yum_hostname: yum.{{ my_tld }}
 
 vault_token: "{{ lookup( 'env', 'VAULT_TOKEN' ) }}"
 
+simta_version: 1.0.4.1
