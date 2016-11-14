@@ -7,6 +7,7 @@ Before=rsyslog.service
 [Service]
 Type=oneshot
 ExecStart=/usr/local/sbin/dynhostname set
+ExecReload=/usr/local/sbin/dynhostname set
 ExecStop=/usr/local/sbin/dynhostname clear
 RemainAfterExit=yes
 

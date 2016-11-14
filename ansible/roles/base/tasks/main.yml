@@ -130,3 +130,12 @@
 - name: Enable dynhostname
   service: name=dynhostname enabled=yes
   tags: configuration
+
+- name: Schedule dynhostname public IP re-check
+  copy:
+    dest: /etc/cron.d/dynhostname
+    src: dynhostname.cron
+    owner: root
+    group: root
+    mode: 0644
+  tags: configuration

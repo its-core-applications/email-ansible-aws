@@ -1,0 +1,5 @@
+# Detect changes to our public IP (e.g. association with an elastic IP) and
+# update the custom DNS name.
+SHELL=/bin/bash
+
+* * * * * root [[ $(dig +short CNAME $(hostname)) != $(curl -fs http://169.254.169.254/latest/meta-data/public-hostname). ]] && systemctl reload dynhostname
