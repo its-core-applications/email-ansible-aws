@@ -78,6 +78,35 @@
   notify: Restart rsyslog
   tags: configuration
 
+- name: Create /etc/systemd/system/rsyslog.service.d
+  file:
+    dest: /etc/systemd/system/rsyslog.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  tags: configuration
+
+- name: Configure rsyslog umask
+  copy:
+    dest: /etc/systemd/system/rsyslog.service.d/umask.conf
+    src: rsyslog.umask
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart rsyslog
+  tags: configuration
+
+- name: Remove RHEL rsyslog cruft
+  file:
+    dest: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/rsyslog.d/21-cloudinit.conf
+    - /etc/rsyslog.d/listen.conf
+  notify: Restart rsyslog
+  tags: configuration
+
 - name: Configure cron scheduled jobs
   copy:
     dest: /etc/cron.d/dailyjobs

@@ -12,6 +12,7 @@
     src: /dev/xvdd
     fstype: xfs
     state: mounted
+  notify: Restart rsyslog
 
 - name: Configure rsyslog listener
   copy:

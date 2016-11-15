@@ -20,7 +20,7 @@
 /var/log/uucp
 {
     missingok
-    create 0644 root root
+    nocreate
     sharedscripts
     postrotate
 	/bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> /dev/null || true
