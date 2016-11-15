@@ -1,5 +1,8 @@
 ---
 
 - name: Restart unbound 
-  service: name=unbound state=restarted
+  systemd:
+    name: unbound
+    daemon_reload: true
+    state: restarted
 

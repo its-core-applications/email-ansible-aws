@@ -1,4 +1,7 @@
 ---
 
 - name: Restart vault
-  service: name=vault state=restarted
+  systemd:
+    name: vault
+    daemon_reload: true
+    state: restarted

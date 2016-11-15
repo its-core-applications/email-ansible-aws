@@ -1,4 +1,7 @@
 ---
 
 - name: Restart splunkforwarder
-  service: name=splunkforwarder state=restarted
+  systemd:
+    name: splunkforwarder
+    daemon_reload: true
+    state: restarted

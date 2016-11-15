@@ -1,4 +1,7 @@
 ---
 
 - name: Restart spamassassin
-  service: name=spamassassin state=restarted
+  systemd:
+    name: spamassassin
+    daemon_reload: true
+    state: restarted

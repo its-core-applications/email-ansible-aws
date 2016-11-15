@@ -1,13 +1,25 @@
 ---
 
 - name: Restart systemd-journald
-  service: name=systemd-journald state=restarted
+  systemd:
+    name: systemd-journald
+    daemon_reload: true
+    state: restarted
 
 - name: Restart rsyslog 
-  service: name=rsyslog state=restarted
+  systemd:
+    name: rsyslog
+    daemon_reload: true
+    state: restarted
 
 - name: Restart crond
-  service: name=crond state=restarted
+  systemd:
+    name: crond
+    daemon_reload: true
+    state: restarted
 
 - name: Restart sshd
-  service: name=sshd state=restarted
+  systemd:
+    name: sshd
+    daemon_reload: true
+    state: restarted
