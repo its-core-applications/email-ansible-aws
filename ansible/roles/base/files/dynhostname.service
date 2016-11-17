@@ -2,7 +2,7 @@
 Description=Set a unique hostname
 After=network-online.target cloud-init.service
 Wants=network-online.target
-Before=rsyslog.service
+Before=rsyslog.service simta.service
 
 [Service]
 Type=oneshot
