@@ -11,3 +11,8 @@ yum_hostname: yum.{{ my_tld }}
 vault_token: "{{ lookup( 'env', 'VAULT_TOKEN' ) }}"
 
 simta_version: 1.0.4.1
+
+egress_eip:
+  us-west-2a: 52.37.117.118
+  us-west-2b: 35.162.59.88
+  us-west-2c: 35.161.254.188

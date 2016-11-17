@@ -42,6 +42,22 @@
   gather_facts: false
   become: false
   tasks:
+    - name: Assign elastic IP
+      # This is ugly, fragile, and limits us to one egress host per az
+      ec2_eip:
+        region: "{{ aws_region }}"
+        device_id: "{{ hostvars[item]['ec2_id'] }}"
+        ip: "{{ egress_eip[ hostvars[item]['ec2_placement'] ] }}"
+      with_items: "{{ groups.tag_Class_egress }}"
+      register: eip
+
+    - name: Wait for elastic IPs
+      wait_for:
+        host: "{{ item.public_ip }}"
+        port: 22
+        search_regex: OpenSSH
+      with_items: "{{ eip.results }}"
+
     - name: "Set egress.{{ my_tld }}"
       route53:
         command: "create"
@@ -49,5 +65,5 @@
         zone: "{{ my_tld }}"
         record: "egress.{{ my_tld }}"
         type: "A"
-        ttl: 300
+        ttl: 60
         value: "{{ groups.tag_Class_egress | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
