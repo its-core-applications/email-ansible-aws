@@ -14,6 +14,14 @@
   notify: Restart sshd
   tags: configuration
 
+- name: Configure sudoers
+  copy:
+    dest: /etc/sudoers
+    src: sudoers
+    owner: root
+    group: root
+    mode: 440
+
 - name: Install basic QoL packages
   yum: pkg={{ item }} state=present
   with_items:
