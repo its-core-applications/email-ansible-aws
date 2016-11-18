@@ -29,3 +29,12 @@
     group: root
     mode: 0444
   tags: configuration
+
+- name: Disable PEERDNS for eth0
+  copy:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    src: ifcfg-eth0
+    owner: root
+    group: root
+    mode: 0644
+
