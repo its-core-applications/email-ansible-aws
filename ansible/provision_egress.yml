@@ -58,12 +58,4 @@
         search_regex: OpenSSH
       with_items: "{{ eip.results }}"
 
-    - name: "Set egress.{{ my_tld }}"
-      route53:
-        command: "create"
-        overwrite: true
-        zone: "{{ my_tld }}"
-        record: "egress.{{ my_tld }}"
-        type: "A"
-        ttl: 60
-        value: "{{ groups.tag_Class_egress | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
+- include: task_dns_egress.yml

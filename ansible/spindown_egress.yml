@@ -1,7 +1,30 @@
 ---
 
+- hosts: tag_Class_egress
+  tasks:
+    - name: Set class on oldest host to egress_spindown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: egress_spindown
+      when: ec2_launch_time == groups.tag_Class_egress | map('extract', hostvars, 'ec2_launch_time') | sort | first
+
+    - meta: refresh_inventory
+
+- include: task_dns_egress.yml
+
 - hosts: tag_Class_egress_spindown
   tasks:
+    - name: Wait for active connections to finish
+      wait_for:
+        host: 0.0.0.0
+        port: 25
+        state: drained
+
+    - name: Give the queue a chance to quiesce
+      pause: seconds=10
+
     - name: Stop simta
       systemd:
         name: simta
@@ -35,10 +58,9 @@
         dest: "/home/ec2-user/simqtmp/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
         state: absent
 
-    - name: Destroy host
-      become: false
-      delegate_to: localhost
-      ec2:
+    - name: Set class to spundown
+      ec2_tag:
         region: "{{ aws_region }}"
-        instance_id: "{{ ec2_id }}"
-        state: absent
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: spundown
