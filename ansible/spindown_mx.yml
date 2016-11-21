@@ -1,0 +1,73 @@
+---
+
+- hosts: tag_Class_mx
+  tasks:
+    - name: Set class on oldest host to mx_spindown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: mx_spindown
+      when: ec2_launch_time == groups.tag_Class_mx | map('extract', hostvars, 'ec2_launch_time') | sort | first
+
+    - meta: refresh_inventory
+
+- hosts: tag_Class_mx_spindown
+  tasks:
+    - name: Remove from loadbalancer
+      delegate_to: localhost
+      connection: local
+      become: false
+      ec2_elb:
+        region: "{{ aws_region }}"
+        instance_id: "{{ ec2_id }}"
+        state: absent
+
+    - name: Wait for active connections to finish
+      wait_for:
+        host: 0.0.0.0
+        port: 25
+        state: drained
+
+    - name: Give the queue a chance to quiesce
+      pause: seconds=60
+
+    - name: Stop simta
+      systemd:
+        name: simta
+        state: stopped
+
+    - name: Clean queues
+      command: /usr/sbin/simta -C
+
+    - name: Create local queue storage directory
+      delegate_to: localhost
+      file:
+        dest: /home/ec2-user/simqtmp
+        state: directory
+
+    - name: Touch lockfile
+      delegate_to: localhost
+      file:
+        dest: "/home/ec2-user/simqtmp/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
+        state: touch
+
+    - name: Save queue
+      synchronize:
+        mode: pull
+        archive: true
+        src: /var/spool/simta/slow/
+        dest: "/home/ec2-user/simqtmp/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}/"
+
+    - name: Remove lockfile
+      delegate_to: localhost
+      file:
+        dest: "/home/ec2-user/simqtmp/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
+        state: absent
+
+    - name: Set class to spundown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: spundown
