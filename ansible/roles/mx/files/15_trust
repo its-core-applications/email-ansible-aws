@@ -1,0 +1,7 @@
+#!/bin/dash
+
+simrbl -q -l mx-trust.dnswl "$SIMTA_REMOTE_IP"
+if [ $? -ne 0 ]; then
+    log "15_trust: trusted host, skipping further tests"
+    filter_exit ${MESSAGE_ACCEPT}
+fi

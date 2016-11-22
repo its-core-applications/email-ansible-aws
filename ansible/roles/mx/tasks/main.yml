@@ -1,15 +1,27 @@
 ---
 
+- name: Install filter data files
+  copy:
+    dest: "/etc/mail/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - deny.from
+    - deny.string
+    - trust.rcpt
+
 - name: Install ingress-specific filters
   copy:
-    dest: /etc/mail/filters/{{ item }}
+    dest: "/etc/mail/filters/{{ item }}"
     src: "{{ item }}"
     owner: root
     group: root
     mode: 0755
   with_items:
+    - 15_trust
     - 80_spamassassin
-  tags: configuration
 
 - name: Install ingress-specific templated filters
   template:
