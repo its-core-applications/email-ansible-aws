@@ -15,15 +15,7 @@ CLAMERR=${CLAMTMP}/stderr
 CLAMDSCAN=/usr/bin/clamdscan
 CLAMDSCAN_FLAGS="--config-file /etc/clamd.conf --quiet --no-summary -l ${CLAMOUT}"
 
-if [ -s /etc/mail/trusted-users ] && check_env \$SIMTA_AUTH_ID; then
-    fgrep -qw ${SIMTA_AUTH_ID} /etc/mail/trusted-users
-    trusted=$?
-fi
-
-if [ ${trusted:-1} -eq 0 ]; then
-       log "80_clamav ${SIMTA_DFILE}: scan skipped for trusted user ${SIMTA_AUTH_ID}"
-       cleanup
-elif check_dfile; then
+if check_dfile; then
     # read from fast queue
     ${CLAMDSCAN} ${CLAMDSCAN_FLAGS} ${SIMTA_DFILE} 2>|${CLAMERR}
     CLAMRET=$?
@@ -34,9 +26,9 @@ elif check_dfile; then
 	;;
 
     1)  signame=$(sed -e '1d; s/.*: //; s/ FOUND$//' $CLAMOUT)
-	blacklisted=$(fgrep -owf /etc/mail/clamav-blacklist $CLAMOUT)
+	badsig=$(fgrep -owf /etc/mail/clamav.badsig $CLAMOUT)
 	if [ $? -eq 0 ]; then
-	    log "80_clamav ${SIMTA_DFILE}: Signature ${signame} is on blacklist, ignoring detection"
+	    log "80_clamav ${SIMTA_DFILE}: Signature ${signame} is marked as bad, ignoring detection"
 	    cleanup
 	fi
         case $signame in
@@ -63,7 +55,7 @@ elif check_dfile; then
                 ;;
         esac
 	if [ $sigtype = 'phishing' ]; then
-	    egrep -qwf /etc/mail/clamav-delete $CLAMOUT
+	    egrep -qwf /etc/mail/clamav.delete $CLAMOUT
             if [ $? -eq 0 ]; then
                 log "80_clamav ${SIMTA_DFILE}: $signame: Phishing deleted"
                 cleanup
@@ -80,7 +72,7 @@ elif check_dfile; then
 	        filter_exit ${MESSAGE_REJECT}
 	    fi
 	else
-	    fgrep -qwf /etc/mail/clamav-reject $CLAMOUT
+	    fgrep -qwf /etc/mail/clamav.reject $CLAMOUT
 	    if [ $? -eq 0 ]; then
 		log "80_clamav ${SIMTA_DFILE}: $signame: Virus rejected"
 		#echo "http://spambusters.mail.umich.edu/reject_5xx"

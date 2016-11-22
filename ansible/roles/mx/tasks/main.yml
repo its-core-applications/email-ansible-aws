@@ -8,7 +8,6 @@
     group: root
     mode: 0755
   with_items:
-    - 80_clamav
     - 80_spamassassin
   tags: configuration
 

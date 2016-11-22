@@ -8,7 +8,6 @@
     - clamav-data-empty
     - clamav
     - clamav-server
-  tags: configuration
 
 - name: Create ~clamupdate/.ssh
   file:
@@ -17,7 +16,6 @@
     owner: clamupdate
     group: clamupdate
     mode: 0700
-  tags: configuration
 
 - name: Install private SSH key
   template:
@@ -26,7 +24,6 @@
     owner: clamupdate
     group: clamupdate
     mode: 0400
-  tags: configuration
 
 - name: Configure clamav
   copy:
@@ -36,7 +33,6 @@
     group: root
     mode: 0644
   notify: Restart clamd
-  tags: configuration
 
 - name: Create /etc/systemd/system/clamav-daemon.service.d
   file:
@@ -45,7 +41,6 @@
     owner: root
     group: root
     mode: 0755
-  tags: configuration
  
 - name: Configure clamav-daemon service
   copy:
@@ -54,7 +49,6 @@
     owner: root
     group: root
     mode: 0644
-  tags: configuration
 
 - name: Install clam-update-client
   copy: 
@@ -63,7 +57,6 @@
     owner: root
     group: root
     mode: 0755
-  tags: configuration
 
 - name: Configure clam-update-client
   copy:
@@ -72,7 +65,6 @@
     owner: root
     group: root
     mode: 0644
-  tags: configuration
 
 - name: Run the update client for ClamAV
   become_user: clamupdate
@@ -80,9 +72,31 @@
   ignore_errors: yes
   changed_when: true
   notify: Restart clamd
-  tags: configuration
 
 - name: Enable clamd
   service: name=clamav-daemon enabled=yes
   notify: Restart clamd
-  tags: configuration
+
+- meta: flush_handlers
+
+- name: Install clamav filter configuration files
+  copy:
+    dest: "/etc/mail/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - clamav.badsig
+    - clamav.badurl
+    - clamav.delete
+    - clamav.reject
+
+- name: Install clamav filter
+  copy:
+    dest: /etc/mail/filters/80_clamav
+    src: 80_clamav
+    owner: root
+    group: root
+    mode: 0755
+
