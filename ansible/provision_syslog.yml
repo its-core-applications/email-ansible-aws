@@ -65,6 +65,6 @@
         zone: "{{ my_tld }}"
         record: "syslog.{{ my_tld }}"
         type: "A"
-        ttl: 300
+        ttl: 60
         value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
 
