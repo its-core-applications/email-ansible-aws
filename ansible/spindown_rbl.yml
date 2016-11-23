@@ -1,0 +1,28 @@
+---
+
+- hosts: tag_Class_rbl
+  serial: 1
+  tasks:
+    - name: Set class on oldest host to rbl_spindown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: rbl_spindown
+      when:
+        - ec2_launch_time == groups.tag_Class_rbl | map('extract', hostvars, 'ec2_launch_time') | sort | first
+        - groups.tag_Class_rbl_spindown is undefined
+
+    - meta: refresh_inventory
+      when: groups.tag_Class_rbl_spindown is undefined
+
+- include: task_dns_rbl.yml
+
+- hosts: tag_Class_rbl_spindown
+  tasks:
+    - name: Set class to spundown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: spundown

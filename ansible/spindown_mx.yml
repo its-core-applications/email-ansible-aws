@@ -1,6 +1,7 @@
 ---
 
 - hosts: tag_Class_mx
+  serial: 1
   tasks:
     - name: Set class on oldest host to mx_spindown
       ec2_tag:
@@ -8,9 +9,12 @@
         resource: "{{ ec2_id }}"
         tags:
           Class: mx_spindown
-      when: ec2_launch_time == groups.tag_Class_mx | map('extract', hostvars, 'ec2_launch_time') | sort | first
+      when:
+        - ec2_launch_time == groups.tag_Class_mx | map('extract', hostvars, 'ec2_launch_time') | sort | first
+        - groups.tag_Class_mx_spindown is undefined
 
     - meta: refresh_inventory
+      when: groups.tag_Class_mx_spindown is undefined
 
 - hosts: tag_Class_mx_spindown
   tasks:

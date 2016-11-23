@@ -1,16 +1,16 @@
 RBLDNSD="- -q -a -t 30::300 -b localhost {% for ip in hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] %}-b {{ ip }} {% endfor %} \
-        mx-accept.dnswl:ip4set:/var/lib/rbldnsd/umich/mx-accept \
-        mx-trust.dnswl:ip4set:/var/lib/rbldnsd/umich/mx-trust \
-        penaltybox-skip.dnswl:ip4set:/var/lib/rbldnsd/umich/penaltybox-skip,umich/umnets,umich/mx-accept \
-        umnetworks.dnswl:ip4trie:/var/lib/rbldnsd/umich/umnets \
-        umnetworks.dnswl:ip6trie:/var/lib/rbldnsd/umich/umnets-ipv6 \
+        mx-accept.dnsal:ip4set:/var/lib/rbldnsd/umich/mx-accept \
+        mx-trust.dnsal:ip4set:/var/lib/rbldnsd/umich/mx-trust \
+        penaltybox-skip.dnsal:ip4set:/var/lib/rbldnsd/umich/penaltybox-skip,umich/umnets,umich/mx-accept \
+        umnetworks.dnsal:ip4trie:/var/lib/rbldnsd/umich/umnets \
+        umnetworks.dnsal:ip6trie:/var/lib/rbldnsd/umich/umnets-ipv6 \
         deny-urls.dnsbl:dnset:/var/lib/rbldnsd/umich/deny-urls \
         iia-bad-urls.dnsbl:dnset:/var/lib/rbldnsd/iia/iia-bad-urls \
         iia-deny-urls.dnsbl:dnset:/var/lib/rbldnsd/iia/iia-deny-urls \
         mx-deny.dnsbl:ip4set:/var/lib/rbldnsd/umich/mx-deny \
         smtp-deny.dnsbl:ip4set:/var/lib/rbldnsd/umich/smtp-deny \
         spamassassin-reject.dnsbl:ip4set:/var/lib/rbldnsd/umich/spamassassin-reject \
-        ual.dnswl:dnset:/var/lib/rbldnsd/umich/ual \
+        ual.dnsal:dnset:/var/lib/rbldnsd/umich/ual \
         ubl.dnsbl:dnset:/var/lib/rbldnsd/umich/ubl,/var/lib/rbldnsd/umich/ubl-preemptive \
         test1.dnsbl:ip4set:/var/lib/rbldnsd/umich/testrbl1 \
         test2.dnsbl:ip4set:/var/lib/rbldnsd/umich/testrbl2 \

@@ -6,7 +6,7 @@ penaltybox_bin=/usr/bin/penaltybox
 penaltybox_args='-h pink.mail.umich.edu'
 pbchecked=0
 
-if ! simrbl -q -l penaltybox-skip.dnswl "$SIMTA_REMOTE_IP" ; then
+if ! simrbl -q -l penaltybox-skip.dnsal "$SIMTA_REMOTE_IP" ; then
     PENALTYBOX_PASS=0
 elif [ "x$SIMTA_DMARC_RESULT" = 'xquarantine' -o "x$SIMTA_DMARC_RESULT" = 'xreject' ]; then
     logmsg=$($penaltybox_bin $penaltybox_args 'dmarc')

@@ -3,7 +3,9 @@
 my_tld: a.mail.umich.edu
 aws_region: us-west-2
 aws_vpn_vpc: vpc-18bcc77c
+aws_vpn_subnet: 10.236.17.0/24
 aws_vpc: vpc-226f3e47
+aws_subnet: 172.31.0.0/16
 aws_ssh_key: 2015-10-16
 aws_master_efs: fs-4027d3e9
 yum_hostname: yum.{{ my_tld }}

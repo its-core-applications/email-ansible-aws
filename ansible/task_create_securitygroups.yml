@@ -127,11 +127,11 @@
           - proto: tcp
             from_port: 2514
             to_port: 2514
-            cidr_ip: 10.236.17.0/24
+            cidr_ip: "{{ aws_vpn_subnet }}"
           - proto: tcp
             from_port: 2514
             to_port: 2514
-            cidr_ip: 172.31.0.0/16
+            cidr_ip: "{{ aws_subnet }}"
 
     - name: Create security group for EFS
       ec2_group:
@@ -144,3 +144,20 @@
             from_port: 2049
             to_port: 2049
             group_name: main-default
+
+    - name: Create security group for RBL
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: rbl
+        description: allows DNS queries from the VPC
+        rules:
+          - proto: udp
+            from_port: 53
+            to_port: 53
+            cidr_ip: "{{ aws_vpn_subnet }}"
+          - proto: udp
+            from_port: 53
+            to_port: 53
+            cidr_ip: "{{ aws_subnet }}"
+

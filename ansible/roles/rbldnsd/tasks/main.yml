@@ -2,7 +2,7 @@
 
 - name: Install rbldnsd
   yum: pkg=rbldnsd state=latest
-  notify: Restart rbldnsd
+  notify: Reconfigure rbldnsd
 
 - name: Configure rbldnsd
   template:

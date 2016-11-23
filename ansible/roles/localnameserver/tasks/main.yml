@@ -6,9 +6,9 @@
   tags: packageinstall
 
 - name: Configure unbound
-  copy:
+  template:
     dest: /etc/unbound/unbound.conf
-    src: unbound.conf
+    src: unbound.conf.j2
     owner: root
     group: root
     mode: 0644

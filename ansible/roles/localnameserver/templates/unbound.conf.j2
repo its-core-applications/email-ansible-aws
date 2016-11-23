@@ -43,31 +43,20 @@ server:
     val-log-level: 1
 
     local-zone: "10.in-addr.arpa" nodefault
-    local-zone: "16.172.in-addr.arpa" nodefault
-    local-zone: "17.172.in-addr.arpa" nodefault
-    local-zone: "18.172.in-addr.arpa" nodefault
-    local-zone: "19.172.in-addr.arpa" nodefault
-    local-zone: "20.172.in-addr.arpa" nodefault
-    local-zone: "21.172.in-addr.arpa" nodefault
-    local-zone: "22.172.in-addr.arpa" nodefault
-    local-zone: "23.172.in-addr.arpa" nodefault
-    local-zone: "24.172.in-addr.arpa" nodefault
-    local-zone: "25.172.in-addr.arpa" nodefault
-    local-zone: "26.172.in-addr.arpa" nodefault
-    local-zone: "27.172.in-addr.arpa" nodefault
-    local-zone: "28.172.in-addr.arpa" nodefault
-    local-zone: "29.172.in-addr.arpa" nodefault
-    local-zone: "30.172.in-addr.arpa" nodefault
-    local-zone: "31.172.in-addr.arpa" nodefault
+{% for i in range(16, 32) %}
+    local-zone: "{{ i }}.172.in-addr.arpa" nodefault
+{% endfor %}
 
 forward-zone:
     name: "10.in-addr.arpa"
     forward-addr: 169.254.169.253
 
+{% for i in range(16, 32) %}
 forward-zone:
-    name: "172.in-addr.arpa"
+    name: "{{ i }}.172.in-addr.arpa"
     forward-addr: 169.254.169.253
 
+{% endfor %}
 forward-zone: 
     name: "compute.amazonaws.com"
     forward-addr: 169.254.169.253
@@ -76,8 +65,11 @@ forward-zone:
     name: "compute.internal"
     forward-addr: 169.254.169.253
 
-#stub-zone:
-#    name: "dnsbl"
-#    stub-addr: 141.211.21.71
-#    stub-addr: 141.211.7.108
-#    stub-host: rbldnsd.a.mail.umich.edu
+stub-zone:
+    name: "dnsbl"
+    stub-host: rbldnsd.{{ my_tld }}
+
+stub-zone:
+    name: "dnsal"
+    stub-host: rbldnsd.{{ my_tld }}
+

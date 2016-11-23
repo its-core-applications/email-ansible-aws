@@ -1,6 +1,7 @@
 ---
 
 - hosts: tag_Class_egress
+  serial: 1
   tasks:
     - name: Set class on oldest host to egress_spindown
       ec2_tag:
@@ -8,9 +9,12 @@
         resource: "{{ ec2_id }}"
         tags:
           Class: egress_spindown
-      when: ec2_launch_time == groups.tag_Class_egress | map('extract', hostvars, 'ec2_launch_time') | sort | first
+      when:
+        - ec2_launch_time == groups.tag_Class_egress | map('extract', hostvars, 'ec2_launch_time') | sort | first
+        - groups.tag_Class_egress_spindown is undefined
 
     - meta: refresh_inventory
+      when: groups.tag_Class_egress_spindown is undefined
 
 - include: task_dns_egress.yml
 
