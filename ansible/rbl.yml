@@ -1,0 +1,8 @@
+---
+
+- hosts: tag_Class_rbl
+  roles:
+    - { role: base, tags: base }
+    - { role: rsyslog_forward, tags: rsyslog }
+    - { role: rbldnsd, tags: rbldnsd }
+

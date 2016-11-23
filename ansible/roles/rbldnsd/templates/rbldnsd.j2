@@ -1,20 +1,24 @@
-RBLDNSD="- -r/etc/rbldnsd -q -a -t 30::300 -b localhost {% for ip in hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] %}-b {{ ip }} {% endfor %} -c 10s \
-        mx-accept.dnswl:ip4set:umich/mx-accept \
-        mx-trust.dnswl:ip4set:umich/mx-trust \
-        penaltybox-skip.dnswl:ip4set:umich/penaltybox-skip,umich/umnets,umich/mx-accept \
-        umnetworks.dnswl:ip4trie:umich/umnets \
-        umnetworks.dnswl:ip6trie:umich/umnets-ipv6 \
-        deny-urls.dnsbl:dnset:umich/deny-urls \
-        mx-deny.dnsbl:ip4set:umich/mx-deny \
-        smtp-deny.dnsbl:ip4set:umich/smtp-deny \
-        ubl.dnsbl:dnset:umich/ubl,umich/ubl-preemptive \
-        test1.dnsbl:ip4set:umich/testrbl1 \
-        test2.dnsbl:ip4set:umich/testrbl2 \
-        test3.dnsbl:ip4set:umich/testrbl3 \
-        sip.dnsbl:ip4tset:invaluement/sip \
-        sip24.dnsbl:ip4set:invaluement/sip24 \
-        uri.dnsbl:dnset:invaluement/uri \
-        sbl.dnsbl:ip4set:spamhaus/sbl \
-        pbl.dnsbl:ip4set:spamhaus/pbl \
-        xbl.dnsbl:ip4set:spamhaus/xbl \
+RBLDNSD="- -q -a -t 30::300 -b localhost {% for ip in hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] %}-b {{ ip }} {% endfor %} \
+        mx-accept.dnswl:ip4set:/var/lib/rbldnsd/umich/mx-accept \
+        mx-trust.dnswl:ip4set:/var/lib/rbldnsd/umich/mx-trust \
+        penaltybox-skip.dnswl:ip4set:/var/lib/rbldnsd/umich/penaltybox-skip,umich/umnets,umich/mx-accept \
+        umnetworks.dnswl:ip4trie:/var/lib/rbldnsd/umich/umnets \
+        umnetworks.dnswl:ip6trie:/var/lib/rbldnsd/umich/umnets-ipv6 \
+        deny-urls.dnsbl:dnset:/var/lib/rbldnsd/umich/deny-urls \
+        iia-bad-urls.dnsbl:dnset:/var/lib/rbldnsd/iia/iia-bad-urls \
+        iia-deny-urls.dnsbl:dnset:/var/lib/rbldnsd/iia/iia-deny-urls \
+        mx-deny.dnsbl:ip4set:/var/lib/rbldnsd/umich/mx-deny \
+        smtp-deny.dnsbl:ip4set:/var/lib/rbldnsd/umich/smtp-deny \
+        spamassassin-reject.dnsbl:ip4set:/var/lib/rbldnsd/umich/spamassassin-reject \
+        ual.dnswl:dnset:/var/lib/rbldnsd/umich/ual \
+        ubl.dnsbl:dnset:/var/lib/rbldnsd/umich/ubl,/var/lib/rbldnsd/umich/ubl-preemptive \
+        test1.dnsbl:ip4set:/var/lib/rbldnsd/umich/testrbl1 \
+        test2.dnsbl:ip4set:/var/lib/rbldnsd/umich/testrbl2 \
+        test3.dnsbl:ip4set:/var/lib/rbldnsd/umich/testrbl3 \
+        sip.dnsbl:ip4tset:/var/lib/rbldnsd/invaluement/sip \
+        sip24.dnsbl:ip4set:/var/lib/rbldnsd/invaluement/sip24 \
+        uri.dnsbl:dnset:/var/lib/rbldnsd/invaluement/uri \
+        sbl.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/sbl \
+        pbl.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/pbl \
+        xbl.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/xbl \
 "

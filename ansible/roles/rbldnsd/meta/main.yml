@@ -1,4 +1,4 @@
 ---
 
 dependencies:
-  - { role: s3repo, tags: s3repo }
+  - { role: comint, tags: comint }

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+name=rbl-sync
+confdir=/usr/local/collaboration/dispatch
+
+updatehost=collaborate@rbldnsd-master.{{ my_tld }}
+srcdir=/usr/local/collaboration/rbldnsd
+destdir=/var/lib/rbldnsd
+sshkey=/root/.ssh/id_rsa.rbldnsd
+
+. /usr/libexec/comint/setup
+
+# Excludes version control and sync artifacts
+rsync -ri \
+    -e "ssh -i $sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+    --copy-dest=$destdir \
+    --exclude '.git' \
+    --exclude '*.*' \
+    ${updatehost}:$srcdir/ ${tmpdir}/sync/ \
+    > ${tmpdir}/rsyncout 2>>$tmpfile
+if [[ $? -eq 0 ]]; then
+    if grep -q '^>' ${tmpdir}/rsyncout ; then
+        mv $destdir ${tmpdir}/old
+        mv $tmpdir/sync $destdir
+        rbldnsctl reload
+    fi
+fi
+
+cleanup
