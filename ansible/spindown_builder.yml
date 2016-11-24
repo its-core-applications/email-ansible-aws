@@ -1,0 +1,10 @@
+---
+
+- hosts: tag_Class_builder
+  tasks:
+    - name: Set class to spundown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: spundown
