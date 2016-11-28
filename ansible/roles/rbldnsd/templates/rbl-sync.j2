@@ -11,7 +11,7 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
 . /usr/libexec/comint/setup
 
 # Excludes version control and sync artifacts
-rsync -ri \
+/usr/bin/rsync -ri \
     -e "ssh -i $sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
     --copy-dest=$destdir \
     --exclude '.git' \
@@ -22,7 +22,7 @@ if [[ $? -eq 0 ]]; then
     if grep -q '^>' ${tmpdir}/rsyncout ; then
         mv $destdir ${tmpdir}/old
         mv $tmpdir/sync $destdir
-        rbldnsctl reload
+        /usr/sbin/rbldnsctl reload
     fi
 fi
 
