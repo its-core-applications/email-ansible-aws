@@ -30,7 +30,7 @@
     mode: 0755
 
 - name: Sync RBLs
-  command: /usr/local/sbin/rbl-sync creates=/var/lib/rbldnsd
+  command: /usr/local/sbin/rbl-sync creates=/var/lib/rbldnsd/umich
 
 - name: Schedule syncing
   copy:
