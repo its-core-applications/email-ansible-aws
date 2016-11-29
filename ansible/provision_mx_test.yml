@@ -1,0 +1,54 @@
+---
+
+- include: task_find_ami.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Gather VPC subnet facts
+      ec2_vpc_subnet_facts:
+        region: "{{ aws_region }}"
+        filters:
+          vpc-id: "{{ aws_vpc }}"
+      register: ec2_subnets
+
+    - name: Create mx-test host
+      ec2:
+        group: [ main-default, mx-elb ]
+        key_name: "{{ aws_ssh_key }}"
+        instance_type: t2.small
+        region: "{{ aws_region }}"
+        image: "{{ find_ami.results.0.ami_id }}"
+        instance_profile_name: standard
+        instance_tags:
+          Class: mx-test
+        exact_count: 1
+        count_tag:
+          Class: mx-test
+      # this is just to force a consistent result structure
+      with_items:
+        - dummy
+      register: ec2
+
+- include: task_wait_for_launched.yml
+
+- include: mx_test.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: "Set mx-test.{{ my_tld }}"
+      route53:
+        command: "create"
+        overwrite: true
+        zone: "{{ my_tld }}"
+        record: "mx-test.{{ my_tld }}"
+        type: "A"
+        ttl: 60
+        value: "{{ groups.tag_Class_mx_test | default({}) | map('extract', hostvars, 'ec2_ip_address') | join(', ') }}"
+      when: groups.tag_Class_mx_test is defined
+

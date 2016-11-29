@@ -1,0 +1,11 @@
+---
+
+- include: spindown_mx_test.yml
+
+- hosts: localhost
+  tasks:
+    - meta: refresh_inventory
+
+- include: deprovision_spundown.yml
+
+- include: provision_mx_test.yml
