@@ -4,6 +4,7 @@
     - { role: base, tags: base }
     - { role: master, tags: master }
     - { role: rsyslog_forward, tags: rsyslog }
+    - { role: simta_basic, tags: simta }
     - { role: comint, tags: comint }
     - { role: localnameserver, tags: localnameserver }
     - { role: kitbag, tags: kitbag }

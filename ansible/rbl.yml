@@ -4,5 +4,6 @@
   roles:
     - { role: base, tags: base }
     - { role: rsyslog_forward, tags: rsyslog }
+    - { role: simta_basic, tags: simta }
     - { role: rbldnsd, tags: rbldnsd }
 
