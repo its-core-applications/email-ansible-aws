@@ -1,7 +1,7 @@
 RBLDNSD="- -q -a -t 30::300 -b localhost {% for ip in hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] %}-b {{ ip }} {% endfor %} \
         mx-accept.dnsal:ip4set:/var/lib/rbldnsd/umich/mx-accept \
         mx-trust.dnsal:ip4set:/var/lib/rbldnsd/umich/mx-trust \
-        penaltybox-skip.dnsal:ip4set:/var/lib/rbldnsd/umich/penaltybox-skip,umich/umnets,umich/mx-accept \
+        penaltybox-skip.dnsal:ip4set:/var/lib/rbldnsd/umich/penaltybox-skip,/var/lib/rbldnsd/umich/umnets,/var/lib/rbldnsd/umich/mx-accept \
         umnetworks.dnsal:ip4trie:/var/lib/rbldnsd/umich/umnets \
         umnetworks.dnsal:ip6trie:/var/lib/rbldnsd/umich/umnets-ipv6 \
         deny-urls.dnsbl:dnset:/var/lib/rbldnsd/umich/deny-urls \
