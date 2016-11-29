@@ -150,6 +150,7 @@
     - hostname-prefixes-relay
     - hostname-prefixes-smtp
     - hostname-suffixes
+    - hostname-suffixes-mx-test
   tags: configuration
 
 - name: Install scripts
