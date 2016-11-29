@@ -1,9 +1,10 @@
+---
+
 - name: Create staff group
   group:
     name: staff
     gid: 1100
     state: present
-  tags: configuration
 
 - name: Create user accounts
   user:
@@ -16,7 +17,6 @@
     comment: "{{ item.comment }}"
     state: present
   with_items: "{{ user_accounts }}"
-  tags: configuration
 
 - name: Grant sudo access
   template:
@@ -25,4 +25,4 @@
     owner: root
     group: root
     mode: 0440
-  tags: configuration
+

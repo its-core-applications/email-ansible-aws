@@ -7,7 +7,6 @@
   with_items:
     - spamassassin
   notify: Restart spamassassin
-  tags: configuration
 
 - name: Configure spamassassin
   copy:
@@ -34,6 +33,7 @@
     group: root
     mode: 0644
   notify: Restart spamassassin
+  tags: mutable
 
 - name: Configure spamd
   copy:
@@ -61,7 +61,6 @@
     owner: simta
     group: mail
     mode: 0400
-  tags: configuration
 
 - name: Install sa-update-client
   copy:
@@ -70,7 +69,6 @@
     owner: root
     group: root
     mode: 0755
-  tags: configuration
 
 - name: Configure sa-update-client
   copy:
@@ -79,15 +77,16 @@
     owner: root
     group: root
     mode: 0644
-  tags: configuration
 
 - name: Update spamassassin rules
   command: /usr/local/sbin/sa-update-client creates=/var/lib/spamassassin/compiled
   ignore_errors: yes
   notify: Restart spamassassin
-  tags: configuration
+  tags: mutable
 
 - name: Enable spamassassin
-  service: name=spamassassin enabled=yes
+  service:
+    name: spamassassin
+    enabled: yes
   notify: Restart spamassassin
-  tags: configuration
+

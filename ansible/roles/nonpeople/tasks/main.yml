@@ -1,3 +1,5 @@
+---
+
 - name: Create nonpeople group
   group:
     name: nonpeople
@@ -16,3 +18,4 @@
     state: present
   with_items: "{{ nonperson_accounts }}"
   tags: configuration
+

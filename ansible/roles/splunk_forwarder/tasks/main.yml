@@ -25,4 +25,7 @@
   notify: Restart splunkforwarder
 
 - name: Enable splunk service
-  service: name=splunkforwarder enabled=true
+  service:
+    name: splunkforwarder
+    enabled: true
+

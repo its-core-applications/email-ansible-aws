@@ -72,9 +72,12 @@
   ignore_errors: yes
   changed_when: true
   notify: Restart clamd
+  tags: mutable
 
 - name: Enable clamd
-  service: name=clamav-daemon enabled=yes
+  service:
+    name: clamav-daemon
+    enabled: yes
   notify: Restart clamd
 
 - meta: flush_handlers
@@ -91,6 +94,7 @@
     - clamav.badurl
     - clamav.delete
     - clamav.reject
+  tags: mutable
 
 - name: Install clamav filter
   copy:

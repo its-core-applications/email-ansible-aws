@@ -1,9 +1,10 @@
 ---
 
 - name: Install unbound 
-  yum: pkg=unbound state=latest
+  yum:
+    pkg: unbound
+    state: latest
   notify: Restart unbound 
-  tags: packageinstall
 
 - name: Configure unbound
   template:
@@ -13,11 +14,11 @@
     group: root
     mode: 0644
   notify: Restart unbound
-  tags: configuration
 
 - name: Enable unbound 
-  service: name=unbound enabled=yes
-  tags: configuration
+  service:
+    name: unbound
+    enabled: yes
 
 - meta: flush_handlers
 
@@ -28,7 +29,6 @@
     owner: root
     group: root
     mode: 0444
-  tags: configuration
 
 - name: Disable PEERDNS for eth0
   copy:

@@ -9,7 +9,6 @@
     owner: root
     group: root
     mode: 0755
-  tags: configuration
 
 - name: Find files in S3
   s3:
@@ -18,7 +17,6 @@
     mode: list
     prefix: "{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/"
   register: find_s3
-  tags: s3
 
 - name: Download files from S3
   s3:
@@ -30,16 +28,14 @@
     overwrite: different
   with_items: "{{ find_s3.s3_keys }}"
   when: item | match(".*\\.rpm")
-  tags: s3
 
 - name: Build repodata
   command: createrepo --database --update /var/cache/{{ yum_hostname }}/
-  tags: yum
 
 - name: Find repodata files
-  find: paths=/var/cache/{{ yum_hostname }}/repodata/
+  find:
+    paths: "/var/cache/{{ yum_hostname }}/repodata/"
   register: find_repodata
-  tags: yum
 
 - name: Upload repodata
   s3:
@@ -51,4 +47,4 @@
     src: "{{ item.path }}"
     overwrite: different
   with_items: "{{ find_repodata.files }}"
-  tags: s3
+

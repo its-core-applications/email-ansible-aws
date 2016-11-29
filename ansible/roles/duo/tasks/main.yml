@@ -8,13 +8,11 @@
     enabled: true
     gpgcheck: true
     gpgkey: https://duo.com/RPM-GPG-KEY-DUO
-  tags: configuration
 
 - name: Install duo_unix
   yum:
     pkg: duo_unix
     state: latest
-  tags: packageinstall
 
 - name: Configure pam_duo
   template:
@@ -23,7 +21,6 @@
     owner: root
     group: root
     mode: 0600
-  tags: configuration
 
 - name: Configure PAM for sshd
   copy:
@@ -32,4 +29,3 @@
     owner: root
     group: root
     mode: 0644
-  tags: configuration
