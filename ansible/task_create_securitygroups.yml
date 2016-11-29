@@ -83,12 +83,16 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpc }}"
         name: egress
-        description: restricts SMTP to ingress hosts 
+        description: allows SMTP from the VPC
         rules:
           - proto: tcp
             from_port: 25
             to_port: 25
-            group_name: mx
+            cidr_ip: "{{ aws_vpn_subnet }}"
+          - proto: tcp
+            from_port: 25
+            to_port: 25
+            cidr_ip: "{{ aws_subnet }}"
 
     - name: Create security group for relay ELB
       ec2_group:
