@@ -14,5 +14,5 @@
     uid: "{{ item.uid }}"
     comment: "{{ item.comment }}"
     state: present
-  with_items: "{{ user_accounts }}"
+  with_items: "{{ nonperson_accounts }}"
   tags: configuration
