@@ -46,6 +46,7 @@
     - tmux
     - vim
     - wget
+    - whois
 
 - name: Uninstall unwanted packages
   yum:
