@@ -2,31 +2,24 @@
 # penalty box - inbound
 
 PENALTYBOX_PASS=1
-penaltybox_bin=/usr/bin/penaltybox
-penaltybox_args='-h pink.mail.umich.edu'
-pbchecked=0
+penaltybox_bin='/usr/bin/penaltybox'
+penaltybox_args='-H 50 -h pink.{{ my_tld }}'
 
-if ! simrbl -q -l penaltybox-skip.dnsal "$SIMTA_REMOTE_IP" ; then
+if check_tfile && grep -iq '^Rpenaltybox@' $SIMTA_TFILE ; then
+    reason='testing'
+elif ! simrbl -q -l penaltybox-skip.dnsal "$SIMTA_REMOTE_IP" ; then
     PENALTYBOX_PASS=0
 elif [ "x$SIMTA_DMARC_RESULT" = 'xquarantine' -o "x$SIMTA_DMARC_RESULT" = 'xreject' ]; then
-    logmsg=$($penaltybox_bin $penaltybox_args 'dmarc')
-    pbret=$?
-    pbchecked=1
+    reason='dmarc'
 elif [ "x$SIMTA_DMARC_RESULT" != 'xpass' -a \
     "x$SIMTA_SPF_RESULT" != 'xpass' -a \
     "x$SIMTA_SPF_RESULT" != 'xneutral' -a \
     "x$SIMTA_SPF_RESULT" != 'xnone' ]; then
-    logmsg=$($penaltybox_bin $penaltybox_args 'spf')
-    pbret=$?
-    pbchecked=1
+    reason='spf'
 elif [ $SIMTA_REVERSE_LOOKUP -ne 0 ]; then
-    logmsg=$($penaltybox_bin $penaltybox_args 'bad reverse')
-    pbret=$?
-    pbchecked=1
+    reason='bad reverse'
 elif [ $SIMTA_WRITE_BEFORE_BANNER -ne 0 ]; then
-    logmsg=$($penaltybox_bin $penaltybox_args 'write before banner')
-    pbret=$?
-    pbchecked=1
+    reason='write before banner'
 else
     RBL=$(simrbl \
         -l {{ trendmicro_key }}.r.mail-abuse.com \
@@ -42,13 +35,13 @@ else
     if [ $? -eq 1 ]; then
         RBL=${RBL#found in }
         RBL=${RBL%%:*}
-        logmsg=$($penaltybox_bin $penaltybox_args "rbl $RBL")
-        pbret=$?
-        pbchecked=1
+        reason="rbl $RBL"
     fi
 fi
 
-if [ $pbchecked -eq 1 ]; then
+if [ $PENALTYBOX_PASS -ne 0 -a "x$reason" != 'x' ]; then
+    logmsg=$($penaltybox_bin $penaltybox_args "$reason")
+    pbret=$?
     if [ "x$logmsg" != 'x' ]; then
         log "70_pb: $logmsg"
     fi

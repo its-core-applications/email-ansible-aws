@@ -18,7 +18,7 @@
 
     - name: Create mx hosts 
       ec2:
-        group: [ main-default, mx ]
+        group: [ main-default, mx, redis ]
         key_name: "{{ aws_ssh_key }}"
         instance_type: m4.large
         region: "{{ aws_region }}"

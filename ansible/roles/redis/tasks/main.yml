@@ -1,0 +1,23 @@
+---
+
+- name: Install redis
+  yum:
+    pkg: redis
+    state: latest
+  notify: Restart redis
+
+- name: Configure redis
+  copy:
+    dest: /etc/redis.conf
+    src: redis.conf
+    owner: redis
+    group: root
+    mode: 0644
+  notify: Restart redis
+
+- name: Enable redis
+  service:
+    name: redis
+    enabled: true
+  notify: Restart redis
+

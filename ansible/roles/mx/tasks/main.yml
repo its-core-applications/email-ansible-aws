@@ -1,5 +1,12 @@
 ---
 
+- name: Install extra packages
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - penaltybox
+
 - name: Install filter data files
   copy:
     dest: "/etc/mail/{{ item }}"

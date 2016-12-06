@@ -165,3 +165,27 @@
             to_port: 53
             cidr_ip: "{{ aws_subnet }}"
 
+    - name: Create security group for redis
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: redis
+        description: Allows redis query and cluster access from the VPC
+        rules:
+          - proto: tcp
+            from_port: 6379
+            to_port: 6379
+            cidr_ip: "{{ aws_vpn_subnet }}"
+          - proto: tcp
+            from_port: 6379
+            to_port: 6379
+            cidr_ip: "{{ aws_subnet }}"
+          - proto: tcp
+            from_port: 16379
+            to_port: 16379
+            cidr_ip: "{{ aws_vpn_subnet }}"
+          - proto: tcp
+            from_port: 16379
+            to_port: 16379
+            cidr_ip: "{{ aws_subnet }}"
+

@@ -18,7 +18,7 @@
 
     - name: Create egress
       ec2:
-        group: [ main-default, egress ]
+        group: [ main-default, egress, redis ]
         key_name: "{{ aws_ssh_key }}"
         instance_type: m4.large
         region: "{{ aws_region }}"
