@@ -1,6 +1,0 @@
----
-
-- hosts: tag_Class_mx, tag_Class_egress
-  roles:
-    - { name: redis, tags: redis }
-

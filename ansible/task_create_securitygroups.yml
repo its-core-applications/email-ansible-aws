@@ -56,7 +56,7 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpc }}"
         name: mx-elb
-        description: allows SMTP from anywhere
+        description: mx ELB
         rules:
           - proto: tcp
             from_port: 25
@@ -71,7 +71,7 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpc }}"
         name: mx
-        description: restricts SMTP to the ELB
+        description: mx hosts
         rules:
           - proto: tcp
             from_port: 25
@@ -83,7 +83,7 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpc }}"
         name: egress
-        description: allows SMTP from the VPC
+        description: egress hosts
         rules:
           - proto: tcp
             from_port: 25
@@ -99,7 +99,7 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpn_vpc }}"
         name: relay-elb
-        description: allows SMTP from anywhere
+        description: relay ELB
         rules:
           - proto: tcp
             from_port: 25
@@ -114,7 +114,7 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpn_vpc }}"
         name: relay
-        description: restricts SMTP to the ELB
+        description: relay hosts
         rules:
           - proto: tcp
             from_port: 25
@@ -126,7 +126,7 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpn_vpc }}"
         name: rsyslog
-        description: allows rsyslog forwarding from the VPC
+        description: rsyslog hosts
         rules:
           - proto: tcp
             from_port: 2514
@@ -154,7 +154,7 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpc }}"
         name: rbl
-        description: allows DNS queries from the VPC
+        description: RBL hosts
         rules:
           - proto: udp
             from_port: 53
@@ -170,7 +170,7 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpc }}"
         name: redis
-        description: Allows redis query and cluster access from the VPC
+        description: redis hosts
         rules:
           - proto: tcp
             from_port: 6379

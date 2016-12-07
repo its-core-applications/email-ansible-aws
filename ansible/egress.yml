@@ -6,3 +6,4 @@
     - { role: rsyslog_forward, tags: rsyslog_forward }
     - { role: localnameserver, tags: localnameserver }
     - { role: simta, tags: simta }
+    - { name: redis, tags: redis }

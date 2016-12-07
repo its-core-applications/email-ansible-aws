@@ -28,6 +28,7 @@
         instance_tags:
           Class: mx
           az: "{{ item.availability_zone }}"
+          redis: 'yes'
         exact_count: 1
         count_tag:
           Class: mx
@@ -36,6 +37,12 @@
       register: ec2
 
 - include: task_wait_for_launched.yml
+
+- hosts: localhost
+  roles:
+    - { role: redis_master, tags: redis }
+
+- include: task_dns_redis.yml
 
 - hosts: localhost
   connection: local

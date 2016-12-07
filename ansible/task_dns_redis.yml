@@ -13,6 +13,6 @@
         record: "pink.{{ my_tld }}"
         type: "A"
         ttl: 60
-        value: "{{ groups.tag_Class_mx | union(groups.tag_Class_egress) | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
-      when: groups.tag_Class_mx is defined or groups.tag_Class_egress is defined
+        value: "{{ groups.tag_redis_yes | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
+      when: groups.tag_redis_yes is defined
 

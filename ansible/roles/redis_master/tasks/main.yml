@@ -1,18 +1,17 @@
 ---
 
-- name: Install management script
+- name: Install management scripts
   copy:
-    dest: /usr/local/sbin/redis-manage
-    src: redis-manage
+    dest: "/usr/local/sbin/{{ item }}"
+    src: "{{ item }}"
     owner: root
     group: root
     mode: 0755
+  items:
+    - redis-manage
+    - redis-remove
 
-- name: Schedule management script
-  cron:
-    user: ec2-user
-    name: manage redis cluster
-    state: present
-    minute: '*/2'
-    job: ". ~/ansible-aws/env-setup.sh &>/dev/null && /usr/local/sbin/redis-manage && ansible-playbook ~/ansible-aws/ansible/task_dns_redis.yml"
-    
+- name: Run provision script
+  command: "/usr/local/sbin/redis-manage {{ groups.tag_redis_yes | map('extract', hostvars, 'ec2_private_ip_address') | join(' ') }}"
+  when: groups.tag_redis_yes is defined
+

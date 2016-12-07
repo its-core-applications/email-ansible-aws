@@ -1,20 +1,21 @@
 #!/bin/bash
 
-readarray -t rhosts < <(ansible --list-hosts tag_Class_egress,tag_Class_mx 2>/dev/null | sed -e '0,/hosts (/d')
-
+rhosts=("$@")
 goodhosts=()
 badhosts=()
 
 for rhost in "${rhosts[@]}"; do
-    rip=$(dig +short $rhost | tail -1)
     if [[ $(redis-cli -h $rhost PING) != 'PONG' ]]; then
-        downhosts+=( $rip )
+        echo "$rhost is down"
+        downhosts+=( $rhost )
     else
         redis-cli -h $rhost CLUSTER INFO | grep -q 'cluster_known_nodes:1'
         if [[ $? -eq 0 ]]; then
-            badhosts+=( $rip )
+            echo "$rhost is lonesome"
+            badhosts+=( $rhost )
         else
-            goodhosts+=( $rip )
+            echo "$rhost is good"
+            goodhosts+=( $rhost )
         fi
     fi
 done
@@ -22,9 +23,10 @@ done
 if [[ ${#goodhosts[@]} -eq 0 ]]; then
     # No existing cluster, we need to create one.
     if [[ ${#badhosts[@]} -lt 3 ]]; then
-        echo "Insufficient hosts available to create a cluster!"
+        echo "Insufficient hosts available to create a cluster!" >&2
         exit 1
     fi
+    echo "Creating a new cluster using ${badhosts[@]:0:3}"
     # redis-trib always requires a port, because it's dumber than redis-cli
     /bin/yes yes | redis-trib create $(for i in ${badhosts[@]:0:3}; do echo $i:6379; done)
     goodhosts=(${badhosts[@]:0:3})
@@ -32,6 +34,7 @@ if [[ ${#goodhosts[@]} -eq 0 ]]; then
 fi
 
 for rhost in ${badhosts[@]}; do
+    echo "Adding $rhost to the cluster using ${goodhosts[0]}"
     redis-trib add-node --slave $rhost:6379 ${goodhosts[0]}:6379
 done
 

@@ -8,4 +8,5 @@
     - { role: simta, tags: simta }
     - { role: spamassassin, tags: spamassassin }
     - { role: clamav, tags: clamav }
+    - { name: redis, tags: redis }
     - { role: mx, tags: mx }

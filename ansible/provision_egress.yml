@@ -28,6 +28,7 @@
         instance_tags:
           Class: egress
           az: "{{ item.availability_zone }}"
+          redis: 'yes'
         exact_count: 1
         count_tag:
           Class: egress
@@ -41,6 +42,8 @@
   connection: local
   gather_facts: false
   become: false
+  roles:
+    - { role: redis_master, tags: redis }
   tasks:
     - name: Assign elastic IP
       # This is ugly, fragile, and limits us to one egress host per az
@@ -57,5 +60,7 @@
         port: 22
         search_regex: OpenSSH
       with_items: "{{ eip.results }}"
+
+- include: task_dns_redis.yml
 
 - include: task_dns_egress.yml

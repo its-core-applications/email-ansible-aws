@@ -33,6 +33,10 @@
         port: 25
         state: drained
 
+    - name: Remove from redis cluster
+      delegate_to: localhost
+      command: "/usr/local/sbin/redis-remove {{ ec2_private_ip_address }}"
+
     - name: Give the queue a chance to quiesce
       pause: seconds=60
 
