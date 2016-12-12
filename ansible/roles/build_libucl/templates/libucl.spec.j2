@@ -1,0 +1,57 @@
+Name:           libucl
+Version:        {{ libucl_version }}
+Release:        1%{?dist}
+Summary:        Parser for UCL (universal configuration language)
+Group:          System Environment/Libraries
+License:        BSD
+URL:            https://github.com/vstakhov/libucl
+Source0:        %{name}-%{version}.tar.xz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+%description
+Libucl is a parser and C API to parse and generate ucl objects.
+
+%package devel
+Summary:        Development files for %{name}
+Requires:       %{name} = %{version}-%{release}
+Group:          Development/Libraries
+
+%description devel
+The %{name}-devel package contains libraries and header files for
+developing applications that use %{name}.
+
+%prep
+%setup -q
+
+%build
+%configure --disable-static
+
+make %{?_smp_mflags}
+
+%install
+rm -rf %{buildroot}
+make DESTDIR=%{buildroot} INSTALL_OPTS='' install
+rm -f %{buildroot}/%{_libdir}/libucl.la
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%{_libdir}/libucl.so.*
+
+%files devel
+%defattr(-,root,root,-)
+%{_includedir}/ucl.h
+%{_includedir}/ucl++.h
+%{_libdir}/libucl.so
+%{_libdir}/pkgconfig/libucl.pc
+%{_mandir}/man3/libucl.3*
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%changelog
+* %(date "+%a %b %d %Y") (Automated RPM build) - %{version}-%{release}
+- See git log for actual changes.

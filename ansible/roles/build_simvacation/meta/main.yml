@@ -2,3 +2,4 @@
 dependencies:
   - { role: rpmbuild, tags: rpmbuild }
   - { role: build_urcl, tags: urcl }
+  - { role: build_libucl, tags: libucl }

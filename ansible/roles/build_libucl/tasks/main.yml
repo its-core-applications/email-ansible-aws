@@ -1,0 +1,33 @@
+---
+
+- name: Clone libucl
+  become: false
+  git: "repo=https://github.com/vstakhov/libucl.git dest=~/libucl update=yes force=yes version={{ libucl_version }}"
+
+- name: Build libucl tarball (autogen.sh)
+  become: false
+  command: chdir=~/libucl ~/libucl/autogen.sh
+
+- name: Build libucl tarball (configure)
+  become: false
+  command: chdir=~/libucl ./configure
+
+- name: Build libucl tarball (make dist)
+  become: false
+  command: chdir=~/libucl make dist
+
+- name: Move tarball into SOURCES
+  become: false
+  shell: "mv -f ~/libucl/libucl-{{ libucl_version }}.tar.xz ~/rpmbuild/SOURCES/"
+
+- name: Install spec file
+  become: false
+  template:
+    dest: ~/libucl.spec
+    src: libucl.spec.j2
+
+- name: Build libucl RPM
+  become: false
+  shell: rpmbuild -ba ~/libucl.spec
+  notify: Update yum repository
+

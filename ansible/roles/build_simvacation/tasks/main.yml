@@ -7,6 +7,7 @@
   with_items:
     - openldap-devel
     - urcl-devel
+    - libucl-devel
 
 - name: Update the simvacation source tree
   become: false
