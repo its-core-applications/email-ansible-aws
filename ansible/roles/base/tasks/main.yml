@@ -32,6 +32,7 @@
     - expect
     - git
     - krb5-workstation
+    - lsof
     - man
     - mosh
     - nc
