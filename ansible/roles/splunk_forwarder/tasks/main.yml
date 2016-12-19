@@ -3,7 +3,7 @@
 - name: Install splunk forwarder
   yum:
     pkg: splunkforwarder
-    state: present
+    state: latest
   notify: Restart splunkforwarder
 
 - name: Install systemd unit file for splunk

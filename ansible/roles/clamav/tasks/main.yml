@@ -3,7 +3,7 @@
 - name: Install clamav
   yum:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items:
     - clamav-data-empty
     - clamav

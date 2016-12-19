@@ -3,7 +3,7 @@
 - name: Install spamassassin
   yum:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items:
     - spamassassin
   notify: Restart spamassassin
