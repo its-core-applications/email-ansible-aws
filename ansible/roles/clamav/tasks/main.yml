@@ -68,9 +68,10 @@
 
 - name: Run the update client for ClamAV
   become_user: clamupdate
-  command: /usr/local/sbin/clam-update-client creates=/var/lib/clamav/current
-  ignore_errors: yes
-  changed_when: true
+  command: /usr/local/sbin/clam-update-client
+  register: result
+  failed_when: "result.rc > 1"
+  changed_when: "result.rc == 0"
   notify: Restart clamd
   tags: mutable
 

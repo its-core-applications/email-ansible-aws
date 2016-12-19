@@ -3,9 +3,12 @@
 # written by peckhamj
 # return codes:
 # 0 = successful update
-# 1 = error
-# 2 = update not necessary
-# 3 = clamd not running
+# 1 = no update available
+# 2 = error
+
+EX_OK=0
+EX_NOUPDATE=1
+EX_ERROR=2
 
 name=$(basename $0)
 
@@ -41,6 +44,7 @@ fi
 reload_clamd() {
     tries=60
     echo RELOADING >| $statusfile
+    chmod 666 $statusfile
     clamdscan --reload
     while [[ $(cat $statusfile) = 'RELOADING' && $tries -gt 0 ]]; do
         sleep 1
@@ -60,7 +64,7 @@ newinfo() {
     rsync -a -e "ssh -i $sshkey -o StrictHostKeyChecking=no" ${update_server}:${rfolder}/main.info $md5 2>&1 | eval $loghow
     if [[ ! -s $md5 ]]; then
         echo "$logas::newinfo failed to download main.info" | eval $loghow
-        exit 1
+        exit $EX_ERROR
     fi
     cd ${current}
     if md5sum --status -c $md5 >/dev/null 2>&1; then
@@ -112,11 +116,11 @@ if [[ -h $current ]]; then
         echo "$noticeas: nothing to update" | eval $noticehow
         rm -rf $tmpsigs
         cleanup
-        exit 2
+        exit $EX_NOUPDATE
     fi
 fi
 
-getsigs $tmpsigs || exit 1
+getsigs $tmpsigs || exit $EX_ERROR
 
 newsigs=${clamdir}/$(namesigs $tmpsigs)
 if [[ -d $newsigs ]]; then
@@ -126,16 +130,16 @@ mv $tmpsigs $newsigs
 
 if ! checksigs $newsigs; then
     echo "$logas: signature in $newsigs fail checksums" | eval $loghow
-    exit 1
+    exit $EX_ERROR
 fi
 
 working=$(readlink -f $current)
 
 linksigs $newsigs
 
-if ! /etc/init.d/clamd status &>/dev/null ; then
+if ! systemctl status clamav-daemon &>/dev/null ; then
     [[ $DEBUG -eq 1 ]] && echo "$name: clamd is not running"
-    exit 3
+    exit $EX_OK
 fi
 
 if ! reload_clamd ; then
@@ -146,9 +150,11 @@ if ! reload_clamd ; then
     else
         echo "$logas: clamd failed to reload the previous databases" | eval $loghow
     fi
-    exit 1
+    exit $EX_ERROR
 fi
 
 remove_oldsigs $(basename $newsigs)
 
 cleanup
+
+exit $EX_OK
