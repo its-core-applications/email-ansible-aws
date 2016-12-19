@@ -8,6 +8,7 @@ PIDFile=/var/run/spamd.pid
 EnvironmentFile=-/etc/sysconfig/spamassassin
 ExecStartPre=-/sbin/portrelease spamd
 ExecStart=/usr/bin/spamd --pidfile /var/run/spamd.pid $SPAMDOPTIONS
+ExecReload=/bin/kill -HUP $MAINPID
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

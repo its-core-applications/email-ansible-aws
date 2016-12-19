@@ -18,12 +18,9 @@
     - sa-update.crontab
     - sa-update.force-sysconfig
     - sa-update.logrotate
-    - spamassassin-default.rc
     - spamassassin-helper.sh
     - spamassassin-official.conf
-    - spamassassin-rawbody-split-documentation.patch
     - spamassassin.service
-    - spamassassin-spamc.rc
     - spamassassin.sysconfig
   tags: build
 
