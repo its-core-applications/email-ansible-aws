@@ -35,7 +35,7 @@ while [[ $tries -gt 0 && $success -ne 1 ]]; do
             echo -e "\n\nlint output:\n" >> $tmpfile
             spamassassin --lint &>> ${tmpdir}/errout
             if [[ $? -eq 0 ]]; then
-                service spamassassin reload > /dev/null
+                systemctl reload spamassassin > /dev/null
                 success=1
             else
                 rm -rf $rule_dir
