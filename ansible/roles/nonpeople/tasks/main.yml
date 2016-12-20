@@ -5,7 +5,7 @@
     name: nonpeople
     gid: 1101
     state: present
-  tags: configuration
+  tags: mutable
 
 - name: Create non-person accounts
   user:
@@ -17,5 +17,5 @@
     comment: "{{ item.comment }}"
     state: present
   with_items: "{{ nonperson_accounts }}"
-  tags: configuration
+  tags: mutable
 

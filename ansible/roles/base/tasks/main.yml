@@ -20,6 +20,7 @@
     owner: root
     group: root
     mode: 440
+  tags: mutable
 
 - name: Install basic QoL packages
   yum:

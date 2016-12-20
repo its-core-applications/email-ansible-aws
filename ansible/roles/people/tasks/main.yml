@@ -5,6 +5,7 @@
     name: staff
     gid: 1100
     state: present
+  tags: mutable
 
 - name: Create user accounts
   user:
@@ -17,6 +18,7 @@
     comment: "{{ item.comment }}"
     state: present
   with_items: "{{ user_accounts }}"
+  tags: mutable
 
 - name: Grant sudo access
   template:
@@ -25,4 +27,4 @@
     owner: root
     group: root
     mode: 0440
-
+  tags: mutable
