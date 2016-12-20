@@ -79,9 +79,10 @@
     mode: 0644
 
 - name: Update spamassassin rules
-  command: /usr/local/sbin/sa-update-client creates=/var/lib/spamassassin/compiled
-  ignore_errors: yes
-  notify: Restart spamassassin
+  command: /usr/local/sbin/sa-update-client
+  register: result
+  failed_when: "result.rc > 1"
+  changed_when: "result.rc == 0"
   tags: mutable
 
 - name: Enable spamassassin

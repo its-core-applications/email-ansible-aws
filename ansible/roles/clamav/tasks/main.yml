@@ -49,6 +49,7 @@
     owner: root
     group: root
     mode: 0644
+  notify: Restart clamd
 
 - name: Install clam-update-client
   copy: 
@@ -72,7 +73,6 @@
   register: result
   failed_when: "result.rc > 1"
   changed_when: "result.rc == 0"
-  notify: Restart clamd
   tags: mutable
 
 - name: Enable clamd
