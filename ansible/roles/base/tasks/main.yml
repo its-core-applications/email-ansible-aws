@@ -153,6 +153,7 @@
     owner: root
     group: root
     mode: 0644
+  notify: Run logrotate
 
 - name: Configure logrotate for syslog files
   copy:
@@ -161,6 +162,7 @@
     owner: root
     group: root
     mode: 0644
+  notify: Run logrotate
 
 - name: Install data files
   copy:

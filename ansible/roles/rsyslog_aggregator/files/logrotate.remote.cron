@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# force rotation so that new hosts don't wait a day.
+/sbin/logrotate -f -s /var/lib/logrotate/logrotate-remote.status /etc/logrotate.remote.conf
+EXITVALUE=$?
+if [[ $EXITVALUE != 0 ]]; then
+    /bin/logger -t logrotate "ALERT exited abnormally with [$EXITVALUE]"
+fi
+
+# Clean up old files. We can't rely on logrotate to do this, because
+# once a host goes away log rotation stops.
+find /var/log/remote -type f -mtime +14 -delete
+find /var/log/remote -type d -empty -delete
+exit 0

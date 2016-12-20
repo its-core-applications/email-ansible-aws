@@ -25,9 +25,16 @@
 
 - name: Configure logrotate for remote logs
   copy:
-    dest: /etc/logrotate.d/remotesyslog
+    dest: /etc/logrotate.remote.conf
     src: logrotate.remote.conf
     owner: root
     group: root
     mode: 0644
 
+- name: Schedule rotation for remote logs
+  copy:
+    dest: /etc/cron.daily/logrotate.remote.cron
+    src: logrotate.remote.cron
+    owner: root
+    group: root
+    mode: 0755

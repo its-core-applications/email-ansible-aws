@@ -23,3 +23,7 @@
     name: sshd
     daemon_reload: true
     state: restarted
+
+- name: Run logrotate
+  command: /etc/cron.daily/logrotate
+
