@@ -18,6 +18,7 @@
     - deny.from
     - deny.string
     - trust.rcpt
+  tags: mutable
 
 - name: Install ingress-specific filters
   copy:
