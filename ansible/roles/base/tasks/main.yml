@@ -65,6 +65,13 @@
     state: latest
   when: inventory_hostname == "base"
 
+- name: Remove RHEL file cruft
+  file:
+    dest: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/cron.daily/rhsmd
+
 - name: Configure tmux
   copy:
     dest: /etc/tmux.conf
@@ -202,7 +209,7 @@
     - dynhostname.service
 
 - name: Enable dynhostname
-  service:
+  systemd:
     name: dynhostname
     enabled: yes
 
