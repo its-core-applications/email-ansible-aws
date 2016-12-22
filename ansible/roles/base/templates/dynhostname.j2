@@ -8,6 +8,7 @@ instanceid=$(curl -fs http://169.254.169.254/latest/meta-data/instance-id)
 sethostname() {
     echo "Setting FQDN to $1"
     hostnamectl set-hostname $1
+    systemctl try-restart rsyslog.service simta.service
     aws ec2 create-tags --region=$region --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1 
 }
 

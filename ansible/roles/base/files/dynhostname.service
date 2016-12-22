@@ -1,8 +1,8 @@
 [Unit]
 Description=Set a unique hostname
-After=network-online.target cloud-init.service
+After=network-online.target
 Wants=network-online.target
-Before=rsyslog.service simta.service
+Before=rsyslog.service crond.service simta.service
 
 [Service]
 Type=oneshot
@@ -12,4 +12,4 @@ ExecStop=/usr/local/sbin/dynhostname clear
 RemainAfterExit=yes
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target rsyslog.service simta.service
