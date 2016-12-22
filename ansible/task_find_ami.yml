@@ -4,8 +4,6 @@
   connection: local
   gather_facts: false
   become: false
-  vars:
-    aws_region: us-west-2
   tasks:
     - name: Find latest AMI
       ec2_ami_find:
