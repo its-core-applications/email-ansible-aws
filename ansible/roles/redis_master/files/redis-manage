@@ -1,8 +1,14 @@
 #!/bin/bash
 
+EX_OK=0
+EX_NOCHANGE=1
+EX_ERROR=2
+
 rhosts=("$@")
 goodhosts=()
 badhosts=()
+
+retval=$EX_NOCHANGE
 
 for rhost in "${rhosts[@]}"; do
     if [[ $(redis-cli -h $rhost PING) != 'PONG' ]]; then
@@ -24,11 +30,12 @@ if [[ ${#goodhosts[@]} -eq 0 ]]; then
     # No existing cluster, we need to create one.
     if [[ ${#badhosts[@]} -lt 3 ]]; then
         echo "Insufficient hosts available to create a cluster!" >&2
-        exit 1
+        exit $EX_ERROR
     fi
     echo "Creating a new cluster using ${badhosts[@]:0:3}"
     # redis-trib always requires a port, because it's dumber than redis-cli
     /bin/yes yes | redis-trib create $(for i in ${badhosts[@]:0:3}; do echo $i:6379; done)
+    retval=$EX_OK
     goodhosts=(${badhosts[@]:0:3})
     badhosts=(${badhosts[@]:3})
 fi
@@ -36,5 +43,7 @@ fi
 for rhost in ${badhosts[@]}; do
     echo "Adding $rhost to the cluster using ${goodhosts[0]}"
     redis-trib add-node --slave $rhost:6379 ${goodhosts[0]}:6379
+    retval=$EX_OK
 done
 
+exit $retval
