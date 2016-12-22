@@ -1,0 +1,30 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Find excess AMIs
+      ec2_ami_find:
+        region: "{{ aws_region }}"
+        owner: self
+        ami_tags:
+          os: rhel
+          image_type: "{{ item }}"
+        sort: name
+        sort_order: descending
+        sort_start: 5
+      register: result
+      with_items:
+        - base
+        - mx
+        - egress
+
+    - name: Delete excess AMIs and their snapshots
+      ec2_ami:
+        region: "{{ aws_region }}"
+        image_id: "{{ item }}"
+        state: absent
+        delete_snapshot: yes
+      with_items: "{{ result | json_query('results[].results[].ami_id') }}"
