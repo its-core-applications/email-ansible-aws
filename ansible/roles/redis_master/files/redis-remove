@@ -13,8 +13,27 @@ myid=$(grep myself $tmpfile | awk '{print $1}')
 
 if grep -q myself,master $tmpfile; then
     slave=$(sed -n -e "/slave $myid/{s/:.*//;s/.* //;p;q}" $tmpfile)
+    if [[ -z $slave ]]; then
+        echo "No current replica, choosing a random replica to steal..."
+        slave=$(sed -n -e "/slave /{s/:.*//;s/.* //;p}" $tmpfile | shuf -n1)
+        if [[ -z $slave ]]; then
+            echo "No replicas available to steal!" >&2
+            rm -f $tmpfile
+            exit 1
+        fi
+        echo "Making $slave into a replica of $1"
+        redis-cli -h $slave CLUSTER REPLICATE $myid
+        try=0
+        until grep -q "slave $myid" $tmpfile || [[ $try -gt 30 ]]; do
+            echo "Waiting for $slave to replicate ${1}..."
+            (( try++ ))
+            sleep 1
+            redis-cli -h $1 CLUSTER NODES > $tmpfile
+        done
+    fi
     echo "Promoting $slave to master"
     redis-cli -h $slave CLUSTER FAILOVER
+    try=0
     until grep -q myself,slave $tmpfile || [[ $try -gt 30 ]]; do
         echo "Waiting for $1 to become a slave..."
         (( try++ ))
