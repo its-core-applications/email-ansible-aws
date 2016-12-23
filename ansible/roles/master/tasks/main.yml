@@ -14,8 +14,9 @@
     state: latest
   with_items:
     - gitolite3
-    - openldap-clients
     - nfs-utils
+    - openldap-clients
+    - python2-boto3
     - unzip
 
 - name: Install extra pip packages

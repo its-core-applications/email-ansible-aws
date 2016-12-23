@@ -1,0 +1,35 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Fetch zone list
+      route53_facts:
+        query: hosted_zone
+      register: r53_zones
+
+    - name: Fetch resource records
+      route53_facts:
+        query: record_sets
+        # This is a lot of faffing about that would be unnecessary if the
+        # facts module were smarter.
+        hosted_zone_id: "{{ r53_zones | json_query(tld_query) | replace('/hostedzone/', '') }}"
+      vars:
+        tld_query: "HostedZones[?Name=='{{ my_tld }}.'].Id | [0]"
+      register: r53_rrs
+
+    - route53:
+        command: delete
+        zone: "{{ my_tld }}"
+        record: "{{ item.Name }}"
+        type: CNAME
+        ttl: "{{ item.TTL }}"
+        value: "{{ item.ResourceRecords.0.Value }}"
+      with_items: "{{ r53_rrs.ResourceRecordSets }}"
+      when:
+        - item.Type == 'CNAME'
+        - item.ResourceRecords.0.Value | match('.+\.compute\.amazonaws\.com')
+        - hostvars[item.Name | replace(my_tld ~ '.', my_tld)] is undefined
+
