@@ -1,5 +1,18 @@
 ---
 
+- name: Create splunk filesystem
+  filesystem:
+    dev: /dev/xvde
+    fstype: xfs
+    force: no
+
+- name: Mount splunk filesystem
+  mount:
+    name: /opt
+    src: /dev/xvde
+    fstype: xfs
+    state: mounted
+
 - name: Install splunk forwarder
   yum:
     pkg: splunkforwarder

@@ -51,6 +51,17 @@
         encrypted: true
         delete_on_termination: false
 
+    - name: Attach splunk volume
+      ec2_vol:
+        name: splunk
+        region: "{{ aws_region }}"
+        instance:  "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_id') | join }}"
+        device_name: xvde
+        volume_type: gp2
+        volume_size: 5
+        encrypted: true
+        delete_on_termination: false
+
 - include: syslog.yml
 
 - hosts: localhost
