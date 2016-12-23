@@ -27,4 +27,4 @@
         image_id: "{{ item }}"
         state: absent
         delete_snapshot: yes
-      with_items: "{{ result | json_query('results[].results[].ami_id') }}"
+      with_items: "{{ result | json_query('results[*].results[*].ami_id') }}"
