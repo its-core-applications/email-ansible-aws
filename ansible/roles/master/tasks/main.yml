@@ -28,7 +28,7 @@
 - name: Mount /home
   mount:
     name: /home
-    src: "{{ ec2_placement }}.{{ aws_master_efs }}.efs.{{ aws_region }}.amazonaws.com:/"
+    src: "{{ aws_master_efs }}.efs.{{ aws_region }}.amazonaws.com:/"
     fstype: nfs4
     opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noatime
     state: mounted
