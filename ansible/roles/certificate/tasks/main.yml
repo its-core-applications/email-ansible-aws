@@ -8,7 +8,7 @@
     mode: 0750
     state: directory
 
-- name: Install certificate private key
+- name: "{{ certificate }} : Install certificate private key"
   template:
     dest: "/etc/pki/collab/private/{{ certificate }}.key"
     src: key.j2
@@ -16,7 +16,7 @@
     group: mail
     mode: 0640
 
-- name: Install certificate
+- name: "{{ certificate }} : Install certificate"
   copy:
     dest: "/etc/pki/collab/private/{{ certificate }}.crt"
     src: "{{ certificate }}.crt"

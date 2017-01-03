@@ -1,6 +1,8 @@
 ---
 
 simta_config: mx.a.mail
+simta_dkim: true
+simta_dkim_selector: mx-2017-01-03
 simta_ldap: true
 simta_ldap_red: RE
 simta_ldap_password: "{{ lookup( 'hashi_vault', 'secret=secret/simta/ldap_password token={{ vault_token }}' ) }}"
