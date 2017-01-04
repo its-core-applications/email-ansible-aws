@@ -16,7 +16,6 @@
     - libopendkim-devel
     - sendmail-devel
     - libidn-devel
-  tags: packageinstall
 
 - name: Disable sendmail
   service: name=sendmail enabled=no state=stopped
@@ -24,21 +23,22 @@
 
 - name: Update the simta source tree
   become: false
-  git: repo=git://scm.marwnad.com/umich/simta.git version=next dest=~/simta update=yes force=yes
-  tags: build
+  git:
+    repo: git://scm.marwnad.com/umich/simta.git
+    version: "{{ build_simta_version }}"
+    dest: ~/simta
+    update: yes
+    force: yes
 
 - name: Build simta RPM (autoreconf)
   become: false
   command: chdir=~/simta autoreconf -fiv
-  tags: build
 
 - name: Build simta RPM (configure)
   become: false
   command: chdir=~/simta ./configure
-  tags: build
 
 - name: Build simta RPM (make rpm)
   become: false
   command: chdir=~/simta make rpm
   notify: Update yum repository
-  tags: build
