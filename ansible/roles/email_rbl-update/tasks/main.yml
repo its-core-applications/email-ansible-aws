@@ -1,9 +1,9 @@
 ---
 
 - name: Install rbl-update script
-  copy:
+  template:
     dest: /usr/bin/rbl-update
-    src: rbl-update
+    src: rbl-update.j2
     owner: root
     group: root
     mode: 0755

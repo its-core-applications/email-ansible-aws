@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-email_domain=umich.edu
+export TLD=umich.edu
 
 # Set up Ansible
 hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
@@ -21,7 +21,7 @@ export VAULT_TOKEN=$(cat ~/.vault-token)
 
 # Set up Git
 if [[ $SUDO_USER ]]; then
-    export GIT_AUTHOR_EMAIL="${SUDO_USER}@$email_domain"
+    export GIT_AUTHOR_EMAIL="${SUDO_USER}@$TLD"
     export GIT_AUTHOR_NAME=$(grep "^${SUDO_USER}:" /etc/passwd | cut -d: -f5)
     export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
     export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
