@@ -67,7 +67,6 @@ if check_dfile; then
 		cleanup
 	    else
 	        log "80_clamav ${SIMTA_DFILE}: $signame: Phishing rejected"
-	        #echo "http://spambusters.mail.umich.edu/reject_5xx"
 	        cleanup
 	        filter_exit ${MESSAGE_REJECT}
 	    fi
@@ -75,7 +74,6 @@ if check_dfile; then
 	    fgrep -qwf /etc/mail/clamav.reject $CLAMOUT
 	    if [ $? -eq 0 ]; then
 		log "80_clamav ${SIMTA_DFILE}: $signame: Virus rejected"
-		#echo "http://spambusters.mail.umich.edu/reject_5xx"
 		cleanup
 		filter_exit ${MESSAGE_REJECT}
 	    else
