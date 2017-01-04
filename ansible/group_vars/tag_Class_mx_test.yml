@@ -7,8 +7,12 @@ simta_ldap: true
 simta_ldap_red: RE
 simta_ldap_domains:
   - test.mail
+simta_devnull_domains:
+  - devnull.mail.umich.edu
+  - devnull.mr.itd.umich.edu
 simta_ldap_password: "{{ lookup( 'hashi_vault', 'secret=secret/simta/ldap_password token={{ vault_token }}' ) }}"
 simta_ldap_host: "ldap-mail.itd.umich.edu"
-simta_redis_host: "pink.{{ subd }}"
+simta_srs: true
+simta_srs_domain: test.mail.umich.edu
 simta_srs_secret: "{{ lookup( 'hashi_vault', 'secret=secret/simta/srs_secret_dev token={{ vault_token }}' ) }}"
 trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro token={{ vault_token }}' ) }}"

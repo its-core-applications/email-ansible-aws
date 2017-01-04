@@ -1,3 +1,6 @@
 ---
 
 simta_config: egress.a.mail
+simta_relay: true
+simta_egress: true
+simta_connlimit: 0

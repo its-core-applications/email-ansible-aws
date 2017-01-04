@@ -25,6 +25,10 @@ egress_eip:
   us-west-2b: 35.162.59.88
   us-west-2c: 35.161.254.188
 
+simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
+simta_ldap_host: 'ldap-mail.itd.umich.edu'
+simta_redis_host: "pink.{{ subd }}"
+
 simta_ldap_domains:
   - alumni.engin
   - biop.lsa
@@ -37,6 +41,10 @@ simta_ldap_domains:
   - lsa
   - math.lsa
   - roles
+
+simta_important_domains:
+  - go.itd.umich.edu
+  - gmail.com
 
 nonperson_accounts:
   - name: box
