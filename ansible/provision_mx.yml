@@ -49,9 +49,9 @@
   gather_facts: false
   become: false
   tasks:
-    - name: "Create mx-{{ aws_region }} ELB"
+    - name: "Create MX loadbalancer(s)"
       ec2_elb_lb:
-        name: "mx-{{ aws_region }}"
+        name: "{{ item }}"
         region: "{{ aws_region }}"
         state: present
         idle_timeout: 3600
@@ -71,24 +71,28 @@
           interval: 30
           unhealthy_threshold: 2
           healthy_threshold: 5
+      with_items: "{{ mx_names }}"
       register: result
 
-    - name: "Add instances to mx-{{ aws_region }}"
+    - name: "Add hosts to MX loadbalancer(s)"
       ec2_elb:
-        ec2_elbs: "mx-{{ aws_region }}"
+        ec2_elbs: "{{ item[0] }}"
         region: "{{ aws_region }}"
-        instance_id: "{{ item }}"
+        instance_id: "{{ item[1] }}"
         state: present
         wait: false
-      with_items: "{{ groups.tag_Class_mx | map('extract', hostvars, 'ec2_id') | list }}"
+      with_nested:
+        - "{{ mx_names }}"
+        - "{{ groups.tag_Class_mx | map('extract', hostvars, 'ec2_id') | list }}"
 
-    - name: "Set mx-{{ aws_region }}.{{ my_tld }}"
+    - name: "Set pretty DNS names for MX loadbalancer(s)"
       route53:
         command: "create"
         overwrite: true
         zone: "{{ my_tld }}"
-        record: "mx-{{ aws_region }}.{{ my_tld }}"
+        record: "{{ item.elb.name }}.{{ my_tld }}"
         type: "A"
         alias: true
-        alias_hosted_zone_id: "{{ result.elb.hosted_zone_id }}"
-        value: "{{ result.elb.dns_name }}"
+        alias_hosted_zone_id: "{{ item.elb.hosted_zone_id }}"
+        value: "{{ item.elb.dns_name }}"
+      with_items: "{{ result.results }}"
