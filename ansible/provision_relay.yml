@@ -66,12 +66,12 @@
           healthy_threshold: 5
       register: result
 
-    - name: "Set relay-{{ aws_region }}.{{ my_tld }}"
+    - name: "Set relay-{{ aws_region }}.{{ subd }}"
       route53:
         command: "create"
         overwrite: true
-        zone: "{{ my_tld }}"
-        record: "relay-{{ aws_region }}.{{ my_tld }}"
+        zone: "{{ subd }}"
+        record: "relay-{{ aws_region }}.{{ subd }}"
         type: "A"
         alias: true
         alias_hosted_zone_id: "{{ result.elb.hosted_zone_id }}"

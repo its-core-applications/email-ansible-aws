@@ -41,12 +41,12 @@
   gather_facts: false
   become: false
   tasks:
-    - name: "Set mx-test.{{ my_tld }}"
+    - name: "Set mx-test.{{ subd }}"
       route53:
         command: "create"
         overwrite: true
-        zone: "{{ my_tld }}"
-        record: "mx-test.{{ my_tld }}"
+        zone: "{{ subd }}"
+        record: "mx-test.{{ subd }}"
         type: "A"
         ttl: 60
         value: "{{ groups.tag_Class_mx_test | default({}) | map('extract', hostvars, 'ec2_ip_address') | join(', ') }}"

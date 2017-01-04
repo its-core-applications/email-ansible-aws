@@ -89,8 +89,8 @@
       route53:
         command: "create"
         overwrite: true
-        zone: "{{ my_tld }}"
-        record: "{{ item.elb.name }}.{{ my_tld }}"
+        zone: "{{ subd }}"
+        record: "{{ item.elb.name }}.{{ subd }}"
         type: "A"
         alias: true
         alias_hosted_zone_id: "{{ item.elb.hosted_zone_id }}"

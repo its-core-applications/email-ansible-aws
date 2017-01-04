@@ -12,7 +12,7 @@ sethostname() {
     aws ec2 create-tags --region=$region --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1 
 }
 
-zoneid=$(route53 ls | awk '/ID:/{ id=$NF } /Name: {{ my_tld }}.$/{ print id }')
+zoneid=$(route53 ls | awk '/ID:/{ id=$NF } /Name: {{ subd }}.$/{ print id }')
 
 if [[ -z $zoneid ]]; then
     echo "Failed to fetch zone ID, not setting hostname"
@@ -45,7 +45,7 @@ fi
 
 # Otherwise generate one automatically
 class=$(aws ec2 describe-tags --region=$region --filter="Name=resource-id,Values=$instanceid" --output=text | awk '$2 == "Class" { print $5 }')
-base={{ my_tld }}
+base={{ subd }}
 prefixes=/usr/share/hostname-prefixes
 suffixes=/usr/share/hostname-suffixes
 if [[ $class ]]; then

@@ -69,12 +69,12 @@
   gather_facts: false
   become: false
   tasks:
-    - name: "Set syslog.{{ my_tld }}"
+    - name: "Set syslog.{{ subd }}"
       route53:
         command: "create"
         overwrite: true
-        zone: "{{ my_tld }}"
-        record: "syslog.{{ my_tld }}"
+        zone: "{{ subd }}"
+        record: "syslog.{{ subd }}"
         type: "A"
         ttl: 60
         value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"

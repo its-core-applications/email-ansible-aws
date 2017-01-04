@@ -3,7 +3,7 @@
 - name: Configure static hostname
   copy:
     dest: /etc/dynhostname.static
-    content: "mogo.{{ my_tld }}"
+    content: "mogo.{{ subd }}"
     owner: root
     group: root
     mode: 0644
