@@ -51,13 +51,13 @@
     - name: Create local queue storage directory
       delegate_to: localhost
       file:
-        dest: /home/ec2-user/simqtmp
+        dest: /home/ec2-user/simqtmp/inbound
         state: directory
 
     - name: Touch lockfile
       delegate_to: localhost
       file:
-        dest: "/home/ec2-user/simqtmp/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
+        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
         state: touch
 
     - name: Save queue
@@ -65,12 +65,12 @@
         mode: pull
         archive: true
         src: /var/spool/simta/slow/
-        dest: "/home/ec2-user/simqtmp/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}/"
+        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}/"
 
     - name: Remove lockfile
       delegate_to: localhost
       file:
-        dest: "/home/ec2-user/simqtmp/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
+        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
         state: absent
 
     - name: Set class to spundown

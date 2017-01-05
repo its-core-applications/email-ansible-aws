@@ -1,0 +1,12 @@
+---
+
+- name: Install scripts
+  copy:
+    dest: "/usr/local/sbin/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  items:
+    - simta-requeue
+

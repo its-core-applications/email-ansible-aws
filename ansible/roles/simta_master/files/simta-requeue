@@ -1,0 +1,74 @@
+#!/bin/bash
+
+name=simta-requeue
+confdir=/usr/local/collaboration/dispatch
+workdir=/home/ec2-user/simqtmp
+lockfile=$workdir/${name}
+log="logger -p cron.info -t ${name}[$$]"
+
+. /usr/libexec/comint/setup
+
+notify() {
+    cat $tmpfile | $log
+    cat $tmpfile | eval ${notifycmd_info} ${notifywho_info}
+}
+
+if [[ -f $lockfile ]]; then
+    echo "Lockfile $lockfile already exists, exiting" >> $tmpfile
+    notify
+    cleanup
+    exit 1
+fi
+touch $lockfile
+trap 'rm -f $lockfile ; exit 1' 1 2 3 15
+
+readarray -t qhosts < <(ansible --list-hosts tag_Class_egress 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
+[[ ${#qhosts[@]} -eq 0 ]] && echo "List of egress hosts is empty" >> $tmpfile
+
+for qhost in ${qhosts[@]}; do
+    [[ -s ${workdir}/{$qhost}.tar ]] && echo "Stale ${workdir}/{$qhost}.tar" >> $tmpfile
+done
+
+if [[ -s $tmpfile ]]; then
+    echo "Exiting due to errors" >> $tmpfile 
+    notify
+    cleanup
+    rm -f $lockfile
+    exit 1
+fi
+
+for queue in ${workdir}/inbound/* ; do
+    [[ -d $queue ]] || continue
+    [[ -e ${queue}.lock ]] && continue
+    find $queue -type f -name D\* >| ${tmpdir}/msglist
+    if [[ -s ${tmpdir}/msglist ]]; then
+        split -a1 -d -n l/${#qhosts[@]} ${tmpdir}/msglist ${tmpdir}/msglist-
+        for i in "${!qhosts[@]}"; do
+            mkdir -p ${workdir}/outbound/${qhosts[$i]}
+            sed -e 'p; s/D/E/;' "${tmpdir}/msglist-$i" | xargs -r -I msg mv msg "${workdir}/outbound/${qhosts[$i]}/"
+        done
+    fi
+    rmdir $queue
+done
+
+err=0
+for qhost in ${qhosts[@]}; do
+    if [[ -d ${workdir}/outbound/${qhost} ]]; then
+        tar -C ${workdir}/outbound/${qhost} --owner=simta --group=mail --mode=0600 -cf ${workdir}/outbound/${qhost}.tar . &>>$tmpfile
+        if [[ $? -eq 0 ]]; then
+            rm -rf ${workdir}/outbound/${qhost}
+            ansible $qhost -m unarchive -a "src=${workdir}/outbound/${qhost}.tar dest=/var/spool/simta/slow extra_opts=--strip-components=1" &>>$tmpfile
+            if [[ $? -eq 0 ]]; then
+                rm -f ${workdir}/outbound/${qhost}.tar
+            else
+                (( err++ ))
+            fi
+        else
+            (( err++ ))
+        fi
+    fi
+done
+
+[[ $err -gt 0 ]] && notify
+cleanup
+rm -f $lockfile
