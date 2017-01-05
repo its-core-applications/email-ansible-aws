@@ -19,8 +19,16 @@
     src: sudoers
     owner: root
     group: root
-    mode: 440
+    mode: 0440
   tags: mutable
+
+- name: Customize environment
+  copy:
+    dest: /etc/profile.d/99_custom.sh
+    src: profile.sh
+    owner: root
+    group: root
+    mode: 0644
 
 - name: Install basic QoL packages
   yum:
