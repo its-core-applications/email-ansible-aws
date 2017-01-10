@@ -5,12 +5,12 @@
   gather_facts: false
   become: false
   tasks:
-    - name: "Set pink.{{ subd }}"
+    - name: "Set {{ simta_redis_host }}"
       route53:
         command: "create"
         overwrite: true
         zone: "{{ subd }}"
-        record: "pink.{{ subd }}"
+        record: "{{ simta_redis_host }}"
         type: "A"
         ttl: 60
         value: "{{ groups.tag_redis_yes | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"

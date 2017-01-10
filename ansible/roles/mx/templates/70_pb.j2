@@ -3,7 +3,7 @@
 
 PENALTYBOX_PASS=1
 penaltybox_bin='/usr/bin/penaltybox'
-penaltybox_args='-H 50 -h pink.{{ subd }}'
+penaltybox_args='-H 50 -h {{ simta_redis_host }}'
 
 if check_tfile && grep -iq '^Rpenaltybox@' $SIMTA_TFILE ; then
     reason='testing'
