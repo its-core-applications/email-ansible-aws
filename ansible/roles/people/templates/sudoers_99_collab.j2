@@ -1,12 +1,12 @@
-User_Alias      BOX    = {{ user_accounts | selectattr('sudo_box', 'defined') | map(attribute='name') | join(',') }}
-User_Alias      COLLAB = {{ user_accounts | selectattr('full_sudo', 'defined') | map(attribute='name') | join(',') }}
-User_Alias      EMAIL  = {{ user_accounts | selectattr('sudo_email', 'defined') | map(attribute='name') | join(',') }}
-User_Alias      GOOGLE = {{ user_accounts | selectattr('sudo_google', 'defined') | map(attribute='name') | join(',') }}
+User_Alias      BOX         = {{ user_accounts | selectattr('sudo_box', 'defined') | selectattr('sudo_box') | map(attribute='name') | join(',') }}
+User_Alias      COLLAB      = {{ user_accounts | selectattr('full_sudo', 'defined') | selectattr('full_sudo') | map(attribute='name') | join(',') }}
+User_Alias      EMAIL       = {{ user_accounts | selectattr('sudo_email', 'defined') | selectattr('sudo_email') | map(attribute='name') | join(',') }}
+User_Alias      GOOGLE      = {{ user_accounts | selectattr('sudo_google', 'defined') | selectattr('sudo_google') | map(attribute='name') | join(',') }}
 
 Runas_Alias     NONPEOPLE = box,email,google
 
-BOX     ALL=(box)       NOPASSWD: ALL
-COLLAB  ALL=(ALL)       ALL
-COLLAB  ALL=(NONPEOPLE) NOPASSWD: ALL
-EMAIL   ALL=(email)     NOPASSWD: ALL
-GOOGLE  ALL=(google)    SETENV:NOPASSWD: /home/google/GAM/src/gam.py
+BOX         ALL=(box)       NOPASSWD: ALL
+COLLAB      ALL=(ALL)       ALL
+COLLAB      ALL=(NONPEOPLE) NOPASSWD: ALL
+EMAIL       ALL=(email)     ALL
+GOOGLE      ALL=(google)    SETENV:NOPASSWD: /home/google/GAM/src/gam.py
