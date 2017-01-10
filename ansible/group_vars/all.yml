@@ -82,10 +82,12 @@ user_accounts:
     comment: Jeffrey Cohen
     uid: 53720
     sudo_email: true
+    sudo_google: true
   - name: awilkins
     comment: Adam Wilkinson
     uid: 56060
     sudo_email: true
+    sudo_google: true
   - name: neda
     comment: Neda Ganjei
     uid: 23665
