@@ -121,6 +121,49 @@
             to_port: 25
             group_name: relay-elb
 
+    - name: Create security group for smtp ELB
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: smtp-elb
+        description: auth SMTP ELB
+        rules:
+          - proto: tcp
+            from_port: 25
+            to_port: 25
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 465
+            to_port: 465
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 587
+            to_port: 587
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+
+    - name: Create security group for smtp
+      ec2_group:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ aws_vpc }}"
+        name: smtp
+        description: auth SMTP
+        rules:
+          - proto: tcp
+            from_port: 25
+            to_port: 25
+            group_name: smtp-elb
+          - proto: tcp
+            from_port: 465
+            to_port: 465
+            group_name: smtp-elb
+          - proto: tcp
+            from_port: 587
+            to_port: 587
+            group_name: smtp-elb
+
     - name: Create security group for rsyslog
       ec2_group:
         region: "{{ aws_region }}"
