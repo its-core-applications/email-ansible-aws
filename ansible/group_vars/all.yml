@@ -53,12 +53,16 @@ nonperson_accounts:
   - name: email
     comment: Mail Routing
     uid: 1002
+    ssh: true
   - name: git
     comment: Gitolite
     uid: 1001
   - name: google
     comment: Google
     uid: 1003
+  - name: splunk
+    comment: Splunk
+    uid: 1005
 
 user_accounts:
   - name: ezekielh
