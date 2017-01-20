@@ -25,6 +25,7 @@
         instance_profile_name: standard
         instance_tags:
           Class: relay
+          Status: preproduction
           az: "{{ item.availability_zone }}"
         exact_count: 1
         count_tag:

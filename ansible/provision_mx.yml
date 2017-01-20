@@ -27,6 +27,7 @@
         instance_profile_name: standard
         instance_tags:
           Class: mx
+          Status: production
           az: "{{ item.availability_zone }}"
           redis: 'yes'
         exact_count: 1

@@ -18,6 +18,7 @@
         termination_protection: yes
         instance_tags:
           Class: master
+          Status: master
           CustomDNSName: "mogo.{{ subd }}"
         exact_count: 1
         count_tag:

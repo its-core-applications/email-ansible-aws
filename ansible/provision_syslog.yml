@@ -24,6 +24,7 @@
         instance_profile_name: standard
         instance_tags:
           Class: syslog
+          Status: production
         exact_count: 1
         count_tag:
           Class: syslog
