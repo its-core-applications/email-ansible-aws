@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "simta": {
+      "command": "{{ sensu_plugin_path }}/check-process.rb -p simta",
+      "subscribers": [
+        "mx_test",
+        "mx",
+        "egress"
+      ],
+      "interval": 60
+    }
+  }
+}

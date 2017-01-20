@@ -1,0 +1,12 @@
+{
+  "checks": {
+    "clamav": {
+      "command": "{{ sensu_plugin_path }}/check-process.rb -p clamd",
+      "subscribers": [
+        "mx_test",
+        "mx"
+      ],
+      "interval": 60
+    }
+  }
+}

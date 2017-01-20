@@ -1,0 +1,52 @@
+---
+
+- name: Configure the Sensu Core repository
+  copy:
+    dest: /etc/yum.repos.d/sensu.repo
+    src: sensu.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install sensu
+  yum:
+    pkg: sensu
+    state: latest
+  notify: Restart sensu
+
+- name: Fix permissions on /opt/sensu
+  file:
+    dest: /opt/sensu
+    state: directory
+    owner: sensu
+    group: sensu
+    mode: 0755
+
+- name: Configure sensu
+  template:
+    dest: "/etc/sensu/conf.d/{{ item }}"
+    src: "{{ item }}.j2"
+  with_items:
+    - client.json
+    - rabbitmq.json
+    - transport.json
+  notify: Restart sensu
+
+- name: Install sensu plugins
+  become_user: sensu
+  gem:
+    name: "{{ item }}"
+    executable: /opt/sensu/embedded/bin/gem
+    state: latest
+  with_items:
+    - sensu-plugins-aws
+    - sensu-plugins-network-checks
+    - sensu-plugins-process-checks
+    - sensu-plugins-redis
+
+- name: Enable sensu-client
+  systemd:
+    name: sensu-client
+    enabled: true
+  notify: Restart sensu-client
+

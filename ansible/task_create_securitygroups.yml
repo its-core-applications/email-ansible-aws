@@ -179,6 +179,18 @@
             from_port: 2514
             to_port: 2514
             cidr_ip: "{{ aws_subnet }}"
+          - proto: tcp
+            from_port: 5672
+            to_port: 5672
+            cidr_ip: "{{ aws_vpn_subnet }}"
+          - proto: tcp
+            from_port: 5672
+            to_port: 5672
+            cidr_ip: "{{ aws_subnet }}"
+          - proto: tcp
+            from_port: 3000
+            to_port: 3000
+            cidr_ip: 0.0.0.0/0
 
     - name: Create security group for EFS
       ec2_group:

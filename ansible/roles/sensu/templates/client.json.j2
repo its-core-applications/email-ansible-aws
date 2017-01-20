@@ -1,0 +1,10 @@
+{
+  "client": {
+    "deregister": true,
+{% if sensu_subscriptions is defined %}
+    "subscriptions": {{ sensu_subscriptions | to_nice_json(indent=6) }},
+{% endif %}
+    "safe_mode": false
+  }
+}
+

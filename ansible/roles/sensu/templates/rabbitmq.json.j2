@@ -1,0 +1,10 @@
+{
+  "rabbitmq": {
+    "host": "syslog.{{ subd }}",
+    "port": 5672,
+    "vhost": "/sensu",
+    "user": "sensu",
+    "password": "{{ sensu_rabbitmq_password }}"
+  }
+}
+

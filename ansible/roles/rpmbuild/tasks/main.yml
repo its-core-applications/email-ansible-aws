@@ -12,6 +12,7 @@
     - automake
     - libtool
     - setup
+    - gcc-c++
 
 - name: Set up rpmbuild tree
   become: false

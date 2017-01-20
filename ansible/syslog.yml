@@ -6,3 +6,5 @@
     - { role: rsyslog_aggregator, tags: rsyslog_aggregator }
     - { role: simta_basic, tags: simta }
     - { role: splunk_forwarder, tags: splunk_forwarder }
+    - { role: sensu, tags: sensu }
+    - { role: sensu_server, tags: sensu }

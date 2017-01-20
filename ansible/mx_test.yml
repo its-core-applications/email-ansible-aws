@@ -12,3 +12,4 @@
     - { role: spamassassin, tags: spamassassin }
     - { role: clamav, tags: clamav }
     - { role: mx, tags: mx }
+    - { role: sensu, tags: sensu }

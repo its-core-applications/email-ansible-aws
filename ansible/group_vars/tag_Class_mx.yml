@@ -9,3 +9,6 @@ simta_ldap_password: "{{ lookup( 'hashi_vault', 'secret=secret/simta/ldap_passwo
 simta_srs: true
 simta_srs_secret: "{{ lookup( 'hashi_vault', 'secret=secret/simta/srs_secret token={{ vault_token }}' ) }}"
 trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro token={{ vault_token }}' ) }}"
+sensu_subscriptions:
+  - production
+  - mx

@@ -1,0 +1,23 @@
+---
+
+- name: Configure PackageCloud repository
+  copy:
+    dest: /etc/yum.repos.d/rabbitmq_rabbitmq-server.repo
+    src: rabbitmq_rabbitmq-server.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install RabbitMQ
+  yum:
+    pkg: rabbitmq-server
+    state: latest
+  notify: Restart RabbitMQ
+
+- name: Enable RabbitMQ
+  systemd:
+    name: rabbitmq-server
+    enabled: true
+  notify: Restart RabbitMQ
+
+- meta: flush_handlers

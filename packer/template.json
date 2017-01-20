@@ -12,7 +12,10 @@
     {
       "type": "ansible",
       "playbook_file": "ansible/{{ user `image_type` }}.yml",
-      "groups": "tag_Class_{{ user `image_type` }}",
+      "groups": [
+        "tag_Class_{{ user `image_type` }}",
+        "tag_Status_development"
+      ],
       "host_alias": "{{ user `image_type` }}"
     },
     {

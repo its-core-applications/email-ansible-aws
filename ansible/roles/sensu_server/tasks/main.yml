@@ -1,0 +1,70 @@
+---
+
+- name: Create the RabbitMQ vhost for sensu
+  rabbitmq_vhost:
+    name: /sensu
+    state: present
+
+- name: Create the RabbitMQ user for sensu
+  rabbitmq_user:
+    name: sensu
+    state: present
+    password: "{{ sensu_rabbitmq_password }}"
+    permissions:
+      - vhost: /sensu
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+
+- name: Configure sensu server
+  template:
+    dest: "/etc/sensu/conf.d/{{ item }}"
+    src: "{{ item }}.j2"
+  with_items:
+    - api.json
+    - redis.json
+    - handle_deregistration.json
+    - check_clamav.json
+    - check_simta.json
+    - check_spamassassin.json
+  notify: Restart sensu server
+
+- name: Enable sensu server
+  systemd:
+    name: "{{ item }}"
+    enabled: true
+  with_items:
+    - sensu-server
+    - sensu-api
+  notify: Restart sensu server
+
+- name: Install sensu plugins
+  become_user: sensu
+  gem:
+    name: "{{ item }}"
+    executable: /opt/sensu/embedded/bin/gem
+    state: latest
+  with_items:
+    - sensu-plugins-sensu
+
+- name: Install uchiwa dashboard
+  yum:
+    pkg: uchiwa
+    state: latest
+  notify: Restart uchiwa
+
+- name: Configure the dashboard
+  template:
+    dest: /etc/sensu/uchiwa.json
+    src: uchiwa.json.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart uchiwa
+
+- name: Enable the dashboard
+  systemd:
+    name: uchiwa
+    enabled: true
+  notify: Restart uchiwa
+

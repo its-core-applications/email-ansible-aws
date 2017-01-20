@@ -5,3 +5,6 @@ simta_relay: true
 simta_egress: true
 simta_dkim: true
 simta_connlimit: 0
+sensu_subscriptions:
+  - production
+  - egress

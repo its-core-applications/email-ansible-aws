@@ -1,0 +1,12 @@
+{
+  "checks": {
+    "spamassassin": {
+      "command": "{{ sensu_plugin_path }}/check-process.rb -p spamd",
+      "subscribers": [
+        "mx_test",
+        "mx"
+      ],
+      "interval": 60
+    }
+  }
+}

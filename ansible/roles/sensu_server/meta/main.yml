@@ -1,0 +1,10 @@
+---
+
+dependencies:
+  - role: redis
+    redis_config: standalone
+    tags: redis
+  - role: rabbitmq
+    tags: rabbitmq
+  - role: rpmbuild
+    tags: rpmbuild

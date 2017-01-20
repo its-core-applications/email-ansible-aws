@@ -10,3 +10,4 @@
       tags: [ simta, certificate ]
     - { role: simta, tags: simta }
     - { name: redis, tags: redis }
+    - { name: sensu, tags: sensu }

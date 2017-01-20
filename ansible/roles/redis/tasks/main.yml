@@ -9,7 +9,7 @@
 - name: Configure redis
   copy:
     dest: /etc/redis.conf
-    src: redis.conf
+    src: "redis.conf-{{ redis_config }}"
     owner: redis
     group: root
     mode: 0644
