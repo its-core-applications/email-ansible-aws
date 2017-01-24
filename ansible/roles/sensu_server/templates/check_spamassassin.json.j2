@@ -3,8 +3,8 @@
     "spamassassin": {
       "command": "{{ sensu_plugin_path }}/check-process.rb -p spamd",
       "subscribers": [
-        "mx_test",
-        "mx"
+        "Class_mx_test",
+        "Class_mx"
       ],
       "interval": 60
     }

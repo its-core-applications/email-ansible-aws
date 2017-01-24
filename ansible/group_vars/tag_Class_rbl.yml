@@ -1,0 +1,5 @@
+---
+
+sensu_subscriptions:
+  - Status_production
+  - Class_rbl

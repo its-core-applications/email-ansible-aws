@@ -1,9 +1,8 @@
 {
   "checks": {
-    "simta": {
-      "command": "{{ sensu_plugin_path }}/check-process.rb -p simta",
+    "redis": {
+      "command": "{{ sensu_plugin_path }}/check-redis-ping.rb",
       "subscribers": [
-        "Class_mx_test",
         "Class_mx",
         "Class_egress"
       ],

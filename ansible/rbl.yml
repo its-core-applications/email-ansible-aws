@@ -6,4 +6,4 @@
     - { role: rsyslog_forward, tags: rsyslog }
     - { role: simta_basic, tags: simta }
     - { role: rbldnsd, tags: rbldnsd }
-
+    - { role: sensu, tags: sensu }

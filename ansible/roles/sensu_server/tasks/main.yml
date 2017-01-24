@@ -23,8 +23,12 @@
   with_items:
     - api.json
     - redis.json
+    - notification_handlers.json
+    - sns.json
     - handle_deregistration.json
     - check_clamav.json
+    - check_cert_mx.json
+    - check_rbldnsd.json
     - check_simta.json
     - check_spamassassin.json
   notify: Restart sensu server
@@ -46,6 +50,17 @@
     state: latest
   with_items:
     - sensu-plugins-sensu
+
+- name: Configure ELB checks
+  sensu_check:
+    name: "elb-{{ item }}"
+    path: /etc/sensu/conf.d/check_elb.json
+    command: "{{ sensu_plugin_path }}/check-elb-nodes.rb -r {{ aws_region }} -n {{ item }} -W 66 -C 33"
+    interval: 60
+    timeout: 30
+    subscribers:
+      - roundrobin:Class_mx
+  with_items: "{{ mx_names }}"
 
 - name: Install uchiwa dashboard
   yum:

@@ -1,0 +1,19 @@
+{
+  "handlers": {
+    "page": {
+      "type": "pipe",
+      "command": "{{ sensu_plugin_path }}/handler-sns.rb"
+    },
+    "fyi": {
+      "type": "pipe",
+      "command": "/bin/true"
+    },
+    "default": {
+      "type": "set",
+      "handlers": [
+        "page",
+        "fyi"
+      ]
+    }
+  }
+}
