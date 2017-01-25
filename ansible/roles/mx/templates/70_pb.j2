@@ -40,13 +40,6 @@ else
 fi
 
 if [ $PENALTYBOX_PASS -ne 0 -a "x$reason" != 'x' ]; then
-    logmsg=$($penaltybox_bin $penaltybox_args "$reason")
-    pbret=$?
-    if [ "x$logmsg" != 'x' ]; then
-        log "70_pb: $logmsg"
-    fi
-    if [ $pbret -eq ${MESSAGE_TEMPFAIL} ]; then
-        filter_exit ${MESSAGE_TEMPFAIL}
-    fi
-    PENALTYBOX_PASS=0
+    log "70_pb: tempfail $reason"
+    filter_exit ${MESSAGE_TEMPFAIL}
 fi
