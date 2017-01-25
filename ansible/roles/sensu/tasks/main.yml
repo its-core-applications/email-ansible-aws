@@ -38,6 +38,7 @@
     - rabbitmq.json
     - transport.json
   notify: Restart sensu
+  tags: mutable
 
 - name: Install sensu plugins
   become_user: sensu
