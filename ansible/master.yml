@@ -17,3 +17,4 @@
     - { role: google_gam, tags: google }
     - { role: redis_master, tags: redis }
     - { role: simta_master, tags: simta }
+    - { role: ansible_master, tags: ansible }
