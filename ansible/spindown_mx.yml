@@ -27,6 +27,11 @@
         instance_id: "{{ ec2_id }}"
         state: absent
 
+    - name: Stop sensu
+      systemd:
+        name: sensu-client
+        state: stopped
+
     - name: Wait for active connections to finish
       wait_for:
         host: 0.0.0.0

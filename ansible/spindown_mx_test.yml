@@ -8,6 +8,10 @@
         resource: "{{ ec2_id }}"
         tags:
           Class: spundown
+    - name: Stop sensu
+      systemd:
+        name: sensu-client
+        state: stopped
 
     - meta: refresh_inventory
 

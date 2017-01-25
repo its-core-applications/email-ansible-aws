@@ -18,3 +18,7 @@ trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro token
 sensu_subscriptions:
   - Status_development
   - Class_mx_test
+sensu_extra:
+  simta:
+    fastqmax: 20
+    fastqwarn: 10

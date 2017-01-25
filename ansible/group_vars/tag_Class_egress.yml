@@ -8,3 +8,7 @@ simta_connlimit: 0
 sensu_subscriptions:
   - Status_production
   - Class_egress
+sensu_extra:
+  simta:
+    slowqwarn: 1000
+    slowqmax: 2000

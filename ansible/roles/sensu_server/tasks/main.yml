@@ -30,6 +30,8 @@
     - check_cert_mx.json
     - check_rbldnsd.json
     - check_simta.json
+    - check_simta_expansion.json
+    - check_simta_queues.json
     - check_spamassassin.json
   notify: Restart sensu server
 

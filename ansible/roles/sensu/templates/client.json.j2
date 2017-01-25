@@ -4,6 +4,9 @@
 {% if sensu_subscriptions is defined %}
     "subscriptions": {{ sensu_subscriptions | to_nice_json(indent=6) }},
 {% endif %}
+{% if sensu_extra is defined %}
+    "extra": {{ sensu_extra | to_nice_json }},
+{% endif %}
     "safe_mode": false
   }
 }

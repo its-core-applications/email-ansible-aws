@@ -20,6 +20,11 @@
 
 - hosts: tag_Class_egress_spindown
   tasks:
+    - name: Stop sensu
+      systemd:
+        name: sensu-client
+        state: stopped
+
     - name: Wait for active connections to finish
       wait_for:
         host: 0.0.0.0

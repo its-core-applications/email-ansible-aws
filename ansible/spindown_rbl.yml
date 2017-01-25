@@ -20,6 +20,10 @@
 
 - hosts: tag_Class_rbl_spindown
   tasks:
+    - name: Stop sensu
+      systemd:
+        name: sensu-client
+        state: stopped
     - name: Set class to spundown
       ec2_tag:
         region: "{{ aws_region }}"
