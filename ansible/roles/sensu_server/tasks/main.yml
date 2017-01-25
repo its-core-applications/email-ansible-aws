@@ -28,6 +28,8 @@
     - handle_deregistration.json
     - check_clamav.json
     - check_cert_mx.json
+    - check_load.json
+    - check_memory.json
     - check_rbldnsd.json
     - check_simta.json
     - check_simta_expansion.json

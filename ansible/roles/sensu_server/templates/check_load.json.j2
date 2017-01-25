@@ -1,0 +1,11 @@
+{
+  "checks": {
+    "load": {
+      "command": "{{ sensu_plugin_path }}/check-load.rb",
+      "subscribers": [
+        "Status_production"
+      ],
+      "interval": 60
+    }
+  }
+}
