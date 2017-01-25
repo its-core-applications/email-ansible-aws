@@ -10,3 +10,9 @@
   items:
     - simta-requeue
 
+- name: Schedule requeuing
+  cron:
+    user: ec2-user
+    minute: "*/5"
+    job: ". ~/ansible-aws/env-setup.sh && /usr/local/sbin/simta-requeue"
+
