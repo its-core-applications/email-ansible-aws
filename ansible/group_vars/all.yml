@@ -13,7 +13,7 @@ yum_hostname: yum.{{ subd }}
 
 vault_token: "{{ lookup( 'env', 'VAULT_TOKEN' ) }}"
 
-sns_topic: arn:aws:sns:us-west-2:236262816615:Testing
+sns_topic: arn:aws:sns:us-west-2:236262816615:On-Call
 
 # Because we have other people's MX records pointing at our servers,
 # we don't want to tie the DNS name to the region name.
