@@ -1,2 +1,2 @@
 # Options to spamd
-SPAMDOPTIONS="-x -d --min-children=5 --max-children=50 --min-spare=2 --max-spare=25"
+SPAMDOPTIONS="-x -d --min-children=2 --max-children=25 --min-spare=2 --max-spare=10"
