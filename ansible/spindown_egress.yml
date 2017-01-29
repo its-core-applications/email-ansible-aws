@@ -2,6 +2,7 @@
 
 - hosts: tag_Class_egress
   serial: 1
+  gather_facts: false
   tasks:
     - name: Set class on oldest host to egress_spindown
       ec2_tag:

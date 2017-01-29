@@ -2,6 +2,7 @@
 
 - hosts: tag_Class_mx
   serial: 1
+  gather_facts: false
   tasks:
     - name: Set class on oldest host to mx_spindown
       ec2_tag:

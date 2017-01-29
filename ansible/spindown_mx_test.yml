@@ -1,6 +1,7 @@
 ---
 
 - hosts: tag_Class_mx_test
+  gather_facts: false
   tasks:
     - name: Set class to spundown
       ec2_tag:
@@ -8,6 +9,7 @@
         resource: "{{ ec2_id }}"
         tags:
           Class: spundown
+
     - name: Stop sensu
       systemd:
         name: sensu-client

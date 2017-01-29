@@ -1,6 +1,7 @@
 ---
 
 - hosts: tag_Class_syslog
+  gather_facts: false
   tasks:
     - name: Set class to spundown
       ec2_tag:
