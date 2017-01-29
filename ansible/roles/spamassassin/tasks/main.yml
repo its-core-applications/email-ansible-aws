@@ -62,6 +62,11 @@
     group: mail
     mode: 0400
 
+- name: Disable stock sa-update
+  file:
+    dest: /etc/cron.d/sa-update
+    state: absent
+
 - name: Install sa-update-client
   copy:
     dest: /usr/local/sbin/sa-update-client
