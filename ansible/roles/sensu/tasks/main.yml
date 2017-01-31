@@ -18,6 +18,7 @@
   file:
     dest: /opt/sensu
     state: directory
+    recurse: yes
     owner: sensu
     group: sensu
     mode: 0755
