@@ -1,7 +1,7 @@
 {
   "checks": {
     "load": {
-      "command": "{{ sensu_plugin_path }}/check-load.rb",
+      "command": "{{ sensu_plugin_path }}/check-load.rb -p -w 30,25,20 -c 35,30,25",
       "subscribers": [
         "Status_production"
       ],

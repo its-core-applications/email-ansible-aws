@@ -1,0 +1,12 @@
+{
+  "checks": {
+    "dnsbl": {
+      "command": "/usr/local/collaboration/check-dnsbl",
+      "subscribers": [
+        "Class_egress"
+      ],
+      "interval": 300,
+      "timeout": 240
+    }
+  }
+}

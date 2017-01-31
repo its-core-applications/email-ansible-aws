@@ -29,6 +29,7 @@
     - check_cert_egress.json
     - check_cert_mx.json
     - check_clamav.json
+    - check_dnsbl.json
     - check_load.json
     - check_memory.json
     - check_rbldnsd.json
@@ -62,8 +63,8 @@
     name: "elb-{{ item }}"
     path: /etc/sensu/conf.d/check_elb.json
     command: "{{ sensu_plugin_path }}/check-elb-nodes.rb -r {{ aws_region }} -n {{ item }} -W 66 -C 33"
-    interval: 60
-    timeout: 30
+    interval: 120
+    timeout: 90
     subscribers:
       - roundrobin:Class_mx
   with_items: "{{ mx_names }}"
