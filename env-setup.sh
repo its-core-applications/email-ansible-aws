@@ -26,3 +26,12 @@ if [[ $SUDO_USER ]]; then
     export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
     export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 fi
+
+function _sshcomplete() {
+    local cur
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    COMPREPLY=($(aws ec2 describe-instances --output=text | awk '/CustomDNSName/{print $NF}' | grep "^$cur" | sort -u))
+    return 0
+}
+
+complete -F _sshcomplete ssh
