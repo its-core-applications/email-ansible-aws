@@ -30,7 +30,7 @@
           Status: production
           az: "{{ item.availability_zone }}"
           redis: 'yes'
-        exact_count: 1
+        exact_count: 2
         count_tag:
           Class: mx
           az: "{{ item.availability_zone }}"
