@@ -1,0 +1,27 @@
+---
+
+- name: Install signature update dependencies
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - spamassassin
+    - gcc
+    - re2c
+    - perl-ExtUtils-MakeMaker
+
+- name: Install update script
+  copy:
+    dest: /usr/local/sbin/sa-update-server
+    src: sa-update-server
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Schedule update checks
+  cron:
+    name: "sa-update-server"
+    user: root
+    minute: 38
+    job: /usr/local/sbin/sa-update-server
+
