@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+import json
+import boto3
+import sys
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-r', '--region', help='AWS region')
+parser.add_argument('-a', '--arn', help='SNS ARN')
+args = parser.parse_args()
+
+region = args.region or 'us-west-2'
+
+client = boto3.client('sns', region_name=region)
+event = json.load(sys.stdin)
+
+subject = '{0} - {1}/{2}'.format('ALERT' if event['action'] == 'create' else 'RESOLVED', event['client']['name'], event['check']['name'])
+msg = '{0} - {1}'.format(subject, event['check']['output'])
+
+response = client.publish(TopicArn = args.arn, Message = msg, Subject = subject)
+

@@ -1,2 +1,0 @@
-# sensu runtime directory
-d /run/sensu 0755 sensu sensu -

@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "cert-egress": {
+      "command": "{{ sensu_plugin_path }}/check-ssl-host.rb -h egress.{{ subd }} -p 25 --starttls smtp -w 30 -c 7",
+      "subscribers": [
+        "roundrobin:Class_mx"
+      ],
+      "interval": 300,
+      "source": "egress.{{ subd }}",
+      "handler": "fyi"
+    },
+    "cert-mx1": {
+      "command": "{{ sensu_plugin_path }}/check-ssl-host.rb -h mx1.{{ subd }} -p 25 --starttls smtp -w 30 -c 7",
+      "subscribers": [
+        "roundrobin:Class_mx"
+      ],
+      "interval": 300,
+      "source": "mx1.{{ subd }}",
+      "handler": "fyi"
+    }
+  }
+}

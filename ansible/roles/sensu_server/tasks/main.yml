@@ -1,5 +1,22 @@
 ---
 
+- name: Install runtime dependencies for custom plugins
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - python2-boto3
+
+- name: Install custom plugins
+  copy:
+    dest: "/etc/sensu/plugins/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - handler-sns
+
 - name: Create the RabbitMQ vhost for sensu
   rabbitmq_vhost:
     name: /sensu
@@ -24,20 +41,15 @@
     - api.json
     - redis.json
     - notification_handlers.json
-    - sns.json
     - handle_deregistration.json
-    - check_cert_egress.json
-    - check_cert_mx.json
+    - check_cert.json
     - check_clamav.json
     - check_dnsbl.json
-    - check_load.json
-    - check_memory.json
     - check_rbldnsd.json
     - check_redis.json
     - check_simta.json
-    - check_simta_expansion.json
-    - check_simta_queues.json
     - check_spamassassin.json
+    - check_system.json
   notify: Restart sensu server
 
 - name: Enable sensu server
@@ -65,9 +77,11 @@
     command: "{{ sensu_plugin_path }}/check-elb-nodes.rb -r {{ aws_region }} -n {{ item }} -W 66 -C 33"
     interval: 120
     timeout: 90
+    source: "{{ item }}.{{ subd }}"
     subscribers:
       - roundrobin:Class_mx
   with_items: "{{ mx_names }}"
+  notify: Restart sensu server
 
 - name: Install uchiwa dashboard
   yum:

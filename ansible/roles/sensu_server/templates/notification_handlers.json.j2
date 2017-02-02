@@ -1,18 +1,52 @@
 {
+  "filters": {
+    "production": {
+      "negate": false,
+      "attributes": {
+        "client": {
+          "subscriptions": "eval: value.include?'Status_production'"
+        }
+      }
+    },
+    "critical": {
+      "negate": false,
+      "attributes": {
+        "check": {
+          "status": 2
+        }
+      }
+    },
+    "state_change_only": {
+      "negate": false,
+      "attributes": {
+        "occurrences": "eval: value == 1 || ':::action:::' == 'resolve'"
+      }
+    }
+  },
   "handlers": {
     "page": {
       "type": "pipe",
-      "command": "{{ sensu_plugin_path }}/handler-sns.rb"
+      "command": "handler-sns -r {{ aws_region }} -a {{ sns_topic }}",
+      "filters": [ "occurrences", "production" ]
     },
     "fyi": {
       "type": "pipe",
-      "command": "/bin/true"
+      "command": "handler-sns -r {{ aws_region }} -a {{ sns_topic_fyi }}",
+      "filters": [ "state_change_only" ]
+    },
+    "graphite": {
+      "type": "tcp",
+      "timeout": 30,
+      "socket": {
+        "host": "localhost",
+        "port": 2003
+      },
+      "mutator": "only_check_output"
     },
     "default": {
       "type": "set",
       "handlers": [
-        "page",
-        "fyi"
+        "page"
       ]
     }
   }

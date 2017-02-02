@@ -14,14 +14,6 @@
     state: latest
   notify: Restart sensu
 
-- name: "FIXME: install tmpfiles.d/sensu.conf"
-  copy:
-    dest: /etc/tmpfiles.d/sensu.conf
-    src: tmpfiles.sensu
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Fix permissions on /opt/sensu
   file:
     dest: /opt/sensu
