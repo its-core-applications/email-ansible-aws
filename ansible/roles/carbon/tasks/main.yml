@@ -1,0 +1,32 @@
+---
+
+- name: Install carbon
+  yum:
+    pkg: python-carbon
+    state: latest
+  notify: Restart carbon
+
+- name: Configure carbon
+  template:
+    dest: "/etc/carbon/{{ item }}"
+    src: "{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - carbon.conf
+    - aggregation-rules.conf
+    - rewrite-rules.conf
+    - storage-aggregation.conf
+    - storage-schemas.conf
+  notify: Restart carbon
+
+- name: Enable carbon daemons
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - carbon-cache
+    - carbon-aggregator
+  notify: Restart carbon
+

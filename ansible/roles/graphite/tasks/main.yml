@@ -1,26 +1,13 @@
 ---
 
-- name: Install build dependencies
+- name: Install graphite-api
   yum:
-    pkg: "{{ item }}"
+    pkg: graphite-api
     state: latest
-  with_items:
-    - python-devel
-    - python-virtualenv
-    - cairo-devel
-    - libffi-devel
+  notify: Restart graphite
 
-- name: Install graphite
-  pip:
-    virtualenv: /opt/graphite
-    virtualenv_site_packages: no
-    name: "{{ item }}"
-    state: latest
-  with_items:
-    - six
-    - packaging
-    - appdirs
-    - https://github.com/graphite-project/whisper/tarball/master
-    - https://github.com/graphite-project/carbon/tarball/master
-    - https://github.com/graphite-project/graphite-web/tarball/master
-  
+- name: Enable graphite-api
+  systemd:
+    name: graphite-api
+    enabled: yes
+  notify: Restart graphite

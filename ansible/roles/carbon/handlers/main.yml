@@ -1,0 +1,11 @@
+---
+
+- name: Restart carbon
+  systemd:
+    name: "{{ item }}"
+    daemon_reload: true
+    state: restarted
+  with_items:
+    - carbon-cache
+    - carbon-aggregator
+
