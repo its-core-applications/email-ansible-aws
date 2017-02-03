@@ -35,6 +35,15 @@
       ],
       "interval": 60
     },
+    "simta-queue-local": {
+      "command": "/usr/local/collaboration/check-simta-queue -q local -w :::extra.simta.localqwarn|100::: -c :::extra.simta.localqmax|20:::",
+      "subscribers": [
+        "Class_mx_test",
+        "Class_mx",
+        "Class_egress"
+      ],
+      "interval": 60
+    },
     "simta-queue-ownership": {
       "command": "/usr/local/collaboration/check-simta-queue-ownership",
       "subscribers": [
@@ -52,6 +61,17 @@
         "Class_egress"
       ],
       "interval": 300
+    },
+    "simta-metrics": {
+      "type": "metric",
+      "command": "/usr/local/collaboration/metrics-simta",
+      "subscribers": [
+        "Class_mx_test",
+        "Class_mx",
+        "Class_egress"
+      ],
+      "handler": "graphite",
+      "interval": 60
     }
   }
 }
