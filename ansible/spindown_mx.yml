@@ -4,18 +4,18 @@
   serial: 1
   gather_facts: false
   tasks:
-    - name: Set class on oldest host to mx_spindown
+    - name: Set class on oldest hosts to mx_spindown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
           Class: mx_spindown
       when:
-        - ec2_launch_time == groups.tag_Class_mx | map('extract', hostvars, 'ec2_launch_time') | sort | first
-        - groups.tag_Class_mx_spindown is undefined
+        - ec2_launch_time == groups.tag_Class_mx | intersect(groups["tag_az_{{ ec2_placement | replace('-', '_') }}"]) | map('extract', hostvars, 'ec2_launch_time') | sort | first
+        - groups.tag_Class_mx_spindown is undefined or groups.tag_Class_mx_spindown | intersect(groups["tag_az_{{ ec2_placement | replace('-', '_') }}"]) | length == 0
 
     - meta: refresh_inventory
-      when: groups.tag_Class_mx_spindown is undefined
+      when: groups.tag_Class_mx_spindown is undefined or groups.tag_Class_mx_spindown | intersect(groups["tag_az_{{ ec2_placement | replace('-', '_') }}"])) | length == 0
 
 - hosts: tag_Class_mx_spindown
   tasks:
