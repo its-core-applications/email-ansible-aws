@@ -1,5 +1,5 @@
 Name:           jemalloc
-Version:        4.2.1
+Version:        4.4.0
 
 Release:        1%{?dist}
 Summary:        General-purpose scalable concurrent malloc implementation
