@@ -5,7 +5,7 @@
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 Name:              redis
-Version:           3.2.5
+Version:           3.2.7
 Release:           2%{?dist}
 Summary:           A persistent key-value database
 License:           BSD
