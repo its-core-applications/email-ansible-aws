@@ -22,6 +22,24 @@
         "Status_production"
       ],
       "interval": 60
+    },
+    "memory-metrics": {
+      "type": "metric",
+      "command": "{{ sensu_plugin_path }}/metrics-memory-percent.rb",
+      "subscribers": [
+        "Status_production"
+      ],
+      "handler": "graphite",
+      "interval": 60
+    },
+    "cpu-metrics": {
+      "type": "metric",
+      "command": "{{ sensu_plugin_path }}/metrics-cpu-pcnt-usage.rb",
+      "subscribers": [
+        "Status_production"
+      ],
+      "handler": "graphite",
+      "interval": 60
     }
   }
 }
