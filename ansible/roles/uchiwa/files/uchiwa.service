@@ -1,0 +1,11 @@
+[Unit]
+Description=Uchiwa is a simple dashboard for sensu
+
+[Service]
+ExecStart=/opt/uchiwa/bin/uchiwa -c /etc/uchiwa.json -p /opt/uchiwa/src/public
+Restart=always
+User=uchiwa
+Group=uchiwa
+
+[Install]
+WantedBy=multi-user.target

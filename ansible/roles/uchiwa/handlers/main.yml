@@ -1,0 +1,8 @@
+---
+
+- name: Restart uchiwa
+  systemd:
+    name: uchiwa
+    daemon_reload: true
+    state: restarted
+

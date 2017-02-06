@@ -10,9 +10,3 @@
     - sensu-api
   listen: Restart sensu
 
-- name: Restart uchiwa
-  systemd:
-    name: uchiwa
-    daemon_reload: true
-    state: restarted
-

@@ -83,24 +83,3 @@
   with_items: "{{ mx_names }}"
   notify: Restart sensu server
 
-- name: Install uchiwa dashboard
-  yum:
-    pkg: uchiwa
-    state: latest
-  notify: Restart uchiwa
-
-- name: Configure the dashboard
-  template:
-    dest: /etc/sensu/uchiwa.json
-    src: uchiwa.json.j2
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart uchiwa
-
-- name: Enable the dashboard
-  systemd:
-    name: uchiwa
-    enabled: true
-  notify: Restart uchiwa
-

@@ -8,3 +8,5 @@ dependencies:
     tags: rabbitmq
   - role: rpmbuild
     tags: rpmbuild
+  - role: sensu
+    tags: sensu
