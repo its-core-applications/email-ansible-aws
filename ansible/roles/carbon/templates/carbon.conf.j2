@@ -1,7 +1,7 @@
 [cache]
 STORAGE_DIR    = /var/lib/carbon/
 LOCAL_DATA_DIR = /var/lib/carbon/whisper/
-WHITELISTS_DIR = /var/lib/carbon/lists/
+WHITELISTS_DIR = /etc/carbon/
 CONF_DIR       = /etc/carbon/
 LOG_DIR        = /var/log/carbon/
 PID_DIR        = /var/run/
@@ -41,7 +41,8 @@ WHISPER_FALLOCATE_CREATE = True
 [aggregator]
 STORAGE_DIR    = /var/lib/carbon/
 LOCAL_DATA_DIR = /var/lib/carbon/whisper/
-WHITELISTS_DIR = /var/lib/carbon/lists/
+USE_WHITELISTS = True
+WHITELISTS_DIR = /etc/carbon/
 CONF_DIR       = /etc/carbon/
 LOG_DIR        = /var/log/carbon/
 PID_DIR        = /var/run/

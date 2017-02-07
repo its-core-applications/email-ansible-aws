@@ -19,6 +19,7 @@
     - rewrite-rules.conf
     - storage-aggregation.conf
     - storage-schemas.conf
+    - blacklist.conf
   notify: Restart carbon
 
 - name: Enable carbon daemons
