@@ -28,12 +28,9 @@
         instance_tags:
           Class: egress
           Status: production
-          az: "{{ item.availability_zone }}"
           redis: 'yes'
-        exact_count: 1
-        count_tag:
-          Class: egress
-          az: "{{ item.availability_zone }}"
+        count: 1
+      when: groups.tag_Class_egress | intersect(groups[item.availability_zone]) | length == 0
       with_items: "{{ ec2_subnets.subnets }}"
       register: ec2
 

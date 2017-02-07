@@ -26,11 +26,8 @@
         instance_tags:
           Class: relay
           Status: preproduction
-          az: "{{ item.availability_zone }}"
-        exact_count: 1
-        count_tag:
-          Class: relay
-          az: "{{ item.availability_zone }}"
+        count: 1
+      when: groups.tag_Class_relay | intersect(groups[item.availability_zone]) | length == 0
       with_items: "{{ ec2_subnets.subnets }}"
       register: ec2
 
