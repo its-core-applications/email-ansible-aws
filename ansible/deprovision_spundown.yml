@@ -1,6 +1,7 @@
 ---
 
 - hosts: tag_Class_spundown
+  gather_facts: false
   tasks:
     - name: Destroy host
       become: false
