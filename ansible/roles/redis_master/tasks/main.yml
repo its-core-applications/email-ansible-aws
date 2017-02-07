@@ -1,5 +1,10 @@
 ---
 
+- name: Install redis
+  yum:
+    pkg: redis
+    state: latest
+
 - name: Install management scripts
   copy:
     dest: "/usr/local/sbin/{{ item }}"
