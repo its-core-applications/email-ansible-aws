@@ -14,7 +14,7 @@
     creates: /etc/pki/collab/private/letsencrypt_account.key
 
 - name: Create certificate key
-  command: "openssl genrsa -out /etc/pki/collab/private/{{ certificate }}.key 4096"
+  command: "openssl ecparam -genkey -name prime256v1 -out /etc/pki/collab/private/{{ certificate }}.key"
   args:
     creates: "/etc/pki/collab/private/{{ certificate }}.key"
   register: result
