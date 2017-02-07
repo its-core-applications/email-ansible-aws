@@ -69,6 +69,7 @@
     state: latest
   with_items:
     - sensu-plugins-sensu
+    - sensu-plugins-graphite
 
 - name: Configure ELB checks
   sensu_check:
