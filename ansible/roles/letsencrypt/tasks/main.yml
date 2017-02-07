@@ -1,0 +1,56 @@
+---
+
+- name: Create certificate storage directory
+  file:
+    dest: /etc/pki/collab/private
+    owner: root
+    group: mail
+    mode: 0750
+    state: directory
+
+- name: Create account key
+  command: openssl genrsa -out /etc/pki/collab/private/letsencrypt_account.key 4096
+  args:
+    creates: /etc/pki/collab/private/letsencrypt_account.key
+
+- name: Create certificate key
+  command: "openssl genrsa -out /etc/pki/collab/private/{{ certificate }}.key 4096"
+  args:
+    creates: "/etc/pki/collab/private/{{ certificate }}.key"
+  register: result
+
+- name: Generate CSR
+  command: "openssl req -new -sha256 -key /etc/pki/collab/private/{{ certificate }}.key -out /etc/pki/collab/{{ certificate }}.csr -subj /CN={{ certificate }}"
+  when: result | changed
+
+- name: Get ACME challenge
+  letsencrypt:
+    account_email: "letsencrypt@devnull.mail.umich.edu"
+    account_key: /etc/pki/collab/private/letsencrypt_account.key
+    acme_directory: https://acme-v01.api.letsencrypt.org/directory
+    challenge: dns-01
+    csr: "/etc/pki/collab/{{ certificate }}.csr"
+    dest: "/etc/pki/collab/private/{{ certificate }}.crt"
+  register: acme_data
+
+- name: You challenge me, sirrah?
+  route53:
+    command: create
+    overwrite: yes
+    wait: yes
+    zone: "{{ subd }}"
+    record: "{{ acme_data.challenge_data[certificate]['dns-01']['resource'] }}.{{ certificate }}"
+    type: TXT
+    value: "\"{{ acme_data.challenge_data[certificate]['dns-01']['resource_value'] }}\""
+    ttl: 30
+  when: acme_data | changed
+
+- name: Get certificate
+  letsencrypt:
+    account_key: /etc/pki/collab/private/letsencrypt_account.key
+    acme_directory: https://acme-v01.api.letsencrypt.org/directory
+    challenge: dns-01
+    csr: "/etc/pki/collab/{{ certificate }}.csr"
+    dest: "/etc/pki/collab/private/{{ certificate }}.crt"
+    data: "{{ acme_data }}"
+
