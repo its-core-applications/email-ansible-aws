@@ -6,6 +6,14 @@
     state: latest
   notify: Restart graphite
 
+- name: Configure graphite-api
+  copy:
+    dest: /etc/sysconfig/graphite-api
+    src: graphite-api.sysconfig
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Enable graphite-api
   systemd:
     name: graphite-api

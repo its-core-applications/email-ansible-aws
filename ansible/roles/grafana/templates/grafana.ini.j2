@@ -30,7 +30,7 @@
 ;protocol = http
 
 # The ip address to bind to, empty will bind to all interfaces
-;http_addr =
+;http_addr = 
 
 # The http port  to use
 http_port = 3001
@@ -44,7 +44,7 @@ http_port = 3001
 
 # The full public facing url you use in browser, used for redirects and emails
 # If you use reverse proxy and sub path specify full url (with sub path)
-;root_url = http://localhost:3000
+root_url = http://graphs.{{ subd }}
 
 # Log web requests
 ;router_logging = false
@@ -125,10 +125,10 @@ http_port = 3001
 #################################### Security ####################################
 [security]
 # default admin user, created on startup
-;admin_user = admin
+admin_user = root
 
 # default admin password, can be changed before first start of grafana,  or in profile settings
-;admin_password = admin
+admin_password = admin
 
 # used for signing
 ;secret_key = SW2YcwTIb9zpOOhoPsMm
@@ -159,37 +159,37 @@ http_port = 3001
 #################################### Users ####################################
 [users]
 # disable user signup / registration
-;allow_sign_up = true
+allow_sign_up = false
 
 # Allow non admin users to create organizations
-;allow_org_create = true
+allow_org_create = false
 
 # Set to true to automatically assign new users to the default organization (id 1)
-;auto_assign_org = true
+auto_assign_org = true
 
 # Default role new users will be automatically assigned (if disabled above is set to true)
-;auto_assign_org_role = Viewer
+auto_assign_org_role = Editor
 
 # Background text for the user field on the login page
 ;login_hint = email or username
 
 # Default UI theme ("dark" or "light")
-;default_theme = dark
+default_theme = dark
 
 [auth]
 # Set to true to disable (hide) the login form, useful if you use OAuth, defaults to false
-;disable_login_form = false
+;disable_login_form = true
 
 #################################### Anonymous Auth ##########################
 [auth.anonymous]
 # enable anonymous access
-;enabled = false
+enabled = true
 
 # specify organization name that should be used for unauthenticated users
-;org_name = Main Org.
+org_name = Main Org.
 
 # specify role for unauthenticated users
-;org_role = Viewer
+org_role = Viewer
 
 #################################### Github Auth ##########################
 [auth.github]
@@ -206,15 +206,15 @@ http_port = 3001
 
 #################################### Google Auth ##########################
 [auth.google]
-;enabled = false
-;allow_sign_up = true
-;client_id = some_client_id
-;client_secret = some_client_secret
-;scopes = https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
-;auth_url = https://accounts.google.com/o/oauth2/auth
-;token_url = https://accounts.google.com/o/oauth2/token
-;api_url = https://www.googleapis.com/oauth2/v1/userinfo
-;allowed_domains =
+enabled = true
+allow_sign_up = true
+client_id = {{ lookup( 'hashi_vault', 'secret=secret/google/grafana/id token={{ vault_token }}' ) }}
+client_secret = {{ lookup( 'hashi_vault', 'secret=secret/google/grafana/secret token={{ vault_token }}' ) }}
+scopes = https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
+auth_url = https://accounts.google.com/o/oauth2/auth
+token_url = https://accounts.google.com/o/oauth2/token
+api_url = https://www.googleapis.com/oauth2/v1/userinfo
+allowed_domains = {{ tld }}
 
 #################################### Generic OAuth ##########################
 [auth.generic_oauth]
@@ -276,7 +276,7 @@ http_port = 3001
 [log]
 # Either "console", "file", "syslog". Default is console and  file
 # Use space to separate multiple modes, e.g. "console file"
-;mode = console file
+mode = syslog
 
 # Either "trace", "debug", "info", "warn", "error", "critical", default is "info"
 ;level = info
@@ -315,7 +315,7 @@ http_port = 3001
 ;max_days = 7
 
 [log.syslog]
-;level =
+level = info
 
 # log line format, valid options are text, console and json
 ;format = text
@@ -325,7 +325,7 @@ http_port = 3001
 ;address =
 
 # Syslog facility. user, daemon and local0 through local7 are valid.
-;facility =
+facility = user
 
 # Syslog tag. By default, the process' argv[0] is used.
 ;tag =

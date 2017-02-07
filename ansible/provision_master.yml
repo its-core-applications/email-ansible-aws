@@ -38,6 +38,16 @@
         ttl: 60
         value: "mogo.{{ subd }}"
 
+    - name: "Set graphs.{{ subd }}"
+      route53:
+        command: "create"
+        overwrite: true
+        zone: "{{ subd }}"
+        record: "graphs.{{ subd }}"
+        type: "CNAME"
+        ttl: 60
+        value: "mogo.{{ subd }}"
+
 - include: task_wait_for_launched.yml
 
 - include: bootstrap_master.yml

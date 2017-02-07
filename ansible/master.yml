@@ -20,3 +20,4 @@
     - { role: spamassassin_master, tags: spamassassin }
     - { role: ansible_master, tags: ansible }
     - { role: dashboard, tags: dashboard }
+    - { role: grafana, tags: grafana }

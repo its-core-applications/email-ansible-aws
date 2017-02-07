@@ -14,8 +14,45 @@
     state: latest
   notify: Restart grafana
 
+- name: Configure grafana
+  template:
+    dest: /etc/grafana/grafana.ini
+    src: grafana.ini.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart grafana
+
+- name: Restore grafana.db
+  command: cp /home/email/grafana.db /var/lib/grafana
+  args:
+    creates: /var/lib/grafana/grafana.db
+  notify: Restart grafana
+
+- name: Fix permissions on grafana.db
+  file:
+    dest: /var/lib/grafana/grafana.db
+    owner: grafana
+    group: grafana
+    mode: 0644
+
 - name: Enable grafana
   systemd:
     name: grafana-server
     enabled: yes
+  notify: Restart grafana
 
+- name: "Configure a vhost for graphs.{{ subd }}"
+  template:
+    dest: "/etc/httpd/conf.d/graphs.{{ subd }}.conf"
+    src: httpd.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart httpd
+
+- name: Schedule backups of grafana.db
+  cron:
+    name: backup grafana.db
+    minute: "*/10"
+    job: "cp /var/lib/grafana/grafana.db /home/email/"

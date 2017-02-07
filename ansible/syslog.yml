@@ -8,6 +8,5 @@
     - { role: splunk_forwarder, tags: splunk_forwarder }
     - { role: carbon, tags: carbon }
     - { role: graphite, tags: graphite }
-    - { role: grafana, tags: grafana }
     - { role: sensu_server, tags: sensu }
     - { role: uchiwa, tags: uchiwa }
