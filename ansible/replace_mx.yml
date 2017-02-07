@@ -1,5 +1,7 @@
 ---
 
+- include: spinup_mx.yml
+
 - include: spindown_mx.yml
 
 - hosts: localhost
@@ -7,5 +9,3 @@
     - meta: refresh_inventory
 
 - include: deprovision_spundown.yml
-
-- include: provision_mx.yml
