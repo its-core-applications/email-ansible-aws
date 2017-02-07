@@ -19,3 +19,4 @@
     - { role: simta_master, tags: simta }
     - { role: spamassassin_master, tags: spamassassin }
     - { role: ansible_master, tags: ansible }
+    - { role: dashboard, tags: dashboard }

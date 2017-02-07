@@ -1,0 +1,14 @@
+---
+
+- name: Install httpd
+  yum:
+    pkg: httpd
+    state: latest
+  notify: Restart httpd
+
+- name: Enable httpd
+  systemd:
+    name: httpd
+    enabled: yes
+  notify: Restart httpd
+

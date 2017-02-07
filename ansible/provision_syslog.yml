@@ -79,22 +79,4 @@
         type: "A"
         ttl: 60
         value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
-    - name: "Set dashboard.{{ subd }}"
-      route53:
-        command: create
-        overwrite: true
-        zone: "{{ subd }}"
-        record: "dashboard.{{ subd }}"
-        type: A
-        ttl: 60
-        value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
-    - name: "Set dashboard-external.{{ subd }}"
-      route53:
-        command: create
-        overwrite: true
-        zone: "{{ subd }}"
-        record: "dashboard-external.{{ subd }}"
-        type: A
-        ttl: 60
-        value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_ip_address') | join(', ') }}"
 

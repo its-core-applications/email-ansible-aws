@@ -28,6 +28,17 @@
         - dummy
       register: ec2
 
+    - name: "Set dashboard.{{ subd }}"
+      route53:
+        command: "create"
+        overwrite: true
+        zone: "{{ subd }}"
+        record: "dashboard.{{ subd }}"
+        type: "CNAME"
+        ttl: 60
+        value: "mogo.{{ subd }}"
+
 - include: task_wait_for_launched.yml
 
 - include: bootstrap_master.yml
+
