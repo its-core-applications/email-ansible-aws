@@ -40,45 +40,12 @@
         port: 25
         state: drained
 
-    - name: Remove from redis cluster
-      delegate_to: localhost
-      command: "/usr/local/sbin/redis-remove {{ ec2_private_ip_address }}"
+    - include: task_spindown_redis.yml
 
     - name: Give the queue a chance to quiesce
       pause: seconds=60
 
-    - name: Stop simta
-      systemd:
-        name: simta
-        state: stopped
-
-    - name: Clean queues
-      command: /usr/sbin/simta -C
-
-    - name: Create local queue storage directory
-      delegate_to: localhost
-      file:
-        dest: /home/ec2-user/simqtmp/inbound
-        state: directory
-
-    - name: Touch lockfile
-      delegate_to: localhost
-      file:
-        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
-        state: touch
-
-    - name: Save queue
-      synchronize:
-        mode: pull
-        archive: true
-        src: /var/spool/simta/slow/
-        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}/"
-
-    - name: Remove lockfile
-      delegate_to: localhost
-      file:
-        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
-        state: absent
+    - include: task_spindown_simta.yml
 
     - name: Set class to spundown
       ec2_tag:

@@ -17,10 +17,10 @@
     - meta: refresh_inventory
       when: groups.tag_Class_egress_spindown is undefined
 
-- include: task_dns_egress.yml
-
 - hosts: tag_Class_egress_spindown
   tasks:
+    - include: task_dns_egress.yml
+
     - name: Stop sensu
       systemd:
         name: sensu-client
@@ -32,9 +32,7 @@
         port: 25
         state: drained
 
-    - name: Remove from redis cluster
-      delegate_to: localhost
-      command: "/usr/local/sbin/redis-remove {{ ec2_private_ip_address }}"
+    - include: task_spindown_redis.yml
 
     - name: Give the queue a chance to quiesce
       pause: seconds=10

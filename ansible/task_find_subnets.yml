@@ -1,0 +1,9 @@
+---
+
+- name: Gather VPC subnet facts
+  ec2_vpc_subnet_facts:
+    region: "{{ aws_region }}"
+    filters:
+      vpc-id: "{{ play_vpc | default(aws_vpc) }}"
+  register: ec2_subnets
+

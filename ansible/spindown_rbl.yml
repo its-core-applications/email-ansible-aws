@@ -17,10 +17,10 @@
     - meta: refresh_inventory
       when: groups.tag_Class_rbl_spindown is undefined
 
-- include: task_dns_rbl.yml
-
 - hosts: tag_Class_rbl_spindown
   tasks:
+    - include: task_dns_rbl.yml
+
     - name: Stop sensu
       systemd:
         name: sensu-client

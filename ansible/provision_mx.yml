@@ -4,13 +4,15 @@
   roles:
     - { role: redis_master, tags: redis }
 
-- include: task_dns_redis.yml
-
 - hosts: localhost
   connection: local
   gather_facts: false
   become: false
   tasks:
+    - include: task_dns_redis.yml
+
+    - include: task_find_subnets.yml
+
     - name: "Create MX loadbalancer(s)"
       ec2_elb_lb:
         name: "{{ item }}"

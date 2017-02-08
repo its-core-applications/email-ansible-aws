@@ -1,0 +1,35 @@
+---
+
+- name: Stop simta
+  systemd:
+    name: simta
+    state: stopped
+
+- name: Clean queues
+  command: /usr/sbin/simta -C
+
+- name: Create local queue storage directory
+  delegate_to: localhost
+  file:
+    dest: /home/ec2-user/simqtmp
+    state: directory
+
+- name: Touch lockfile
+  delegate_to: localhost
+  file:
+    dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
+    state: touch
+
+- name: Save queue
+  synchronize:
+    mode: pull
+    archive: true
+    src: /var/spool/simta/slow/
+    dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}/"
+
+- name: Remove lockfile
+  delegate_to: localhost
+  file:
+    dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
+    state: absent
+

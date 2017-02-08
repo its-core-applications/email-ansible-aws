@@ -59,6 +59,6 @@
         search_regex: OpenSSH
       with_items: "{{ eip.results }}"
 
-- include: task_dns_redis.yml
+    - include: task_dns_redis.yml
 
-- include: task_dns_egress.yml
+    - include: task_dns_egress.yml

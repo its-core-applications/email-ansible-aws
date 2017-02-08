@@ -1,0 +1,17 @@
+---
+
+- name: Remove redis tag
+  ec2_tag:
+    region: "{{ aws_region }}"
+    resource: "{{ ec2_id }}"
+    tags:
+      redis: 'no'
+
+- meta: refresh_inventory
+
+- include: task_dns_redis.yml
+
+- name: Remove from redis cluster
+  delegate_to: localhost
+  command: "/usr/local/sbin/redis-remove {{ ec2_private_ip_address }}"
+

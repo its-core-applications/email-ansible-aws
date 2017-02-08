@@ -31,5 +31,8 @@
 
 - include: rbl.yml
 
-- include: task_dns_rbl.yml
+- hosts: localhost
+  connection: local
+  tasks:
+    - include: task_dns_rbl.yml
 
