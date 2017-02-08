@@ -2,9 +2,19 @@
 
 - name: Install httpd
   yum:
-    pkg: httpd
+    pkg: "{{ item }}"
     state: latest
   notify: Restart httpd
+  with_items:
+    - httpd
+    - mod_ssl
+
+- name: Remove unwanted config files
+  file:
+    dest: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/httpd/conf.d/welcome.conf
 
 - name: Enable httpd
   systemd:
