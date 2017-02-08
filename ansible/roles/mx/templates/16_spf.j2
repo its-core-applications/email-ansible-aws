@@ -1,0 +1,14 @@
+#!/bin/dash
+
+if [ "x${SIMTA_SMTP_MAIL_FROM##*@}" != 'x{{ tld }}' ]; then
+    : # No enforcement for other domains
+elif ! simrbl -q -l mx-accept.dnsal "$SIMTA_REMOTE_IP"; then
+    : # Safeguard in case we broke SPF
+elif [ "x$SIMTA_SPF_RESULT" != 'xpass' ]; then
+    if [ "x$SIMTA_SPF_RESULT" = 'xtemperror' -o \
+         "x$SIMTA_SPF_RESULT" = 'xpermerror' ]; then
+        log "16_spf: want to tempfail"
+    else
+        log "16_spf: want to reject"
+    fi
+fi

@@ -39,5 +39,6 @@
     group: root
     mode: 0755
   with_items:
+    - 16_spf
     - 70_pb
 
