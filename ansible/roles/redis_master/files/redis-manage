@@ -15,7 +15,7 @@ for rhost in "${rhosts[@]}"; do
         echo "$rhost is down"
         downhosts+=( $rhost )
     else
-        redis-cli -h $rhost CLUSTER INFO | grep -q 'cluster_known_nodes:1'
+        redis-cli -h $rhost CLUSTER INFO | grep -wq 'cluster_known_nodes:1'
         if [[ $? -eq 0 ]]; then
             echo "$rhost is lonesome"
             badhosts+=( $rhost )
