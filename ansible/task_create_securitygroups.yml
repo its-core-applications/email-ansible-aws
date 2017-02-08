@@ -191,6 +191,7 @@
         name: rsyslog
         description: rsyslog hosts
         rules:
+        # Remote syslog using RELP
           - proto: tcp
             from_port: 2514
             to_port: 2514
@@ -199,6 +200,7 @@
             from_port: 2514
             to_port: 2514
             cidr_ip: "{{ aws_subnet }}"
+        # RabbitMQ for sensu pub/sub
           - proto: tcp
             from_port: 5672
             to_port: 5672
@@ -207,13 +209,20 @@
             from_port: 5672
             to_port: 5672
             cidr_ip: "{{ aws_subnet }}"
+        # graphite-api
           - proto: tcp
             from_port: 8888
             to_port: 8888
             cidr_ip: "{{ aws_subnet }}"
+        # uchiwa
           - proto: tcp
             from_port: 3000
             to_port: 3000
+            cidr_ip: "{{ aws_subnet }}"
+        # sensu API
+          - proto: tcp
+            from_port: 4567
+            to_port: 4567
             cidr_ip: "{{ aws_subnet }}"
 
     - name: Create security group for EFS
