@@ -3,3 +3,6 @@
 dependencies:
   - role: httpd
     tags: httpd
+  - role: letsencrypt
+    tags: certificate
+    certificate: dashboard.{{ subd }}
