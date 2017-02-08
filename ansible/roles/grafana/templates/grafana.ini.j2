@@ -168,7 +168,7 @@ allow_org_create = false
 auto_assign_org = true
 
 # Default role new users will be automatically assigned (if disabled above is set to true)
-auto_assign_org_role = Editor
+auto_assign_org_role = Viewer
 
 # Background text for the user field on the login page
 ;login_hint = email or username
@@ -178,12 +178,12 @@ default_theme = dark
 
 [auth]
 # Set to true to disable (hide) the login form, useful if you use OAuth, defaults to false
-;disable_login_form = true
+disable_login_form = true
 
 #################################### Anonymous Auth ##########################
 [auth.anonymous]
 # enable anonymous access
-enabled = true
+;enabled = true
 
 # specify organization name that should be used for unauthenticated users
 org_name = Main Org.
