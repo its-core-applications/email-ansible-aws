@@ -15,7 +15,6 @@
         region: "{{ aws_region }}"
         image: "{{ find_ami.results.0.ami_id }}"
         instance_profile_name: master
-        termination_protection: yes
         instance_tags:
           Class: master
           Status: master
