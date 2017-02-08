@@ -10,3 +10,10 @@
     - mx
     - egress
 
+- name: Schedule deprovisioning of spundown hosts
+  cron:
+    name: "ansible-deprovision"
+    user: ec2-user
+    minute: "13,28,43,58"
+    job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/deprovision_spundown.yml &>/dev/null"
+
