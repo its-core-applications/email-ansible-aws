@@ -2,13 +2,29 @@
 
 if [ "x${SIMTA_SMTP_MAIL_FROM##*@}" != 'x{{ tld }}' ]; then
     : # No enforcement for other domains
-elif ! simrbl -q -l mx-accept.dnsal "$SIMTA_REMOTE_IP"; then
-    : # Safeguard in case we broke SPF
 elif [ "x$SIMTA_SPF_RESULT" != 'xpass' ]; then
-    if [ "x$SIMTA_SPF_RESULT" = 'xtemperror' -o \
-         "x$SIMTA_SPF_RESULT" = 'xpermerror' ]; then
-        log "16_spf: want to tempfail"
+    allow=$(simrbl -l mx-accept.dnsal umnetworks.dnsal "$SIMTA_REMOTE_IP")
+    if [ $? -eq 1 ]; then
+        allow=${allow#found in }
+        allow=${allow%%:*}
+    fi
+
+    if [ "x$allow" = 'xmx-accept.dnsal' ]; then
+        # Safeguard in case we broke SPF
+        log "16_spf: hit mx-accept guardrail with $SIMTA_REMOTE_IP"
+    elif [ "x$SIMTA_SPF_RESULT" = 'xtemperror' ]; then
+        # Temporary SPF problem, e.g. DNS timeout
+        log "16_spf: want to tempfail $SIMTA_REMOTE_IP"
+        #filter_exit $MESSAGE_TEMPFAIL
+    elif [ "x$allow" = 'xumnetworks.dnsal' ]; then
+        # Local IP not listed in SPF, should ideally be dealt with
+        log "16_spf: needs-review local IP $SIMTA_REMOTE_IP"
+    elif [ "x$SIMTA_SPF_RESULT" = 'xpermerror' ]; then
+        # "Permanent" SPF problem, e.g. syntax
+        log "16_spf: want to tempfail $SIMTA_REMOTE_IP"
+        #filter_exit $MESSAGE_TEMPFAIL
     else
-        log "16_spf: want to reject"
+        log "16_spf: want to reject $SIMTA_REMOTE_IP"
+        #filter_exit $MESSAGE_REJECT
     fi
 fi
