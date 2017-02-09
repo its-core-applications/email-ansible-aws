@@ -1,13 +1,13 @@
 [cache]
 STORAGE_DIR    = /var/lib/carbon/
 LOCAL_DATA_DIR = /var/lib/carbon/whisper/
-WHITELISTS_DIR = /etc/carbon/
+WHITELISTS_DIR = /var/lib/carbon/lists/
 CONF_DIR       = /etc/carbon/
 LOG_DIR        = /var/log/carbon/
 PID_DIR        = /var/run/
 
 DATABASE = whisper
-USE_WHITELISTS = True
+USE_WHITELIST = True
 ENABLE_LOGROTATION = False
 USER = carbon
 MAX_CACHE_SIZE = inf
@@ -42,14 +42,14 @@ WHISPER_FALLOCATE_CREATE = True
 [aggregator]
 STORAGE_DIR    = /var/lib/carbon/
 LOCAL_DATA_DIR = /var/lib/carbon/whisper/
-WHITELISTS_DIR = /etc/carbon/
+WHITELISTS_DIR = /var/lib/carbon/lists/
 CONF_DIR       = /etc/carbon/
 LOG_DIR        = /var/log/carbon/
 PID_DIR        = /var/run/
 
 USER = carbon
 
-USE_WHITELISTS = True
+USE_WHITELIST = True
 
 LINE_RECEIVER_INTERFACE = 127.0.0.1
 LINE_RECEIVER_PORT = 2003
