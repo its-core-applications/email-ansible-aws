@@ -13,7 +13,7 @@
       when:
         - ec2_launch_time == groups.tag_Class_mx | intersect(groups[ec2_placement]) | map('extract', hostvars, 'ec2_launch_time') | sort | first
         - groups.tag_Class_mx_spindown is undefined or groups.tag_Class_mx_spindown | intersect(groups[ec2_placement]) | length == 0
-        - groups.tag_Class_mx | intersect(groups[ec2_placement]) | length > 1
+        - groups.tag_Class_mx | intersect(groups[ec2_placement]) | length > 2
 
     - meta: refresh_inventory
       when: groups.tag_Class_mx_spindown is undefined or groups.tag_Class_mx_spindown | intersect(groups[ec2_placement]) | length == 0
