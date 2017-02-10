@@ -3,7 +3,7 @@
 if [ "x${SIMTA_SMTP_MAIL_FROM##*@}" != 'x{{ tld }}' ]; then
     : # No enforcement for other domains
 elif [ "x$SIMTA_SPF_RESULT" != 'xpass' ]; then
-    allow=$(simrbl -l mx-accept.dnsal umnetworks.dnsal "$SIMTA_REMOTE_IP")
+    allow=$(simrbl -l mx-accept.dnsal -l umnetworks.dnsal "$SIMTA_REMOTE_IP")
     if [ $? -eq 1 ]; then
         allow=${allow#found in }
         allow=${allow%%:*}
