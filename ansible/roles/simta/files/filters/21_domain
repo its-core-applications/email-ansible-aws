@@ -1,0 +1,17 @@
+#!/bin/dash
+# deny based on recipient domain
+
+allow=0
+deny=/etc/mail/deny.domain
+
+if [ -s $deny ] && check_tfile; then
+    for rcpt in $(sed -n '/^R/s/^.*@//p' $SIMTA_TFILE | sort -u); do
+	domain=$(echo $rcpt | fgrep -i -o -f $deny)
+	allow=$(( $allow + $? ))
+    done
+    if [ $allow -eq 0 ]; then
+	log "21_domain: $deny matched $domain"
+	filter_exit ${MESSAGE_REJECT}
+    fi
+fi
+

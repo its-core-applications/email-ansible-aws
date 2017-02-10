@@ -1,0 +1,29 @@
+#!/bin/bash
+# report if we're not in runlevel 3 or higher
+
+if [[ -z $outofservice ]]; then
+    runlevel=$(who -r | awk '{print $2}')
+    if [[ $runlevel -le 2 ]]; then
+        [[ $errlvl -lt $LEVEL_ERROR ]] && errlvl=$LEVEL_ERROR
+        echo "${host} not in a service run-level:" >> $tmpfile
+        who -r >> $tmpfile
+        echo >> $tmpfile
+    else
+        # if we are in runlevel 3 or higher, check running services
+	# this is RHEL-dependent code
+        if [[ $rcignores ]]; then
+            filter="sed /^\($(echo ${rcignores[@]} | sed 's/ /\\|^/g')\)\W/d"
+        else
+            filter=cat
+        fi
+        systemctl -l --failed --no-legend | $filter > $tmpdir/$modname
+        if [[ -s $tmpdir/$modname ]]; then
+            [[ $errlvl -lt $LEVEL_ERROR ]] && errlvl=$LEVEL_ERROR
+            echo "runlevel errors:" >> $tmpfile
+            echo >> $tmpfile
+            cat $tmpdir/$modname >> $tmpfile
+            echo >> $tmpfile
+        fi
+    fi
+fi
+

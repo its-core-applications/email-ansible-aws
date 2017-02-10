@@ -1,0 +1,13 @@
+#!/bin/dash
+# deny based on string in message
+
+deny=/etc/mail/deny.string
+
+if [ -s $deny ] && check_dfile; then
+    str=$(fgrep -o -f $deny $SIMTA_DFILE)
+    if [ $? -eq 0 ]; then
+        log "40_string: $deny matched $str"
+	filter_exit ${MESSAGE_TEMPFAIL}
+    fi
+fi
+

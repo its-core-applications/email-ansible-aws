@@ -1,0 +1,48 @@
+#!/bin/bash
+# watchdog script
+
+name=watchdog
+hour=$(date +%H)
+confdir=/usr/local/collaboration/report
+noupdate=/var/radmind/client/.CheckedOut
+
+LEVEL_DEBUG=0
+LEVEL_INFO=1
+LEVEL_WARN=2
+LEVEL_ERROR=3
+
+errlvl=$LEVEL_INFO
+
+# process to discard from cpucheck
+cpuignores=()
+# process to discard from vmcheck
+vmignores=()
+# rc scripts to ignore when checking runlevel
+rcignores=()
+
+. /usr/local/collaboration/nag/psnag-functions
+. /usr/libexec/comint/setup
+
+for module in $(find $confdir/watchdog.d -type f | sort); do
+    modname=$(basename $module | sed -re 's/^[0-9]+//')
+
+    # each module can be bitmasked for days you want to be notified
+    # 0=Sun, 1=Mon, etc.  default value 127 = every day
+    eval mask=\${${modname}mask:-127}
+
+    if [[ $(( 2 ** $(date +%w) & $mask )) -ne 0 ]]; then
+	. $module
+    fi
+done
+
+if [[ -s $tmpfile ]]; then
+    if [[ $errlvl -eq $LEVEL_ERROR ]]; then
+        cat $tmpfile | eval ${notifycmd_error} ${notifywho_error}
+    elif [[ $errlvl -eq $LEVEL_WARN ]]; then
+        cat $tmpfile | eval ${notifycmd_warn} ${notifywho_warn}
+    else
+        cat $tmpfile | eval ${notifycmd_info} ${notifywho_info}
+    fi
+fi
+
+cleanup

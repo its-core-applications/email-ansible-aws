@@ -1,0 +1,8 @@
+---
+
+dependencies:
+  - { role: s3repo, tags: s3repo }
+  - { role: comint, tags: comint }
+  - role: certificate
+    certificate: "{{ simta_config }}.{{ tld }}"
+    tags: certificate

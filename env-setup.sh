@@ -9,7 +9,6 @@ hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
 export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
 export ANSIBLE_PRIVATE_KEY_FILE=$hacking_dir/id_rsa
 export ANSIBLE_INVENTORY=$hacking_dir/inventory
-export ANSIBLE_ROLES_PATH=$hacking_dir/ansible/common/roles
 
 # Set up Vault
 export VAULT_ADDR='http://127.0.0.1:8200'

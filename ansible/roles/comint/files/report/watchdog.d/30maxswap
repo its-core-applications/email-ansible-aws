@@ -1,0 +1,10 @@
+#!/bin/bash
+# check for swap use
+
+swapuse ${maxswap:-50} > $tmpdir/$modname
+if [[ -s $tmpdir/$modname ]]; then
+    echo "over ${maxswap:-50}% of RAM in swap:" >> $tmpfile
+    cat $tmpdir/$modname >> $tmpfile
+    echo >> $tmpfile
+fi
+

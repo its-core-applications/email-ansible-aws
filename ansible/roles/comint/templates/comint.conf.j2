@@ -1,0 +1,21 @@
+#!/bin/bash
+# comint.conf
+# generic setup for notifications
+
+notify_date=$(date +%F)
+notify_replyto=its.collaboration.services@umich.edu
+
+notifycmd_email="env MAILRC=/dev/null replyto=\$notify_replyto /usr/bin/cronmail \"\${host}: [_TAG_] \$name \$notify_type \$notify_date\""
+notifycmd_page="/usr/bin/snsnotify -r us-west-2"
+
+notifycmd_error=${notifycmd_email/_TAG_/CRITICAL}
+notifywho_error=blackops.root@umich.edu
+
+notifycmd_warn=${notifycmd_email/_TAG_/WARNING}
+notifywho_warn=blackops.root@umich.edu
+
+notifycmd_info=${notifycmd_email/_TAG_/INFO}
+notifywho_info=blackops.root@umich.edu
+
+notifycmd_debug=${notifycmd_email/_TAG_/DEBUG}
+notifywho_debug=blackops.root@umich.edu

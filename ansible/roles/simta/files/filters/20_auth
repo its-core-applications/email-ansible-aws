@@ -1,0 +1,13 @@
+#!/bin/dash
+# deny based on authenticated user
+
+deny=/etc/mail/deny.auth
+
+if [ -s $deny ] && check_env \$SIMTA_AUTH_ID; then
+    from=$(echo $SIMTA_AUTH_ID | fgrep -i -x -o -f $deny)
+    if [ $? -eq 0 ]; then
+	log "20_auth: $deny matched $from"
+	filter_exit ${MESSAGE_REJECT}
+    fi
+fi
+

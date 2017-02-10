@@ -1,6 +1,3 @@
-[submodule "ansible-common"]
-	path = ansible/common
-	url = git@mogo.a.mail.umich.edu:ansible/ansible-common
 [submodule "git/ansible.git"]
 	path = git/ansible.git
 	url = git://github.com/ansible/ansible.git

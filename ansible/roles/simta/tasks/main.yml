@@ -1,0 +1,168 @@
+---
+
+- name: Install simta
+  yum: name=simta-{{ simta_version }} state=present
+  notify: Restart simta
+
+- name: Install auxiliary packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - simta-mscan
+    - simta-admin
+    - simvacation
+
+- name: Create directories
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - /etc/mail
+    - /etc/mail/filters
+
+- name: Install standard filters
+  copy:
+    dest: /etc/mail/filters/{{ item }}
+    src: "filters/{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - 19_dropfrom
+    - 20_auth
+    - 20_from
+    - 21_domain
+    - 21_to
+    - 21_ubl
+    - 30_nsrecord
+    - 40_string
+    - 75_load
+
+- name: Configure simta
+  template:
+    dest: /etc/simta.conf
+    src: simta.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart simta
+
+- name: Install /etc/mail/aliases
+  copy:
+    dest: /etc/mail/aliases
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_first_found:
+    - aliases-{{ simta_config }}
+    - aliases
+  notify: Rebuild aliases
+  tags: mutable
+
+- name: Install /etc/hosts.allow
+  copy: dest=/etc/hosts.allow src={{ item }} owner=collaborate group=collaboration mode=0664
+  when: simta_tcpwrappers
+  with_first_found:
+    - hosts.allow-{{ simta_config }}
+    - hosts.allow
+  tags: mutable
+
+- name: Install /etc/hosts.deny
+  copy: dest=/etc/hosts.deny src={{ item }} owner=collaborate group=collaboration mode=0664
+  when: simta_tcpwrappers
+  with_first_found:
+    - hosts.deny-{{ simta_config }}
+    - hosts.deny
+  tags: mutable
+
+- name: Install the public suffix list
+  get_url:
+    dest: /etc/mail/public_suffix_list.dat
+    url: https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+  notify: Restart simta
+  tags: mutable
+
+- name: Create /etc/mail/ldap
+  file:
+    dest: /etc/mail/ldap
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: simta_ldap
+
+- name: Configure OpenLDAP defaults
+  copy:
+    dest: /etc/openldap/ldap.conf
+    src: ldap.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: simta_ldap
+
+- name: "Install LDAP config file for {{ tld }}"
+  template:
+    dest: "/etc/mail/ldap/{{ tld }}"
+    src: ldap/tld.j2
+    owner: root
+    group: root
+    mode: 0644
+  when: simta_ldap
+
+- name: Install LDAP config files for subdomains
+  template:
+    dest: "/etc/mail/ldap/{{ item }}.{{ tld }}"
+    src: ldap/subdomain.j2
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ simta_ldap_domains }}"
+  when: simta_ldap
+
+- name: Configure simvacation
+  template:
+    dest: /etc/mail/simvacation.conf
+    src: simvacation.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+  when: simta_ldap
+
+- name: Enable simta
+  systemd:
+    name: simta
+    daemon_reload: true
+    enabled: yes
+
+- name: Install local monitoring scripts
+  copy:
+    dest: "/usr/local/collaboration/{{ item }}"
+    src: "{{ item }}"
+    owner: collaborate
+    group: collaboration
+    mode: 0755
+  with_items:
+    - check-simta-expansion
+    - check-simta-queue
+    - check-simta-queue-ownership
+    - check-simta-queue-age
+    - check-simta-queue-jailed
+    - metrics-simta
+
+- name: Install templated monitoring scripts
+  template:
+    dest: "/usr/local/collaboration/{{ item }}"
+    src: "{{ item }}.j2"
+    owner: collaborate
+    group: collaboration
+    mode: 0755
+  with_items:
+    - check-dnsbl
+

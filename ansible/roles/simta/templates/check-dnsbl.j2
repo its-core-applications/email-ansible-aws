@@ -1,0 +1,44 @@
+#!/bin/bash
+
+while getopts i: opt; do
+    case $opt in
+    i)  ip=$OPTARG
+        ;;
+    esac
+done
+
+[[ $ip ]] || ip=$(curl -fs http://169.254.169.254/latest/meta-data/public-ipv4)
+if [[ -z $ip ]]; then
+    echo "No IP to check."
+    exit 3
+fi
+
+lists=()
+
+for bl in \
+    b.barracudacentral.org \
+    bl.spamcop.net \
+    cbl.abuseat.org \
+    ips.backscatterer.org \
+    pbl.dnsbl \
+    sbl.dnsbl \
+    sip.dnsbl \
+    sip24.dnsbl \
+    xbl.dnsbl \
+    {{ trendmicro_key }}.q.mail-abuse.com \
+    {{ trendmicro_key }}.r.mail-abuse.com
+do
+{# bash array syntax conflicts with Jinja2 comments #}{% raw %}
+    if ! simrbl -q -l $bl $ip ; then
+        lists[${#lists[@]}]=$bl
+    fi
+done
+
+if [[ ${#lists[@]} -gt 0 ]]; then
+    echo "$ip is listed on ${lists[@]}"
+    exit 2
+fi
+
+echo "$ip is clean"
+exit 0
+{% endraw %}

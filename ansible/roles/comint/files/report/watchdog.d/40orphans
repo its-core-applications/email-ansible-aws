@@ -1,0 +1,13 @@
+#!/bin/bash
+# roadkill orphans
+
+if [ ${#orphans_opt} -gt 0 ]; then
+    roadkill $orphans_opt > $tmpdir/$modname
+    if [[ -s $tmpdir/$modname ]]; then
+        [[ $errlvl -lt $LEVEL_WARN ]] && errlvl=$LEVEL_WARN
+	echo "orphaned processes:" >> $tmpfile
+	cat $tmpdir/$modname >> $tmpfile
+	echo >> $tmpfile
+    fi
+fi
+

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+while getopts g:t: opt; do
+    case $opt in
+    g)  group=$OPTARG
+        ;;
+    t)  terminal=$OPTARG
+        ;;
+    esac
+done
+
+expanded=$(simexpander /etc/simta.conf $group | awk '/^Terminal:/{print $NF}')
+echo "$group expanded to '$expanded'"
+[[ $expanded != $terminal ]] && exit 2
+
+exit 0

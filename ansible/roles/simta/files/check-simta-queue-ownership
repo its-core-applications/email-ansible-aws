@@ -1,0 +1,13 @@
+#!/bin/bash
+
+base=/var/spool/simta
+
+unowned=$(find $base -ignore_readdir_race -type f \! -user simta -print 2>/dev/null | wc -l)
+if [[ $unowned -gt 0 ]]; then
+    echo "$unowned files not owned by simta"
+    exit 2
+fi
+
+echo "All files owned by simta"
+exit 0
+

@@ -1,0 +1,22 @@
+---
+
+- name: Create the collaboration group
+  group:
+    name: collaboration
+    gid: 1206
+    state: present
+  tags:
+    - configuration
+    - identity_management
+
+- name: Create the collaborate user
+  user:
+    name: collaborate
+    uid: 1000537
+    group: collaboration
+    state: present
+    home: /usr/local/collaboration
+    createhome: yes
+  tags:
+    - configuration
+    - identity_management

@@ -1,0 +1,148 @@
+# simta.conf for {{ simta_config }}
+{% if simta_bitbucket %}
+BITBUCKET   50
+{% endif %}
+
+{% if simta_relay %}
+SMTP_MODE   GLOBAL_RELAY
+{% else %}
+SMTP_MODE   NORMAL
+{% endif %}
+
+IPV6        OFF
+{% if simta_loadbalanced %}
+PROXY       ON
+{% endif %}
+
+ALIAS_FILE  /etc/mail/aliases
+ALIAS_DB    /etc/mail/aliases.db
+
+{% if simta_authn %}
+AUTHN       SASL
+AUTHZ_DNS   DENY    ubl.dnsbl
+
+{% endif %}
+{% if simta_relay %}
+RDNS_CHECK          RELAXED
+SENDER_CHECKING     OFF
+SPF                 OFF
+DKIM_VERIFY         OFF
+DMARC               OFF
+AUTHN_RESULTS       OFF
+{% else %}
+RDNS_CHECK          CHILLAXED
+PUBLICSUFFIX_FILE   /etc/mail/public_suffix_list.dat
+{% endif %}
+{% if simta_dkim %}
+DKIM_SIGN           {{ simta_dkim_level }}
+DKIM_DOMAIN         {{ tld }}
+DKIM_SELECTOR       {{ simta_dkim_selector }}
+DKIM_KEY            /etc/pki/collab/private/{{ simta_dkim_selector }}._domainkey.{{ tld }}.key
+
+{% endif %}
+{% if simta_msa %}
+
+SUBMISSION_MODE     MSA
+
+{% endif %}
+TLS                 ON
+TLS_CA_FILE         /etc/pki/tls/certs/ca-bundle.crt
+TLS_CERT            /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.crt
+TLS_CERT_KEY        /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.key
+
+{% if simta_relay == false %}
+AUTHN       HONEYPOT
+
+RBL_TRUST   mx-trust.dnsal
+RBL_ACCEPT  mx-accept.dnsal
+RBL_BLOCK   mx-deny.dnsbl {{ simta_spambusters }}
+
+{% for rbl in simta_rbls %}
+{%- if simta_ldap %}
+USER_
+{%- endif %}
+RBL_BLOCK {{ rbl.rjust( 12 ) }} {{ simta_spambusters }}
+{% endfor %}
+
+{% endif %}
+CONNECTION_LIMIT                    {{ simta_connlimit }}
+{% if simta_loadbalanced == false %}
+CONNECTION_LIMIT_PER_HOST           {{ simta_connlimit // 10 }}
+{% endif %}
+MAX_MESSAGE_SIZE                    104857600
+{% if simta_relay == false %}
+MAX_FAILED_RCPTS                    3
+{% endif %}
+MAX_Q_RUNNERS_RECEIVE               5
+AGGRESSIVE_RECEIPT                  25
+RECEIVE_ACCEPTED_MESSAGE_TIMER      5
+RECEIVE_GLOBAL_SESSION_TIMEOUT      3600
+RECEIVE_COMMAND_INACTIVITY_TIMEOUT  600
+RECEIVE_DATA_LINE_TIMEOUT           300
+{% if simta_egress == false %}
+DELIVER_DATA_LINE_TIMEOUT           60
+DELIVER_DATA_SESSION_TIMEOUT        300
+DELIVER_MESSAGES_PER_CONNECTION     25
+{% endif %}
+
+CHECKSUM_ALGORITHM  sha1
+CONTENT_FILTER      /usr/sbin/simta-mscan
+
+{% if simta_egress == false %}
+DELIVER_TLS             REQUIRED
+RECEIVE_QUEUE_STRATEGY  PUNT
+PUNT                    egress.{{ subd }}
+
+SUBADDRESS_SEPARATOR    +
+{% endif %}
+
+{% if simta_ldap %}
+@{{ tld.ljust( 30 ) }} {{ simta_ldap_red }} LDAP    /etc/mail/ldap/{{ tld }}
+{% for domain in simta_ldap_domains %}
+@{{ ([ domain, '.', tld ]|join).ljust( 30 ) }} {{ simta_ldap_red }} LDAP    /etc/mail/ldap/{{ domain }}.{{ tld }}
+{% endfor %}
+@{{ simta_vacationhost.ljust( 30 ) }} R  LDAP    /etc/mail/ldap/{{ tld }}
+@{{ simta_vacationhost.ljust( 30 ) }} D  MAILER  /usr/bin/simvacation -r 3 -f $S $R
+{% endif %}
+
+{% if simta_local_domains is defined %}
+DEFAULT_LOCAL_MAILER /usr/libexec/simta/simda $R /usr/bin/procmail -f $S
+
+{% for domain in simta_local_domains %}
+@{{ domain.ljust( 30 ) }} RE ALIAS
+@{{ domain.ljust( 30 ) }} RE PASSWORD
+@{{ domain.ljust( 30 ) }} D  MAILER DEFAULT
+{% endfor %}
+
+{% endif %}
+{% if simta_egress %}
+DELIVER_QUEUE_STRATEGY              SHUFFLE
+DELIVER_MESSAGES_PER_CONNECTION     50
+
+{% if simta_important_domains is defined %}
+# Peg important domains at five minutes
+{% for domain in simta_important_domains %}
+@{{ domain.ljust( 30 ) }} D  QUEUE_WAIT 300 300
+{% endfor %}
+
+{% endif %}
+{% endif %}
+{% if simta_srs %}
+SRS_SECRET                      {{ simta_srs_secret }}
+SRS_DOMAIN                      {{ simta_srs_domain }}
+SRS                             FOREIGN
+@{{ simta_srs_domain.ljust(30) }} RE SRS
+
+{% endif %}
+{% if simta_devnull_domains is defined %}
+{% for domain in simta_devnull_domains %}
+@{{ domain.ljust( 30 ) }} R  ACCEPT
+@{{ domain.ljust( 30 ) }} D  MAILER  /bin/true
+{% endfor %}
+{% endif %}
+{% if simta_egress %}
+# Require TLS for pre-tested high-ish volume domains
+{% for domain in simta_tls_domains %}
+@{{ domain.ljust( 30 ) }} D  TLS REQUIRED
+{% endfor %}
+{% endif %}

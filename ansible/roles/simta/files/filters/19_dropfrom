@@ -1,0 +1,21 @@
+#!/bin/dash
+# delete based on envelope from
+
+deny=/etc/mail/drop.from
+auth=/etc/mail/deny.auth
+
+if [ -s $deny ] && check_env \$SIMTA_SMTP_MAIL_FROM; then
+    from=$(fgrep -i -x -o $SIMTA_SMTP_MAIL_FROM $deny)
+    if [ $? -eq 0 ]; then
+	log "19_dropfrom: $deny matched $from"
+	if [ -s $auth ] && check_env \$SIMTA_AUTH_ID; then
+	    fgrep -xq $SIMTA_AUTH_ID $auth
+	    if [ $? -ne 0 ]; then
+		echo $SIMTA_AUTH_ID >> $auth
+		log "19_dropfrom: added $SIMTA_AUTH_ID to $auth"
+	    fi
+	fi
+	filter_exit ${MESSAGE_DELETE}
+    fi
+fi
+

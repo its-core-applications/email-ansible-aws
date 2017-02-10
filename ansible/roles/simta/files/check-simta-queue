@@ -1,0 +1,31 @@
+#!/bin/bash
+
+base=/var/spool/simta
+critical=1000
+warn=500
+
+while getopts c:q:w: opt; do
+    case $opt in
+    c)  critical=$OPTARG
+        ;;
+    w)  warn=$OPTARG
+        ;;
+    q)  queue=${base}/$OPTARG
+        ;;
+    esac
+done
+
+if [[ ! -d $queue ]]; then
+    echo "No queue directory: $queue"
+    exit 2
+fi
+
+qcount=$(find $queue -ignore_readdir_race -type f -name 'E*' 2>/dev/null | wc -l)
+echo "$qcount messages in $queue"
+if [[ $qcount -gt $critical ]]; then
+    exit 2
+elif [[ $qcount -gt $warn ]]; then
+    exit 1
+fi
+
+exit 0

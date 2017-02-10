@@ -1,0 +1,13 @@
+#!/bin/dash
+# deny based on envelope from
+
+deny=/etc/mail/deny.from
+
+if [ -s $deny ] && check_env \$SIMTA_SMTP_MAIL_FROM; then
+    from=$(fgrep -i -x -o $SIMTA_SMTP_MAIL_FROM $deny)
+    if [ $? -eq 0 ]; then
+	log "20_from: $deny matched $from"
+	filter_exit ${MESSAGE_REJECT}
+    fi
+fi
+

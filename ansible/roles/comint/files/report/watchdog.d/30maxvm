@@ -1,0 +1,11 @@
+#!/bin/bash
+# check for processes approaching max vm limit
+
+vmdiscard=`echo ${vmignores[@]} |sed 's/ /|/g'`
+vmcheck ${maxvm:-1000000} ${vmtime:-100} |egrep -vw "${vmdiscard:-foobar}" > $tmpdir/$modname
+if [[ -s $tmpdir/$modname ]]; then
+    echo "processes over maxvm:" >> $tmpfile
+    cat $tmpdir/$modname >> $tmpfile
+    echo >> $tmpfile
+fi
+

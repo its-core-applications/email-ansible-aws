@@ -1,0 +1,37 @@
+#!/bin/bash
+# Dispatch to find old connections in the simta fast queue
+
+name=old_connection
+
+logs='/var/log/maillog'
+
+confdir=/usr/local/collaboration/dispatch
+. /usr/libexec/comint/setup
+
+files=$(find /var/spool/simta/fast -ignore_readdir_race -mmin +${fastqage:-120} -name D\*)
+pids=$(echo "$files" | awk -F. '{print $NF}' | sort -u)
+
+for pid in $pids; do
+    ip=$(lsof -n -i TCP | grep smtp | \
+        awk '$2 == '$pid' { gsub(/.*>|:.*/, ""); print }')
+    [[ $ip ]] || continue
+
+    rev=$(dig +noall +answer -x $ip | awk '{print $NF}')
+
+    dispatch="${dispatch}Old connection ${pid} to ${ip} (${rev})"
+
+    success=$(grep "\\[${pid}.*\\[${ip}\\].* Success" $logs | tail -1)
+    [[ $success ]] || dispatch="${dispatch}\n\n\n"
+    [[ $success ]] || continue
+
+    tid=$(echo "$success" | awk '{ gsub(/.*simta\[|\]:.*/, ""); print }')
+
+    dispatch="${dispatch}\n\n${success}\n[...]\n"
+    dispatch="${dispatch}$(grep \\\[${tid}\\\] $logs | tail -1)\n\n\n"
+done
+
+[[ $files ]] && dispatch="${dispatch}\n$(ls -lh $files)"
+
+echo -en "$dispatch" | eval $notifycmd_info $notifywho_info
+
+cleanup

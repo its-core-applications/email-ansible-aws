@@ -1,0 +1,18 @@
+#!/bin/bash
+
+prefix=$(hostname)
+ts=$(date +%s)
+
+simc -q &>/dev/null
+
+ss -na -o '( sport = :25 or sport = :465 or sport = :587 )' | awk 'NR > 2 { sockstate[$2]++ } END{ for (state in sockstate) print tolower(state), sockstate[state]; }' | while read state count; do
+    echo ${prefix}.simta.sockets.$state $count $ts
+done
+
+cat /var/spool/simta/etc/queue_schedule | awk 'NR > 5 && $2 > 5 { gsub(/\./, "_", $3); print $2, $3 }' | while read count queue; do
+    echo ${prefix}.simta.queue.host.$queue $count $ts
+done
+
+for q in slow fast local; do
+    echo ${prefix}.simta.queue.${q} $(find /var/spool/simta/$q -ignore_readdir_race -type f -name 'E*' 2>/dev/null | wc -l) $ts
+done

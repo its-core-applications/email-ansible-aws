@@ -1,0 +1,5 @@
+---
+
+dependencies:
+  - { role: s3repo, tags: s3repo }
+  - { role: user_accounts, tags: user_accounts }

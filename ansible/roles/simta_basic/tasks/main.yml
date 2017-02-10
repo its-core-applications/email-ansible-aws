@@ -1,0 +1,52 @@
+---
+
+- name: Install simta
+  yum: name=simta state=latest
+  notify: Restart simta
+
+- name: Install auxiliary packages
+  yum: name={{ item }} state=present
+  with_items:
+    - simta-admin
+
+- name: Create directories
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - /etc/mail
+
+- name: Configure simta
+  copy:
+    dest: /etc/simta.conf
+    src: simta.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart simta
+
+- name: Install /etc/mail/aliases
+  copy:
+    dest: /etc/mail/aliases
+    src: aliases
+    owner: root
+    group: root
+    mode: 0644
+  notify: Rebuild aliases
+  tags: mutable
+
+- name: Enable simta
+  systemd:
+    name: simta
+    daemon_reload: true
+    enabled: yes
+
+- name: Install local monitoring scripts
+  copy: dest=/usr/local/collaboration/{{ item }} src={{ item }} owner=collaborate group=collaboration mode=0755
+  with_items:
+    - nag/simqnag
+    - dispatch/simqc
+    - dispatch/old_connection

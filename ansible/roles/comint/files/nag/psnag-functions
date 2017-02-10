@@ -1,0 +1,58 @@
+# functions common to watchdog/psnag
+
+# Convert ddd-hh:mm:ss format (of $2) into total number of seconds
+fixtime() {
+    awk '{
+	ts=$2
+	# sub() would be nice here, if \& substitution actually worked.
+	if ( ts ~ /^[0-9][0-9]:[0-9][0-9]$/ ) { ts = ("00:" ts); };
+	if ( ts ~ /^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]$/ ) { ts = ("0-" ts); };
+	c=split(ts, ta, /:|-/);
+	if ( c != 4 ) {
+	    printf "Parse failure on time string\n" > "/dev/stderr";
+	    exit 1;
+	}
+	$2=ta[1]*86400 + ta[2]*3600 + ta[3]*60 + ta[4];
+	print;
+    }'
+}
+
+# checks for processes using > $1 %cpu and > $2 cputime
+cpucheck()
+{
+    ps --no-headers -eo pcpu,cputime,pid,ppid,user,uid,comm | fixtime | \
+    awk -v check=$1 -v time=$2 '
+	$1 > check && $2 > time {
+	    printf "%4.1f %10d %5d %5d %8s %s\n", $1, $2, $3, $4, $5, $7;
+	}'
+}
+
+# checks for processes using > $1 vm and > $2 cputime
+vmcheck()
+{
+    ps --no-headers -eo rss,cputime,pid,ppid,user,uid,comm | fixtime | \
+    awk -v check=$1 -v time=$2 '
+	$1 > check && $2 > time {
+	    printf "%7s %10d %5d %5d %8s %s\n", $1, $2, $3, $4, $5, $7;
+    }'
+}
+
+# checks if swap utilization is > $1
+swapuse()
+{
+    ram=`free | grep ^Mem | awk '{print $2}'`
+    if [ $(( `free | grep ^Swap | awk '{print $3}'` * 100 / $ram )) -gt "$1" ]; then
+	printf "%8s %8s\n" "RAM" "swap"
+	printf "%8d %8d\n" $ram "`free | grep ^Swap | awk '{print $3}'`"
+    fi
+}
+
+# checks for processes with ( uid >= $1 ) and ( wallclock > $2 )
+wccheck()
+{
+    ps --no-headers -eo pcpu,etime,pid,ppid,user,uid,comm | fixtime | \
+    awk -v uid=$1 -v etime=$2 '
+	$6 >= uid && $2 > etime {
+	    printf "%4.1f %10d %5d %5d %8s %s\n", $1, $2, $3, $4, $5, $7;
+    }'
+}

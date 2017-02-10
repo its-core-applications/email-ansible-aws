@@ -1,0 +1,12 @@
+#!/bin/bash
+# roadkill
+
+if [ ${#roadkill_opt} -gt 0 ]; then
+    roadkill $roadkill_opt > $tmpdir/$modname
+    if [[ -s $tmpdir/$modname ]]; then
+	echo "unusually old processes:" >> $tmpfile
+	cat $tmpdir/$modname >> $tmpfile
+	echo >> $tmpfile
+    fi
+fi
+

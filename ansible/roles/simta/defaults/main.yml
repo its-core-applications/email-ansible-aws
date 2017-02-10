@@ -1,0 +1,48 @@
+---
+
+tld: umich.edu
+simta_spambusters: http://spambusters.mail.umich.edu/troubleshoot
+simta_bitbucket: false
+simta_tcpwrappers: false
+simta_ldap: false
+simta_ldap_red: E
+simta_ldap_domains: []
+simta_srs: false
+simta_srs_domain: "{{ tld }}"
+simta_vacationhost: vacation.mail.umich.edu
+simta_dkim: false
+simta_dkim_level: LOCAL
+simta_loadbalanced: false
+simta_authn: false
+simta_relay: false
+simta_msa: false
+simta_connlimit: 1500
+simta_egress: false
+
+simta_rbls:
+  - xbl.dnsbl
+  - pbl.dnsbl
+  - sbl.dnsbl
+  - sip.dnsbl
+
+simta_tls_domains:
+  - adsroot.itcs.umich.edu
+  - ameritech.net
+  - aol.com
+  - att.net
+  - comcast.net
+  - engin.umd.umich.edu
+  - gmail.com
+  - go.itd.umich.edu
+  - hotmail.com
+  - mac.com
+  - me.com
+  - med.umich.edu
+  - msn.com
+  - msu.edu
+  - sbcglobal.net
+  - umflint.edu
+  - umich.edu
+  - verizon.net
+  - wayne.edu
+  - yahoo.com
