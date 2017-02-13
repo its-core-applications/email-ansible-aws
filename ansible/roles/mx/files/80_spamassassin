@@ -1,8 +1,7 @@
 #!/bin/dash
 
 if check_dfile; then
-    # $load1 is from 75_load
-    if [ ${load1%.*} -lt 30 ]; then
+    if [ ${load1%.*} -lt 15 ]; then
         spamscore=$(spamc -c -s 1048576 <$SIMTA_DFILE 2>/dev/null)
         spamret=$?
         spamscore=${spamscore%/*}
@@ -20,8 +19,21 @@ if check_dfile; then
                 log "80_spamassassin: score $spamscore : reject"
                 filter_exit $MESSAGE_REJECT
             fi
-            log "80_spamassassin: score $spamscore : tempfail"
-            filter_exit $MESSAGE_TEMPFAIL
+            # PENALTYBOX_PASS is from 70_pb
+            if [ $PENALTYBOX_PASS -eq 1 ] ; then
+                log "80_spamassassin: score $spamscore : penaltybox"
+                logmsg=$($penaltybox_bin $penaltybox_args "spamassassin")
+                pbret=$?
+                if [ x"$logmsg" != x ]; then
+                    log "80_spamassassin: $logmsg"
+                fi
+                if [ $pbret -eq $MESSAGE_TEMPFAIL ]; then
+                    filter_exit $MESSAGE_TEMPFAIL
+                fi
+                PENALTYBOX_PASS=0
+            else
+                log "80_spamassassin: score $spamscore : noaction"
+            fi
             ;;
         *)
             log "80_spamassassin: score unknown"
