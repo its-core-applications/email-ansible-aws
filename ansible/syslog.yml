@@ -4,7 +4,10 @@
   roles:
     - { role: base, tags: base }
     - { role: rsyslog_aggregator, tags: rsyslog_aggregator }
-    - { role: simta_basic, tags: simta }
+    - role: simta
+      simta_localmail: true
+      simta_tls: false
+      tags: simta
     - { role: splunk_forwarder, tags: splunk_forwarder }
     - { role: carbon, tags: carbon }
     - { role: graphite, tags: graphite }

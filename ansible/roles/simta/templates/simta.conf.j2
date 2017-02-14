@@ -3,7 +3,9 @@
 BITBUCKET   50
 {% endif %}
 
-{% if simta_relay %}
+{% if simta_localmail %}
+SMTP_MODE   OFF
+{% elif simta_relay %}
 SMTP_MODE   GLOBAL_RELAY
 {% else %}
 SMTP_MODE   NORMAL
@@ -17,6 +19,7 @@ PROXY       ON
 ALIAS_FILE  /etc/mail/aliases
 ALIAS_DB    /etc/mail/aliases.db
 
+{% if simta_localmail == false %}
 {% if simta_authn %}
 AUTHN       SASL
 AUTHZ_DNS   DENY    ubl.dnsbl
@@ -146,3 +149,4 @@ SRS                             FOREIGN
 @{{ domain.ljust( 30 ) }} D  TLS REQUIRED
 {% endfor %}
 {% endif %}
+{% endif %}{# simta_localmail == false #}

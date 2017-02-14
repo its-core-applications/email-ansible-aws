@@ -39,6 +39,7 @@
     - 30_nsrecord
     - 40_string
     - 75_load
+  when: simta_localmail == false
 
 - name: Configure simta
   template:
@@ -86,6 +87,7 @@
     group: root
     mode: 0644
     force: yes
+  when: simta_localmail == false
   notify: Restart simta
   tags: mutable
 
@@ -165,4 +167,5 @@
     mode: 0755
   with_items:
     - check-dnsbl
+  when: trendmicro_key is defined
 

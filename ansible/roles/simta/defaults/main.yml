@@ -1,6 +1,8 @@
 ---
 
 tld: umich.edu
+simta_config: 'this host'
+simta_tls: true
 simta_spambusters: http://spambusters.mail.umich.edu/troubleshoot
 simta_bitbucket: false
 simta_tcpwrappers: false
@@ -18,6 +20,7 @@ simta_relay: false
 simta_msa: false
 simta_connlimit: 1500
 simta_egress: false
+simta_localmail: false
 
 simta_rbls:
   - xbl.dnsbl

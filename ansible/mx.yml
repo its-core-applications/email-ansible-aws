@@ -5,9 +5,6 @@
     - { role: base, tags: base }
     - { role: rsyslog_forward, tags: rsyslog_forward }
     - { role: localnameserver, tags: localnameserver }
-    - role: certificate
-      certificate: "{{ simta_dkim_selector }}._domainkey.{{ tld }}"
-      tags: [ simta, certificate ]
     - { role: simta, tags: simta }
     - { role: spamassassin, tags: spamassassin }
     - { role: clamav, tags: clamav }

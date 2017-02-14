@@ -4,6 +4,9 @@
   roles:
     - { role: base, tags: base }
     - { role: rsyslog_forward, tags: rsyslog }
-    - { role: simta_basic, tags: simta }
+    - role: simta
+      simta_localmail: true
+      simta_tls: false
+      tags: simta
     - { role: rbldnsd, tags: rbldnsd }
     - { role: sensu, tags: sensu }
