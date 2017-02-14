@@ -1,7 +1,36 @@
 {
   "checks": {
+     "cpu-metrics": {
+      "type": "metric",
+      "command": "{{ sensu_plugin_path }}/metrics-cpu-pcnt-usage.rb",
+      "subscribers": [
+        "Status_production",
+        "Status_development"
+      ],
+      "handler": "graphite",
+      "interval": 30
+    },
+    "disk": {
+      "command": "{{ sensu_plugin_path }}/check-disk-usage.rb",
+      "subscribers": [
+        "Status_production",
+        "Status_development"
+      ],
+      "interval": 60
+    },
+    "disk-metrics": {
+      "type": "metric",
+      "command": "{{ sensu_plugin_path }}/metrics-disk-usage.rb -i ^/dev",
+      "subscribers": [
+        "Status_production",
+        "Status_development"
+      ],
+      "handler": "graphite",
+      "interval": 30
+    },
     "load": {
       "command": "{{ sensu_plugin_path }}/check-load.rb -p -w 30,25,20 -c 35,30,25",
+      "occurrences": 2,
       "subscribers": [
         "Status_production"
       ],
@@ -11,10 +40,11 @@
       "type": "metric",
       "command": "{{ sensu_plugin_path }}/metrics-load.rb",
       "subscribers": [
-        "Status_production"
+        "Status_production",
+        "Status_development"
       ],
       "handler": "graphite",
-      "interval": 60
+      "interval": 30
     },
     "memory": {
       "command": "{{ sensu_plugin_path }}/check-memory-percent.rb",
@@ -27,19 +57,21 @@
       "type": "metric",
       "command": "{{ sensu_plugin_path }}/metrics-memory-percent.rb",
       "subscribers": [
-        "Status_production"
+        "Status_production",
+        "Status_development"
       ],
       "handler": "graphite",
-      "interval": 60
+      "interval": 30
     },
-    "cpu-metrics": {
+    "network-metrics": {
       "type": "metric",
-      "command": "{{ sensu_plugin_path }}/metrics-cpu-pcnt-usage.rb",
+      "command": "{{ sensu_plugin_path }}/metrics-net.rb",
       "subscribers": [
-        "Status_production"
+        "Status_production",
+        "Status_development"
       ],
       "handler": "graphite",
-      "interval": 60
+      "interval": 30
     }
   }
 }
