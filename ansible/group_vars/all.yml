@@ -53,6 +53,10 @@ nonperson_accounts:
   - name: box
     comment: Box
     uid: 1004
+  - name: collaborate
+    comment: Collaboration
+    uid: 1000537
+    home: /usr/local/collaboration
   - name: email
     comment: Mail Routing
     uid: 1002

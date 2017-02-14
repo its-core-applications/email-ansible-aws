@@ -5,7 +5,7 @@
     dest: /usr/local/collaboration/dispatch/kitbag
     src: kitbag
     owner: collaborate
-    group: collaboration
+    group: nonpeople
     mode: 0755
 
 - name: Configure kitbag
@@ -13,7 +13,7 @@
     dest: /usr/local/collaboration/dispatch/kitbag.conf
     src: kitbag.conf.j2
     owner: collaborate
-    group: collaboration
+    group: nonpeople
     mode: 0644
 
 - name: Schedule kitbag

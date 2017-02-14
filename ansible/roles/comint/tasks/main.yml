@@ -1,13 +1,19 @@
 ---
 
 - name: Install comint
-  yum: name={{ item }} state=latest
+  yum:
+    name: "{{ item }}"
+    state: latest
   with_items:
     - comint
-  tags: packageinstall
 
 - name: Create directories
-  file: dest={{ item }} state=directory owner=collaborate group=collaboration mode=0775
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: collaborate
+    group: nonpeople
+    mode: 0775
   with_items:
     - /usr/local/collaboration
     - /usr/local/collaboration/dispatch
@@ -17,19 +23,27 @@
     - /usr/local/collaboration/report
     - /usr/local/collaboration/report/local
     - /usr/local/collaboration/report/watchdog.d
-  tags: configuration
 
 - name: Set up monitoring skeleton
-  template: dest=/usr/local/collaboration/{{ item }} src={{ item }}.j2 owner=collaborate group=collaboration mode=0664
+  template:
+    dest: "/usr/local/collaboration/{{ item }}"
+    src: "{{ item }}.j2"
+    owner: collaborate
+    group: nonpeople
+    mode: 0664
   with_items:
     - comint.conf
     - dispatch/dispatch.conf
     - nag/nag.conf
     - report/report.conf
-  tags: configuration
 
 - name: Install basic monitoring scripts
-  copy: dest=/usr/local/collaboration/{{ item }} src={{ item }} owner=collaborate group=collaboration mode=0755
+  copy:
+    dest: "/usr/local/collaboration/{{ item }}"
+    src: "{{ item }}"
+    owner: collaborate
+    group: nonpeople
+    mode: 0755
   with_items:
     - report/watchdog
     - report/watchdog.d/10overrides
@@ -39,15 +53,22 @@
     - report/watchdog.d/30maxvm
     - report/watchdog.d/40orphans
     - report/watchdog.d/40roadkill
-  tags: configuration
 
 - name: Configure basic monitoring scripts
-  copy: dest=/usr/local/collaboration/{{ item }} src={{ item }} owner=collaborate group=collaboration mode=0644
+  copy:
+    dest: "/usr/local/collaboration/{{ item }}"
+    src: "{{ item }}"
+    owner: collaborate
+    group: nonpeople
+    mode: 0644
   with_items:
     - report/watchdog.conf
     - nag/psnag-functions
-  tags: configuration
 
 - name: Set up cron job to run reports
-  cron: user=collaborate minute=0 hour=0 name=reports job="run-parts /usr/local/collaboration/report"
-  tags: configuration
+  cron:
+    user: collaborate
+    minute: 0
+    hour: 0
+    name: reports
+    job: "run-parts /usr/local/collaboration/report"

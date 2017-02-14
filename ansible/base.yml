@@ -2,5 +2,7 @@
 
 - hosts: all
   roles:
-    - base
-    - nonpeople
+    - role: base
+      tags: base
+    - role: nonpeople
+      tags: nonpeople
