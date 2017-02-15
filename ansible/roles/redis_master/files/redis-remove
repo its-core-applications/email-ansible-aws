@@ -1,58 +1,73 @@
 #!/bin/bash
 
-tmpfile=$(mktemp /tmp/redis-remove.XXXXXXXX)
+name=redis-remove
+tmpfile=$(mktemp /tmp/${name}.XXXXXXXX)
 
 if [[ $# -ne 1 ]]; then
     echo "Usage: $0 <host>" >&2
     exit 1
 fi
 
+outlog() {
+    logger -p user.info -t "$name[$$]" "$1"
+    echo "$1" >&2
+}
+
 redis-cli -h $1 CLUSTER NODES > $tmpfile
 
 myid=$(grep myself $tmpfile | awk '{print $1}')
 
 if grep -q myself,master $tmpfile; then
-    slave=$(sed -n -e "/slave $myid/{s/:.*//;s/.* //;p;q}" $tmpfile)
-    if [[ -z $slave ]]; then
-        echo "No current replica, choosing a random replica to steal..."
-        slave=$(sed -n -e "/slave /{s/:.*//;s/.* //;p}" $tmpfile | shuf -n1)
-        if [[ -z $slave ]]; then
-            echo "No replicas available to steal!" >&2
-            rm -f $tmpfile
-            exit 1
+    # Grab the first replica
+    replica=$(sed -n -e "/slave $myid/{s/:.*//;s/.* //;p;q}" $tmpfile)
+    try=0
+    while [[ -z $replica && $try -lt 3 ]]; do
+        outlog "No current replica, choosing a random replica to steal..."
+        (( try++ ))
+        replica=$(sed -n -e "/slave /{s/:.*//;s/.* //;p}" $tmpfile | shuf -n1)
+        if [[ -z $replica ]]; then
+            outlog "No replicas available to steal!"
+            sleep 5
+            redis-cli -h $1 CLUSTER NODES > $tmpfile
+        else
+            outlog "Making $replica into a replica of $1"
+            redis-cli -h $replica CLUSTER REPLICATE $myid
+            itry=0
+            until grep -q "slave $myid" $tmpfile || [[ $itry -gt 30 ]]; do
+                [[ $(( itry % 5 )) -eq 0 ]] && outlog "Waiting for $replica to replicate ${1}..."
+                (( itry++ ))
+                sleep 1
+                redis-cli -h $1 CLUSTER NODES > $tmpfile
+            done
         fi
-        echo "Making $slave into a replica of $1"
-        redis-cli -h $slave CLUSTER REPLICATE $myid
+        # Maybe we have a replica now
+        replica=$(sed -n -e "/slave $myid/{s/:.*//;s/.* //;p;q}" $tmpfile)
+    done
+    if [[ $replica ]]; then
+        outlog "Promoting $replica to master"
+        redis-cli -h $replica CLUSTER FAILOVER
         try=0
-        until grep -q "slave $myid" $tmpfile || [[ $try -gt 30 ]]; do
-            echo "Waiting for $slave to replicate ${1}..."
+        until grep -q myself,slave $tmpfile || [[ $try -gt 30 ]]; do
+            outlog "Waiting for $1 to stop being a master..."
             (( try++ ))
             sleep 1
             redis-cli -h $1 CLUSTER NODES > $tmpfile
         done
     fi
-    echo "Promoting $slave to master"
-    redis-cli -h $slave CLUSTER FAILOVER
-    try=0
-    until grep -q myself,slave $tmpfile || [[ $try -gt 30 ]]; do
-        echo "Waiting for $1 to become a slave..."
-        (( try++ ))
-        sleep 1
-        redis-cli -h $1 CLUSTER NODES > $tmpfile
-    done
 fi
 
 if grep -q myself,slave $tmpfile; then
+    outlog "Shutting down $1"
+    redis-cli -h $1 CONFIG appendonly no
+    redis-cli -h $1 SHUTDOWN NOSAVE
+    outlog "Forgetting $1..."
     for rhost in $(sed -n -e 's/:.*//;s/.* //;p' $tmpfile); do
-        redis-cli -h $rhost CLUSTER FORGET $myid
+        [[ $rhost != $1 ]] && redis-cli -h $rhost CLUSTER FORGET $myid &>/dev/null
     done
 else
-    echo "$1 is not a slave, we can't remove it!" >&2
+    outlog "$1 is still a master, we can't remove it!"
     rm -f $tmpfile
     exit 1
 fi
-
-redis-cli -h $1 CONFIG appendonly no
-redis-cli -h $1 SHUTDOWN NOSAVE
 
 rm -f $tmpfile
