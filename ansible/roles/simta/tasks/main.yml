@@ -21,6 +21,15 @@
   with_items:
     - /etc/mail
     - /etc/mail/filters
+    - /etc/systemd/system/simta.service.d
+
+- name: Enable core files
+  copy:
+    dest: /etc/systemd/system/simta.service.d/core.conf
+    src: systemd-core.conf
+    owner: root
+    group: root
+    mode: 0644
 
 - name: Install standard filters
   copy:
