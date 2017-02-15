@@ -9,13 +9,13 @@ notifycmd_email="env MAILRC=/dev/null replyto=\$notify_replyto /usr/bin/cronmail
 notifycmd_page="/usr/bin/snsnotify -r us-west-2"
 
 notifycmd_error=${notifycmd_email/_TAG_/CRITICAL}
-notifywho_error=blackops.root@umich.edu
+notifywho_error={{ ops_rootmail }}
 
 notifycmd_warn=${notifycmd_email/_TAG_/WARNING}
-notifywho_warn=blackops.root@umich.edu
+notifywho_warn={{ ops_rootmail }}
 
 notifycmd_info=${notifycmd_email/_TAG_/INFO}
-notifywho_info=blackops.root@umich.edu
+notifywho_info={{ ops_rootmail }}
 
 notifycmd_debug=${notifycmd_email/_TAG_/DEBUG}
-notifywho_debug=blackops.root@umich.edu
+notifywho_debug={{ ops_rootmail }}

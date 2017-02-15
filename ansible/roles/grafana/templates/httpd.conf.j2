@@ -4,7 +4,7 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-    ServerAdmin blackops@{{ tld }}
+    ServerAdmin {{ ops_email }}
     ServerName graphs.{{ subd }}
     ErrorLog /var/log/httpd/graphs-error.log
     CustomLog /var/log/httpd/graphs-access.log common

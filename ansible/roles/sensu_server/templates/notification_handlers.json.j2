@@ -26,12 +26,17 @@
   "handlers": {
     "page": {
       "type": "pipe",
-      "command": "handler-sns -r {{ aws_region }} -a {{ sns_topic }}",
-      "filters": [ "occurrences", "production" ]
+      "command": "handler-sns -r {{ aws_region }} -t oncall",
+      "filters": [ "occurrences", "production", "critical" ]
+    },
+    "email": {
+      "type": "pipe",
+      "command": "handler-sns -r {{ aws_region }} -t rootmail",
+      "filters": [ "occurrences" ]
     },
     "fyi": {
       "type": "pipe",
-      "command": "handler-sns -r {{ aws_region }} -a {{ sns_topic_fyi }}",
+      "command": "handler-sns -r {{ aws_region }} -t rootmail",
       "filters": [ "state_change_only" ]
     },
     "graphite": {
@@ -46,7 +51,8 @@
     "default": {
       "type": "set",
       "handlers": [
-        "page"
+        "page",
+        "email"
       ]
     }
   }

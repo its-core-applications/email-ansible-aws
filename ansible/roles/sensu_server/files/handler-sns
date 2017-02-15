@@ -7,15 +7,34 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-r', '--region', help='AWS region')
 parser.add_argument('-a', '--arn', help='SNS ARN')
+parser.add_argument('-t', '--topic', help='SNS topic name')
 args = parser.parse_args()
 
 region = args.region or 'us-west-2'
 
 client = boto3.client('sns', region_name=region)
+
+if args.arn:
+    arn = args.arn
+else:
+    topics = client.list_topics()
+    for t in topics['Topics']:
+        if t['TopicArn'].endswith(':' + args.topic):
+            arn = t['TopicArn']
+
 event = json.load(sys.stdin)
 
-subject = '{0} - {1}/{2}'.format('ALERT' if event['action'] == 'create' else 'RESOLVED', event['client']['name'], event['check']['name'])
+if event['check']['status'] == 0:
+    status = 'OK'
+elif event['check']['status'] == 1:
+    status = 'WARNING'
+elif event['check']['status'] == 2:
+    status = 'CRITICAL'
+else:
+    status = 'UNKNOWN'
+
+subject = '{0} - {1}/{2} {3}'.format('ALERT' if event['action'] == 'create' else 'RESOLVED', event['client']['name'], event['check']['name'], status)
 msg = '{0} - {1}'.format(subject, event['check']['output'])
 
-response = client.publish(TopicArn = args.arn, Message = msg, Subject = subject)
+response = client.publish(TopicArn = arn, Message = msg, Subject = subject)
 

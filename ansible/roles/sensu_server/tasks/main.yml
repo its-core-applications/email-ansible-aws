@@ -1,5 +1,31 @@
 ---
 
+- name: Create SNS topic for paging
+  delegate_to: localhost
+  become: false
+  sns_topic:
+    region: "{{ aws_region }}"
+    name: oncall
+    display_name: ONC
+    state: present
+    purge_subscriptions: no
+    subscriptions:
+      - endpoint: "{{ ops_pager }}"
+        protocol: 'sms'
+
+- name: Create SNS topic for email
+  delegate_to: localhost
+  become: false
+  sns_topic:
+    region: "{{ aws_region }}"
+    name: rootmail
+    display_name: rootmail
+    state: present
+    purge_subscriptions: no
+    subscriptions:
+      - endpoint: "{{ ops_rootmail }}"
+        protocol: 'email'
+
 - name: Install runtime dependencies for custom plugins
   yum:
     pkg: "{{ item }}"
