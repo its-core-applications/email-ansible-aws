@@ -194,6 +194,7 @@
     - hostname-prefixes-relay
     - hostname-prefixes-smtp
     - hostname-suffixes
+    - hostname-suffixes-builder
     - hostname-suffixes-mx-test
 
 - name: Install scripts
