@@ -50,6 +50,7 @@ fi
 for rhost in ${badhosts[@]}; do
     outlog "Adding $rhost to the cluster using ${goodhosts[0]}"
     redis-trib add-node --slave $rhost:6379 ${goodhosts[0]}:6379
+    sleep 5
     retval=$EX_OK
 done
 
