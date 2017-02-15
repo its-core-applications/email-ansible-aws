@@ -1,5 +1,7 @@
 #!/bin/bash
 
+name=redis-manage
+
 EX_OK=0
 EX_NOCHANGE=1
 EX_ERROR=2
@@ -10,17 +12,22 @@ badhosts=()
 
 retval=$EX_NOCHANGE
 
+outlog() {
+    logger -p user.info -t "$name[$$]" "$1"
+    echo "$1"
+}
+
 for rhost in "${rhosts[@]}"; do
     if [[ $(redis-cli -h $rhost PING) != 'PONG' ]]; then
-        echo "$rhost is down"
+        outlog "$rhost is down"
         downhosts+=( $rhost )
     else
         redis-cli -h $rhost CLUSTER INFO | grep -wq 'cluster_known_nodes:1'
         if [[ $? -eq 0 ]]; then
-            echo "$rhost is lonesome"
+            outlog "$rhost is lonesome"
             badhosts+=( $rhost )
         else
-            echo "$rhost is good"
+            outlog "$rhost is good"
             goodhosts+=( $rhost )
         fi
     fi
@@ -29,10 +36,10 @@ done
 if [[ ${#goodhosts[@]} -eq 0 ]]; then
     # No existing cluster, we need to create one.
     if [[ ${#badhosts[@]} -lt 3 ]]; then
-        echo "Insufficient hosts available to create a cluster!" >&2
+        outlog "Insufficient hosts available to create a cluster!" >&2
         exit $EX_ERROR
     fi
-    echo "Creating a new cluster using ${badhosts[@]:0:3}"
+    outlog "Creating a new cluster using ${badhosts[@]:0:3}"
     # redis-trib always requires a port, because it's dumber than redis-cli
     /bin/yes yes | redis-trib create $(for i in ${badhosts[@]:0:3}; do echo $i:6379; done)
     retval=$EX_OK
@@ -41,7 +48,7 @@ if [[ ${#goodhosts[@]} -eq 0 ]]; then
 fi
 
 for rhost in ${badhosts[@]}; do
-    echo "Adding $rhost to the cluster using ${goodhosts[0]}"
+    outlog "Adding $rhost to the cluster using ${goodhosts[0]}"
     redis-trib add-node --slave $rhost:6379 ${goodhosts[0]}:6379
     retval=$EX_OK
 done

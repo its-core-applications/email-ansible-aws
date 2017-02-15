@@ -10,7 +10,7 @@ fi
 
 outlog() {
     logger -p user.info -t "$name[$$]" "$1"
-    echo "$1" >&2
+    echo "$1"
 }
 
 redis-cli -h $1 CLUSTER NODES > $tmpfile
@@ -26,7 +26,7 @@ if grep -q myself,master $tmpfile; then
         (( try++ ))
         replica=$(sed -n -e "/slave /{s/:.*//;s/.* //;p}" $tmpfile | shuf -n1)
         if [[ -z $replica ]]; then
-            outlog "No replicas available to steal!"
+            outlog "No replicas available to steal!" >&2
             sleep 5
             redis-cli -h $1 CLUSTER NODES > $tmpfile
         else
@@ -65,7 +65,7 @@ if grep -q myself,slave $tmpfile; then
         [[ $rhost != $1 ]] && redis-cli -h $rhost CLUSTER FORGET $myid &>/dev/null
     done
 else
-    outlog "$1 is still a master, we can't remove it!"
+    outlog "$1 is still a master, we can't remove it!" >&2
     rm -f $tmpfile
     exit 1
 fi
