@@ -6,9 +6,12 @@
   become: false
   tasks:
     - name: Wait for launched instances to be available 
-      shell: "for i in {1..60}; do {{ inventory_file }} | grep -q {{ item.id }} && break; sleep 5; done; sleep 5"
+      shell: "for i in {1..60}; do {{ inventory_file }} | grep -q {{ item.id }} && break; sleep 5; done"
       when: item is defined
       with_items: "{{ ec2.results | map(attribute='instances') | list }}"
+
+    - name: Wait some more
+      pause: seconds=20
 
     - name: Flush DNS cache
       command: unbound-control reload
