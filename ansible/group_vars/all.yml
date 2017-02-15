@@ -28,7 +28,7 @@ egress_eip:
   us-west-2b: 35.162.59.88
   us-west-2c: 35.161.254.188
 
-simta_version: 1.0.5
+simta_version: 1.0.5.3
 simta_dkim_selector: mx-2017-01-03
 simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
 simta_ldap_host: 'ldap-mail.itd.umich.edu'
