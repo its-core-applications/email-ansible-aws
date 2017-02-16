@@ -11,7 +11,7 @@
       "interval": 30
     },
     "disk": {
-      "command": "{{ sensu_plugin_path }}/check-disk-usage.rb",
+      "command": "{{ sensu_plugin_path }}/check-disk-usage.rb -x tmpfs -w 90 -c 95",
       "subscribers": [
         "Status_production",
         "Status_development"

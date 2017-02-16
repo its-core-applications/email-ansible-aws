@@ -7,6 +7,14 @@
         "Class_egress"
       ],
       "interval": 60
+    },
+    "redis-cluster": {
+      "command": "/usr/local/collaboration/check-redis-cluster -c pink.{{ subd }}",
+      "subscribers": [
+        "roundrobin:Class_mx"
+      ],
+      "source": "pink.{{ subd }}",
+      "interval": 60
     }
   }
 }
