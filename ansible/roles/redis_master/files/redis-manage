@@ -49,7 +49,14 @@ fi
 
 for rhost in ${badhosts[@]}; do
     outlog "Adding $rhost to the cluster using ${goodhosts[0]}"
-    redis-trib add-node --slave $rhost:6379 ${goodhosts[0]}:6379
+    loser=$(redis-cli -h ${goodhosts[0]} CLUSTER NODES | awk '/slave/{ master[$4]++ } END{ x=99; for (id in master) if( master[id] < x ) { x=master[id]; loser=id }; print loser }')
+    redis-cli -h ${goodhosts[0]} CLUSTER MEET $rhost 6379
+    until redis-cli -h $rhost CLUSTER NODES | grep -q "^$loser"; do
+        outlog "Waiting for $rhost to know about $loser"
+        sleep 1
+    done
+    outlog "Making $rhost a replica of $loser"
+    redis-cli -h $rhost CLUSTER REPLICATE $loser
     until redis-cli -h $rhost CLUSTER NODES | grep -q 'myself,slave' ; do
         outlog "Waiting for $rhost to be a replica..."
         sleep 1
