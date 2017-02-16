@@ -21,3 +21,13 @@
     enabled: true
   notify: Restart redis
 
+- name: Install local monitoring scripts
+  copy:
+    dest: "/usr/local/collaboration/{{ item }}"
+    src: "{{ item }}"
+    owner: collaborate
+    group: nonpeople
+    mode: 0755
+  with_items:
+    - check-redis-cluster
+

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+while getopts c: opt; do
+    case $opt in
+    c)  cluster=$OPTARG
+        ;;
+    esac
+done
+
+retval=0
+
+ip=$(dig +short $cluster | head -1)
+if [[ -z $ip ]]; then
+    echo "Unable to resolve an IP to check for $cluster"
+    exit 3
+fi
+
+state=$(redis-trib check ${ip}:6379 2>&1)
+[[ $state =~ '[OK] All nodes agree about slots configuration.' ]] || retval=1
+[[ $state =~ '[OK] All 16384 slots covered.' ]] || retval=2
+
+echo "$state"
+
+exit $retval
