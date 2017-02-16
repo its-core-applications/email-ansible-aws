@@ -47,10 +47,11 @@ if [[ ${#goodhosts[@]} -eq 0 ]]; then
     badhosts=(${badhosts[@]:3})
 fi
 
+ghost=${goodhosts[0]}
 for rhost in ${badhosts[@]}; do
-    outlog "Adding $rhost to the cluster using ${goodhosts[0]}"
-    loser=$(redis-cli -h ${goodhosts[0]} CLUSTER NODES | awk '/slave/{ master[$4]++ } END{ x=99; for (id in master) if( master[id] < x ) { x=master[id]; loser=id }; print loser }')
-    redis-cli -h ${goodhosts[0]} CLUSTER MEET $rhost 6379
+    outlog "Adding $rhost to the cluster using $ghost"
+    loser=$(redis-cli -h $ghost CLUSTER NODES | awk '/slave/{ master[$4]++ } END{ x=99; for (id in master) if( master[id] < x ) { x=master[id]; loser=id }; print loser }')
+    redis-cli -h $ghost CLUSTER MEET $rhost 6379
     until redis-cli -h $rhost CLUSTER NODES | grep -q "^$loser"; do
         outlog "Waiting for $rhost to know about $loser"
         sleep 1
@@ -61,6 +62,7 @@ for rhost in ${badhosts[@]}; do
         outlog "Waiting for $rhost to be a replica..."
         sleep 1
     done
+    ghost=$rhost
     retval=$EX_OK
 done
 
