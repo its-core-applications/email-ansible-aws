@@ -5,7 +5,9 @@ syslog-facility USER
 dir /var/lib/redis/
 
 cluster-enabled yes
+cluster-node-timeout 15000
 cluster-slave-validity-factor 0
+cluster-require-full-coverage no
 
 maxmemory-policy volatile-lru
 maxmemory-samples 10
