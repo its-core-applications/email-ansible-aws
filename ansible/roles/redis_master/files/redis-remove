@@ -46,28 +46,39 @@ if grep -q myself,master $tmpfile; then
     if [[ $replica ]]; then
         outlog "Promoting $replica to master"
         redis-cli -h $replica CLUSTER FAILOVER
-        try=0
-        until grep -q myself,slave $tmpfile || [[ $try -gt 30 ]]; do
-            outlog "Waiting for $1 to stop being a master..."
-            (( try++ ))
-            sleep 1
-            redis-cli -h $1 CLUSTER NODES > $tmpfile
-        done
     fi
 fi
 
-if grep -q myself,slave $tmpfile; then
-    outlog "Shutting down $1"
-    redis-cli -h $1 CONFIG appendonly no
-    redis-cli -h $1 SHUTDOWN NOSAVE
-    outlog "Forgetting $1..."
-    for rhost in $(sed -n -e 's/:.*//;s/.* //;p' $tmpfile); do
-        [[ $rhost != $1 ]] && redis-cli -h $rhost CLUSTER FORGET $myid &>/dev/null
-    done
-else
-    outlog "$1 is still a master, we can't remove it!" >&2
-    rm -f $tmpfile
-    exit 1
-fi
+try=0
+until grep -q myself,slave $tmpfile; do
+    [[ $(( try % 5 )) -eq 0 ]] && outlog "Waiting for $1 to stop being a master..."
+    if [[ $(( try++ )) -gt 30 ]]; then
+        outlog "$1 is still a master, we can't remove it!" >&2
+        rm -f $tmpfile
+        exit 1
+    fi
+    sleep 1
+    redis-cli -h $1 CLUSTER NODES > $tmpfile
+done
+
+try=0
+while grep -q "slave $myid" $tmpfile; do
+    [[ $(( try % 5 )) -eq 0 ]] && outlog "Waiting for $1 to stop having replicas..."
+    if [[ $(( try++ )) -gt 30 ]]; then
+        outlog "$1 still has replicas, we can't remove it!" >&2
+        rm -f $tmpfile
+        exit 1
+    fi
+    sleep 1
+    redis-cli -h $1 CLUSTER NODES > $tmpfile
+done
+
+outlog "Shutting down $1"
+redis-cli -h $1 CONFIG appendonly no
+redis-cli -h $1 SHUTDOWN NOSAVE
+outlog "Forgetting $1..."
+for rhost in $(sed -n -e 's/:.*//;s/.* //;p' $tmpfile); do
+    [[ $rhost != $1 ]] && redis-cli -h $rhost CLUSTER FORGET $myid &>/dev/null
+done
 
 rm -f $tmpfile

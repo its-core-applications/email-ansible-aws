@@ -50,7 +50,10 @@ fi
 for rhost in ${badhosts[@]}; do
     outlog "Adding $rhost to the cluster using ${goodhosts[0]}"
     redis-trib add-node --slave $rhost:6379 ${goodhosts[0]}:6379
-    sleep 5
+    until redis-cli -h $rhost CLUSTER NODES | grep -q 'myself,slave' ; do
+        outlog "Waiting for $rhost to be a replica..."
+        sleep 1
+    done
     retval=$EX_OK
 done
 

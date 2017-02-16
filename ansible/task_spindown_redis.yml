@@ -1,6 +1,8 @@
 ---
 
 - name: Remove redis tag
+  delegate_to: localhost
+  become: false
   ec2_tag:
     region: "{{ aws_region }}"
     resource: "{{ ec2_id }}"
