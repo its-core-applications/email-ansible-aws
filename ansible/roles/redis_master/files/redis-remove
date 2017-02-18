@@ -45,7 +45,16 @@ if grep -q myself,master $tmpfile; then
     done
     if [[ $replica ]]; then
         outlog "Promoting $replica to master"
-        redis-cli -h $replica CLUSTER FAILOVER
+        try=0
+        res=$(redis-cli -h $replica CLUSTER FAILOVER)
+        until [[ $res = 'OK' ]]; do
+            [[ $(( try % 5 )) -eq 0 ]] && outlog "Waiting for $replica to accept the failover command instead of saying ${res}..."
+            if [[ $(( try++ )) -gt 30 ]]; then
+                outlog "Giving up on failover!" >&2
+                exit 1
+            fi
+            res=$(redis-cli -h $replica CLUSTER FAILOVER)
+        done
     fi
 fi
 
@@ -74,7 +83,7 @@ while grep -q "slave $myid" $tmpfile; do
 done
 
 outlog "Shutting down $1"
-redis-cli -h $1 CONFIG appendonly no
+redis-cli -h $1 CONFIG SET appendonly no
 redis-cli -h $1 SHUTDOWN NOSAVE
 outlog "Forgetting $1..."
 for rhost in $(sed -n -e 's/:.*//;s/.* //;p' $tmpfile); do

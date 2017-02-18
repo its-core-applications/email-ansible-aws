@@ -9,16 +9,24 @@ done
 
 retval=0
 
-ip=$(dig +short $cluster | head -1)
-if [[ -z $ip ]]; then
-    echo "Unable to resolve an IP to check for $cluster"
+ips=$(dig +short $cluster)
+if [[ -z $ips ]]; then
+    echo "Unable to resolve $cluster"
     exit 3
 fi
 
-state=$(redis-trib check ${ip}:6379 2>&1)
-[[ $state =~ '[OK] All nodes agree about slots configuration.' ]] || retval=1
-[[ $state =~ '[OK] All 16384 slots covered.' ]] || retval=2
+for ip in $ips; do
+    if [[ $(redis-cli -h $ip PING 2>&1) = 'PONG' ]]; then
+        state=$(redis-trib check ${ip}:6379 2>&1)
+        [[ $state =~ '[OK] All nodes agree about slots configuration.' ]] || retval=1
+        [[ $state =~ '[OK] All 16384 slots covered.' ]] || retval=2
 
-echo "$state"
+        echo "$state"
 
-exit $retval
+        exit $retval
+    fi
+done
+
+echo "No PONG from any hosts in $cluster"
+exit 3
+
