@@ -1,7 +1,6 @@
 #!/bin/bash
 
 name=redis-remove
-tmpfile=$(mktemp /tmp/${name}.XXXXXXXX)
 
 if [[ $# -ne 1 ]]; then
     echo "Usage: $0 <host>" >&2
@@ -13,6 +12,12 @@ outlog() {
     echo "$1"
 }
 
+if [[ $(redis-cli -h $1 PING) != 'PONG' ]]; then
+    outlog "No PONG from $1, assuming it's already removed."
+    exit 0
+fi
+
+tmpfile=$(mktemp /tmp/${name}.XXXXXXXX)
 redis-cli -h $1 CLUSTER NODES > $tmpfile
 
 myid=$(grep myself $tmpfile | awk '{print $1}')
