@@ -37,11 +37,12 @@
 - include: task_wait_for_launched.yml
 
 - hosts: localhost
-  connection: local
-  gather_facts: false
-  become: false
   roles:
     - { role: redis_master, tags: redis }
+
+- hosts: localhost
+  connection: local
+  become: false
   tasks:
     - name: Assign elastic IP
       # This is ugly, fragile, and limits us to one egress host per az
