@@ -50,7 +50,7 @@ fi
 ghost=${goodhosts[0]}
 for rhost in ${badhosts[@]}; do
     outlog "Adding $rhost to the cluster using $ghost"
-    loser=$(redis-cli -h $ghost CLUSTER NODES | awk '/slave/{ master[$4]++ } END{ x=99; for (id in master) if( master[id] < x ) { x=master[id]; loser=id }; print loser }')
+    loser=$(redis-cli -h $ghost CLUSTER NODES | awk '/slave [a-f0-9]{40}/{ master[$4]++ } END{ x=99; for (id in master) if( master[id] < x ) { x=master[id]; loser=id }; print loser }')
     redis-cli -h $ghost CLUSTER MEET $rhost 6379
     until redis-cli -h $rhost CLUSTER NODES | grep -q "^$loser"; do
         outlog "Waiting for $rhost to know about $loser"
