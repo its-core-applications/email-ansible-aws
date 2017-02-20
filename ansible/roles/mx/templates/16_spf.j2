@@ -2,6 +2,8 @@
 
 if [ "x${SIMTA_SMTP_MAIL_FROM##*@}" != 'x{{ tld }}' ]; then
     : # No enforcement for other domains
+elif [ "x${SIMTA_HEADER_FROM##*@}" = 'x{{ tld }}' -a "x$SIMTA_DMARC_RESULT" = 'xpass' ]; then
+    : # It doesn't matter what the SPF result is, we passed DMARC
 elif [ "x$SIMTA_SPF_RESULT" != 'xpass' ]; then
     allow=$(simrbl -l mx-accept.dnsal -l umnetworks.dnsal "$SIMTA_REMOTE_IP")
     if [ $? -eq 1 ]; then
