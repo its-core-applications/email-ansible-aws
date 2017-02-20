@@ -1,10 +1,10 @@
 {
   "filters": {
     "production": {
-      "negate": false,
+      "negate": true,
       "attributes": {
         "client": {
-          "subscriptions": "eval: value.include?'Status_production'"
+          "subscriptions": "eval: value.include?'Status_development'"
         }
       }
     },
@@ -12,7 +12,7 @@
       "negate": false,
       "attributes": {
         "check": {
-          "status": 2
+          "history": "eval: value.include?'2'"
         }
       }
     },
