@@ -189,13 +189,14 @@
     mode: 0644
   with_items:
     - hostname-prefixes
-    - hostname-prefixes-egress
-    - hostname-prefixes-mx
-    - hostname-prefixes-relay
-    - hostname-prefixes-smtp
     - hostname-suffixes
     - hostname-suffixes-builder
+    - hostname-suffixes-egress
+    - hostname-suffixes-mx
     - hostname-suffixes-mx-test
+    - hostname-suffixes-relay
+    - hostname-suffixes-smtp
+    - hostname-suffixes-smtp-test
 
 - name: Install scripts
   template:
