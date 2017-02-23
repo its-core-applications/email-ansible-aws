@@ -40,8 +40,13 @@
         port: 25
         state: drained
 
+- hosts: tag_Class_mx_spindown
+  serial: 1
+  tasks:
     - include: task_spindown_redis.yml
 
+- hosts: tag_Class_mx_spindown
+  tasks:
     - name: Give the queue a chance to quiesce
       pause: seconds=60
 
