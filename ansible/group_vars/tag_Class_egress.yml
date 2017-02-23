@@ -3,6 +3,7 @@
 simta_config: egress.a.mail
 simta_relay: true
 simta_egress: true
+simta_filters: false
 simta_dkim: true
 simta_connlimit: 0
 trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro token={{ vault_token }}' ) }}"

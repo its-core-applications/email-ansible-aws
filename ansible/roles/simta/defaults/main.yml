@@ -21,6 +21,7 @@ simta_msa: false
 simta_connlimit: 1500
 simta_egress: false
 simta_localmail: false
+simta_filters: true
 
 simta_rbls:
   - xbl.dnsbl
