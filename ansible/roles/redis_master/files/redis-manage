@@ -30,6 +30,13 @@ for rhost in "${rhosts[@]}"; do
             outlog "$rhost is good"
             goodhosts+=( $rhost )
         fi
+        redis-cli -h $rhost CLUSTER NODES | awk '{sub(/:[0-9]+/, "", $2); print $1, $2}' | while read nid nip; do
+            echo "${rhosts[@]}" | fgrep -wq $nip
+            if [[ $? -eq 1 ]]; then
+                outlog "forgetting $nip on $rhost"
+                redis-cli -h $rhost CLUSTER FORGET $nid
+            fi
+        done
     fi
 done
 
