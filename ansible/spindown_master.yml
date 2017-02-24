@@ -1,0 +1,25 @@
+---
+
+- hosts: tag_Class_master
+  gather_facts: false
+  tasks:
+    - name: Set class to master_spindown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: master_spindown
+
+    - name: Stop crond
+      systemd:
+        name: crond
+        state: stopped
+
+- hosts: tag_Class_master_spindown
+    - name: Set class to spundown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: spundown
+
