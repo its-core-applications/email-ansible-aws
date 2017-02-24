@@ -214,6 +214,11 @@
             from_port: 8888
             to_port: 8888
             cidr_ip: "{{ aws_subnet }}"
+        # carbon-aggregator
+          - proto: tcp
+            from_port: 2003
+            to_port: 2003
+            cidr_ip: "{{ aws_subnet }}"
         # uchiwa
           - proto: tcp
             from_port: 3000
