@@ -12,8 +12,6 @@ aws_ssh_key: 2015-10-16
 
 yum_hostname: yum.{{ subd }}
 
-vault_token: "{{ lookup( 'env', 'VAULT_TOKEN' ) }}"
-
 ops_email: "blackops@{{ tld }}"
 ops_rootmail: "blackops.root@{{ tld }}"
 

@@ -1,6 +1,6 @@
 [duo]
-ikey = {{ lookup('hashi_vault', 'secret=secret/{{ ansible_hostname }}/duo/ikey token={{ vault_token }}' ) }}
-skey = {{ lookup('hashi_vault', 'secret=secret/{{ ansible_hostname }}/duo/skey token={{ vault_token }}' ) }}
+ikey = {{ lookup('hashi_vault', 'secret=secret/{{ ansible_hostname }}/duo/ikey' ) }}
+skey = {{ lookup('hashi_vault', 'secret=secret/{{ ansible_hostname }}/duo/skey' ) }}
 host = api-d9c5afcf.duosecurity.com
 groups = staff
 pushinfo = yes

@@ -5,10 +5,10 @@ simta_loadbalanced: true
 simta_dkim: true
 simta_ldap: true
 simta_ldap_red: RE
-simta_ldap_password: "{{ lookup( 'hashi_vault', 'secret=secret/simta/ldap_password token={{ vault_token }}' ) }}"
+simta_ldap_password: "{{ lookup( 'hashi_vault', 'secret=secret/simta/ldap_password' ) }}"
 simta_srs: true
-simta_srs_secret: "{{ lookup( 'hashi_vault', 'secret=secret/simta/srs_secret token={{ vault_token }}' ) }}"
-trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro token={{ vault_token }}' ) }}"
+simta_srs_secret: "{{ lookup( 'hashi_vault', 'secret=secret/simta/srs_secret' ) }}"
+trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro' ) }}"
 sensu_subscriptions:
   - Status_production
   - Class_mx

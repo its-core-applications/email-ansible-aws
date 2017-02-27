@@ -208,8 +208,8 @@ org_role = Viewer
 [auth.google]
 enabled = true
 allow_sign_up = true
-client_id = {{ lookup( 'hashi_vault', 'secret=secret/google/grafana/id token={{ vault_token }}' ) }}
-client_secret = {{ lookup( 'hashi_vault', 'secret=secret/google/grafana/secret token={{ vault_token }}' ) }}
+client_id = {{ lookup( 'hashi_vault', 'secret=secret/google/grafana/id' ) }}
+client_secret = {{ lookup( 'hashi_vault', 'secret=secret/google/grafana/secret' ) }}
 scopes = https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
 auth_url = https://accounts.google.com/o/oauth2/auth
 token_url = https://accounts.google.com/o/oauth2/token

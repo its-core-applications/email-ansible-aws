@@ -16,7 +16,6 @@ vault read secret/ping
 if [[ $? -ne 0 ]]; then
     echo "WARNING: Vault ping failed; do you need to auth and/or unseal?"
 fi
-export VAULT_TOKEN=$(cat ~/.vault-token)
 
 # Set up Git
 if [[ $SUDO_USER ]]; then
