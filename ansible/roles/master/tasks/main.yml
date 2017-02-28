@@ -1,13 +1,5 @@
 ---
 
-- name: Configure static hostname
-  copy:
-    dest: /etc/dynhostname.static
-    content: "mogo.{{ subd }}"
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Install extra packages
   yum:
     name: "{{ item }}"

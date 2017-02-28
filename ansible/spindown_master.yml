@@ -9,17 +9,16 @@
         resource: "{{ ec2_id }}"
         tags:
           Class: master_spindown
+          Name: old-mogo
+          CustomDNSName: "old-mogo.{{ subd }}"
+
+    - name: Run dynhostname
+      systemd:
+        name: dynhostname
+        state: reloaded
 
     - name: Stop crond
       systemd:
         name: crond
         state: stopped
-
-- hosts: tag_Class_master_spindown
-    - name: Set class to spundown
-      ec2_tag:
-        region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
-        tags:
-          Class: spundown
 

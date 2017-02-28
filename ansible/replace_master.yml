@@ -3,6 +3,14 @@
 - include: task_create_securitygroups.yml
 - include: spindown_master.yml
 - include: provision_master.yml
-- include: spindown_master.yml
-- include: deprovision_spundown.yml
 
+- hosts: tag_Class_master_spindown
+  tasks:
+    - name: Set class to spundown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Class: spundown
+
+- include: deprovision_spundown.yml
