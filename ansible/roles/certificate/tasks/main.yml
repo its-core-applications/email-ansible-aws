@@ -9,7 +9,7 @@
     state: directory
   when: certificate_type != 'null'
 
-- name: "{{ certificate }} : Install certificate private key"
+- name: "{{ certificate }} : Install private key"
   template:
     dest: "/etc/pki/collab/private/{{ certificate }}.key"
     src: key.j2
