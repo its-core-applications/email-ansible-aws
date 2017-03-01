@@ -76,9 +76,9 @@
     mode: 0755
 
 - name: Configure sa-update-client
-  copy:
+  template:
     dest: /usr/local/collaboration/dispatch/sa-update-client.conf
-    src: sa-update-client.conf
+    src: sa-update-client.conf.j2
     owner: root
     group: root
     mode: 0644

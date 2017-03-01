@@ -18,7 +18,7 @@
         instance_tags:
           Class: master
           Status: master
-          CustomDNSName: "mogo.{{ subd }}"
+          CustomDNSName: "{{ master_hostname }}.{{ subd }}"
         exact_count: 1
         count_tag:
           Class: master
@@ -27,25 +27,18 @@
         - dummy
       register: ec2
 
-    - name: "Set dashboard.{{ subd }}"
+    - name: "Set CNAMEs for vhosts"
       route53:
         command: "create"
         overwrite: true
         zone: "{{ subd }}"
-        record: "dashboard.{{ subd }}"
+        record: "{{ item }}.{{ subd }}"
         type: "CNAME"
         ttl: 60
-        value: "mogo.{{ subd }}"
-
-    - name: "Set graphs.{{ subd }}"
-      route53:
-        command: "create"
-        overwrite: true
-        zone: "{{ subd }}"
-        record: "graphs.{{ subd }}"
-        type: "CNAME"
-        ttl: 60
-        value: "mogo.{{ subd }}"
+        value: "{{ master_hostname }}.{{ subd }}"
+      with_items:
+        - dashboard
+        - graphs
 
 - include: task_wait_for_launched.yml
 

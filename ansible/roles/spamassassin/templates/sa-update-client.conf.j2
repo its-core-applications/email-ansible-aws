@@ -1,7 +1,7 @@
 #!/bin/bash
 # config for spamassassin rule updates
 
-update_host=spamassassin@mogo.a.mail.umich.edu
+update_host=spamassassin@{{ master_hostname }}.{{ subd }}
 rule_dir=/var/lib/spamassassin/
 ssh_key=/var/spool/simta/.ssh/id_rsa
 

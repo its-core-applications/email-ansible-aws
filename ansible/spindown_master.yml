@@ -9,8 +9,8 @@
         resource: "{{ ec2_id }}"
         tags:
           Class: master_spindown
-          Name: old-mogo
-          CustomDNSName: "old-mogo.{{ subd }}"
+          Name: "old-{{ master_hostname }}"
+          CustomDNSName: "old-{{ master_hostname }}.{{ subd }}"
 
     - name: Run dynhostname
       systemd:
