@@ -30,7 +30,7 @@
           Status: production
           redis: 'yes'
         count: 1
-      when: groups.tag_Class_egress | intersect(groups[item.availability_zone]) | length == 0
+      when: groups.tag_Class_egress | default([]) | intersect(groups[item.availability_zone] | default([])) | length == 0
       with_items: "{{ ec2_subnets.subnets }}"
       register: ec2
 

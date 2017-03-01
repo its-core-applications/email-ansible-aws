@@ -27,7 +27,7 @@
           Class: relay
           Status: preproduction
         count: 1
-      when: groups.tag_Class_relay | intersect(groups[item.availability_zone]) | length == 0
+      when: groups.tag_Class_relay | default([]) | intersect(groups[item.availability_zone] | default([])) | length == 0
       with_items: "{{ ec2_subnets.subnets }}"
       register: ec2
 
@@ -82,4 +82,4 @@
         instance_id: "{{ item }}"
         state: present
         wait: false
-      with_items: "{{ groups.tag_Class_relay | map('extract', hostvars, 'ec2_id') | list }}"
+      with_items: "{{ groups.tag_Class_relay | default([]) | map('extract', hostvars, 'ec2_id') | list }}"

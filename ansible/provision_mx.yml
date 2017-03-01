@@ -47,7 +47,7 @@
         wait: false
       with_nested:
         - "{{ mx_names }}"
-        - "{{ groups.tag_Class_mx | map('extract', hostvars, 'ec2_id') | list }}"
+        - "{{ groups.tag_Class_mx | default([]) | map('extract', hostvars, 'ec2_id') | list }}"
 
     - name: "Set pretty DNS names for MX loadbalancer(s)"
       route53:

@@ -4,5 +4,5 @@
 - include: provision_syslog.yml
 - include: provision_rbl.yml
 - include: provision_egress.yml
-- include: provision_mx.yml
+- include: spinup_mx.yml
 
