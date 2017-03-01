@@ -1,11 +1,11 @@
 ---
 
-- hosts: tag_Class_builder
+- hosts: tag_Class_builder:!tag_Status_spundown
   gather_facts: false
   tasks:
-    - name: Set class to spundown
+    - name: Set status to spundown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: spundown
+          Status: spundown

@@ -3,12 +3,12 @@
 - hosts: tag_Class_master
   gather_facts: false
   tasks:
-    - name: Set class to master_spindown
+    - name: Set status to spindown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: master_spindown
+          Status: spindown
           Name: "old-{{ master_hostname }}"
           CustomDNSName: "old-{{ master_hostname }}.{{ subd }}"
 

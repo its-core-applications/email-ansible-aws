@@ -4,23 +4,27 @@
   serial: 1
   gather_facts: false
   tasks:
-    - name: Set class on oldest host to egress_spindown
+    - name: Set status on oldest host to spindown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: egress_spindown
+          Status: spindown
       when:
         - ec2_launch_time == groups.tag_Class_egress | map('extract', hostvars, 'ec2_launch_time') | sort | first
-        - groups.tag_Class_egress_spindown is undefined
+        - groups.tag_Class_egress | intersect(groups.tag_Status_spindown | default([])) | length == 0
 
     - meta: refresh_inventory
-      when: groups.tag_Class_egress_spindown is undefined
+      when: groups.tag_Class_egress | intersect(groups.tag_Status_spindown | default([])) | length == 0
 
-- hosts: tag_Class_egress_spindown
+- hosts: localhost
+  connection: local
+  become: false
   tasks:
     - include: task_dns_egress.yml
 
+- hosts: tag_Class_egress:&tag_Status_spindown
+  tasks:
     - name: Stop sensu
       systemd:
         name: sensu-client
@@ -35,7 +39,7 @@
     - include: task_spindown_redis.yml
 
     - name: Give the queue a chance to quiesce
-      pause: seconds=10
+      pause: seconds=60
 
     - name: Stop simta
       systemd:
@@ -70,9 +74,9 @@
         dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
         state: absent
 
-    - name: Set class to spundown
+    - name: Set status to spundown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: spundown
+          Status: spundown

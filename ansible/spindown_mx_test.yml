@@ -1,19 +1,17 @@
 ---
 
-- hosts: tag_Class_mx_test
+- hosts: tag_Class_mx_test:!tag_Status_spundown
   gather_facts: false
   tasks:
-    - name: Set class to spundown
+    - name: Set status to spundown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: spundown
+          Status: spundown
 
     - name: Stop sensu
       systemd:
         name: sensu-client
         state: stopped
-
-    - meta: refresh_inventory
 

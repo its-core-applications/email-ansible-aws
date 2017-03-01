@@ -4,13 +4,14 @@
 - include: spindown_master.yml
 - include: provision_master.yml
 
-- hosts: tag_Class_master_spindown
+- hosts: tag_Class_master:&tag_Status_spindown
   tasks:
-    - name: Set class to spundown
+    - name: Set status to spundown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: spundown
+          Status: spundown
+    - meta: refresh_inventory
 
 - include: deprovision_spundown.yml

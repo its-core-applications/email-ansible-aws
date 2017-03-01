@@ -22,7 +22,7 @@ fi
 touch $lockfile
 trap 'rm -f $lockfile ; exit 1' 1 2 3 15
 
-readarray -t qhosts < <(ansible --list-hosts tag_Class_egress 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
+readarray -t qhosts < <(ansible --list-hosts 'tag_Class_egress:&tag_Status_production' 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
 [[ ${#qhosts[@]} -eq 0 ]] && echo "List of egress hosts is empty" >> $tmpfile
 
 for qhost in ${qhosts[@]}; do

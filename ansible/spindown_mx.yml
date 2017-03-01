@@ -4,21 +4,21 @@
   serial: 1
   gather_facts: false
   tasks:
-    - name: Set class on oldest hosts to mx_spindown
+    - name: Set status on oldest hosts to spindown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: mx_spindown
+          Status: spindown
       when:
         - ec2_launch_time == groups.tag_Class_mx | intersect(groups[ec2_placement]) | map('extract', hostvars, 'ec2_launch_time') | sort | first
-        - groups.tag_Class_mx_spindown is undefined or groups.tag_Class_mx_spindown | intersect(groups[ec2_placement]) | length == 0
-        - groups.tag_Class_mx | intersect(groups[ec2_placement]) | length > 2
+        - groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | intersect(groups[ec2_placement]) | length == 0
+        - groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | intersect(groups[ec2_placement]) | length > 2
 
     - meta: refresh_inventory
-      when: groups.tag_Class_mx_spindown is undefined or groups.tag_Class_mx_spindown | intersect(groups[ec2_placement]) | length == 0
+      when: groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | intersect(groups[ec2_placement]) | length == 0
 
-- hosts: tag_Class_mx_spindown
+- hosts: tag_Class_mx:&tag_Status_spindown
   tasks:
     - name: Remove from loadbalancer
       delegate_to: localhost
@@ -40,21 +40,21 @@
         port: 25
         state: drained
 
-- hosts: tag_Class_mx_spindown
+- hosts: tag_Class_mx:&tag_Status_spindown
   serial: 1
   tasks:
     - include: task_spindown_redis.yml
 
-- hosts: tag_Class_mx_spindown
+- hosts: tag_Class_mx:&tag_Status_spindown
   tasks:
     - name: Give the queue a chance to quiesce
       pause: seconds=60
 
     - include: task_spindown_simta.yml
 
-    - name: Set class to spundown
+    - name: Set status to spundown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: spundown
+          Status: spundown

@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_spundown
+- hosts: tag_Status_spundown
   gather_facts: false
   tasks:
     - name: Destroy host

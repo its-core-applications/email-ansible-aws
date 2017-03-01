@@ -3,12 +3,10 @@
 - hosts: tag_Class_syslog
   gather_facts: false
   tasks:
-    - name: Set class to spundown
+    - name: Set status to spundown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Class: spundown
-
-    - meta: refresh_inventory
+          Status: spundown
 

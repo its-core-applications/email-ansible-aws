@@ -8,6 +8,7 @@
     - openldap-devel
     - urcl-devel
     - libucl-devel
+    - lmdb-devel
 
 - name: Update the simvacation source tree
   become: false

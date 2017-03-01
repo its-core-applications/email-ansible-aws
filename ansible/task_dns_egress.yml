@@ -11,6 +11,6 @@
     record: "egress.{{ subd }}"
     type: "A"
     ttl: 60
-    value: "{{ groups.tag_Class_egress | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
-  when: groups.tag_Class_egress is defined
+    value: "{{ groups.tag_Class_egress | intersect(groups.tag_Status_production) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
+  when: groups.tag_Class_egress | default([]) | intersect(groups.tag_Status_production | default([])) | length > 0
 
