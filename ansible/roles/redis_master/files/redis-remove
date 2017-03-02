@@ -90,6 +90,7 @@ done
 outlog "Shutting down $1"
 redis-cli -h $1 CONFIG SET appendonly no
 redis-cli -h $1 SHUTDOWN NOSAVE
+sleep 5
 outlog "Forgetting $1..."
 for rhost in $(sed -n -e 's/:.*//;s/.* //;p' $tmpfile); do
     [[ $rhost != $1 ]] && redis-cli -h $rhost CLUSTER FORGET $myid &>/dev/null
