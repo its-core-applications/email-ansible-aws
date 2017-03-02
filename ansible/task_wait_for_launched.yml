@@ -11,7 +11,7 @@
       with_items: "{{ ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | list }}"
 
     - name: Wait some more
-      pause: seconds=20
+      pause: seconds=30
 
     - name: Flush DNS cache
       command: unbound-control reload
