@@ -6,8 +6,9 @@
   ec2_tag:
     region: "{{ aws_region }}"
     resource: "{{ ec2_id }}"
+    state: absent
     tags:
-      redis: 'no'
+      redis: 'yes'
 
 - meta: refresh_inventory
 
