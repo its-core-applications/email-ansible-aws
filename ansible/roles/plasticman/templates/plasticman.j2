@@ -1,0 +1,89 @@
+#!/bin/bash
+
+name=plasticman
+carbon_server=syslog.{{ subd }}
+carbon_port=2003
+graphite_server=syslog.{{ subd }}:8888
+
+if [[ $1 ]]; then
+    class=$1
+else
+    class=mx
+fi
+
+# FIXME: This should probably go in a config file or a command line flag
+min_count=6
+max_count=18
+
+minute=$(( ($(date +%-H) * 60) + $(date +%-M) ))
+if [[ $minute -gt 345 && $minute -lt 1080 ]]; then
+    min_count=9
+fi
+
+sendmetric() {
+    echo "plasticman.${class}.$1 $2 $(date +%s)" | ncat $carbon_server $carbon_port
+}
+
+outlog() {
+    logger -p user.info -t "$name[$$]" "$class: $1"
+}
+
+scaledown() {
+    outlog "scaling down"
+    sendmetric scale.down.start 1 
+    ansible-playbook ~/ansible-aws/ansible/spindown_${class}.yml
+    sendmetric scale.down.end 1
+    outlog "finished scaling down"
+}
+
+scaleup() {
+    outlog "scaling up"
+    sendmetric scale.up.start 1
+    ansible-playbook ~/ansible-aws/ansible/spinup_${class}.yml
+    sendmetric scale.up.end 1
+    outlog "finished scaling up"
+}
+
+count=$(ansible --list-hosts "tag_Class_$class:&tag_Status_production" | awk '/  hosts \(/{gsub(/[():]/, "", $2); print $2}')
+sendmetric count $count
+
+rup=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.up.*&from=-12minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
+rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.*.*&from=-60minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
+
+if [[ ${rup[0]} -eq 0 && ${rscale[0]} -eq 0 ]]; then
+    outlog "no event data"
+    # try to fake an event so this won't happen on future runs
+    sendmetric scale.down.fake 1
+    exit 1
+fi
+
+rup=${rup[1]}
+rscale=${rscale[1]}
+
+if [[ $count -lt $min_count && $rup -eq 0 ]]; then
+    outlog "$count is below the $min_count floor"
+    scaleup
+    exit 0
+fi
+
+# Check for any datapoints in the last hour where the five minute
+# load average was over 4
+hour=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-1hour&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 4 { x++ } END{ print NR, x }'))
+
+# Check for datapoints in the last twelve minutes where it was over 11
+quint=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-12minutes&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 11 { x++ } END{ print NR, x }'))
+
+if [[ $count -gt $min_count && ${hour[1]} -eq 0 && $rscale -eq 0 ]]; then
+    if [[ ${hour[0]} -lt 30 ]]; then
+        outlog "too few datapoints to scale down"
+    else
+        scaledown
+    fi
+elif [[ ${quint[1]} -gt 2 && $rup -eq 0 ]]; then
+    if [[ $count -ge $max_count ]]; then
+        outlog "$count plus additional hosts is above the $max_count ceiling"
+    else
+        scaleup
+    fi
+fi
+
