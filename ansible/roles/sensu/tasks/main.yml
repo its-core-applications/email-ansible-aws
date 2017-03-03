@@ -41,6 +41,19 @@
   notify: Restart sensu
   tags: mutable
 
+- name: Install sensu-dynsubs
+  copy:
+    dest: /usr/local/sbin/sensu-dynsubs
+    src: sensu-dynsubs
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Schedule sensu-dynsubs
+  cron:
+    name: update sensu subscriptions
+    job: /usr/local/sbin/sensu-dynsubs
+
 - name: Install sensu plugins
   become_user: sensu
   gem:

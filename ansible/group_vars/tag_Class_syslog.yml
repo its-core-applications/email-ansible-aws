@@ -1,5 +1,2 @@
 ---
 
-sensu_subscriptions:
-  - master
-  - Status_production
