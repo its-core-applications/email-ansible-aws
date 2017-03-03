@@ -11,6 +11,6 @@
     record: "rbldnsd.{{ subd }}"
     type: "A"
     ttl: 60
-    value: "{{ groups.tag_Class_rbl intersect(groups.tag_Status_production | default([])) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
+    value: "{{ groups.tag_Class_rbl | intersect(groups.tag_Status_production | default([])) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
   when: groups.tag_Class_rbl | intersect(groups.tag_Status_production | default([])) | length > 0
 
