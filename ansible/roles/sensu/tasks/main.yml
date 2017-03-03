@@ -10,8 +10,11 @@
 
 - name: Install sensu
   yum:
-    pkg: sensu
+    pkg: "{{ item }}"
     state: latest
+  with_items:
+    - sensu
+    - python2-boto3
   notify: Restart sensu
 
 - name: Fix permissions on /opt/sensu
