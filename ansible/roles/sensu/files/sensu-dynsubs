@@ -47,7 +47,6 @@ hash2 = hashlib.sha512()
 hash2.update(newconf)
 
 if hash1.digest() != hash2.digest():
-    print 'Updating subscription configuration'
     try:
       with open(subfile, 'w') as cfile:
         cfile.write(newconf)
@@ -55,9 +54,6 @@ if hash1.digest() != hash2.digest():
         print 'Failed to write subscription file'
         sys.exit(1)
 
-    print 'Restarting sensu-client'
     systemd = dbus.Interface(dbus.SystemBus().get_object('org.freedesktop.systemd1', '/org/freedesktop/systemd1'), 'org.freedesktop.systemd1.Manager')
     systemd.TryRestartUnit('sensu-client.service', 'fail')
 
-else:
-    print 'Subscription file is up to date'
