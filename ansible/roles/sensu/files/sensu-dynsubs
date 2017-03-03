@@ -3,7 +3,6 @@ import boto3
 import dbus
 import hashlib
 import json
-import os.path
 import re
 import sys
 import urllib2
@@ -23,7 +22,7 @@ instance = client.Instance(iid)
 config = { 'client': { 'subscriptions': [] }}
 
 for tag in instance.tags:
-    if tag['Key'] not in reject_tags:
+    if tag['Key'] not in reject_tags and tag['Value'] != 'no':
         # Mutate it like the dynamic inventory script does (more or less)
         if tag['Value'] == 'yes':
             subscription = re.sub('[^A-Za-z0-9\_]', '_', tag['Key']);
