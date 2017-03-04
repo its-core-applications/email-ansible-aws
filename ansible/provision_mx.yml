@@ -70,6 +70,7 @@
         body_format: json
         body:
           name: "{{ item }}.{{ subd }}"
+          elb_name: "{{ item }}"
           address: ""
           subscriptions:
             - Class_elb
