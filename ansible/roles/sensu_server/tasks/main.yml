@@ -71,6 +71,7 @@
     - check_cert.json
     - check_clamav.json
     - check_dnsbl.json
+    - check_elb.json
     - check_rbldnsd.json
     - check_redis.json
     - check_simta.json
@@ -96,29 +97,4 @@
   with_items:
     - sensu-plugins-sensu
     - sensu-plugins-graphite
-
-- name: Configure ELB checks
-  sensu_check:
-    name: "elb-{{ item }}"
-    path: /etc/sensu/conf.d/check_elb.json
-    command: "{{ sensu_plugin_path }}/check-elb-nodes.rb -r {{ aws_region }} -n {{ item }} -W 66 -C 33"
-    interval: 120
-    timeout: 90
-    source: "{{ item }}.{{ subd }}"
-    subscribers:
-      - roundrobin:Class_mx
-  with_items: "{{ mx_names }}"
-  notify: Restart sensu server
-
-- meta: flush_handlers
-
-- name: Set production status for proxy clients
-  command: >
-    curl -s -i -X POST -H 'Content-Type: application/json'
-    -d '{"name":"{{ item }}.{{ subd }}","address":"","subscriptions":["Status_production"]}'
-    http://127.0.0.1:4567/clients
-  with_flattened:
-    - egress
-    - pink
-    - "{{ mx_names }}"
 

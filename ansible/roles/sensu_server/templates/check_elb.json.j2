@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "elb-nodes": {
+      "command": "{{ sensu_plugin_path }}/check-elb-nodes.rb -r {{ aws_region }} -n :::name::: -W 66 -C 33",
+      "subscribers": [
+        "roundrobin:Class_egress"
+      ],
+      "interval": 120,
+      "timeout": 90,
+      "proxy_requests": {
+        "client_attributes": {
+          "subscriptions": "eval: value.include?'Class_elb'"
+        }
+      }
+    }
+  }
+}

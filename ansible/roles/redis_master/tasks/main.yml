@@ -23,3 +23,16 @@
   changed_when: "result.rc == 0"
   when: groups.tag_redis_yes is defined
 
+- name: Register sensu proxy client for redis cluster
+  uri:
+    url: http://syslog.{{ subd }}:4567/clients
+    method: POST
+    body_format: json
+    body:
+      name: "pink.{{ subd }}"
+      address: ""
+      subscriptions:
+        - Class_redis_cluster
+        - Status_production
+    status_code: 201
+

@@ -78,3 +78,17 @@
   tasks:
     - meta: refresh_inventory
     - include: task_dns_egress.yml
+
+    - name: Register sensu proxy client for redis cluster
+      uri:
+        url: http://syslog.{{ subd }}:4567/clients
+        method: POST
+        body_format: json
+        body:
+          name: "egress.{{ subd }}"
+          address: ""
+          subscriptions:
+            - Status_production
+            - tls
+        status_code: 201
+

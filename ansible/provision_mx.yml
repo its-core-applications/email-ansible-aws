@@ -62,3 +62,19 @@
       with_items: "{{ result.results }}"
       loop_control:
         label: "{{ item.elb.name }}.{{ subd }} -> {{ item.elb.dns_name }}"
+
+    - name: Register sensu proxy client for MX loadbalancer(s)
+      uri:
+        url: http://syslog.{{ subd }}:4567/clients
+        method: POST
+        body_format: json
+        body:
+          name: "{{ item }}.{{ subd }}"
+          address: ""
+          subscriptions:
+            - Class_elb
+            - Status_production
+            - tls
+        status_code: 201
+      with_items: "{{ mx_names }}"
+

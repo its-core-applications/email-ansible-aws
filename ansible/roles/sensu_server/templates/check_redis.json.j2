@@ -9,13 +9,17 @@
       "interval": 60
     },
     "redis-cluster": {
-      "command": "/usr/local/collaboration/check-redis-cluster -c pink.{{ subd }}",
+      "command": "/usr/local/collaboration/check-redis-cluster -c :::name:::",
       "subscribers": [
-        "roundrobin:Class_mx"
+        "roundrobin:Class_egress"
       ],
-      "source": "pink.{{ subd }}",
       "occurrences": 2,
-      "interval": 60
+      "interval": 60,
+      "proxy_requests": {
+        "client_attributes": {
+          "subscriptions": "eval: value.include?'Class_redis_cluster'"
+        }
+      }
     }
   }
 }
