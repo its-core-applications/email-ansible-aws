@@ -7,39 +7,11 @@
   notify: Reconfigure rbldnsd
 
 - name: Configure rbldnsd
-  template:
+  copy:
     dest: /etc/sysconfig/rbldnsd
-    src: rbldnsd.j2
+    src: rbldnsd
     owner: root
     group: root
     mode: 0644
   notify: Reconfigure rbldnsd
-
-- name: Install SSH private key
-  template:
-    dest: /root/.ssh/id_rsa.rbldnsd
-    src: id_rsa.j2
-    owner: root
-    group: root
-    mode: 0400
-
-- name: Install sync script
-  template:
-    dest: /usr/local/sbin/rbl-sync
-    src: rbl-sync.j2
-    owner: root
-    group: root
-    mode: 0755
-
-- name: Sync RBLs
-  command: /usr/local/sbin/rbl-sync
-  tags: mutable
-
-- name: Schedule syncing
-  copy:
-    dest: /etc/cron.d/rbl-sync
-    src: rbl-sync.cron
-    owner: root
-    group: root
-    mode: 0644
 

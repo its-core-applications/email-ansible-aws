@@ -9,4 +9,5 @@
       simta_tls: false
       tags: simta
     - { role: rbldnsd, tags: rbldnsd }
+    - { role: rbldnsd_sync, tags: rbldnsd }
     - { role: sensu, tags: sensu }

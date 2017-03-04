@@ -1,4 +1,4 @@
-RBLDNSD="- -q -a -t 30::300 -b localhost {% for ip in hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] %}-b {{ ip }} {% endfor %} \
+RBLDNSD="- -q -a -t 30::300 -b 0.0.0.0 \
         mx-accept.dnsal:ip4set:/var/lib/rbldnsd/umich/mx-accept \
         mx-trust.dnsal:ip4set:/var/lib/rbldnsd/umich/mx-trust \
         penaltybox-skip.dnsal:ip4set:/var/lib/rbldnsd/umich/penaltybox-skip,/var/lib/rbldnsd/umich/umnets,/var/lib/rbldnsd/umich/mx-accept \

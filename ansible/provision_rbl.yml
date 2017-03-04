@@ -1,6 +1,8 @@
 ---
 
 - include: task_find_ami.yml
+  vars:
+    launch_class: rbl
 
 - hosts: localhost
   connection: local
@@ -28,8 +30,6 @@
       register: ec2
 
 - include: task_wait_for_launched.yml
-
-- include: rbl.yml
 
 - hosts: localhost
   connection: local
