@@ -79,7 +79,7 @@
     - meta: refresh_inventory
     - include: task_dns_egress.yml
 
-    - name: Register sensu proxy client for redis cluster
+    - name: Register sensu proxy client for egress
       uri:
         url: http://syslog.{{ subd }}:4567/clients
         method: POST
