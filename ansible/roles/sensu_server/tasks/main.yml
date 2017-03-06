@@ -10,7 +10,7 @@
     state: present
     purge_subscriptions: no
     subscriptions:
-      - endpoint: "{{ ops_pager }}"
+      - endpoint: "{{ lookup('hashi_vault', 'secret=secret/phone/pager') }}"
         protocol: 'sms'
 
 - name: Create SNS topic for email
