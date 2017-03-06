@@ -1,4 +1,0 @@
----
-# This is mainly a place to put Vault lookups that isn't all.yml, for now.
-
-sensu_rabbitmq_password: "{{ lookup( 'hashi_vault', 'secret=secret/sensu/rabbitmq' ) }}"

@@ -52,7 +52,7 @@
   rabbitmq_user:
     name: sensu
     state: present
-    password: "{{ sensu_rabbitmq_password }}"
+    password: "{{ lookup('hashi_vault', 'secret=secret/sensu/rabbitmq') }}"
     permissions:
       - vhost: /sensu
         configure_priv: .*

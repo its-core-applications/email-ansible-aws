@@ -4,7 +4,7 @@
     "port": 5672,
     "vhost": "/sensu",
     "user": "sensu",
-    "password": "{{ sensu_rabbitmq_password }}"
+    "password": "{{ lookup('hashi_vault', 'secret=secret/sensu/rabbitmq') }}"
   }
 }
 
