@@ -18,9 +18,9 @@
     mode: 0700
 
 - name: Install private SSH key
-  template:
+  copy:
     dest: /var/lib/clamav/.ssh/id_rsa
-    src: id_rsa.j2
+    content: "{{ lookup('hashi_vault', 'secret=secret/ssh/clamav' ) }}"
     owner: clamupdate
     group: clamupdate
     mode: 0400

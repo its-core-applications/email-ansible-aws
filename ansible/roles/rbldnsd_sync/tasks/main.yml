@@ -1,9 +1,9 @@
 ---
 
 - name: Install SSH private key
-  template:
+  copy:
     dest: /root/.ssh/id_rsa.rbldnsd
-    src: id_rsa.j2
+    content: "{{ lookup('hashi_vault', 'secret=secret/ssh/rbldnsd' ) }}"
     owner: root
     group: root
     mode: 0400

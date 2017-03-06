@@ -55,9 +55,9 @@
   tags: configuration
 
 - name: Install ssh key for simta
-  template:
+  copy:
     dest: /var/spool/simta/.ssh/id_rsa
-    src: id_rsa.j2
+    content: "{{ lookup('hashi_vault', 'secret=secret/ssh/simta' ) }}"
     owner: simta
     group: mail
     mode: 0400
