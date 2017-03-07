@@ -1,0 +1,23 @@
+---
+
+- hosts: localhost
+  become: false
+  tasks:
+    - name: Create IAM roles for SSO
+      iam_role:
+        name: "{{ item.name }}"
+        state: present
+        assume_role_policy_document:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 'sts:AssumeRoleWithSAML'
+              Principal:
+                Federated: "{{ aws_iam_saml }}"
+              Condition:
+                StringEquals:
+                  'SAML:aud': 'https://signin.aws.amazon.com/saml'
+        managed_policy: "{{ item.policies }}"
+      with_items: "{{ aws_iam_groups }}"
+      loop_control:
+        label: "{{ item.name }}"
