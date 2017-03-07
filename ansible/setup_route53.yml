@@ -1,0 +1,28 @@
+---
+
+- hosts: localhost
+  become: false
+  tasks:
+    - name: "Create {{ subd }}"
+      route53_zone:
+        zone: "{{ subd }}"
+        state: present
+
+    - name: "Get SOA for {{ subd }}"
+      route53:
+        command: get
+        zone: "{{ subd }}"
+        record: "{{ subd }}"
+        type: SOA
+      register: result
+
+    - name: "Set SOA for {{ subd }}"
+      route53:
+        command: create
+        overwrite: yes
+        zone: "{{ subd }}"
+        record: "{{ subd }}"
+        type: SOA
+        ttl: 300
+        value: "{{ result.set.value.split()[0:3] | join(' ') }} 7200 900 1209600 60"
+
