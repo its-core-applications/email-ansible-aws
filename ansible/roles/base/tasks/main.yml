@@ -20,6 +20,7 @@
     owner: root
     group: root
     mode: 0440
+    validate: 'visudo -cf %s'
   tags: mutable
 
 - name: Customize environment
