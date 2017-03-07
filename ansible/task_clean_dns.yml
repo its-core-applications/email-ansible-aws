@@ -33,5 +33,5 @@
       when:
         - item.Type == 'CNAME'
         - item.ResourceRecords.0.Value | match('.+\.compute\.amazonaws\.com')
-        - item.Name | replace(subd ~ '.', subd) not in hostvars
+        - item.Name[:-1] not in hostvars
 
