@@ -1,6 +1,6 @@
 ---
 
-- include: task_create_securitygroups.yml
+- include: setup_securitygroups.yml
 - include: spindown_master.yml
 - include: provision_master.yml
 

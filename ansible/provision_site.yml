@@ -1,6 +1,6 @@
 ---
 
-- include: task_create_securitygroups.yml
+- include: setup_securitygroups.yml
 - include: provision_syslog.yml
 - include: provision_rbl.yml
 - include: provision_egress.yml
