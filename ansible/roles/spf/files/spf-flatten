@@ -1,0 +1,110 @@
+#!/usr/bin/env python
+
+import argparse
+import dns.resolver
+import netaddr
+import re
+
+ip_list = []
+unresolvable_mechs = []
+
+def main():
+    parser = argparse.ArgumentParser()
+    target_parser = parser.add_mutually_exclusive_group(required=True)
+    target_parser.add_argument('-d', '--domain', help='SPF domain')
+    target_parser.add_argument('-r', '--record', help='SPF record')
+    parser.add_argument('-t', '--txt', action='store_true', help='Return a pre-formatted TXT record')
+    parser.add_argument('-u', '--unresolvable', action='store_true', help='Include unresolvable mechanisms')
+    args = parser.parse_args()
+
+    if args.domain:
+        parse_domain(args.domain)
+    elif args.record:
+        parse_record(args.record, None)
+
+    merged_ip_list = netaddr.cidr_merge(ip_list)
+
+    spf = [ 'v=spf1' ]
+    for ip in merged_ip_list:
+        if ip.version == 6:
+            spf.append('ip6:' + str(ip.cidr).replace('/128', ''))
+        else:
+            spf.append('ip4:' + str(ip.cidr).replace('/32', ''))
+    if args.unresolvable:
+        spf.extend(unresolvable_mechs)
+    spf.append('~all')
+
+    if args.txt:
+        raw_record = ' '.join(spf)
+        cooked_record = [raw_record[i:i+255] for i in range(0, len(raw_record), 255)]
+        print '"' + '" "'.join(cooked_record) + '"'
+    else:
+        print ' '.join(spf)
+
+def parse_domain(domain):
+    try:
+        records = dns.resolver.query(domain, 'TXT')
+    except dns.exception.DNSException:
+        return
+
+    for record in records:
+        parse_record(record, domain)
+
+def parse_record(record, domain):
+    # Collapse the record into a single unquoted string and split it
+    fields = str(record).strip('"').replace('" "', '').split()
+    if fields[0] == 'v=spf1':
+        for field in fields:
+            parse_mech(field, domain)
+
+def parse_mech(mech, domain):
+    value = None
+    match = re.match(r'([+-?~]{0,1})([a-z0-9]+)[:=]{0,1}(.*)', mech)
+    if match:
+        if match.group(1) and match.group(1) != '+':
+            return
+        mech = match.group(2)
+        value = match.group(3)
+    else:
+        return
+
+    if mech == 'a':
+        resolve_addr(value if value else domain)
+    elif mech == 'mx':
+        resolve_mx(value if value else domain)
+    elif mech == 'ip4' or mech == 'ip6':
+        ip_list.append(netaddr.IPNetwork(value))
+    elif mech == 'ptr':
+        unresolvable_mechs.append('ptr:' + (value if value else domain))
+    elif mech == 'exists':
+        unresolvable_mechs.append('exists:' + value)
+    elif mech == 'redirect' or mech == 'include':
+        parse_domain(value)
+
+# Resolve address records and add them to the list
+def resolve_addr(domain):
+    try:
+        records = dns.resolver.query(domain, 'A')
+        for ip in records:
+            ip_list.append(netaddr.IPNetwork(str(ip)))
+    except dns.exception.DNSException:
+        pass
+
+    try:
+        records = dns.resolver.query(domain, "AAAA")
+        for ip in records:
+            ip_list.append(netaddr.IPNetwork(str(ip)))
+    except dns.exception.DNSException:
+        pass
+
+# Resolve MX records and add them to the list
+def resolve_mx(domain):
+    try:
+        records = dns.resolver.query(domain, "MX")
+    except dns.exception.DNSException:
+        return
+
+    for record in records:
+        resolve_addr(str(record).split(' ')[1])
+
+if __name__ == "__main__": main()

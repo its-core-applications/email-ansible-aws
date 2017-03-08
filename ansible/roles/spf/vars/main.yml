@@ -1,0 +1,7 @@
+---
+
+spf_default: 'include:spfexpansiondummy.mail.umich.edu'
+spf_specific:
+  - name: ezekielh
+    record: 'include:marwnad.com'
+

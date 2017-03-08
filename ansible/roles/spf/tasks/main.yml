@@ -1,0 +1,51 @@
+---
+
+- name: Install script dependencies
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - python-dns
+    - python-netaddr
+
+- name: Install spf-flatten script
+  copy:
+    dest: /usr/local/sbin/spf-flatten
+    src: spf-flatten
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create _spf zone
+  route53_zone:
+    zone: "_spf.{{ subd }}"
+    state: present
+
+- name: Get NS records for the zone
+  route53:
+    command: get
+    zone: "_spf.{{ subd }}"
+    record: "_spf.{{ subd }}"
+    type: NS
+  register: result
+
+- debug: var=result
+
+- name: Delegate zone
+  route53:
+    command: create
+    zone: "{{ subd }}"
+    record: "_spf.{{ subd }}"
+    type: NS
+    ttl: 86400
+    value: "{{ result.nameservers | join(', ') }}"
+
+- name: Create default record
+  route53:
+    command: create
+    overwrite: yes
+    zone: "_spf.{{ subd }}"
+    record: "*._spf.{{ subd }}"
+    type: TXT
+    ttl: 600
+    value: "{{ lookup('pipe', '/usr/local/sbin/spf-flatten -t -r \"v=spf1 ' ~ spf_default ~ '\"') }}"
