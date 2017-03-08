@@ -1,0 +1,5 @@
+---
+
+splunk_version: 6.5.2
+splunk_rpm: splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm
+splunk_checksum: 'sha256:890c536f2edc93be5075b6333d9257b3dbd9cb712028b6decab61de6c931e49a'
