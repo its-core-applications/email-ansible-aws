@@ -11,7 +11,7 @@
     - { role: build_simta, tags: simta }
     - { role: build_spamassassin, tags: spamassassin }
     - { role: build_clamav, tags: clamav }
-    - { role: build_dash, tags: dash }
+#    - { role: build_dash, tags: dash }
     - { role: build_mscan, tags: mscan }
     - { role: build_simta-admin, tags: simta-admin }
     - { role: build_redis, tags: redis }
