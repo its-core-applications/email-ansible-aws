@@ -13,7 +13,9 @@ def main():
     target_parser = parser.add_mutually_exclusive_group(required=True)
     target_parser.add_argument('-d', '--domain', help='SPF domain')
     target_parser.add_argument('-r', '--record', help='SPF record')
-    parser.add_argument('-t', '--txt', action='store_true', help='Return a pre-formatted TXT record')
+    format_parser = parser.add_mutually_exclusive_group()
+    format_parser.add_argument('-s', '--splunk', action='store_true', help='Return a Splunk search')
+    format_parser.add_argument('-t', '--txt', action='store_true', help='Return a pre-formatted TXT record')
     parser.add_argument('-u', '--unresolvable', action='store_true', help='Include unresolvable mechanisms')
     args = parser.parse_args()
 
@@ -24,22 +26,28 @@ def main():
 
     merged_ip_list = netaddr.cidr_merge(ip_list)
 
-    spf = [ 'v=spf1' ]
-    for ip in merged_ip_list:
-        if ip.version == 6:
-            spf.append('ip6:' + str(ip.cidr).replace('/128', ''))
-        else:
-            spf.append('ip4:' + str(ip.cidr).replace('/32', ''))
-    if args.unresolvable:
-        spf.extend(unresolvable_mechs)
-    spf.append('~all')
-
-    if args.txt:
-        raw_record = ' '.join(spf)
-        cooked_record = [raw_record[i:i+255] for i in range(0, len(raw_record), 255)]
-        print '"' + '" "'.join(cooked_record) + '"'
+    spf = []
+    if args.splunk:
+      for ip in merged_ip_list:
+        spf.append('simta_client_ip=' + str(ip.cidr))
+      print '(' + ' OR '.join(spf) + ')'
     else:
-        print ' '.join(spf)
+        spf = [ 'v=spf1' ]
+        for ip in merged_ip_list:
+            if ip.version == 6:
+                spf.append('ip6:' + str(ip.cidr).replace('/128', ''))
+            else:
+                spf.append('ip4:' + str(ip.cidr).replace('/32', ''))
+        if args.unresolvable:
+            spf.extend(unresolvable_mechs)
+        spf.append('~all')
+
+        if args.txt:
+            raw_record = ' '.join(spf)
+            cooked_record = [raw_record[i:i+255] for i in range(0, len(raw_record), 255)]
+            print '"' + '" "'.join(cooked_record) + '"'
+        else:
+            print ' '.join(spf)
 
 def parse_domain(domain):
     try:
