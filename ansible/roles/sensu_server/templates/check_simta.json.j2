@@ -10,7 +10,7 @@
       "interval": 60
     },
     "simta-expansion": {
-      "command": "/usr/local/collaboration/check-simta-expansion -g simta.expansion.test@umich.edu -t success@devnull.mail.umich.edu",
+      "command": "/usr/libexec/simta-admin/check-simta-expansion -g simta.expansion.test@umich.edu -t success@devnull.mail.umich.edu",
       "subscribers": [
         "Class_mx_test",
         "Class_mx"
@@ -18,7 +18,7 @@
       "interval": 60
     },
     "simta-queue-fast": {
-      "command": "/usr/local/collaboration/check-simta-queue -q fast -w :::extra.simta.fastqwarn|1000::: -c :::extra.simta.fastqmax|2000:::",
+      "command": "/usr/libexec/simta-admin/check-simta-queue -q fast -w :::extra.simta.fastqwarn|1000::: -c :::extra.simta.fastqmax|2000:::",
       "subscribers": [
         "Class_mx_test",
         "Class_mx",
@@ -27,7 +27,7 @@
       "interval": 60
     },
     "simta-queue-slow": {
-      "command": "/usr/local/collaboration/check-simta-queue -q slow -w :::extra.simta.slowqwarn|100::: -c :::extra.simta.slowqmax|200:::",
+      "command": "/usr/libexec/simta-admin/check-simta-queue -q slow -w :::extra.simta.slowqwarn|100::: -c :::extra.simta.slowqmax|200:::",
       "subscribers": [
         "Class_mx_test",
         "Class_mx",
@@ -36,7 +36,7 @@
       "interval": 60
     },
     "simta-queue-local": {
-      "command": "/usr/local/collaboration/check-simta-queue -q local -w :::extra.simta.localqwarn|100::: -c :::extra.simta.localqmax|20:::",
+      "command": "/usr/libexec/simta-admin/check-simta-queue -q local -w :::extra.simta.localqwarn|100::: -c :::extra.simta.localqmax|20:::",
       "subscribers": [
         "Class_mx_test",
         "Class_mx",
@@ -45,7 +45,7 @@
       "interval": 60
     },
     "simta-queue-ownership": {
-      "command": "/usr/local/collaboration/check-simta-queue-ownership",
+      "command": "/usr/libexec/simta-admin/check-simta-queue-ownership",
       "subscribers": [
         "Class_mx_test",
         "Class_mx",
@@ -54,7 +54,7 @@
       "interval": 60
     },
     "simta-queue-fast-age": {
-      "command": "/usr/local/collaboration/check-simta-queue-age -q fast -a 120 -c 0",
+      "command": "/usr/libexec/simta-admin/check-simta-queue-age -q fast -a 120 -c 0",
       "subscribers": [
         "Class_mx_test",
         "Class_mx",
@@ -64,7 +64,7 @@
     },
     "simta-metrics": {
       "type": "metric",
-      "command": "/usr/local/collaboration/metrics-simta",
+      "command": "/usr/libexec/simta-admin/metrics-simta -l 10",
       "subscribers": [
         "Class_mx_test",
         "Class_mx",

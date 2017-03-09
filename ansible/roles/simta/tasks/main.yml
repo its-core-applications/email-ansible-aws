@@ -154,22 +154,7 @@
     daemon_reload: true
     enabled: yes
 
-- name: Install local monitoring scripts
-  copy:
-    dest: "/usr/local/collaboration/{{ item }}"
-    src: "{{ item }}"
-    owner: collaborate
-    group: nonpeople
-    mode: 0755
-  with_items:
-    - check-simta-expansion
-    - check-simta-queue
-    - check-simta-queue-ownership
-    - check-simta-queue-age
-    - check-simta-queue-jailed
-    - metrics-simta
-
-- name: Install templated monitoring scripts
+- name: Install custom monitoring scripts
   template:
     dest: "/usr/local/collaboration/{{ item }}"
     src: "{{ item }}.j2"
