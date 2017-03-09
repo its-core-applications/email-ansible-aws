@@ -25,4 +25,3 @@
     - { role: ansible_master, tags: ansible }
     - { role: dashboard, tags: dashboard }
     - { role: grafana, tags: grafana }
-    - { role: spf, tags: spf }

@@ -1,7 +1,41 @@
 ---
 
-spf_default: 'include:spfexpansiondummy.mail.umich.edu'
-spf_specific:
-  - name: ezekielh
-    record: 'include:marwnad.com'
+spf_main:
+  - name: _umich
+    record: "ip4:141.211.12.0/23 ip4:141.211.14.0/25 ip4:141.211.14.128/27 ip4:141.211.90.64/28 ip4:141.211.125.0/24 ip4:141.211.176.128/27 ip4:141.211.91.0/26 ip4:141.211.76.102 include:_umich2.{{ spfd }}"
+  - name: _umich2
+    record: 'ip4:141.215.69.0/24 ip4:35.161.254.188 ip4:35.162.59.88 ip4:52.37.117.118 ip4:141.211.4.224 ip4:141.211.61.69 ip4:141.214.17.0/24 ip4:34.192.174.128 ip4:52.21.120.56 ip4:52.44.166.222'
+
+spf_thirdparty:
+  - names: [ '*' ]
+    record: 'include:outboundmail.convio.net ip4:205.139.105.0/23 ip4:206.79.6.0/24 include:spf.mandrillapp.com ip4:72.55.140.81 include:servers.mcsv.net include:e2ma.net include:cust-spf.exacttarget.com ip4:199.231.134.72 ip4:199.231.134.73 ip4:198.58.97.164 ip4:50.116.17.165 ip6:2600:3c00::f03c:91ff:fe6e:bbb8 ip4:216.177.90.7 a:sympmail.symplicity.com include:rnmk.com ip4:69.16.208.122 ip4:162.247.216.0/22'
+  - names:
+      - ae-lit-mysql
+      - ae-lit-root
+      - hathitrust-system
+    record: 'ip4:134.68.0.0/16'
+  - names: [ dpss-emergency-alert ]
+    record: 'include:spf.blackboardconnect.com'
+  - names: [ fin-riskmgmt.general ]
+    record: 'ip4:170.30.248.28'
+  - names: [ fleetrental ]
+    record: 'ip4:209.25.178.7'
+  - names: [ lawlibnotices ]
+    record: 'include:umil.iii.com'
+  - names: [ mlearninginfo ]
+    record: 'include:sabacloud.com'
+  - names: [ moa-mustech ]
+    record: 'ip4:96.30.56.221 ip4:192.138.19.78'
+  - names: [ printingservices ]
+    record: 'ip4:162.213.47.4 ip4:162.213.47.252 ip4:162.213.47.253 ip4:162.253.34.43'
+  - names: [ pubstoreowners ]
+    record: 'include:_spf.bigcommerce.com'
+  - names: [ rosscareerservices ]
+    record: 'ip4:209.143.65.64/26 ip4:98.102.12.0/28'
+  - names: [ student.employment ]
+    record: 'include:ngwebsolutions.net'
+  - names: [ umdearborn-orsp ]
+    record: 'ip4:204.232.182.157'
+  - names: [ umich.procurement ]
+    record: 'ip4:66.45.4.80 ip4:66.179.241.200/29 ip4:66.179.241.208 ip4:173.252.161.148'
 

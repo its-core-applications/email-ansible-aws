@@ -2,6 +2,7 @@
 
 tld: "{{ lookup( 'env', 'TLD' ) }}"
 subd: "a.mail.{{ tld }}"
+spfd: "spf.mail.{{ tld }}"
 
 aws_region: us-west-2
 aws_vpn_vpc: vpc-18bcc77c
