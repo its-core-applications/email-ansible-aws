@@ -7,7 +7,3 @@ simta_filters: false
 simta_dkim: true
 simta_connlimit: 0
 trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro' ) }}"
-sensu_extra:
-  simta:
-    slowqwarn: 1000
-    slowqmax: 2000

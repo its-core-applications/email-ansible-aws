@@ -1,0 +1,7 @@
+---
+
+sensu_extra:
+  simta:
+    fastqmax: 20
+    fastqwarn: 10
+

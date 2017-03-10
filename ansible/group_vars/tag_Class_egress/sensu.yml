@@ -1,0 +1,7 @@
+---
+
+sensu_extra:
+  simta:
+    slowqwarn: 1500
+    slowqmax: 2000
+
