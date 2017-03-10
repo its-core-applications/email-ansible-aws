@@ -24,7 +24,7 @@
     record: "{{ item.name }}.{{ spfd }}"
     type: TXT
     ttl: 600
-    value: "\"v=spf1 {{ item.record }} ~all\""
+    value: "{{ lookup('pipe', '/usr/local/sbin/spf-flatten -t -r \"v=spf1 ' ~ item.record ~ '\"') }}"
   with_items: "{{ spf_main }}"
 
 - name: Create third-party SPF records
