@@ -19,38 +19,15 @@
 
 - include: task_find_subnets.yml
 
-- name: Get EFS security group facts
-  become: false
-  delegate_to: localhost
-  ec2_group_facts:
-    region: "{{ aws_region }}"
-    filters:
-      vpc-id: "{{ aws_vpc }}"
-      group-name: EFS
-  register: efs_sg
-
-- name: Create EFS for /home
-  become: false
-  delegate_to: localhost
-  efs:
-    region: "{{ aws_region }}"
-    # This value is only special in that our initial EFS setup in us-west-2
-    # was via the console, and we don't want to move the data to a new one.
-    # Other regions will just have to suffer along with it.
-    name: console-edbd768c-4947-472b-8773-515fc2578fb2
-    state: present
-    tags:
-      Name: home
-    targets: "{{ ec2_subnets | json_query(target_query) }}"
-    wait: yes
-  vars:
-    target_query: "subnets[*].{subnet_id: id, security_groups: ['{{ efs_sg.security_groups.0.group_id }}']}"
-  register: result
+- name: Create filesystem for /home
+  filesystem:
+    dev: /dev/xvdd
+    fstype: xfs
+    force: no
 
 - name: Mount /home
   mount:
     name: /home
-    src: "{{ result.efs.file_system_id }}.efs.{{ aws_region }}.amazonaws.com:/"
-    fstype: nfs4
-    opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noatime
+    src: /dev/xvdd
+    fstype: xfs
     state: mounted
