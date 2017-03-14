@@ -1,0 +1,19 @@
+---
+
+- name: Download RPMs
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/var/tmp/{{ item.rpm }}"
+    checksum: "{{ item.checksum }}"
+  with_items: "{{ rpm_downloads }}"
+
+- name: Upload RPMs
+  s3:
+    bucket: "{{ yum_hostname }}"
+    region: "{{ yum_aws_region }}"
+    mode: put
+    permission: public-read
+    object: "{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/{{ item.rpm }}"
+    src: "/var/tmp/{{ item.rpm }}"
+    overwrite: never
+  with_items: "{{ rpm_downloads }}"

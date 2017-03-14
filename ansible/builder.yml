@@ -5,7 +5,7 @@
     - { role: base, tags: base }
     - { role: rpmbuild, tags: always }
     - { role: localrepo, tags: always }
-    - { role: build_splunkforwarder, tags: splunk }
+    - { role: download_rpm, tags: prebuilt }
     - { role: build_comint, tags: comint }
     - { role: build_jemalloc, tags: jemalloc }
     - { role: build_simta, tags: simta }

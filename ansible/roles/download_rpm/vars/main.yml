@@ -1,0 +1,15 @@
+---
+
+rpm_downloads:
+  - name: splunk
+    rpm: splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm
+    url: 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.2&product=universalforwarder&filename=splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm&wget=true'
+    checksum: 'sha256:890c536f2edc93be5075b6333d9257b3dbd9cb712028b6decab61de6c931e49a'
+  - name: cjose
+    rpm: cjose-0.4.1-1.el7.centos.x86_64.rpm
+    url: 'https://github.com/pingidentity/mod_auth_openidc/releases/download/v2.1.3/cjose-0.4.1-1.el7.centos.x86_64.rpm'
+    checksum: 'sha256:37a93d7cd98012915a0940f281388b22a12ea325e2b8f5d83e89278ca9da21a5'
+  - name: mod_auth_openidc
+    rpm: mod_auth_openidc-2.1.6-1.el7.centos.x86_64.rpm
+    url: 'https://github.com/pingidentity/mod_auth_openidc/releases/download/v2.1.6/mod_auth_openidc-2.1.6-1.el7.centos.x86_64.rpm'
+    checksum: 'sha256:8d444197fb481a5d48bcd7c6f3881b49b505072b85b75888d47cd751501290bf'
