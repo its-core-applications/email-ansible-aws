@@ -11,6 +11,7 @@
     },
     {
       "type": "ansible",
+      "ansible_env_vars": [ "ANSIBLE_SSH_PIPELINING=False" ],
       "playbook_file": "ansible/{{ user `image_type` }}.yml",
       "groups": [
         "tag_Class_{{ user `image_type` }}",
