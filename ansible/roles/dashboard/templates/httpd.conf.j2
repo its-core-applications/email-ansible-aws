@@ -15,8 +15,21 @@
     SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
     SSLHonorCipherOrder on
 
+    OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration
+    OIDCClientID {{ lookup('hashi_vault', 'secret=secret/google/dashboard/id') }}
+    OIDCClientSecret {{ lookup('hashi_vault', 'secret=secret/google/dashboard/secret') }}
+    OIDCCryptoPassphrase {{ lookup('hashi_vault', 'secret=secret/google/dashboard/passphrase') }}
+    OIDCRedirectURI https://dashboard.{{ subd }}/login/google
+    OIDCScope "openid email"
+    OIDCAuthRequestParams hd={{ tld }}
+
     <Location />
+        AuthType openid-connect
+        Require claim hd:{{ tld }}
+
         ProxyPass http://syslog.{{ subd }}:3000/
         ProxyPassReverse http://syslog.{{ subd }}:3000/
+
+        RequestHeader set Authorization "Token %{OIDC_CLAIM_email}e"
     </Location>
 </VirtualHost>

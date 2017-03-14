@@ -1,5 +1,10 @@
 ---
 
+- name: Install mod_auth_openidc
+  yum:
+    pkg: mod_auth_openidc
+    state: present
+
 - name: "Configure a vhost for dashboard.{{ subd }}"
   template:
     dest: "/etc/httpd/conf.d/dashboard.{{ subd }}.conf"
