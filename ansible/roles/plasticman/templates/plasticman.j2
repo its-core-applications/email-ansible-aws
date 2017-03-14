@@ -45,7 +45,7 @@ scaleup() {
 }
 
 count=$(ansible --list-hosts "tag_Class_$class:&tag_Status_production" | awk '/  hosts \(/{gsub(/[():]/, "", $2); print $2}')
-sendmetric count $count
+sendmetric hostcount $count
 
 rup=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.up.*&from=-12minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
 rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.*.*&from=-60minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
