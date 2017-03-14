@@ -12,6 +12,19 @@
           "subscriptions": "eval: value.include?'Class_elb'"
         }
       }
+    },
+    "elb-metrics": {
+      "command": "{{ sensu_plugin_path }}/metrics-elb.rb -r {{ aws_region }} -n :::elb_name:::",
+      "subscribers": [
+        "roundrobin:Class_egress"
+      ],
+      "interval": 30,
+      "handler": "graphite",
+      "proxy_requests": {
+        "client_attributes": {
+          "subscriptions": "eval: value.include?'Class_elb'"
+        }
+      }
     }
   }
 }

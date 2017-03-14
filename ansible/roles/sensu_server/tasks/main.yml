@@ -68,6 +68,7 @@
     - redis.json
     - notification_handlers.json
     - handle_deregistration.json
+    - check_aws.json
     - check_cert.json
     - check_clamav.json
     - check_dnsbl.json
