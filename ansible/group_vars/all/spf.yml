@@ -27,15 +27,15 @@ spf_thirdparty:
   - names: [ moa-mustech ]
     record: 'ip4:96.30.56.221 ip4:192.138.19.78'
   - names: [ printingservices ]
-    record: 'ip4:162.213.47.4 ip4:162.213.47.252 ip4:162.213.47.253 ip4:162.253.34.43'
+    record: 'include:pti.com'
   - names: [ pubstoreowners ]
     record: 'include:_spf.bigcommerce.com'
   - names: [ rosscareerservices ]
-    record: 'ip4:209.143.65.64/26 ip4:98.102.12.0/28'
+    record: 'include:mbafocus.com'
   - names: [ student.employment ]
     record: 'include:ngwebsolutions.net'
   - names: [ umdearborn-orsp ]
-    record: 'ip4:204.232.182.157'
+    record: 'a:in4corp.com'
   - names: [ umich.procurement ]
-    record: 'ip4:66.45.4.80 ip4:66.179.241.200/29 ip4:66.179.241.208 ip4:173.252.161.148'
+    record: 'include:sciquest.com'
 
