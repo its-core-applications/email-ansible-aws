@@ -7,9 +7,9 @@
   notify: Restart redis
 
 - name: Configure redis
-  copy:
+  template:
     dest: /etc/redis.conf
-    src: "redis.conf-{{ redis_config }}"
+    src: redis.conf.j2
     owner: redis
     group: root
     mode: 0644

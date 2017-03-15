@@ -1,3 +1,3 @@
 ---
 
-redis_config: cluster
+redis_cluster: true

@@ -2,7 +2,7 @@
 
 dependencies:
   - role: redis
-    redis_config: standalone
+    redis_cluster: false
     tags: redis
   - role: rabbitmq
     tags: rabbitmq

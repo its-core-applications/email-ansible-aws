@@ -4,6 +4,7 @@ syslog-enabled yes
 syslog-facility USER
 dir /var/lib/redis/
 
+{% if redis_cluster %}
 cluster-enabled yes
 cluster-node-timeout 15000
 cluster-slave-validity-factor 0
@@ -12,6 +13,13 @@ cluster-require-full-coverage no
 maxmemory-policy volatile-lru
 maxmemory-samples 10
 
-save 3600 1000
 appendonly no
+{% else %}
+appendonly yes
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+aof-load-truncated yes
+{% endif %}
+
+save 3600 1000
 stop-writes-on-bgsave-error no
