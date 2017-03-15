@@ -9,21 +9,6 @@
     "port": 3000,
     "usersOptions": {
       "defaultTheme": "uchiwa-dark"
-    },
-    "users": [
-{% for user in user_accounts %}
-      {
-        "username": "{{ user.name }}",
-        "accessToken": "{{ user.name }}@{{ tld }}",
-        "password": "{{ user.name }}"
-      },
-{% endfor %}
-      {
-        "username": "guest",
-        "accessToken": "guest",
-        "password": "guest",
-        "readonly": true
-      }
-    ]
+    }
   }
 }

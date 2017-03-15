@@ -1,0 +1,5 @@
+---
+
+ldap_host: ldap.umich.edu
+ldap_base: dc=umich,dc=edu
+ldap_group: cn=ITS Application Delivery Support,ou=User Groups,ou=Groups,dc=umich,dc=edu

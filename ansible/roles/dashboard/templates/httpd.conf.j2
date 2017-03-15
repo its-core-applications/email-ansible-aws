@@ -21,15 +21,32 @@
     OIDCCryptoPassphrase {{ lookup('hashi_vault', 'secret=secret/google/dashboard/passphrase') }}
     OIDCRedirectURI https://dashboard.{{ subd }}/login/google
     OIDCScope "openid email"
-    OIDCAuthRequestParams hd={{ tld }}
+    OIDCRemoteUserClaim email
 
     <Location />
         AuthType openid-connect
-        Require claim hd:{{ tld }}
+        AuthLDAPURL "ldaps://{{ ldap_host }}/{{ ldap_base }}?mail"
+        <Limit GET>
+            Require valid-user
+        </Limit>
+        <LimitExcept GET>
+            <RequireAll>
+                Require claim hd:{{ tld }}
+                Require ldap-group {{ ldap_group }}
+            </RequireAll>
+        </LimitExcept>
 
         ProxyPass http://syslog.{{ subd }}:3000/
         ProxyPassReverse http://syslog.{{ subd }}:3000/
-
-        RequestHeader set Authorization "Token %{OIDC_CLAIM_email}e"
     </Location>
+{% for loc in ['bower_components','config','health','metrics','user'] %}
+    <Location /{{ loc }}>
+        OIDCUnAuthAction pass
+    </Location>
+{% endfor %}
+{% for loc in ['aggregates','checks','clients','datacenters','events','login','logout','request','results','silenced','stashes','subscriptions'] %}
+    <Location /{{ loc }}>
+        OIDCUnAuthAction 401
+    </Location>
+{% endfor %}
 </VirtualHost>
