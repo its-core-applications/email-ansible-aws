@@ -51,6 +51,8 @@ for queue in ${workdir}/inbound/* ; do
     rmdir $queue
 done
 
+find ${workdir}/outbound -empty -delete
+
 err=0
 for qhost in ${qhosts[@]}; do
     if [[ -d ${workdir}/outbound/${qhost} ]]; then
