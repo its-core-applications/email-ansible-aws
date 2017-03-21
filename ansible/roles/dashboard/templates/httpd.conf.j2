@@ -46,7 +46,12 @@
 {% endfor %}
 {% for loc in ['aggregates','checks','clients','datacenters','events','login','logout','request','results','silenced','stashes','subscriptions'] %}
     <Location /{{ loc }}>
-        OIDCUnAuthAction 401
+        <Limit GET>
+            OIDCUnAuthAction pass
+        </Limit>
+        <LimitExcept GET>
+            OIDCUnAuthAction 401
+        </LimitExcept>
     </Location>
 {% endfor %}
 </VirtualHost>
