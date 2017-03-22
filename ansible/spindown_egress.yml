@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_egress
+- hosts: tag_Class_egress:&tag_Status_production
   serial: 1
   gather_facts: false
   tasks:
@@ -13,9 +13,10 @@
       when:
         - ec2_launch_time == groups.tag_Class_egress | map('extract', hostvars, 'ec2_launch_time') | sort | first
         - groups.tag_Class_egress | intersect(groups.tag_Status_spindown | default([])) | length == 0
+      register: result
 
     - meta: refresh_inventory
-      when: groups.tag_Class_egress | intersect(groups.tag_Status_spindown | default([])) | length == 0
+      when: result | changed
 
 - hosts: localhost
   connection: local

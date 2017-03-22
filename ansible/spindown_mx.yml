@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_mx
+- hosts: tag_Class_mx:&tag_Status_production
   serial: 1
   gather_facts: false
   tasks:
@@ -14,9 +14,10 @@
         - ec2_launch_time == groups.tag_Class_mx | intersect(groups[ec2_placement]) | map('extract', hostvars, 'ec2_launch_time') | sort | first
         - groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | intersect(groups[ec2_placement]) | length == 0
         - groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | intersect(groups[ec2_placement]) | length > 2
+      register: result
 
     - meta: refresh_inventory
-      when: groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | intersect(groups[ec2_placement]) | length == 0
+      when: result | changed
 
 - hosts: tag_Class_mx:&tag_Status_spindown
   tasks:
