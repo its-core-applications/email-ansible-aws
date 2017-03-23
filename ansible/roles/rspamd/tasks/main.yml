@@ -1,0 +1,29 @@
+---
+
+- name: Set up rspamd yum repo
+  copy:
+    dest: /etc/yum.repos.d/rspamd.repo
+    src: rspamd.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install rspamd
+  yum:
+    pkg: rspamd
+    state: latest
+  notify: Restart rspamd
+
+- name: Local rspamd configuration
+  copy:
+    dest: "/etc/rspamd/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - local.d/rbl.conf
+    - local.d/surbl.conf
+    - override.d/metrics.conf
+  notify: Restart rspamd
+

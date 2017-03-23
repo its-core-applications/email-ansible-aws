@@ -1,0 +1,17 @@
+---
+
+- name: Install filter dependencies
+  yum:
+    pkg: jq
+    state: latest
+
+- name: Install ingress-specific filters
+  copy:
+    dest: "/etc/mail/filters/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - 80_rspamd
+

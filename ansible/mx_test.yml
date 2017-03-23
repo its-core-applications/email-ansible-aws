@@ -6,7 +6,8 @@
     - { role: rsyslog_forward, tags: rsyslog_forward }
     - { role: localnameserver, tags: localnameserver }
     - { role: simta, tags: simta }
-    - { role: spamassassin, tags: spamassassin }
+    - { role: rspamd, tags: rspamd }
     - { role: clamav, tags: clamav }
     - { role: mx, tags: mx }
+    - { role: mx_test, tags: mx }
     - { role: sensu, tags: sensu }
