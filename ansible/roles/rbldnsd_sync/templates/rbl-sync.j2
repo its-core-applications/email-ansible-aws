@@ -19,9 +19,9 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
     ${updatehost}:$srcdir/ ${tmpdir}/sync/ \
     > ${tmpdir}/rsyncout 2>>$tmpfile
 if [[ $? -eq 0 ]]; then
-    if grep -q '^>' ${tmpdir}/rsyncout ; then
-        mv $destdir ${tmpdir}/old
-        mv $tmpdir/sync $destdir
+    diff -qr ${tmpdir}/sync $destdir &>/dev/null
+    if [[ $? -eq 1 ]]; then
+        rsync -a --delete ${tmpdir}/sync/ $destdir/ &>/dev/null
         /usr/sbin/rbldnsctl reload
     fi
 fi
