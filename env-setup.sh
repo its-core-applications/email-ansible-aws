@@ -26,9 +26,11 @@ if [[ $SUDO_USER ]]; then
 fi
 
 function _sshcomplete() {
-    local cur
+    local cur prev
+    COMPREPLY=()
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
     cur="${COMP_WORDS[COMP_CWORD]}"
-    COMPREPLY=($(aws ec2 describe-instances --output=text | awk '/CustomDNSName/{print $NF}' | grep "^$cur" | sort -u))
+    [[ $prev = 'ssh' ]] && COMPREPLY=( $(aws ec2 describe-instances --filters 'Name=instance-state-name,Values=running' --output=text | awk '/CustomDNSName/{print $NF}' | grep "^$cur" | sort -u) )
     return 0
 }
 
