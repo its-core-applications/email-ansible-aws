@@ -66,6 +66,7 @@
   with_items:
     - api.json
     - redis.json
+    - sensu_plugin.json
     - notification_handlers.json
     - handle_deregistration.json
     - check_aws.json
