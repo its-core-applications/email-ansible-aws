@@ -23,6 +23,7 @@
         exact_count: 2
         count_tag:
           Class: rbl
+          Status: production
         wait: true
       # this is just to force a consistent result structure
       with_items:
