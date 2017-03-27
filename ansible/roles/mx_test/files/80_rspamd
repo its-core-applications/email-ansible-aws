@@ -2,23 +2,18 @@
 
 if check_dfile; then
     spamout=$(rspamc --json --ip="$SIMTA_REMOTE_IP" --from="$SIMTA_SMTP_MAIL_FROM" --helo="$SIMTA_SMTP_HELO" --hostname="$SIMTA_REMOTE_HOSTNAME" <$SIMTA_DFILE | tail -n +2 2>/dev/null)
-    spamscore=$(echo $spamout | jq -r .default.score)
-    spamaction=$(echo $spamout | jq -r .default.action)
-    spamsymbols=$(echo $(echo $spamout | jq -r '.default[] | objects | del(.description) | flatten | @text'))
+    spamres=$(echo $spamout | jq -r '@text "score=\(.default.score) \(.default.action)"')
+    spamsymbols=$(echo $spamout | jq -j '.default[] | objects | del(.description) | flatten | @text')
+    spamaction=${spamres#* }
 
-    log "80_rspamd: symbols $spamsymbols"
+    log "80_rspamd: $spamres symbols={$spamsymbols}"
     case "$spamaction" in
-    "no action")
-        log "80_rspamd: score $spamscore : pass"
-        ;;
     reject)
-        log "80_rspamd: score $spamscore : reject"
         filter_exit $MESSAGE_REJECT
         ;;
     greylist)
         # PENALTYBOX_PASS is from 70_pb
         if [ $PENALTYBOX_PASS -eq 1 ] ; then
-            log "80_rspamd: score $spamscore : penaltybox"
             logmsg=$($penaltybox_bin $penaltybox_args "rspamd")
             pbret=$?
             if [ x"$logmsg" != x ]; then
@@ -28,12 +23,7 @@ if check_dfile; then
                 filter_exit $MESSAGE_TEMPFAIL
             fi
             PENALTYBOX_PASS=0
-        else
-            log "80_rspamd: score $spamscore : noaction"
         fi
-        ;;
-    *)
-        log "80_rspamd: score unknown"
         ;;
     esac
 fi
