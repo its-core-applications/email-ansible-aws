@@ -2,16 +2,11 @@
 
 - include: setup_securitygroups.yml
 - include: spindown_master.yml
-- include: provision_master.yml
 
-- hosts: tag_Class_master:&tag_Status_spindown
+- hosts: localhost
   tasks:
-    - name: Set status to spundown
-      ec2_tag:
-        region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
-        tags:
-          Status: spundown
-    - meta: refresh_inventory
+      - meta: refresh_inventory
 
 - include: deprovision_spundown.yml
+- include: provision_master.yml
+

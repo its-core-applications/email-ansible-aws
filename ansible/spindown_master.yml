@@ -3,22 +3,10 @@
 - hosts: tag_Class_master
   gather_facts: false
   tasks:
-    - name: Set status to spindown
+    - name: Set status to spundown
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
-          Status: spindown
-          Name: "old-{{ master_hostname }}"
-          CustomDNSName: "old-{{ master_hostname }}.{{ subd }}"
-
-    - name: Run dynhostname
-      systemd:
-        name: dynhostname
-        state: reloaded
-
-    - name: Stop crond
-      systemd:
-        name: crond
-        state: stopped
+          Status: spundown
 
