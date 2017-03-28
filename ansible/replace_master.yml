@@ -4,6 +4,7 @@
 - include: spindown_master.yml
 
 - hosts: localhost
+  gather_facts: false
   tasks:
       - meta: refresh_inventory
 
