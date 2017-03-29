@@ -8,7 +8,7 @@ spf_main:
 
 spf_thirdparty:
   - names: [ '*' ]
-    record: 'include:outboundmail.convio.net ip4:205.139.105.0/23 ip4:206.79.6.0/24 ip4:72.55.140.81 include:e2ma.net include:cust-spf.exacttarget.com ip4:199.231.134.72 ip4:199.231.134.73 ip4:198.58.97.164 ip4:50.116.17.165 ip6:2600:3c00::f03c:91ff:fe6e:bbb8 ip4:216.177.90.7 a:sympmail.symplicity.com include:rnmk.com ip4:69.16.208.122 ip4:162.247.216.0/22'
+    record: 'include:outboundmail.convio.net include:servers.mcsv.net ip4:205.139.105.0/23 ip4:206.79.6.0/24 ip4:72.55.140.81 include:e2ma.net include:cust-spf.exacttarget.com ip4:199.231.134.72 ip4:199.231.134.73 ip4:198.58.97.164 ip4:50.116.17.165 ip6:2600:3c00::f03c:91ff:fe6e:bbb8 ip4:216.177.90.7 a:sympmail.symplicity.com include:rnmk.com ip4:69.16.208.122 ip4:162.247.216.0/22'
   - names:
       - ae-lit-mysql
       - ae-lit-root

@@ -17,3 +17,10 @@
     minute: "*/5"
     job: ". ~/ansible-aws/env-setup.sh && /usr/local/sbin/simta-requeue"
 
+- name: Schedule SPF updates
+  cron:
+    name: ansible-spf-update
+    user: ec2-user
+    minute: "23,53"
+    job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/setup_spf.yml"
+
