@@ -25,9 +25,11 @@
     - local.d/dkim.conf
     - local.d/dmarc.conf
     - local.d/metrics.conf
+    - local.d/multimap.conf
     - local.d/rbl.conf
     - local.d/spf.conf
     - local.d/surbl.conf
     - override.d/metrics.conf
+    - umich_bad_tld.inc
   notify: Restart rspamd
 
