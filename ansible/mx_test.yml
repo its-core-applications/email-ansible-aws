@@ -7,7 +7,7 @@
     - { role: localnameserver, tags: localnameserver }
     - { role: simta, tags: simta }
     - { role: rspamd, tags: rspamd }
-    - { role: clamav, tags: clamav }
+    - { role: clamav_filter, tags: clamav }
     - { role: mx, tags: mx }
     - { role: mx_test, tags: mx }
     - { role: sensu, tags: sensu }

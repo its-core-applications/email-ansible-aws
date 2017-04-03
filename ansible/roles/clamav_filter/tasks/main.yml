@@ -1,0 +1,10 @@
+---
+
+- name: Install clamav filter
+  copy:
+    dest: /etc/mail/filters/80_clamav
+    src: 80_clamav
+    owner: root
+    group: root
+    mode: 0755
+

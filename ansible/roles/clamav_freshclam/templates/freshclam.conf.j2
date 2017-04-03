@@ -1,0 +1,10 @@
+LogSyslog yes
+PrivateMirror clamav.{{ subd }}
+TestDatabases yes
+
+# Custom databases
+{% for synctype in clamav_custom_sigs.keys() %}
+{% for db in clamav_custom_sigs[synctype] %}
+DatabaseCustomURL http://clamav.{{ subd }}/{{ db.name }}
+{% endfor %}
+{% endfor %}

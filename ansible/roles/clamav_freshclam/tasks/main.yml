@@ -1,0 +1,26 @@
+---
+
+- name: Install freshclam
+  yum:
+    pkg: clamav-update
+    state: latest
+
+- name: Configure freshclam
+  template:
+    dest: /etc/freshclam.conf
+    src: freshclam.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Run freshclam
+  command: freshclam
+  args:
+    creates: /var/lib/clamav/mirrors.dat
+
+- name: Schedule freshclam
+  cron:
+    name: freshclam
+    minute: '*/5'
+    job: freshclam --quiet
+

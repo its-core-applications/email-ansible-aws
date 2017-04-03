@@ -25,3 +25,4 @@
     - { role: ansible_master, tags: ansible }
     - { role: dashboard, tags: dashboard }
     - { role: grafana, tags: grafana }
+    - { role: clamav_master, tags: clamav }

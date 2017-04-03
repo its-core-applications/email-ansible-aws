@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use 5.014;
+
+use Time::Piece;
+
+# Set up some prehexed strings
+my $from = unpack 'H*', 'From:';
+my $replyto = unpack 'H*', 'Reply-To:';
+my $delim = unpack 'H*', "?!#\$%&~^*+=,:;()<>[]{}/|\\\`\'\"\t \n";
+
+# Then make them usable
+$delim = join '|', $delim =~ m/../g;
+$delim = '(' . $delim . ')';
+$replyto = $replyto . '{-50}';
+$from = $from . '{-50}';
+
+# There's a lot of ancient data, let's ignore anything more than two years old
+my $cutoffdate = localtime->strftime('%Y%m%d') - 20000;
+
+if (@ARGV == 1) {
+    open(STDIN, '<', $ARGV[0]) or die "Failed to open $ARGV[0]: $!";
+}
+
+while (<>) {
+    next unless $_;
+    next if m/^#/;
+    my ($address, $type, $date) = split /,/;
+    next if $date < $cutoffdate;
+
+    my $hexaddress = unpack 'H*', $address;
+    $hexaddress = $delim . $hexaddress . $delim;
+
+    my $base = 'UMICH.APER.';
+    my $sigbits = ':4:*:';
+    if ((index $type, 'C') > -1) {
+        say $base, 'any.', $address, $sigbits, $hexaddress;
+    }
+    else {
+        if ((index $type, 'A') > -1) {
+            say $base, 'replyto.', $address, $sigbits, $replyto, $hexaddress;	
+        }
+        if ((index $type, 'B') > -1) {
+            say $base, 'from.', $address, $sigbits, $from, $hexaddress;
+        } 
+    }
+}

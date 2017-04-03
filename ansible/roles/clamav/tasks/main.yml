@@ -9,22 +9,6 @@
     - clamav
     - clamav-server
 
-- name: Create ~clamupdate/.ssh
-  file:
-    dest: /var/lib/clamav/.ssh
-    state: directory
-    owner: clamupdate
-    group: clamupdate
-    mode: 0700
-
-- name: Install private SSH key
-  copy:
-    dest: /var/lib/clamav/.ssh/id_rsa
-    content: "{{ lookup('hashi_vault', 'secret=secret/ssh/clamav' ) }}"
-    owner: clamupdate
-    group: clamupdate
-    mode: 0400
-
 - name: Configure clamav
   copy:
     dest: /etc/clamd.conf
@@ -34,54 +18,20 @@
     mode: 0644
   notify: Restart clamd
 
-- name: Create /etc/systemd/system/clamav-daemon.service.d
-  file:
-    dest: /etc/systemd/system/clamav-daemon.service.d
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
- 
 - name: Configure clamav-daemon service
   copy:
-    dest: /etc/systemd/system/clamav-daemon.service.d/unit.conf
-    src: unit.conf
+    dest: /etc/systemd/system/clamav-daemon.service
+    src: clamav-daemon.service
     owner: root
     group: root
     mode: 0644
   notify: Restart clamd
-
-- name: Install clam-update-client
-  copy: 
-    dest: /usr/local/sbin/clam-update-client
-    src: clam-update-client
-    owner: root
-    group: root
-    mode: 0755
-
-- name: Configure clam-update-client
-  copy:
-    dest: /usr/local/collaboration/dispatch/clam-update-client.conf
-    src: clam-update-client.conf
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Run the update client for ClamAV
-  become_user: clamupdate
-  command: /usr/local/sbin/clam-update-client
-  register: result
-  failed_when: "result.rc > 1"
-  changed_when: "result.rc == 0"
-  tags: mutable
 
 - name: Enable clamd
   service:
     name: clamav-daemon
     enabled: yes
   notify: Restart clamd
-
-- meta: flush_handlers
 
 - name: Install clamav filter configuration files
   copy:
@@ -91,17 +41,8 @@
     group: root
     mode: 0644
   with_items:
-    - clamav.badsig
     - clamav.badurl
     - clamav.delete
     - clamav.reject
   tags: mutable
-
-- name: Install clamav filter
-  copy:
-    dest: /etc/mail/filters/80_clamav
-    src: 80_clamav
-    owner: root
-    group: root
-    mode: 0755
 

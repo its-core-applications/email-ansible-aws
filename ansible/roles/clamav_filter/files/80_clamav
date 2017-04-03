@@ -26,11 +26,6 @@ if check_dfile; then
 	;;
 
     1)  signame=$(sed -e '1d; s/.*: //; s/ FOUND$//' $CLAMOUT)
-	badsig=$(fgrep -owf /etc/mail/clamav.badsig $CLAMOUT)
-	if [ $? -eq 0 ]; then
-	    log "80_clamav ${SIMTA_DFILE}: Signature ${signame} is marked as bad, ignoring detection"
-	    cleanup
-	fi
         case $signame in
             *Phish*)
                 sigtype=phishing

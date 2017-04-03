@@ -1,0 +1,99 @@
+---
+
+- name: Create signature cache directories
+  file:
+    dest: /var/cache/clamav
+    state: directory
+    owner: clamupdate
+    group: clamupdate
+    mode: 0755
+
+- name: Install prerequisites
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - perl-Time-Piece
+    - clamav-update
+
+- name: Install processing scripts
+  copy:
+    dest: "/usr/local/sbin/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - clamav_aper_addresses
+    - clamav_aper_links
+
+- name: Configure freshclam for official signatures
+  copy:
+    dest: /etc/freshclam.official.conf
+    src: freshclam.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Sync official signatures
+  command: freshclam --config-file=/etc/freshclam.official.conf
+
+- name: Copy custom signatures
+  copy:
+    src: "{{ item.name }}"
+    dest: "{{ clamav_sigdir }}/{{ item.name }}"
+  with_items: "{{ clamav_custom_sigs.local }}"
+
+- name: rsync custom signatures
+  command: "rsync -t --timeout=60 {{ item.url }} {{ clamav_sigdir }}/{{ item.name }}"
+  with_items: "{{ clamav_custom_sigs.rsync }}"
+
+- name: Fetch custom signatures
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ clamav_sigdir }}/{{ item.name }}.raw"
+  with_items: "{{ clamav_custom_sigs.http }}"
+
+- name: Process custom signatures
+  shell: "/usr/local/sbin/clamav_{{ item.process }} {{ clamav_sigdir }}/{{ item.name }}.raw | sort -u >| {{ clamav_sigdir }}/{{ item.name }}"
+  with_items: "{{ clamav_custom_sigs.http }}"
+
+- name: Create S3 bucket for signatures
+  s3_bucket:
+    name: "clamav.{{ subd }}"
+    region: "{{ aws_region }}"
+    state: present
+
+- name: Configure the S3 bucket as a website
+  s3_website:
+    name: "clamav.{{ subd }}"
+    region: "{{ aws_region }}"
+    state: present
+
+- name: "Set clamav.{{ subd }}"
+  route53:
+    command: create
+    overwrite: yes
+    zone: "{{ subd }}"
+    record: "clamav.{{ subd }}"
+    type: CNAME
+    value: "clamav.{{ subd }}.s3-{{ aws_region }}.amazonaws.com"
+    ttl: 300
+
+- name: Upload signature files to S3
+  s3_sync:
+    mode: push
+    bucket: "clamav.{{ subd }}"
+    region: "{{ aws_region }}"
+    permission: public-read
+    file_change_strategy: checksum
+    file_root: "{{ clamav_sigdir }}"
+    exclude: '*.raw,mirrors.dat'
+
+- name: Schedule signature updates
+  cron:
+    name: ansible-clamav-sync
+    user: ec2-user
+    minute: '10,25,40,55'
+    job: '. ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags clamav'
+
