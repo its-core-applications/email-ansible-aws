@@ -7,13 +7,6 @@
   gather_facts: false
   become: false
   tasks:
-    - name: Gather VPC subnet facts
-      ec2_vpc_subnet_facts:
-        region: "{{ aws_region }}"
-        filters:
-          vpc-id: "{{ aws_vpc }}"
-      register: ec2_subnets
-
     - name: Create mx-test host
       ec2:
         group: [ main-default, mx-elb ]
