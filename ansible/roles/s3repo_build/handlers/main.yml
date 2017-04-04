@@ -1,10 +1,14 @@
 ---
 
 - name: s3upload
-  find: paths="/home/ec2-user/rpmbuild/RPMS" patterns="*.rpm" recurse=yes
+  find:
+    paths:
+      - /home/ec2-user/rpmbuild/RPMS
+      - /var/tmp/sensugems/cache
+    patterns: '*.rpm'
+    recurse: yes
   register: find_rpm
   changed_when: true
-  tags: s3
   notify: s3upload step 2
 
 - name: s3upload step 2
@@ -17,4 +21,6 @@
     src: "{{ item.path }}"
     overwrite: never
   with_items: "{{ find_rpm.files }}"
-  tags: s3
+  loop_control:
+    label: "{{ item.path | basename }}"
+

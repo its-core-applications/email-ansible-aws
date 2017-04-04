@@ -57,7 +57,7 @@
     },
     "kill_bad_clients": {
       "type": "pipe",
-      "command": "{{ sensu_plugin_path }}/handler-sensu-deregister.rb",
+      "command": "handler-sensu-deregister.rb",
       "filters": [ "bad_hostname" ]
     },
     "graphite": {

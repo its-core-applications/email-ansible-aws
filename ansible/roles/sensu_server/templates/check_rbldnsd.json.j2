@@ -1,7 +1,7 @@
 {
   "checks": {
     "rbldnsd": {
-      "command": "{{ sensu_plugin_path }}/check-process.rb -p rbldnsd",
+      "command": "check-process.rb -p rbldnsd",
       "subscribers": [
         "Class_rbl"
       ],

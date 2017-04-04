@@ -1,6 +1,4 @@
 ---
 
 dependencies:
-  - role: rpmbuild
-    tags: rpmbuild
   - role: sensu_repo

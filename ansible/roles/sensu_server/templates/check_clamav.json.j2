@@ -1,7 +1,7 @@
 {
   "checks": {
     "clamav": {
-      "command": "{{ sensu_plugin_path }}/check-process.rb -p clamd",
+      "command": "check-process.rb -p clamd",
       "subscribers": [
         "Class_mx_test",
         "Class_mx"

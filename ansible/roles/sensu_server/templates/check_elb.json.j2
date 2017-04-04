@@ -1,7 +1,7 @@
 {
   "checks": {
     "elb-nodes": {
-      "command": "{{ sensu_plugin_path }}/check-elb-nodes.rb -r {{ aws_region }} -n :::elb_name::: -W 66 -C 33",
+      "command": "check-elb-nodes.rb -r {{ aws_region }} -n :::elb_name::: -W 66 -C 33",
       "subscribers": [
         "roundrobin:Class_egress"
       ],
@@ -14,7 +14,7 @@
       }
     },
     "elb-metrics": {
-      "command": "{{ sensu_plugin_path }}/metrics-elb.rb -r {{ aws_region }} -n :::elb_name:::",
+      "command": "metrics-elb.rb -r {{ aws_region }} -n :::elb_name:::",
       "subscribers": [
         "roundrobin:Class_egress"
       ],

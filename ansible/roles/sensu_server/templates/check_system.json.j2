@@ -2,7 +2,7 @@
   "checks": {
      "cpu-metrics": {
       "type": "metric",
-      "command": "{{ sensu_plugin_path }}/metrics-cpu-pcnt-usage.rb",
+      "command": "metrics-cpu-pcnt-usage.rb",
       "subscribers": [
         "Status_production",
         "Status_development"
@@ -11,7 +11,7 @@
       "interval": 30
     },
     "disk": {
-      "command": "{{ sensu_plugin_path }}/check-disk-usage.rb -x tmpfs -w 90 -c 95",
+      "command": "check-disk-usage.rb -x tmpfs -w 90 -c 95",
       "subscribers": [
         "Status_production",
         "Status_development"
@@ -20,7 +20,7 @@
     },
     "disk-metrics": {
       "type": "metric",
-      "command": "{{ sensu_plugin_path }}/metrics-disk-usage.rb -i ^/dev",
+      "command": "metrics-disk-usage.rb -i ^/dev",
       "subscribers": [
         "Status_production",
         "Status_development"
@@ -29,7 +29,7 @@
       "interval": 30
     },
     "load": {
-      "command": "{{ sensu_plugin_path }}/check-load.rb -p -w 30,25,20 -c 35,30,25",
+      "command": "check-load.rb -p -w 30,25,20 -c 35,30,25",
       "occurrences": 2,
       "subscribers": [
         "Status_production"
@@ -38,7 +38,7 @@
     },
     "load-metrics": {
       "type": "metric",
-      "command": "{{ sensu_plugin_path }}/metrics-load.rb",
+      "command": "metrics-load.rb",
       "subscribers": [
         "Status_production",
         "Status_development"
@@ -47,7 +47,7 @@
       "interval": 30
     },
     "memory": {
-      "command": "{{ sensu_plugin_path }}/check-memory-percent.rb",
+      "command": "check-memory-percent.rb",
       "subscribers": [
         "Status_production"
       ],
@@ -55,7 +55,7 @@
     },
     "memory-metrics": {
       "type": "metric",
-      "command": "{{ sensu_plugin_path }}/metrics-memory-percent.rb",
+      "command": "metrics-memory-percent.rb",
       "subscribers": [
         "Status_production",
         "Status_development"
@@ -65,7 +65,7 @@
     },
     "network-metrics": {
       "type": "metric",
-      "command": "{{ sensu_plugin_path }}/metrics-net.rb",
+      "command": "metrics-net.rb",
       "subscribers": [
         "Status_production",
         "Status_development"
