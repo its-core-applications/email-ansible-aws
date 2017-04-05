@@ -91,10 +91,11 @@
   notify: Restart sensu server
 
 - name: Install sensu plugins
-  become_user: sensu
+  environment: "{{ sensu_environment }}"
   gem:
     name: "{{ item }}"
     executable: /opt/sensu/embedded/bin/gem
+    user_install: no
     state: latest
   with_items:
     - sensu-plugins-sensu
