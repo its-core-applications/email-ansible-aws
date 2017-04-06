@@ -6,8 +6,9 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-r', '--region', help='AWS region')
-parser.add_argument('-a', '--arn', help='SNS ARN')
-parser.add_argument('-t', '--topic', help='SNS topic name')
+target_parser = parser.add_mutually_exclusive_group(required=True)
+target_parser.add_argument('-a', '--arn', help='SNS ARN')
+target_parser.add_argument('-t', '--topic', help='SNS topic name')
 args = parser.parse_args()
 
 region = args.region or 'us-west-2'
@@ -34,7 +35,10 @@ else:
     status = 'UNKNOWN'
 
 subject = '{0} - {1}/{2} {3}'.format('ALERT' if event['action'] == 'create' else 'RESOLVED', event['client']['name'], event['check']['name'], status)
-msg = '{0} - {1}'.format(subject, event['check']['output'])
+msg = {
+    'default': event['check']['output'],
+    'sms': '{0} - {1}'.format(subject, event['check']['output'].split("\n")[0]),
+}
 
-response = client.publish(TopicArn = arn, Message = msg, Subject = subject)
+response = client.publish(TopicArn = arn, Message = json.dumps(msg), MessageStructure = 'json', Subject = subject)
 
