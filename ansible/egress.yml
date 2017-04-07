@@ -6,5 +6,5 @@
     - { role: rsyslog_forward, tags: rsyslog_forward }
     - { role: localnameserver, tags: localnameserver }
     - { role: simta, tags: simta }
-    - { name: redis, tags: redis }
-    - { name: sensu, tags: sensu }
+    - { role: redis, tags: redis }
+    - { role: sensu, tags: sensu }

@@ -1,7 +1,0 @@
----
-
-- name: Restart spamassassin
-  systemd:
-    name: spamassassin
-    daemon_reload: true
-    state: restarted

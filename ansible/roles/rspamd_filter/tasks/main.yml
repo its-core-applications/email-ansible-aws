@@ -1,0 +1,10 @@
+---
+
+- name: Install rspamd filter
+  copy:
+    dest: /etc/mail/filters/80_rspamd
+    src: 80_rspamd
+    owner: root
+    group: root
+    mode: 0755
+

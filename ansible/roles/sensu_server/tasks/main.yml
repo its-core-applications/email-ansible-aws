@@ -76,8 +76,8 @@
     - check_elb.json
     - check_rbldnsd.json
     - check_redis.json
+    - check_rspamd.json
     - check_simta.json
-    - check_spamassassin.json
     - check_system.json
   notify: Restart sensu server
 

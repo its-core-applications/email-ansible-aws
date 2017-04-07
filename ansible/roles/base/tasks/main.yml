@@ -41,6 +41,7 @@
     - cronie-noanacron
     - expect
     - git
+    - jq
     - krb5-workstation
     - lsof
     - man

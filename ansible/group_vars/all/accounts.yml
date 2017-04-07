@@ -18,10 +18,6 @@ nonperson_accounts:
   - name: google
     comment: Google
     uid: 1003
-  - name: spamassassin
-    comment: SpamAssassin
-    uid: 1006
-    ssh: true
   - name: splunk
     comment: Splunk
     uid: 1005

@@ -21,7 +21,6 @@
     - { role: redis_master, tags: redis }
     - { role: simta_master, tags: simta }
     - { role: plasticman, tags: plasticman }
-    - { role: spamassassin_master, tags: spamassassin }
     - { role: ansible_master, tags: ansible }
     - { role: dashboard, tags: dashboard }
     - { role: grafana, tags: grafana }

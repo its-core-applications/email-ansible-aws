@@ -9,5 +9,5 @@
     - { role: rspamd, tags: rspamd }
     - { role: clamav_filter, tags: clamav }
     - { role: mx, tags: mx }
-    - { role: mx_test, tags: mx }
+    - { role: rspamd_filter, tags: rspamd }
     - { role: sensu, tags: sensu }

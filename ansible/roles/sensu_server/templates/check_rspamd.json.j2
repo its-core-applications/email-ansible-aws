@@ -1,0 +1,12 @@
+{
+  "checks": {
+    "rspamd": {
+      "command": "check-process.rb -p rspamd",
+      "subscribers": [
+        "Class_mx",
+        "Class_mx_test"
+      ],
+      "interval": 60
+    }
+  }
+}
