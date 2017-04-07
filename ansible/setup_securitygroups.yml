@@ -13,24 +13,16 @@
         description: default VPC security group
         rules:
           - proto: icmp
-            from_port: -1
-            to_port: -1
+            ports: -1
             cidr_ip: 0.0.0.0/0
           - proto: tcp
-            from_port: 22
-            to_port: 22
-            cidr_ip: 0.0.0.0/0
-          - proto: tcp
-            from_port: 80
-            to_port: 80
-            cidr_ip: 0.0.0.0/0
-          - proto: tcp
-            from_port: 443
-            to_port: 443
+            ports:
+              - 22
+              - 80
+              - 443
             cidr_ip: 0.0.0.0/0
           - proto: udp
-            from_port: 60000
-            to_port: 61000
+            ports: 60000-61000
             cidr_ip: 0.0.0.0/0
         rules_egress:
           - proto: all
@@ -44,16 +36,13 @@
         description: default VPC security group
         rules:
           - proto: icmp
-            from_port: -1
-            to_port: -1
+            ports: -1
             cidr_ip: 0.0.0.0/0
           - proto: tcp
-            from_port: 22
-            to_port: 22
+            ports: 22
             cidr_ip: 0.0.0.0/0
           - proto: udp
-            from_port: 60000
-            to_port: 61000
+            ports: 60000-61000
             cidr_ip: 0.0.0.0/0
         rules_egress:
           - proto: all
@@ -67,12 +56,10 @@
         description: mx ELB
         rules:
           - proto: tcp
-            from_port: 25
-            to_port: 25
+            ports: 25
             cidr_ip: 0.0.0.0/0
           - proto: icmp
-            from_port: -1
-            to_port: -1
+            ports: -1
             cidr_ip: 0.0.0.0/0
         rules_egress:
           - proto: all
@@ -86,8 +73,7 @@
         description: mx hosts
         rules:
           - proto: tcp
-            from_port: 25
-            to_port: 25
+            ports: 25
             group_name: mx-elb
 
     - name: Create security group for egress
@@ -98,13 +84,10 @@
         description: egress hosts
         rules:
           - proto: tcp
-            from_port: 25
-            to_port: 25
-            cidr_ip: "{{ aws_vpn_subnet }}"
-          - proto: tcp
-            from_port: 25
-            to_port: 25
-            cidr_ip: "{{ aws_subnet }}"
+            ports: 25
+            cidr_ip:
+              - "{{ aws_vpn_subnet }}"
+              - "{{ aws_subnet }}"
 
     - name: Create security group for relay ELB
       ec2_group:
@@ -114,12 +97,10 @@
         description: relay ELB
         rules:
           - proto: tcp
-            from_port: 25
-            to_port: 25
+            ports: 25
             cidr_ip: 0.0.0.0/0
           - proto: icmp
-            from_port: -1
-            to_port: -1
+            ports: -1
             cidr_ip: 0.0.0.0/0
         rules_egress:
           - proto: all
@@ -133,8 +114,7 @@
         description: relay hosts
         rules:
           - proto: tcp
-            from_port: 25
-            to_port: 25
+            ports: 25
             group_name: relay-elb
 
     - name: Create security group for smtp ELB
@@ -145,20 +125,13 @@
         description: auth SMTP ELB
         rules:
           - proto: tcp
-            from_port: 25
-            to_port: 25
-            cidr_ip: 0.0.0.0/0
-          - proto: tcp
-            from_port: 465
-            to_port: 465
-            cidr_ip: 0.0.0.0/0
-          - proto: tcp
-            from_port: 587
-            to_port: 587
+            ports:
+              - 25
+              - 465
+              - 587
             cidr_ip: 0.0.0.0/0
           - proto: icmp
-            from_port: -1
-            to_port: -1
+            ports: -1
             cidr_ip: 0.0.0.0/0
         rules_egress:
           - proto: all
@@ -169,19 +142,13 @@
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpc }}"
         name: smtp
-        description: auth SMTP
+        description: auth SMTP hosts
         rules:
           - proto: tcp
-            from_port: 25
-            to_port: 25
-            group_name: smtp-elb
-          - proto: tcp
-            from_port: 465
-            to_port: 465
-            group_name: smtp-elb
-          - proto: tcp
-            from_port: 587
-            to_port: 587
+            ports:
+              - 25
+              - 465
+              - 587
             group_name: smtp-elb
 
     - name: Create security group for rsyslog
@@ -191,72 +158,30 @@
         name: rsyslog
         description: rsyslog hosts
         rules:
-        # Remote syslog using RELP
           - proto: tcp
-            from_port: 2514
-            to_port: 2514
-            cidr_ip: "{{ aws_vpn_subnet }}"
-          - proto: tcp
-            from_port: 2514
-            to_port: 2514
-            cidr_ip: "{{ aws_subnet }}"
-        # RabbitMQ for sensu pub/sub
-          - proto: tcp
-            from_port: 5672
-            to_port: 5672
-            cidr_ip: "{{ aws_vpn_subnet }}"
-          - proto: tcp
-            from_port: 5672
-            to_port: 5672
-            cidr_ip: "{{ aws_subnet }}"
-        # graphite-api
-          - proto: tcp
-            from_port: 8888
-            to_port: 8888
-            cidr_ip: "{{ aws_subnet }}"
-        # carbon-aggregator
-          - proto: tcp
-            from_port: 2003
-            to_port: 2003
-            cidr_ip: "{{ aws_subnet }}"
-        # uchiwa
-          - proto: tcp
-            from_port: 3000
-            to_port: 3000
-            cidr_ip: "{{ aws_subnet }}"
-        # sensu API
-          - proto: tcp
-            from_port: 4567
-            to_port: 4567
-            cidr_ip: "{{ aws_subnet }}"
-
-    - name: Create security group for EFS
-      ec2_group:
-        region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
-        name: EFS
-        description: allows NFS from the VPC
-        rules:
-          - proto: tcp
-            from_port: 2049
-            to_port: 2049
-            group_name: main-default
+            ports:
+              - 2003 # carbon-aggregator
+              - 2514 # Remote syslog using RELP
+              - 3000 # uchiwa
+              - 4567 # sensu API
+              - 5672 # RabbitMQ for sensu pub/sub
+              - 8888 # graphite-api
+            cidr_ip:
+              - "{{ aws_vpn_subnet }}"
+              - "{{ aws_subnet }}"
 
     - name: Create security group for RBL
       ec2_group:
         region: "{{ aws_region }}"
         vpc_id: "{{ aws_vpc }}"
         name: rbl
-        description: RBL hosts
+        description: rbl hosts
         rules:
           - proto: udp
-            from_port: 53
-            to_port: 53
-            cidr_ip: "{{ aws_vpn_subnet }}"
-          - proto: udp
-            from_port: 53
-            to_port: 53
-            cidr_ip: "{{ aws_subnet }}"
+            ports: 53
+            cidr_ip:
+              - "{{ aws_vpn_subnet }}"
+              - "{{ aws_subnet }}"
 
     - name: Create security group for redis
       ec2_group:
@@ -266,19 +191,10 @@
         description: redis hosts
         rules:
           - proto: tcp
-            from_port: 6379
-            to_port: 6379
-            cidr_ip: "{{ aws_vpn_subnet }}"
-          - proto: tcp
-            from_port: 6379
-            to_port: 6379
-            cidr_ip: "{{ aws_subnet }}"
-          - proto: tcp
-            from_port: 16379
-            to_port: 16379
-            cidr_ip: "{{ aws_vpn_subnet }}"
-          - proto: tcp
-            from_port: 16379
-            to_port: 16379
-            cidr_ip: "{{ aws_subnet }}"
+            ports:
+              - 6379
+              - 16379
+            cidr_ip:
+              - "{{ aws_vpn_subnet }}"
+              - "{{ aws_subnet }}"
 
