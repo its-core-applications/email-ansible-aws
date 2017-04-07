@@ -39,7 +39,7 @@
 - name: Rebuild gems as packages using fpm
   become_user: sensu
   environment: "{{ sensu_environment }}"
-  command: "fpm --verbose -s gem -t rpm --gem-disable-dependency ffi --gem-disable-dependency sensu-plugin --gem-package-name-prefix sensugems --rpm-dist el7 {{ item.path }}"
+  command: "fpm --verbose -s gem -t rpm --gem-disable-dependency ffi --gem-disable-dependency json --gem-disable-dependency minitest --gem-disable-dependency sensu-plugin --gem-package-name-prefix sensugems --rpm-dist el7 {{ item.path }}"
   args:
     chdir: /var/tmp/sensugems/cache
   register: result

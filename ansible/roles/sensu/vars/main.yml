@@ -2,7 +2,7 @@
 
 sensu_environment:
   PATH: /opt/sensu/embedded/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
-  GEM_PATH: /opt/sensu/embedded/lib/ruby/gems/2.3.0
+  GEM_PATH: /opt/sensu/embedded/lib/ruby/gems/2.4.0
 
 sensu_plugins:
   - sensu-plugins-aws
