@@ -2,9 +2,9 @@
 
 - name: Download vault
   get_url:
-    url: https://releases.hashicorp.com/vault/0.6.1/vault_0.6.1_linux_amd64.zip
+    url: https://releases.hashicorp.com/vault/0.7.0/vault_0.7.0_linux_amd64.zip
     dest: /var/tmp/vault.zip
-    checksum: sha256:4f248214e4e71da68a166de60cc0c1485b194f4a2197da641187b745c8d5b8be
+    checksum: sha256:c6d97220e75335f75bd6f603bb23f1f16fe8e2a9d850ba59599b1a0e4d067aaa
 
 - name: Install vault
   unarchive:
