@@ -8,7 +8,7 @@
 
 - name: Mount splunk filesystem
   mount:
-    name: /opt
+    name: /opt/splunkforwarder
     src: /dev/xvde
     fstype: xfs
     state: mounted

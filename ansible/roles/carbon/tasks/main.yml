@@ -1,5 +1,18 @@
 ---
 
+- name: Create carbon filesystem
+  filesystem:
+    dev: /dev/xvdf
+    fstype: xfs
+    force: no
+
+- name: Mount carbon filesystem
+  mount:
+    name: /var/lib/carbon
+    src: /dev/xvdf
+    fstype: xfs
+    state: mounted
+
 - name: Install carbon
   yum:
     pkg: python-carbon
