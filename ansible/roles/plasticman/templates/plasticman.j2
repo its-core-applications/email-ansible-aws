@@ -13,12 +13,12 @@ fi
 
 # FIXME: This should probably go in a config file or a command line flag
 scale_count=3
-min_count=6
+min_count=3
 max_count=18
 
 minute=$(( ($(date +%-H) * 60) + $(date +%-M) ))
 if [[ $minute -gt 345 && $minute -lt 1080 ]]; then
-    min_count=9
+    min_count=6
 fi
 
 sendmetric() {

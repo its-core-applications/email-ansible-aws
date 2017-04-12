@@ -13,7 +13,7 @@
       when:
         - ec2_launch_time == groups.tag_Class_mx | intersect(groups[ec2_placement]) | map('extract', hostvars, 'ec2_launch_time') | sort | first
         - groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | intersect(groups[ec2_placement]) | length == 0
-        - groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | intersect(groups[ec2_placement]) | length > 2
+        - groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | intersect(groups[ec2_placement]) | length > 1
       register: result
 
     - meta: refresh_inventory
