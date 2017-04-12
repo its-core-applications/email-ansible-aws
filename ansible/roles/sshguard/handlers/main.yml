@@ -1,0 +1,7 @@
+---
+
+- name: Restart sshguard
+  systemd:
+    name: sshguard
+    daemon_reload: true
+    state: restarted

@@ -1,0 +1,17 @@
+---
+
+- name: Install sshguard
+  yum:
+    pkg: sshguard
+    state: latest
+  notify: Restart sshguard
+
+- name: Configure sshguard
+  copy:
+    dest: /etc/sshguard.conf
+    src: sshguard.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart sshguard
+

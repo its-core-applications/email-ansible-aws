@@ -6,6 +6,7 @@
     - { role: rpmbuild, tags: always }
     - { role: localrepo, tags: always }
     - { role: download_rpm, tags: prebuilt }
+    - { role: build_sshguard, tags: sshguard }
     - { role: build_sensu_plugins, tags: sensu }
     - { role: build_comint, tags: comint }
     - { role: build_jemalloc, tags: jemalloc }
