@@ -1,5 +1,11 @@
 ---
 
 dependencies:
+  - role: dynhostname
+    tags: dynhostname
+  - role: nonpeople
+    tags: nonpeople
+  - role: rsyslog
+    tags: rsyslog
   - role: sshguard
     tags: sshguard

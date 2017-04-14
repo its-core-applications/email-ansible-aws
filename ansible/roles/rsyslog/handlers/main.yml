@@ -1,0 +1,17 @@
+---
+
+- name: Restart systemd-journald
+  systemd:
+    name: systemd-journald
+    daemon_reload: true
+    state: restarted
+
+- name: Restart rsyslog 
+  systemd:
+    name: rsyslog
+    daemon_reload: true
+    state: restarted
+
+- name: Run logrotate
+  command: /etc/cron.daily/logrotate
+
