@@ -1,5 +1,7 @@
 ---
 - hosts: tag_Class_master
+  vars:
+    bootstrap: true
   roles:
     - { role: base, tags: base }
     - { role: master, tags: master }

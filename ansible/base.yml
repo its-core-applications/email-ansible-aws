@@ -4,5 +4,3 @@
   roles:
     - role: base
       tags: base
-    - role: nonpeople
-      tags: nonpeople

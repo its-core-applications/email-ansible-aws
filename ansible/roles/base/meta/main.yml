@@ -5,7 +5,9 @@ dependencies:
     tags: dynhostname
   - role: nonpeople
     tags: nonpeople
+    when: bootstrap == false
   - role: rsyslog
     tags: rsyslog
   - role: sshguard
     tags: sshguard
+    when: bootstrap == false
