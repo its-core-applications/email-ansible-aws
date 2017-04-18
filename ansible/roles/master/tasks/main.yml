@@ -9,7 +9,6 @@
     - nfs-utils
     - opendkim
     - openldap-clients
-    - python2-boto3
     - unzip
 
 - name: Install extra pip packages

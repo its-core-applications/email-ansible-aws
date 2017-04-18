@@ -26,13 +26,6 @@
       - endpoint: "{{ ops_rootmail }}"
         protocol: 'email'
 
-- name: Install runtime dependencies for custom plugins
-  yum:
-    pkg: "{{ item }}"
-    state: latest
-  with_items:
-    - python2-boto3
-
 - name: Install custom plugins
   copy:
     dest: "/etc/sensu/plugins/{{ item }}"

@@ -6,7 +6,6 @@
     state: latest
   with_items:
     - sensu
-    - python2-boto3
   notify: Restart sensu
 
 - name: Add sensu to extra groups

@@ -51,6 +51,7 @@
     - pv
     - python-boto
     - python-pip
+    - python2-boto3
     - strace
     - sysstat
     - telnet
