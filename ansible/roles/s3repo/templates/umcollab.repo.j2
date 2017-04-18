@@ -2,5 +2,8 @@
 name = UMCollab repository
 baseurl = http://{{ yum_hostname }}/{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}
 enabled = 1
+{% if bootstrap %}
+skip_if_unavailable = 1
+{% endif %}
 gpgcheck = 0
 metadata_expire = 0

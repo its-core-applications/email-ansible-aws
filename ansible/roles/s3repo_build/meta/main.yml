@@ -1,3 +1,6 @@
 ---
 dependencies:
   - { role: rpmbuild, tags: rpmbuild }
+  - role: s3_website
+    tags: s3_website
+    s3_hostname: "{{ yum_hostname }}"

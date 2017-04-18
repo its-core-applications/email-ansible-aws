@@ -1,6 +1,8 @@
 ---
 
 - hosts: tag_Class_builder
+  vars:
+    bootstrap: yes
   roles:
     - { role: base, tags: base }
     - { role: rpmbuild, tags: always }
