@@ -1,0 +1,24 @@
+---
+
+- name: Create S3 bucket for website
+  s3_bucket:
+    name: "{{ s3_hostname }}"
+    region: "{{ aws_region }}"
+    state: present
+
+- name: Configure the S3 bucket as a website
+  s3_website:
+    name: "{{ s3_hostname }}"
+    region: "{{ aws_region }}"
+    state: present
+
+- name: "Set {{ s3_hostname }}"
+  route53:
+    command: create
+    overwrite: yes
+    zone: "{{ subd }}"
+    record: "{{ s3_hostname }}"
+    type: CNAME
+    value: "{{ s3_hostname }}.s3-{{ aws_region }}.amazonaws.com"
+    ttl: 300
+

@@ -58,28 +58,6 @@
   shell: "/usr/local/sbin/clamav_{{ item.process }} {{ clamav_sigdir }}/{{ item.name }}.raw | sort -u >| {{ clamav_sigdir }}/{{ item.name }}"
   with_items: "{{ clamav_custom_sigs.http }}"
 
-- name: Create S3 bucket for signatures
-  s3_bucket:
-    name: "clamav.{{ subd }}"
-    region: "{{ aws_region }}"
-    state: present
-
-- name: Configure the S3 bucket as a website
-  s3_website:
-    name: "clamav.{{ subd }}"
-    region: "{{ aws_region }}"
-    state: present
-
-- name: "Set clamav.{{ subd }}"
-  route53:
-    command: create
-    overwrite: yes
-    zone: "{{ subd }}"
-    record: "clamav.{{ subd }}"
-    type: CNAME
-    value: "clamav.{{ subd }}.s3-{{ aws_region }}.amazonaws.com"
-    ttl: 300
-
 - name: Upload signature files to S3
   s3_sync:
     mode: push
