@@ -1,6 +1,6 @@
 [umcollab]
 name = UMCollab repository
-baseurl = http://{{ yum_hostname }}/{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}
+baseurl = http://{{ yum_hostname }}/{{ yum_repo_path }}
 enabled = 1
 {% if bootstrap %}
 skip_if_unavailable = 1

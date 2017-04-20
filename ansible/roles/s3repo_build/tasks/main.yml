@@ -15,7 +15,7 @@
     bucket: "{{ yum_hostname }}"
     region: "{{ yum_aws_region }}"
     mode: list
-    prefix: "{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/"
+    prefix: "{{ yum_repo_path }}/"
   register: find_s3
 
 - name: Download files from S3
@@ -43,7 +43,7 @@
     region: "{{ yum_aws_region }}"
     mode: put
     permission: public-read
-    object: "{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/repodata/{{ item.path | basename }}"
+    object: "{{ yum_repo_path }}/repodata/{{ item.path | basename }}"
     src: "{{ item.path }}"
     overwrite: different
   with_items: "{{ find_repodata.files }}"

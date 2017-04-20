@@ -13,7 +13,7 @@
     region: "{{ yum_aws_region }}"
     mode: put
     permission: public-read
-    object: "{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/{{ item.rpm }}"
+    object: "{{ yum_repo_path }}/{{ item.rpm }}"
     src: "/var/tmp/{{ item.rpm }}"
     overwrite: never
   with_items: "{{ rpm_downloads }}"
