@@ -1,0 +1,43 @@
+#!/bin/bash
+
+bad=0
+
+for bl in \
+    b.barracudacentral.org \
+    bl.spamcop.net \
+    cbl.abuseat.org \
+    ips.backscatterer.org \
+    pbl.dnsbl \
+    sbl.dnsbl \
+    xbl.dnsbl \
+    sip.dnsbl \
+    sip24.dnsbl \
+    xbl.dnsbl \
+    {{ trendmicro_key }}.q.mail-abuse.com \
+    {{ trendmicro_key }}.r.mail-abuse.com \
+    bl.spameatingmonkey.net \
+    mx-accept.dnsal \
+    mx-trust.dnsal \
+    penaltybox-skip.dnsal \
+    umnetworks.dnsal \
+    mx-deny.dnsbl \
+    smtp-deny.dnsbl
+do
+{# bash array syntax conflicts with Jinja2 comments #}{% raw %}
+    if ! simrbl -q -l $bl 127.0.0.1 ; then
+        echo "$bl lists 127.0.0.2"
+        (( bad++ ))
+    fi
+    if simrbl -q -l $bl 127.0.0.2 ; then
+        echo "$bl does not list 127.0.0.2"
+        (( bad++ ))
+    fi
+done
+
+if [[ $bad -gt 0 ]]; then
+    exit 2
+fi
+
+echo "All lists are working properly"
+exit 0
+{% endraw %}

@@ -164,5 +164,6 @@
     mode: 0755
   with_items:
     - check-dnsbl
+    - check-dnsl
   when: trendmicro_key is defined
 
