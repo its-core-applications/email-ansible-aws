@@ -31,50 +31,6 @@
     group: root
     mode: 0644
 
-- name: Install basic QoL packages
-  yum:
-    pkg: "{{ item }}"
-    state: present
-  with_items:
-    - awscli
-    - bind-utils
-    - cronie-noanacron
-    - expect
-    - git
-    - jq
-    - krb5-workstation
-    - lsof
-    - man
-    - mosh
-    - nc
-    - openldap-clients
-    - pv
-    - python-boto
-    - python-pip
-    - python2-boto3
-    - strace
-    - sysstat
-    - telnet
-    - tmux
-    - vim
-    - wget
-    - whois
-
-- name: Uninstall unwanted packages
-  yum:
-    pkg: "{{ item }}"
-    state: absent
-  with_items:
-    - cronie-anacron
-    - postfix
-
-# Only for the fake hostname that packer uses when building the base image
-- name: Upgrade all packages
-  yum:
-    pkg: "*"
-    state: latest
-  when: inventory_hostname == "base"
-
 - name: Remove RHEL file cruft
   file:
     dest: "{{ item }}"

@@ -1,6 +1,8 @@
 ---
 
 dependencies:
+  - role: base_packages
+    tags: base_packages
   - role: dynhostname
     tags: dynhostname
   - role: nonpeople
