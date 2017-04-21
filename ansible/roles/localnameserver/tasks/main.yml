@@ -38,4 +38,12 @@
     owner: root
     group: root
     mode: 0644
-  tags: mutable
+
+- name: Disable cloud-init network config
+  copy:
+    dest: /etc/cloud/cloud.cfg.d/99-network.cfg
+    content: 'network: {config: disabled}'
+    owner: root
+    group: root
+    mode: 0644
+
