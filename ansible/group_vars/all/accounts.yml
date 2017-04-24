@@ -62,3 +62,7 @@ user_accounts:
   - name: kcheek
     comment: Kevin Cheek
     uid: 57997
+  - name: jimcald
+    comment: Jim Caldwell
+    uid: 30540
+    full_sudo: true
