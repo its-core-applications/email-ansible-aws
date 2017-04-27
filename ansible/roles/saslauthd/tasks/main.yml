@@ -1,0 +1,19 @@
+---
+
+- name: Install sasl
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - cyrus-sasl
+    - cyrus-sasl-gssapi
+    - cyrus-sasl-plain
+
+- name: Configure saslauthd
+  copy:
+    dest: /etc/sysconfig/saslauthd
+    src: saslauthd.sysconfig
+    owner: root
+    group: root
+    mode: 0644
+

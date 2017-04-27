@@ -1,0 +1,11 @@
+---
+
+- name: Configure krb5
+  template:
+    dest: /etc/krb5.conf.d/{{ item }}
+    src: "{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - 00_default_realm

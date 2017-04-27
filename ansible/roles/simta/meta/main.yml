@@ -3,6 +3,9 @@
 dependencies:
   - { role: s3repo, tags: s3repo }
   - { role: comint, tags: comint }
+  - role: saslauthd
+    tags: saslauthd
+    when: simta_authn
   - role: certificate
     certificate: "{{ simta_config }}.{{ tld }}"
     certificate_type: tls
