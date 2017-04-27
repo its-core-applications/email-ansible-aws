@@ -23,6 +23,14 @@
     validate: 'visudo -cf %s'
   tags: mutable
 
+- name: Configure cloud-init
+  copy:
+    dest: /etc/cloud/cloud.cfg
+    src: cloud.cfg
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Customize environment
   copy:
     dest: /etc/profile.d/99_custom.sh
