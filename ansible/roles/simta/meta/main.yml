@@ -5,9 +5,11 @@ dependencies:
   - { role: comint, tags: comint }
   - role: certificate
     certificate: "{{ simta_config }}.{{ tld }}"
-    certificate_type: "{{ simta_tls | ternary('tls', 'null') }}"
+    certificate_type: tls
+    when: simta_tls
     tags: certificate
   - role: certificate
     certificate: "{{ simta_dkim_selector }}._domainkey.{{ tld }}"
-    certificate_type: "{{ simta_dkim | ternary('dkim', 'null') }}"
+    certificate_type: dkim
+    when: simta_dkim
     tags: certificate

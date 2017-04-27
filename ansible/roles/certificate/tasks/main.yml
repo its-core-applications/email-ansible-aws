@@ -7,7 +7,6 @@
     group: mail
     mode: 0750
     state: directory
-  when: certificate_type != 'null'
 
 - name: "{{ certificate }} : Install private key"
   copy:
@@ -16,7 +15,6 @@
     owner: root
     group: mail
     mode: 0640
-  when: certificate_type != 'null'
 
 - name: "{{ certificate }} : Install certificate"
   copy:
