@@ -19,6 +19,8 @@ PROXY       ON
 ALIAS_FILE  /etc/mail/aliases
 ALIAS_DB    /etc/mail/aliases.db
 
+TLS_CA_FILE /etc/pki/tls/certs/ca-bundle.crt
+
 {% if simta_localmail == false %}
 {% if simta_authn %}
 AUTHN       SASL
@@ -26,14 +28,14 @@ AUTHZ_DNS   DENY    ubl.dnsbl
 
 {% endif %}
 {% if simta_relay %}
-RDNS_CHECK          RELAXED
+RDNS_CHECK          CHILLAXED
 SENDER_CHECKING     OFF
 SPF                 OFF
 DKIM_VERIFY         OFF
 DMARC               OFF
 AUTHN_RESULTS       OFF
 {% else %}
-RDNS_CHECK          CHILLAXED
+RDNS_CHECK          RELAXED
 PUBLICSUFFIX_FILE   /etc/mail/public_suffix_list.dat
 {% endif %}
 {% if simta_dkim %}
@@ -44,14 +46,18 @@ DKIM_KEY            /etc/pki/collab/private/{{ simta_dkim_selector }}._domainkey
 
 {% endif %}
 {% if simta_msa %}
-
 SUBMISSION_MODE     MSA
+SUBMISSION_PORT     ON
+{% if simta_tls %}
+TLS_LEGACY_PORT     ON
+{% endif %}
 
 {% endif %}
+{% if simta_tls %}
 TLS                 ON
-TLS_CA_FILE         /etc/pki/tls/certs/ca-bundle.crt
 TLS_CERT            /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.crt
 TLS_CERT_KEY        /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.key
+{% endif %}
 
 {% if simta_relay == false %}
 AUTHN       HONEYPOT
@@ -66,6 +72,9 @@ USER_
 {%- endif %}
 RBL_BLOCK {{ rbl.rjust( 12 ) }} {{ simta_spambusters }}
 {% endfor %}
+
+BANNER_DELAY            1
+BANNER_PUNISH_WRITES    ON
 
 {% endif %}
 CONNECTION_LIMIT                    {{ simta_connlimit }}
