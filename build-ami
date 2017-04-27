@@ -7,7 +7,7 @@ else
 fi
 
 if [[ $class = 'base' ]]; then
-    base=$(aws ec2 describe-images --filters "Name=owner-id,Values=309956199498" "Name=virtualization-type,Values=hvm" "Name=block-device-mapping.volume-type,Values=gp2" "Name=name,Values=RHEL-7.2_HVM_GA*" --query 'Images[*].{Name:Name,ImageId:ImageId}' --output=text | sort -k2 | awk 'END { print $1 }')
+    base=$(aws ec2 describe-images --filters "Name=owner-id,Values=309956199498" "Name=virtualization-type,Values=hvm" "Name=block-device-mapping.volume-type,Values=gp2" "Name=name,Values=RHEL-7.?_HVM_GA*" --query 'Images[*].{Name:Name,ImageId:ImageId}' --output=text | sort -k2 | awk 'END { print $1 }')
 else 
     base=$(aws ec2 describe-images --owners self --filters "Name=tag:image_type,Values=base" --query 'Images[*].{Name:Name,ImageId:ImageId}' --output=text | sort -k2 | awk 'END { print $1 }')
 fi
