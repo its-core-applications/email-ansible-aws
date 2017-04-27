@@ -1,0 +1,17 @@
+---
+
+- hosts: tag_Class_smtp_test:!tag_Status_spundown
+  gather_facts: false
+  tasks:
+    - name: Set status to spundown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        resource: "{{ ec2_id }}"
+        tags:
+          Status: spundown
+
+    - name: Stop sensu
+      systemd:
+        name: sensu-client
+        state: stopped
+

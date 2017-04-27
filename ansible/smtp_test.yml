@@ -5,6 +5,7 @@
     - { role: base, tags: base }
     - { role: rsyslog_forward, tags: rsyslog_forward }
     - { role: localnameserver, tags: localnameserver }
-    - { role: simta, tags: simta }
+    - role: simta
+      simta_authn: yes
+      tags: simta
     - { role: clamav_filter, tags: clamav }
-#    - { role: smtp, tags: smtp }

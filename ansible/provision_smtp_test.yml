@@ -37,19 +37,3 @@
 
 - include: smtp_test.yml
 
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  become: false
-  tasks:
-    - name: "Set smtp-test.{{ subd }}"
-      route53:
-        command: "create"
-        overwrite: true
-        zone: "{{ subd }}"
-        record: "smtp-test.{{ subd }}"
-        type: "A"
-        ttl: 60
-        value: "{{ groups.tag_Class_smtp_test | default({}) | map('extract', hostvars, 'ec2_ip_address') | join(', ') }}"
-      when: groups.tag_Class_smtp_test is defined
-
