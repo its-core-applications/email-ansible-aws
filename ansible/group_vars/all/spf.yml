@@ -28,6 +28,8 @@ spf_thirdparty:
     record: 'ip4:96.30.56.221 ip4:192.138.19.78'
   - names: [ printingservices ]
     record: 'include:pti.com'
+  - names: [ psmitow ]
+    record: 'include:spf.peopleadmin.com'
   - names: [ pubstoreowners ]
     record: 'include:_spf.bigcommerce.com'
   - names: [ rosscareerservices ]
