@@ -1,0 +1,46 @@
+diff --git a/include/sasl.h b/include/sasl.h
+index 8b8a63f..6ae153f 100755
+--- a/include/sasl.h
++++ b/include/sasl.h
+@@ -179,6 +179,7 @@
+ 				       because of some constrains/policy violation */
+ 
+ #define SASL_BADBINDING -32  /* channel binding failure */
++#define SASL_CONFIGERR -33  /* error when parsing configuration file */
+ 
+ /* max size of a sasl mechanism name */
+ #define SASL_MECHNAMEMAX 20
+diff --git a/lib/common.c b/lib/common.c
+index 672fe2f..de0adfd 100644
+--- a/lib/common.c
++++ b/lib/common.c
+@@ -1362,6 +1362,7 @@ const char *sasl_errstring(int saslerr,
+     case SASL_CONSTRAINT_VIOLAT: return "sasl_setpass can't store a property because "
+ 			        "of a constraint violation";
+     case SASL_BADBINDING: return "channel binding failure";
++    case SASL_CONFIGERR:  return "error when parsing configuration file";
+ 
+     default:   return "undefined error!";
+     }
+diff --git a/lib/config.c b/lib/config.c
+index 7cae302..fde3757 100644
+--- a/lib/config.c
++++ b/lib/config.c
+@@ -91,7 +91,7 @@ int sasl_config_init(const char *filename)
+ 	}
+ 	if (*p != ':') {
+ 	    fclose(infile);
+-	    return SASL_FAIL;
++	    return SASL_CONFIGERR;
+ 	}
+ 	*p++ = '\0';
+ 
+@@ -99,7 +99,7 @@ int sasl_config_init(const char *filename)
+ 	
+ 	if (!*p) {
+ 	    fclose(infile);
+-	    return SASL_FAIL;
++	    return SASL_CONFIGERR;
+ 	}
+ 
+ 	/* Now strip trailing spaces, if any */

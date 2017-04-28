@@ -1,0 +1,45 @@
+diff -ur cyrus-sasl-2.1.26/saslauthd/auth_krb5.c cyrus-sasl-2.1.26-/saslauthd/auth_krb5.c
+--- cyrus-sasl-2.1.26/saslauthd/auth_krb5.c	2012-10-12 10:05:48.000000000 -0400
++++ cyrus-sasl-2.1.26-/saslauthd/auth_krb5.c	2017-04-28 14:42:15.969510492 -0400
+@@ -58,6 +58,7 @@
+ static cfile config = 0;
+ static char *keytabname = NULL; /* "system default" */
+ static char *verify_principal = "host"; /* a principal in the default keytab */
++static char *servername = NULL; /* server name to use in principal */
+ #endif /* AUTH_KRB5 */
+ 
+ #include <errno.h>
+@@ -104,6 +105,7 @@
+     if (config) {
+ 	keytabname = cfile_getstring(config, "krb5_keytab", keytabname);
+ 	verify_principal = cfile_getstring(config, "krb5_verify_principal", verify_principal);
++	servername = cfile_getstring(config, "krb5_servername", servername);
+     }
+ 
+     return 0;
+@@ -279,8 +281,9 @@
+     
+     memset(&packet, 0, sizeof(packet));
+ 
+-    if ((k5_retcode = krb5_sname_to_principal(context, NULL, verify_principal,
+-					      KRB5_NT_SRV_HST, &server))) {
++    if ((k5_retcode = krb5_sname_to_principal(context, servername,
++		verify_principal,
++		( servername ? KRB5_NT_UNKNOWN : KRB5_NT_SRV_HST), &server))) {
+ 	k5support_log_err(context, k5_retcode, "krb5_sname_to_principal()");
+ 	return 0;
+     }
+@@ -305,8 +308,12 @@
+     /* this duplicates work done in krb5_sname_to_principal
+      * oh well.
+      */
+-    if (gethostname(thishost, BUFSIZ) < 0) {
++    if( servername ) {
++	strncpy( thishost, servername, BUFSIZ );
++    } else {
++	if (gethostname(thishost, BUFSIZ) < 0) {
+ 	goto fini;
++	}
+     }
+     thishost[BUFSIZ-1] = '\0';
+     

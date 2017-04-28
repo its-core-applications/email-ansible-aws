@@ -6,8 +6,6 @@
     state: latest
   with_items:
     - cyrus-sasl
-    - cyrus-sasl-gssapi
-    - cyrus-sasl-plain
 
 - name: Configure saslauthd
   copy:
@@ -16,4 +14,12 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Install the keytab
+  copy:
+    dest: /etc/krb5.keytab
+    content: "{{ lookup('hashi_vault', 'secret=secret/krb/' ~ simta_config ~ '.' ~ tld) }}"
+    owner: root
+    group: mail
+    mode: 0640
 

@@ -4,3 +4,4 @@ dependencies:
   - { role: build_jemalloc, tags: jemalloc }
   - { role: build_denser, tags: denser }
   - { role: build_libsnet, tags: libsnet }
+  - { role: build_cyrus_sasl, tags: sasl }

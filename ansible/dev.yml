@@ -16,4 +16,5 @@
     - { role: build_penaltybox, tags: penaltybox }
     - { role: build_libucl, tags: libucl }
     - { role: build_simvacation, tags: simvacation }
+    - { role: build_cyrus_sasl, tags: sasl }
     - { role: s3repo_build, tags: always }

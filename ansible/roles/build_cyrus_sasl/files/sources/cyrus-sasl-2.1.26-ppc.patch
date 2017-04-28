@@ -1,0 +1,24 @@
+diff -up cyrus-sasl-2.1.26/config/ltconfig.ppc cyrus-sasl-2.1.26/config/ltconfig
+--- cyrus-sasl-2.1.26/config/ltconfig.ppc	2012-10-12 16:05:48.000000000 +0200
++++ cyrus-sasl-2.1.26/config/ltconfig	2013-06-04 15:38:53.695401296 +0200
+@@ -2040,7 +2040,7 @@ linux-gnu*)
+   else
+     # Only the GNU ld.so supports shared libraries on MkLinux.
+     case "$host_cpu" in
+-    powerpc*) dynamic_linker=no ;;
++#    powerpc*) dynamic_linker=no ;;
+     *) dynamic_linker='Linux ld.so' ;;
+     esac
+   fi
+diff -up cyrus-sasl-2.1.26/saslauthd/config/ltconfig.ppc cyrus-sasl-2.1.26/saslauthd/config/ltconfig
+--- cyrus-sasl-2.1.26/saslauthd/config/ltconfig.ppc	2013-06-04 15:39:49.849463707 +0200
++++ cyrus-sasl-2.1.26/saslauthd/config/ltconfig	2013-06-04 15:39:12.826741036 +0200
+@@ -2040,7 +2040,7 @@ linux-gnu*)
+   else
+     # Only the GNU ld.so supports shared libraries on MkLinux.
+     case "$host_cpu" in
+-    powerpc*) dynamic_linker=no ;;
++    #powerpc*) dynamic_linker=no ;;
+     *) dynamic_linker='Linux ld.so' ;;
+     esac
+   fi

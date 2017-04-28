@@ -12,6 +12,7 @@
     - { role: build_sensu_plugins, tags: sensu }
     - { role: build_comint, tags: comint }
     - { role: build_jemalloc, tags: jemalloc }
+    - { role: build_cyrus_sasl, tags: sasl }
     - { role: build_simta, tags: simta }
     - { role: build_clamav, tags: clamav }
 #    - { role: build_dash, tags: dash }
