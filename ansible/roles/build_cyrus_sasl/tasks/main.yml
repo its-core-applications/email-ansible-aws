@@ -44,6 +44,7 @@
     - cyrus-sasl-2.1.26-servername.patch
     - cyrus-sasl-2.1.26-size_t.patch
     - cyrus-sasl-2.1.26-sql.patch
+    - cyrus-sasl-2.1.26-user-specified-logging.patch
     - cyrus-sasl-2.1.26-warnings.patch
     - saslauthd.service
     - saslauthd.sysconfig

@@ -10,7 +10,7 @@
 Summary: The Cyrus SASL library
 Name: cyrus-sasl
 Version: 2.1.26
-Release: 51%{?dist}
+Release: 52%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
@@ -54,6 +54,8 @@ Patch56: cyrus-sasl-2.1.26-handle-single-character-mechanisms.patch
 Patch57: cyrus-sasl-2.1.26-error-message-when-config-has-typo.patch
 # GSSAPI: Use per-connection mutex where possible (#1263017)
 Patch58: cyrus-sasl-2.1.26-gssapi-use-per-connection-mutex.patch
+# Too much loogging in GSSAPI resolved (#1187097)
+Patch60: cyrus-sasl-2.1.26-user-specified-logging.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: autoconf, automake, libtool, gdbm-devel, groff
@@ -98,7 +100,7 @@ compiling applications which use the Cyrus SASL library.
 chmod -x doc/*.html
 chmod -x include/*.h
 %patch1  -p1 -b .servername
-%patch11 -p1 -b .no_rpath
+%patch11 -p1 -b .no-rpath
 %patch15 -p1 -b .path
 %patch23 -p1 -b .man
 %patch24 -p1 -b .sizes
@@ -115,12 +117,12 @@ chmod -x include/*.h
 %patch50 -p1 -b .sql
 %patch51 -p1 -b .sha1vsplain
 %patch52 -p1 -b .revert
-%patch54 -p1 -b .gssapi_non_encrypt
+%patch54 -p1 -b .gssapi-non-encrypt
 %patch55 -p1 -b .threads
 %patch56 -p1 -b .prefix
 %patch57 -p1 -b .typo
 %patch58 -p1 -b .mutex
-
+%patch60 -p1 -b .too-much-logging
 
 %build
 # Find Kerberos.
