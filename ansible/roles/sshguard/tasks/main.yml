@@ -15,3 +15,10 @@
     mode: 0644
   notify: Restart sshguard
 
+- name: Enable sshguard
+  systemd:
+    name: sshguard
+    enabled: yes
+    daemon-reload: yes
+  notify: Restart sshguard
+
