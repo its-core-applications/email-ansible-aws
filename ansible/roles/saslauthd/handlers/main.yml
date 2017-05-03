@@ -1,0 +1,7 @@
+---
+
+- name: Restart saslauthd
+  systemd:
+    name: saslauthd
+    state: restarted
+

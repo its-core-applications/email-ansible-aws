@@ -6,20 +6,51 @@
     state: latest
   with_items:
     - cyrus-sasl
+  notify: Restart saslauthd
 
-- name: Configure saslauthd
+- name: Configure saslauthd service
   copy:
     dest: /etc/sysconfig/saslauthd
     src: saslauthd.sysconfig
     owner: root
     group: root
     mode: 0644
+  notify: Restart saslauthd
 
-- name: Install the keytab
+- name: Configure saslauthd
+  template:
+    dest: /etc/saslauthd.conf
+    src: saslauthd.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart saslauthd
+
+- name: Copy the encoded keytab
   copy:
-    dest: /etc/krb5.keytab
+    dest: /etc/krb5.keytab.b64
     content: "{{ lookup('hashi_vault', 'secret=secret/krb/' ~ simta_config ~ '.' ~ tld) }}"
     owner: root
     group: mail
     mode: 0640
+  register: result
+
+- name: Decode the keytab
+  shell: base64 -d /etc/krb5.keytab.b64 > /etc/krb5.keytab
+  when: result|changed
+  notify: Restart saslauthd
+
+- name: Set permissions on the keytab
+  file:
+    dest: /etc/krb5.keytab
+    owner: root
+    group: mail
+    mode: 0640
+
+- name: Enable saslauthd
+  systemd:
+    name: simta
+    daemon_reload: yes
+    enabled: yes
+  notify: Restart saslauthd
 

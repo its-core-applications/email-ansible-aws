@@ -119,6 +119,7 @@
     owner: root
     group: root
     mode: 0644
+  notify: Restart simta
   when: simta_ldap
 
 - name: "Install LDAP config file for {{ tld }}"
@@ -128,6 +129,7 @@
     owner: root
     group: root
     mode: 0644
+  notify: Restart simta
   when: simta_ldap
 
 - name: Install LDAP config files for subdomains
@@ -138,6 +140,7 @@
     group: root
     mode: 0644
   with_items: "{{ simta_ldap_domains }}"
+  notify: Restart simta
   when: simta_ldap
 
 - name: Configure simvacation
@@ -149,11 +152,22 @@
     mode: 0644
   when: simta_ldap
 
+- name: Install SASL config file
+  copy:
+    dest: /etc/sasl2/simta.conf
+    src: simta.sasl2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart simta
+  when: simta_authn
+
 - name: Enable simta
   systemd:
     name: simta
     daemon_reload: true
     enabled: yes
+  notify: Restart simta
 
 - name: Install custom monitoring scripts
   template:
