@@ -56,7 +56,7 @@ find ${workdir}/outbound -empty -delete
 err=0
 for qhost in ${qhosts[@]}; do
     if [[ -d ${workdir}/outbound/${qhost} ]]; then
-        tar -C ${workdir}/outbound/${qhost} --owner=simta --group=mail --mode=0600 -cf ${workdir}/outbound/${qhost}.tar . &>>$tmpfile
+        tar -C ${workdir}/outbound/${qhost} --owner=simta --group=mail --mode=0644 -cf ${workdir}/outbound/${qhost}.tar . &>>$tmpfile
         if [[ $? -eq 0 ]]; then
             rm -rf ${workdir}/outbound/${qhost}
             ansible $qhost -m unarchive -a "src=${workdir}/outbound/${qhost}.tar dest=/var/spool/simta/slow extra_opts=--strip-components=1" &>>$tmpfile
