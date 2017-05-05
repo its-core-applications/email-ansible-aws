@@ -21,12 +21,10 @@ simta_ldap_domains:
   - biop.lsa
   - bus
   - dc
-  - econ
   - engin
   - engin.umd
   - geo.lsa
   - lsa
-  - math.lsa
   - roles
 
 simta_important_domains:
