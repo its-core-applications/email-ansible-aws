@@ -2,21 +2,21 @@
 
 - name: Clone simta-admin
   become: false
-  git: repo=git://scm.marwnad.com/umich/simta-admin.git dest=~/simta-admin update=yes force=yes accept_hostkey=yes
-  tags: build
+  git:
+    repo: https://github.com/simta/simta-admin.git
+    dest: ~/simta-admin
+    update: yes
+    force: yes
 
 - name: Build simta-admin RPM (autoreconf)
   become: false
   command: chdir=~/simta-admin autoreconf -fiv
-  tags: build
 
 - name: Build simta-admin RPM (configure)
   become: false
   command: chdir=~/simta-admin ./configure
-  tags: build
 
 - name: Build simta-admin RPM (make rpm)
   become: false
   command: chdir=~/simta-admin make rpm
   notify: Update yum repository
-  tags: build

@@ -3,28 +3,29 @@
 - meta: flush_handlers
 
 - name: Install build dependencies
-  yum: pkg={{ item }} state=latest
+  yum:
+    pkg: "{{ item }}"
+    state: latest
   with_items:
     - urcl-devel
-  tags: packageinstall
 
 - name: Clone penaltybox
   become: false 
-  git: repo=git://scm.marwnad.com/umich/penaltybox.git dest=~/penaltybox update=yes force=yes accept_hostkey=yes
-  tags: build
+  git:
+    repo: https://github.com/simta/penaltybox.git
+    dest: ~/penaltybox
+    update: yes
+    force: yes
 
 - name: Build penaltybox RPM (autoreconf)
   become: false
   command: chdir=~/penaltybox autoreconf -fiv
-  tags: build
 
 - name: Build penaltybox RPM (configure)
   become: false
   command: chdir=~/penaltybox ./configure
-  tags: build
 
 - name: Build penaltybox RPM (make rpm)
   become: false
   command: chdir=~/penaltybox make rpm
   notify: Update yum repository
-  tags: build

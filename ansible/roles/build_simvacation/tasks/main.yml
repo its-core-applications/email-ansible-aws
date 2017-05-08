@@ -12,7 +12,11 @@
 
 - name: Update the simvacation source tree
   become: false
-  git: repo=git://scm.marwnad.com/umich/simvacation.git dest=~/simvacation update=yes force=yes
+  git:
+    repo: https://github.com/simta/simvacation.git
+    dest: ~/simvacation
+    update: yes
+    force: yes
 
 - name: Build simvacation RPM (autoreconf)
   become: false

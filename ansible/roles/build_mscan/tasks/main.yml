@@ -2,21 +2,21 @@
 
 - name: Clone simta-mscan
   become: false
-  git: repo=git://scm.marwnad.com/umich/simta-mscan.git dest=~/simta-mscan update=yes force=yes accept_hostkey=yes
-  tags: build
+  git:
+    repo: https://github.com/simta/simta-mscan.git
+    dest: ~/simta-mscan
+    update: yes
+    force: yes
 
 - name: Build simta-mscan RPM (autoreconf)
   become: false
   command: chdir=~/simta-mscan autoreconf -fiv
-  tags: build
 
 - name: Build simta-mscan RPM (configure)
   become: false
   command: chdir=~/simta-mscan ./configure
-  tags: build
 
 - name: Build simta-mscan RPM (make rpm)
   become: false
   command: chdir=~/simta-mscan make rpm
   notify: Update yum repository
-  tags: build

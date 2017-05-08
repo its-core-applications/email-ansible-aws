@@ -1,29 +1,30 @@
 ---
 
 - name: Install build dependencies
-  yum: pkg={{ item }} state=present
+  yum:
+    pkg: "{{ item }}"
+    state: present
   with_items:
     - cyrus-sasl-devel
     - openssl-devel
-  tags: packageinstall
 
 - name: Clone libsnet
   become: false
-  git: repo=git://scm.marwnad.com/umich/libsnet.git dest=~/libsnet update=yes force=yes accept_hostkey=yes
-  tags: build
+  git:
+    repo: https://github.com/simta/libsnet.git
+    dest: ~/libsnet
+    update: yes
+    force: yes
 
 - name: Build libsnet RPM (autoreconf)
   become: false
   command: chdir=~/libsnet autoreconf -fiv
-  tags: build
 
 - name: Build libsnet RPM (configure)
   become: false
   command: chdir=~/libsnet ./configure
-  tags: build
 
 - name: Build libsnet RPM (make rpm)
   become: false
   command: chdir=~/libsnet make rpm
   notify: Update yum repository
-  tags: build
