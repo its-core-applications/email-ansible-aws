@@ -5,8 +5,8 @@ User_Alias      GOOGLE      = {{ user_accounts | selectattr('sudo_google', 'defi
 
 Runas_Alias     NONPEOPLE = box,email,google
 
-BOX         ALL=(box)       NOPASSWD: ALL
+BOX         ALL=(box)       SETENV:NOPASSWD: ALL
 COLLAB      ALL=(ALL)       ALL
-COLLAB      ALL=(NONPEOPLE) NOPASSWD: ALL
+COLLAB      ALL=(NONPEOPLE) SETENV:NOPASSWD: ALL
 EMAIL       ALL=(email)     ALL
 GOOGLE      ALL=(google)    SETENV:NOPASSWD: /home/google/GAM/src/gam.py

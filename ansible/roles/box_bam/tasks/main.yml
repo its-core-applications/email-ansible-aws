@@ -1,0 +1,10 @@
+---
+
+- name: Install bam wrapper
+  copy:
+    dest: /usr/bin/bam
+    src: bam.sh
+    owner: root
+    group: root
+    mode: 0755
+

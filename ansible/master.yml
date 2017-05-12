@@ -18,6 +18,7 @@
     - { role: duo, tags: duo }
     - { role: email_rbl-update, tags: email }
     - { role: google_gam, tags: google }
+    - { role: box_bam, tags: box }
     - { role: redis_master, tags: redis }
     - { role: simta_master, tags: simta }
     - { role: plasticman, tags: plasticman }
