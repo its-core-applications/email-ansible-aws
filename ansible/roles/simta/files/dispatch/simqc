@@ -1,9 +1,0 @@
-#!/bin/bash
-
-confdir=/usr/local/collaboration/dispatch
-name=simqc
-. /usr/libexec/comint/setup
-
-/usr/bin/simqc -f -s | eval $notifycmd_info $notifywho_info
-
-cleanup
