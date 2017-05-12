@@ -6,9 +6,9 @@
     state: latest
   with_items:
     - gitolite3
-    - nfs-utils
     - opendkim
     - openldap-clients
+    - python-ldap
     - unzip
 
 - name: Install extra pip packages
