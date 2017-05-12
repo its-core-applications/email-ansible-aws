@@ -14,6 +14,7 @@
 - name: Install extra pip packages
   pip: name={{ item }} state=latest
   with_items:
+    - ftptool
     - hvac
 
 - include: task_find_subnets.yml
