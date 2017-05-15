@@ -12,13 +12,13 @@ else
 fi
 
 # FIXME: This should probably go in a config file or a command line flag
-scale_count=3
+scale_count=6
 min_count=3
 max_count=18
 
 minute=$(( ($(date +%-H) * 60) + $(date +%-M) ))
-if [[ $minute -gt 465 && $minute -lt 1095 ]]; then
-    min_count=6
+if [[ $minute -gt 435 && $minute -lt 1095 ]]; then
+    min_count=9
 fi
 
 sendmetric() {
@@ -85,9 +85,9 @@ if [[ $count -lt $min_count && $rup -eq 0 ]]; then
     exit 0
 fi
 
-# Check for any datapoints in the last hour where the five minute
+# Check for any datapoints in the last hour and a bit where the five minute
 # load average was over 4
-hour=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-1hour&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 4 { x++ } END{ print NR, x }'))
+hour=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-65minutes&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 4 { x++ } END{ print NR, x }'))
 
 # Check for datapoints in the last twelve minutes where it was over 11
 quint=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-12minutes&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 11 { x++ } END{ print NR, x }'))
