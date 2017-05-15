@@ -2,20 +2,20 @@
 
 - name: Install extra packages
   yum:
-    name: "{{ item }}"
+    name:
+      - gitolite3
+      - opendkim
+      - openldap-clients
+      - python-ldap
+      - unzip
     state: latest
-  with_items:
-    - gitolite3
-    - opendkim
-    - openldap-clients
-    - python-ldap
-    - unzip
 
 - name: Install extra pip packages
-  pip: name={{ item }} state=latest
-  with_items:
-    - ftptool
-    - hvac
+  pip:
+    name:
+      - ftptool
+      - hvac
+    state: latest
 
 - include: task_find_subnets.yml
 
