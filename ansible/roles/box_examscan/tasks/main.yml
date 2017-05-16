@@ -1,0 +1,13 @@
+---
+
+- name: Install wrappers
+  copy:
+    dest: "/usr/bin/{{ item }}"
+    src: "{{ item }}.sh"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - exam_roster_process
+    - exam_scans_process
+
