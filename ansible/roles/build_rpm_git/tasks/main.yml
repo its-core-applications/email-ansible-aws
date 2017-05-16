@@ -1,0 +1,38 @@
+---
+
+- meta: flush_handlers
+
+- name: "Install build dependencies for {{ build_data.name }}"
+  yum:
+    name: "{{ build_data.deps }}"
+    state: latest
+  when: build_data.deps is defined
+
+- name: "Clone {{ build_data.name }} git repo"
+  become: false
+  git:
+    repo: "{{ build_data.repo }}"
+    dest: "~/{{ build_data.name }}"
+    version: "{{ build_data.version | default(omit) }}"
+    update: yes
+    force: yes
+
+- name: "Build {{ build_data.name }} RPM (autoreconf)"
+  become: false
+  command: autoreconf -fiv
+  args:
+    chdir: "~/{{ build_data.name }}"
+
+- name: "Build {{ build_data.name }} RPM (configure)"
+  become: false
+  command: ./configure
+  args:
+    chdir: "~/{{ build_data.name }}"
+
+- name: "Build {{ build_data.name }} RPM (make rpm)"
+  become: false
+  make:
+    chdir:  "~/{{ build_data.name }}"
+    target: rpm
+  notify: Update yum repository
+

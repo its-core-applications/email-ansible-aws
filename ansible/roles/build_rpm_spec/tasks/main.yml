@@ -1,0 +1,34 @@
+---
+
+- meta: flush_handlers
+
+- name: "Install build dependencies for {{ build_data.name }}"
+  yum:
+    name: "{{ build_data.deps }}"
+    state: latest
+  when: build_data.deps is defined
+
+- name: "Install spec file for {{ build_data.name }}"
+  become: false
+  copy:
+    src: "build/{{ build_data.name }}/{{ build_data.name }}.spec"
+    dest: "~/{{ build_data.name }}.spec"
+
+- name: "Fetch sources for {{ build_data.name }}"
+  become: false
+  command: "spectool -g -R ~/{{ build_data.name }}.spec"
+
+- name: "Install non-fetchable sources for {{ build_data.name }}"
+  become: false
+  copy:
+    src: "build/{{ build_data.name }}/sources/{{ item }}"
+    dest: "~/rpmbuild/SOURCES/{{ item }}"
+  with_items: "{{ build_data.extra_sources | default([]) }}"
+
+- name: "Build {{ build_data.name }} RPM"
+  become: false
+  command: "rpmbuild -ba ~/{{ build_data.name }}.spec"
+  environment:
+      QA_RPATHS: 1
+  notify: Update yum repository
+

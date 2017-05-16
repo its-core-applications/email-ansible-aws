@@ -2,19 +2,30 @@
 
 - name: Clone libucl
   become: false
-  git: "repo=https://github.com/vstakhov/libucl.git dest=~/libucl update=yes force=yes version={{ libucl_version }}"
+  git:
+    repo: https://github.com/vstakhov/libucl.git
+    dest: ~/libucl
+    update: yes
+    force: yes
+    version: "{{ libucl_version }}"
 
 - name: Build libucl tarball (autogen.sh)
   become: false
-  command: chdir=~/libucl ~/libucl/autogen.sh
+  command: ./autogen.sh
+  args:
+    chdir: ~/libucl
 
 - name: Build libucl tarball (configure)
   become: false
-  command: chdir=~/libucl ./configure
+  command: ./configure
+  args:
+    chdir: ~/libucl
 
 - name: Build libucl tarball (make dist)
   become: false
-  command: chdir=~/libucl make dist
+  make:
+    chdir: ~/libucl
+    target: dist
 
 - name: Move tarball into SOURCES
   become: false
@@ -28,6 +39,6 @@
 
 - name: Build libucl RPM
   become: false
-  shell: rpmbuild -ba ~/libucl.spec
+  command: rpmbuild -ba ~/libucl.spec
   notify: Update yum repository
 

@@ -1,0 +1,18 @@
+---
+
+- name: "Download {{ build_data.name }} RPM"
+  get_url:
+    url: "{{ build_data.url }}"
+    dest: "/var/tmp/{{ build_data.rpm }}"
+    checksum: "{{ build_data.checksum }}"
+
+- name: "Upload {{ build_data.name }} RPM"
+  s3:
+    bucket: "{{ yum_hostname }}"
+    region: "{{ yum_aws_region }}"
+    mode: put
+    permission: public-read
+    object: "{{ yum_repo_path }}/{{ build_data.rpm }}"
+    src: "/var/tmp/{{ build_data.rpm }}"
+    overwrite: never
+

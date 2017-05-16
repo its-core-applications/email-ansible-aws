@@ -1,4 +1,0 @@
----
-
-dependencies:
-  - { role: rpmbuild, tags: rpmbuild }
