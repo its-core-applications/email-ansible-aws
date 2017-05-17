@@ -40,4 +40,13 @@ spf_thirdparty:
     record: 'a:in4corp.com'
   - names: [ umich.procurement ]
     record: 'include:sciquest.com'
-
+  - names:
+      - hr
+      - it
+      - it-support
+      - emailadmin
+      - suport
+      - linkedin
+      - ithelpdesk
+      - techsupport
+    record: 'include:_phishspf.knowbe4.com'
