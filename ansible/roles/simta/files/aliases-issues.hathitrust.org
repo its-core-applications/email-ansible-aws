@@ -1,0 +1,3 @@
+feedback: ulib-sd-hathitrust@umich.edu
+projectlib: ulib-jira-projectlib@umich.edu
+htprojects: ulib-jira-ht-projects@umich.edu

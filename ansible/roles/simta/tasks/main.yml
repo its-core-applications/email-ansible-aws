@@ -143,6 +143,26 @@
   notify: Restart simta
   when: simta_ldap
 
+- name: Install LDAP config files for mapped domains
+  template:
+    dest: "/etc/mail/ldap/{{ item.domain }}"
+    src: ldap/mapped_domain.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart simta
+  with_items: "{{ simta_ldap_domains_mapped | default({}) }}"
+  when: simta_ldap
+
+- name: Install alias files for alias domains
+  copy:
+    dest: "/etc/mail/aliases-{{ item }}"
+    src: "aliases-{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ simta_alias_domains | default([]) }}"
+
 - name: Configure simvacation
   template:
     dest: /etc/mail/simvacation.conf

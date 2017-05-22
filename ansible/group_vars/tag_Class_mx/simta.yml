@@ -9,3 +9,68 @@ simta_ldap_password: "{{ lookup( 'hashi_vault', 'secret=secret/simta/ldap_passwo
 simta_srs: true
 simta_srs_secret: "{{ lookup( 'hashi_vault', 'secret=secret/simta/srs_secret' ) }}"
 trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro' ) }}"
+
+simta_alias_domains:
+  - issues.hathitrust.org
+
+simta_ldap_domains_mapped:
+  - domain: aabts.org
+    prefix: aabts
+  - domain: affmichlaw.org
+    prefix: affmichlaw
+  - domain: chrt.org
+    prefix: chrt
+  - domain: civsa.org
+    prefix: civsa
+  - domain: dailystudy.org
+    prefix: dailystudy
+  - domain: elmuseodelnorte.org
+    prefix: elmuseodelnorte
+  - domain: environmentreport.org
+    prefix: environmentreport
+  - domain: glrc.org
+    prefix: glrc
+  - domain: icart-bukavu.org
+    prefix: icart-bukavu
+  - domain: isbis.org
+    prefix: isbis
+  - domain: michiganchannel.org
+    prefix: michiganchannel
+  - domain: michiganemagine.org
+    prefix: michiganemagine
+  - domain: michiganherc.org
+    prefix: michiganherc
+  - domain: michiganproductions.org
+    prefix: michiganproductions
+  - domain: michiganradio.org
+    prefix: michiganradio
+  - domain: michigantavr.org
+    prefix: michigantavr
+  - domain: miseagrant.com
+    prefix: miseagrant
+  - domain: modometer.org
+    prefix: modometer
+  - domain: ootb.tv
+    prefix: ootb
+  - domain: openclimate.org
+    prefix: openclimate
+  - domain: outsmarthpv.org
+    prefix: outsmarthpv
+  - domain: raaps.org
+    prefix: raaps
+  - domain: sakaiproject.org
+    prefix: sakaiproject
+  - domain: smartgirl.org
+    prefix: smartgirl
+  - domain: ssdan.net
+    prefix: ssdan
+  - domain: stonesoup.org
+    prefix: stonesoup
+  - domain: teachingworks.org
+    prefix: teachingworks
+  - domain: ums.org
+    prefix: ums
+  - domain: urcmich.org
+    prefix: urcmich
+  - domain: wcbn.org
+    prefix: wcbn
