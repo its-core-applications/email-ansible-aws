@@ -51,4 +51,3 @@
   with_items: "{{ gems.files }}"
   loop_control:
     label: "{{ item.path | basename }}"
-  notify: s3upload
