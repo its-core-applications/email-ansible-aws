@@ -120,6 +120,8 @@
           - gmp-devel
           - libxml2-devel
           - ncurses-devel
+          - sendmail-devel
+          - tcp_wrappers-devel
         extra_sources:
           - README.fedora
           - clamav-0.98-umask.patch
