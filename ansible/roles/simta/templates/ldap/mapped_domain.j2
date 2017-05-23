@@ -21,15 +21,12 @@ bindpw	    {{ simta_ldap_password }}
 # timeout -- the ldap server timeout -- defaults to 180 seconds
 timeout 180
 
-# uri -- defines a search
-#
-# These searches are executed in order. First we search for a group
-# with the domain-specific prefix, then for the plain name constrained
-# by the prefix (e.g. for bounces to
-# {{ item.prefix }}.foo-errors@{{ item.domain }}).
+# The canonical location for these groups is the main domain, not
+# the mapped domain.
+associateddomain {{ tld }}
 
+# Map addresses in this domain to groups with a specific prefix.
 uri  "ldap:///ou=User%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn={{ item.prefix }} %25s)(!(umichEntryDisabled=TRUE)))" RDNPREF searchtype=ALL
-uri  "ldap:///ou=User%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn=%25s)(cn={{ item.prefix }} *)(!(umichEntryDisabled=TRUE)))" RDNPREF searchtype=ALL
 
 # attributes is a list of attributes to be read from the server.
 #            If no attributes are configured,  then all attributes are
