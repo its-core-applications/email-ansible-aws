@@ -10,16 +10,40 @@ spf_thirdparty:
   - names: [ '*' ]
     record: 'include:outboundmail.convio.net include:servers.mcsv.net ip4:205.139.105.0/23 ip4:206.79.6.0/24 ip4:72.55.140.81 include:e2ma.net include:cust-spf.exacttarget.com ip4:199.231.134.72 ip4:199.231.134.73 ip4:198.58.97.164 ip4:50.116.17.165 ip6:2600:3c00::f03c:91ff:fe6e:bbb8 ip4:216.177.90.7 a:sympmail.symplicity.com include:rnmk.com ip4:162.247.216.0/22'
   - names:
-      - ae-lit-mysql
-      - ae-lit-root
-      - hathitrust-system
-    record: 'ip4:134.68.0.0/16'
+      - bauern
+      - cfeak
+      - jengaret
+      - leonaa
+      - lmfranco
+      - mdame
+      - roslatva
+      - student.employment
+    record: 'include:ngwebsolutions.net'
+  - names:
+      - bldawson
+      - dental.statements
+      - dentalrecordcopy
+      - domsw
+      - jeffwa
+      - stefanac
+    record: 'include:certifiedmail.com'
+  - names: [ chermcb ]
+    record: 'include: vocsmail.com'
   - names: [ dpss-emergency-alert ]
     record: 'include:spf.blackboardconnect.com'
+  - names:
+      - eperformancelsahr
+      - psmitow
+    record: 'include:spf.peopleadmin.com'
   - names: [ fin-riskmgmt.general ]
     record: 'ip4:170.30.248.28'
   - names: [ fleetrental ]
     record: 'ip4:209.25.178.7'
+  - names:
+      - hathitrust-system
+      - lit-ae-root
+      - lit-ae-mysql
+    record: 'ip4:134.68.0.0/16'
   - names: [ lawlibnotices ]
     record: 'include:umil.iii.com'
   - names: [ mlearninginfo ]
@@ -28,18 +52,18 @@ spf_thirdparty:
     record: 'ip4:96.30.56.221 ip4:192.138.19.78'
   - names: [ printingservices ]
     record: 'include:pti.com'
-  - names: [ psmitow ]
-    record: 'include:spf.peopleadmin.com'
+  - names:
+      - procurement.services
+      - umich.procurement
+    record: 'include:sciquest.com'
   - names: [ pubstoreowners ]
     record: 'include:_spf.bigcommerce.com'
   - names: [ rosscareerservices ]
     record: 'include:mbafocus.com'
-  - names: [ student.employment ]
-    record: 'include:ngwebsolutions.net'
   - names: [ umdearborn-orsp ]
     record: 'a:in4corp.com'
-  - names: [ umich.procurement ]
-    record: 'include:sciquest.com'
+  - names: [ umpark ]
+    record: 'include:paypal.com'
   - names:
       - hr
       - it
