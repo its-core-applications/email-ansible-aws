@@ -10,6 +10,25 @@ spf_thirdparty:
   - names: [ '*' ]
     record: 'include:outboundmail.convio.net include:servers.mcsv.net ip4:205.139.105.0/23 ip4:206.79.6.0/24 ip4:72.55.140.81 include:e2ma.net include:cust-spf.exacttarget.com ip4:199.231.134.72 ip4:199.231.134.73 ip4:198.58.97.164 ip4:50.116.17.165 ip6:2600:3c00::f03c:91ff:fe6e:bbb8 ip4:216.177.90.7 a:sympmail.symplicity.com include:rnmk.com ip4:162.247.216.0/22'
   - names:
+      - acrisos
+      - anortley
+      - ctaylo
+      - fin-riskmgmt.general
+      - gkassa
+      - heaard
+      - isulli
+      - jamccarl
+      - jomiller
+      - kmrychli
+      - larich
+      - ntraugh
+      - pennyde
+      - trevinor
+      - tvachon
+      - whdorsey
+      - wyenkel
+    record: 'ip4:170.30.0.0/16'
+  - names:
       - bauern
       - cfeak
       - jengaret
@@ -35,8 +54,6 @@ spf_thirdparty:
       - eperformancelsahr
       - psmitow
     record: 'include:spf.peopleadmin.com'
-  - names: [ fin-riskmgmt.general ]
-    record: 'ip4:170.30.248.28'
   - names: [ fleetrental ]
     record: 'ip4:209.25.178.7'
   - names:
@@ -50,6 +67,9 @@ spf_thirdparty:
     record: 'include:sabacloud.com'
   - names: [ moa-mustech ]
     record: 'ip4:96.30.56.221 ip4:192.138.19.78'
+  - names:
+      - ochfitnesscenter
+    record: 'ip4:72.3.208.43'
   - names: [ printingservices ]
     record: 'include:pti.com'
   - names:
