@@ -19,6 +19,14 @@
     state: latest
   notify: Restart carbon
 
+- name: Fix whisper file permissions
+  file:
+    dest: /var/lib/carbon
+    state: directory
+    owner: carbon
+    group: carbon
+    recurse: yes
+
 - name: Configure carbon
   template:
     dest: "/etc/carbon/{{ item }}"
