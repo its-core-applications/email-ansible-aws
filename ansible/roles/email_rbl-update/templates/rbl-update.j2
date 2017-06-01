@@ -1,6 +1,6 @@
 #!/bin/bash
 
-workdir=/home/email/umich-rbls.git
+workdir=/home/email/umich-dnsbls.git
 
 action=$2
 file=$1
@@ -22,11 +22,12 @@ echo "Running $action against $file"
 
 cd $workdir
 
+git pull
+
 if [[ ! -s $file ]]; then
     echo "${workdir}/$file is empty or nonexistent, exiting"
     exit 1
 fi
-
 
 if [[ -n $(git status --porcelain $file) ]]; then
     echo "$file failed 'git status', exiting"
@@ -35,21 +36,26 @@ if [[ -n $(git status --porcelain $file) ]]; then
 fi
 
 for entry in $@ ; do
+    label=$entry
+    if [[ $file = 'deny-from' ]]; then
+        label=$(echo $label | tr A-Z a-z)
+        entry="$(echo -n $label | sha1sum | cut -d' ' -f1) $label"
+    fi
     if [[ $action = "add" ]]; then
-        if grep -q -w $entry $file ; then
+        if grep -q -w "$entry" $file ; then
             echo ""
-            echo -n "Oh dear, it looks like $entry is already in ${file}. "
+            echo -n "Oh dear, it looks like $label is already in ${file}. "
             echo "I'm skipping this one."
             continue
         else
             sed -i -e "5i$entry" $file
         fi
     elif [[ $action = "remove" ]]; then
-        if grep -q -w $entry $file ; then
+        if grep -q -w "$entry" $file ; then
             sed -ri -e "/^${entry}\b/d" $file
         else
             echo ""
-            echo -n "Oh my, it looks like $entry is not in ${file}. "
+            echo -n "Oh my, it looks like $label is not in ${file}. "
             echo "I'm skipping this one."
             continue
         fi
@@ -68,7 +74,7 @@ if [[ -n $(git status --porcelain $file) ]]; then
     rm -f $tmpfile
     if [[ -n $(git status --porcelain $file) ]]; then
         echo
-        echo echo "Aborted commit, reverting file changes."
+        echo "Aborted commit, reverting file changes."
         git checkout -- $file
     else
         git push

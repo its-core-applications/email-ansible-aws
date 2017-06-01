@@ -15,7 +15,6 @@
     group: root
     mode: 0644
   with_items:
-    - deny.from
     - deny.string
     - trust.rcpt
   tags: mutable
