@@ -17,7 +17,7 @@
       ec2:
         group: [ vpn-default, rsyslog ]
         key_name: "{{ aws_ssh_key }}"
-        instance_type: m4.large
+        instance_type: m4.xlarge
         region: "{{ aws_region }}"
         vpc_subnet_id: "{{ ec2_subnets.subnets.0.id }}"
         image: "{{ find_ami.results.0.ami_id }}"
