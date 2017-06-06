@@ -11,7 +11,7 @@
       ec2:
         group: [ main-default, mx-elb ]
         key_name: "{{ aws_ssh_key }}"
-        instance_type: t2.small
+        instance_type: t2.large
         region: "{{ aws_region }}"
         image: "{{ find_ami.results.0.ami_id }}"
         instance_profile_name: standard
