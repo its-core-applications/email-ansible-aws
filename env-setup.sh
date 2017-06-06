@@ -30,7 +30,12 @@ function _sshcomplete() {
     COMPREPLY=()
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     cur="${COMP_WORDS[COMP_CWORD]}"
-    [[ $prev = 'ssh' ]] && COMPREPLY=( $(aws ec2 describe-instances --filters 'Name=instance-state-name,Values=running' --output=text | awk '/CustomDNSName/{print $NF}' | grep "^$cur" | sort -u) )
+    if [[ $prev = 'ssh' ]]; then
+        if [[ ! -s ~/.aws-hosts || $(stat --format %Y ~/.aws-hosts) -lt $(( $(date +%s) - 30 )) ]]; then
+            aws ec2 describe-instances --filters 'Name=instance-state-name,Values=running' --output=text | awk '/CustomDNSName/{print $NF}' >| ~/.aws-hosts
+        fi
+        COMPREPLY=( $(cat ~/.aws-hosts ~/umce/hosts.* | grep "^$cur" | sort -u) )
+    fi
     return 0
 }
 
