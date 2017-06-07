@@ -99,7 +99,7 @@ spf_thirdparty:
   - names: [ pubstoreowners ]
     record: 'include:_spf.bigcommerce.com'
 
-  - name: [ ross-elcc ]
+  - names: [ ross-elcc ]
     record: 'a:657272-reswave.northwind.ca'
 
   - names: [ rosscareerservices ]
