@@ -50,7 +50,9 @@ spf_thirdparty:
       - stefanac
     record: 'include:certifiedmail.com'
 
-  - names: [ chermcb ]
+  - names:
+      - chermcb
+      - nbbickel
     record: 'include: vocsmail.com'
 
   - names: [ dpss-emergency-alert ]
@@ -73,6 +75,9 @@ spf_thirdparty:
   - names: [ lawlibnotices ]
     record: 'include:umil.iii.com'
 
+  - names: [ lentzs ]
+    record: 'include:greathill.com'
+
   - names: [ mlearninginfo ]
     record: 'include:sabacloud.com'
 
@@ -93,6 +98,9 @@ spf_thirdparty:
 
   - names: [ pubstoreowners ]
     record: 'include:_spf.bigcommerce.com'
+
+  - name: [ ross-elcc ]
+    record: 'a:657272-reswave.northwind.ca'
 
   - names: [ rosscareerservices ]
     record: 'include:mbafocus.com'

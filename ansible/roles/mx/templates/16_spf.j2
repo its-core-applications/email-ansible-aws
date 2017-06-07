@@ -1,8 +1,8 @@
 #!/bin/dash
 
-if [ "x${SIMTA_SMTP_MAIL_FROM##*@}" != 'x{{ tld }}' ]; then
+if [ "x$SIMTA_SPF_DOMAIN" != 'x{{ tld }}' ]; then
     : # No enforcement for other domains
-elif [ "x${SIMTA_HEADER_FROM##*@}" = 'x{{ tld }}' -a "x$SIMTA_DMARC_RESULT" = 'xpass' ]; then
+elif [ "x$SIMTA_DMARC_DOMAIN" = 'x{{ tld }}' -a "x$SIMTA_DMARC_RESULT" = 'xpass' ]; then
     : # It doesn't matter what the SPF result is, we passed DMARC
 elif [ "x$SIMTA_SPF_RESULT" != 'xpass' ]; then
     allow=$(simrbl -l mx-accept.dnsal -l umnetworks.dnsal "$SIMTA_REMOTE_IP")
@@ -13,22 +13,22 @@ elif [ "x$SIMTA_SPF_RESULT" != 'xpass' ]; then
 
     if [ "x$allow" = 'xmx-accept.dnsal' ]; then
         # Safeguard in case we broke SPF
-        log "16_spf: hit mx-accept guardrail with $SIMTA_REMOTE_IP"
+        log "16_spf: spf_disposition=guardrail spf_ip=$SIMTA_REMOTE_IP"
     elif [ "x$SIMTA_SPF_RESULT" = 'xtemperror' ]; then
         # Temporary SPF problem, e.g. DNS timeout
-        log "16_spf: want to tempfail $SIMTA_REMOTE_IP"
+        log "16_spf: spf_disposition=tempfail spf_ip=$SIMTA_REMOTE_IP spf_sender=$SIMTA_SMTP_MAIL_FROM"
         #echo "Problem resolving SPF for {{ tld }}"
         #filter_exit $MESSAGE_TEMPFAIL
     elif [ "x$allow" = 'xumnetworks.dnsal' ]; then
         # Local IP not listed in SPF, should ideally be dealt with
-        log "16_spf: needs-review local IP $SIMTA_REMOTE_IP"
+        log "16_spf: spf_disposition=needs-review spf_ip=$SIMTA_REMOTE_IP spf_sender=$SIMTA_SMTP_MAIL_FROM"
     elif [ "x$SIMTA_SPF_RESULT" = 'xpermerror' ]; then
         # "Permanent" SPF problem, e.g. syntax
-        log "16_spf: want to tempfail $SIMTA_REMOTE_IP"
+        log "16_spf: spf_disposition=tempfail spf_ip=$SIMTA_REMOTE_IP spf_sender=$SIMTA_SMTP_MAIL_FROM"
         #echo "Problem resolving SPF for {{ tld }}"
         #filter_exit $MESSAGE_TEMPFAIL
     else
-        log "16_spf: want to reject $SIMTA_REMOTE_IP"
+        log "16_spf: spf_disposition=reject spf_ip=$SIMTA_REMOTE_IP spf_sender=$SIMTA_SMTP_MAIL_FROM"
         #echo "Unauthenticated mail from {{ tld }} is not accepted due to local policy"
         #filter_exit $MESSAGE_REJECT
     fi
