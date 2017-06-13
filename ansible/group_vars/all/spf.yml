@@ -78,11 +78,14 @@ spf_thirdparty:
   - names: [ lentzs ]
     record: 'include:greathill.com'
 
+  - names: [ merchantcreditcard ]
+    record: 'include:quikpayasp.com'
+
   - names: [ mlearninginfo ]
     record: 'include:sabacloud.com'
 
   - names: [ moa-mustech ]
-    record: 'ip4:96.30.56.221 ip4:192.138.19.78'
+    record: 'ip4:96.30.56.221 ip4:192.138.19.78 ip4:64.91.241.212'
 
   - names:
       - ochfitnesscenter
