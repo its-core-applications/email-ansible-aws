@@ -1,6 +1,7 @@
 #!/bin/bash
 
-bad=0
+warn=0
+crit=0
 
 for bl in \
     b.barracudacentral.org \
@@ -25,17 +26,19 @@ for bl in \
 do
 {# bash array syntax conflicts with Jinja2 comments #}{% raw %}
     if ! simrbl -q -l $bl 127.0.0.1 ; then
-        echo "$bl lists 127.0.0.2"
-        (( bad++ ))
+        echo "$bl lists 127.0.0.1"
+        (( crit++ ))
     fi
     if simrbl -q -l $bl 127.0.0.2 ; then
         echo "$bl does not list 127.0.0.2"
-        (( bad++ ))
+        (( warn++ ))
     fi
 done
 
-if [[ $bad -gt 0 ]]; then
+if [[ $crit -gt 0 ]]; then
     exit 2
+elif [[ $warn -gt 0 ]]; then
+    exit 1
 fi
 
 echo "All lists are working properly"
