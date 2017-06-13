@@ -53,7 +53,7 @@ spf_thirdparty:
   - names:
       - chermcb
       - nbbickel
-    record: 'include: vocsmail.com'
+    record: 'include:vocsmail.com'
 
   - names: [ dpss-emergency-alert ]
     record: 'include:spf.blackboardconnect.com'
