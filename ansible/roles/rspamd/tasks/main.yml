@@ -24,11 +24,13 @@
   with_items:
     - local.d/dkim.conf
     - local.d/dmarc.conf
+    - local.d/logging.inc
     - local.d/metrics.conf
     - local.d/multimap.conf
     - local.d/rbl.conf
     - local.d/spf.conf
     - local.d/surbl.conf
+    - local.d/worker-proxy.inc
     - override.d/metrics.conf
     - umich_bad_tld.inc
   notify: Restart rspamd
