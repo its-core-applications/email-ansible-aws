@@ -8,38 +8,7 @@ spf_main:
 
 spf_thirdparty:
   - names: [ '*' ]
-    record: 'include:outboundmail.convio.net include:servers.mcsv.net ip4:205.139.105.0/23 ip4:206.79.6.0/24 ip4:72.55.140.81 include:e2ma.net include:cust-spf.exacttarget.com ip4:199.231.134.72 ip4:199.231.134.73 ip4:198.58.97.164 ip4:50.116.17.165 ip6:2600:3c00::f03c:91ff:fe6e:bbb8 ip4:216.177.90.7 a:sympmail.symplicity.com include:rnmk.com ip4:162.247.216.0/22'
-
-  - names:
-      - acrisos
-      - anortley
-      - ctaylo
-      - fin-riskmgmt.general
-      - gkassa
-      - heaard
-      - isulli
-      - jamccarl
-      - jomiller
-      - kmrychli
-      - larich
-      - ntraugh
-      - pennyde
-      - trevinor
-      - tvachon
-      - whdorsey
-      - wyenkel
-    record: 'ip4:170.30.0.0/16'
-
-  - names:
-      - bauern
-      - cfeak
-      - jengaret
-      - leonaa
-      - lmfranco
-      - mdame
-      - roslatva
-      - student.employment
-    record: 'include:ngwebsolutions.net'
+    record: 'include:outboundmail.convio.net include:servers.mcsv.net ip4:205.139.105.0/23 ip4:206.79.6.0/24 ip4:72.55.140.81 include:e2ma.net include:cust-spf.exacttarget.com ip4:199.231.134.72 ip4:199.231.134.73 ip4:198.58.97.164 ip4:50.116.17.165 ip6:2600:3c00::f03c:91ff:fe6e:bbb8 ip4:216.177.90.7 a:sympmail.symplicity.com include:rnmk.com ip4:162.247.216.0/22 include:ngwebsolutions.net ip4:170.30.0.0/16'
 
   - names:
       - bldawson
@@ -51,9 +20,20 @@ spf_thirdparty:
     record: 'include:certifiedmail.com'
 
   - names:
+      - casl-touchnet
+      - ericstar
+      - tadavis
+    record: 'ip4:198.187.196.0/24 ip4:199.106.139.112/28 ip4:198.187.195.89'
+
+  - names:
       - chermcb
       - nbbickel
     record: 'include:vocsmail.com'
+
+  - names:
+      - cjacobse
+      - umhsdev-web
+    record: 'ip4:198.100.45.34'
 
   - names: [ dpss-emergency-alert ]
     record: 'include:spf.blackboardconnect.com'
