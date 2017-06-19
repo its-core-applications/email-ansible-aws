@@ -3,6 +3,7 @@
   roles:
     - { role: base, tags: base }
     - { role: master, tags: master }
+    - { role: ssh_certs, tags: ssh_certs }
     - { role: rsyslog_forward, tags: rsyslog }
     - role: simta
       simta_localmail: true
