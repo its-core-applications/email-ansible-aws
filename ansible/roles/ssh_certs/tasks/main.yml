@@ -1,7 +1,7 @@
 ---
 
 - name: Sign SSH host keys
-  shell: "cat {{ item }}.pub | vault write -field=signed_key ssh-host-signer/sign/hostrole public_key=- cert_type=host > {{ item }}-cert.pub"
+  shell: "cat {{ item }}.pub | vault write -field=signed_key ssh-host-signer/sign/hostrole public_key=- cert_type=host valid_principals={{ inventory_hostname }} > {{ item }}-cert.pub"
   args:
     creates: "{{ item }}-cert.pub"
   environment:
