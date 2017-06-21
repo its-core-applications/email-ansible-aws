@@ -65,7 +65,7 @@ spf_thirdparty:
     record: 'include:sabacloud.com'
 
   - names: [ moa-mustech ]
-    record: 'ip4:96.30.56.221 ip4:192.138.19.78 ip4:64.91.241.212'
+    record: 'ip4:96.30.56.221 ip4:192.138.19.78 ip4:64.91.241.212 ip4:67.225.165.182'
 
   - names:
       - ochfitnesscenter
