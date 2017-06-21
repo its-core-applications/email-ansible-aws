@@ -18,6 +18,7 @@
 - name: Install fpm
   gem:
     name: fpm
+    user_install: no
     state: latest
 
 - name: Set up rpmbuild tree
