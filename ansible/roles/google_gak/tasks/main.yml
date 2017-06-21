@@ -1,0 +1,15 @@
+---
+
+- name: Install google-admin-kit
+  yum:
+    pkg: google-admin-kit
+    state: latest
+
+- name: Configure google-admin-kit
+  template:
+    dest: /etc/google-admin-kit.yml
+    src: google-admin-kit.yml.j2
+    owner: google
+    group: root
+    mode: 0640
+
