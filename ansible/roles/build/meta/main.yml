@@ -145,6 +145,15 @@ dependencies:
       extra_sources:
         - dash-0.5.7-format-security.patch
 
+  - role: build_rpm_git
+    tags:
+      - google
+      - google-admin-kit
+    build_data:
+      name: google-admin-kit
+      repo: https://bitbucket.org/its-application-delivery/google-admin-kit.git
+
+
   - role: build_rpm_prebuilt
     tags: mod_auth_openidc
     build_data:
