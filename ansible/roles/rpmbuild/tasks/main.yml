@@ -2,19 +2,27 @@
 
 - name: Install basic build dependencies
   yum:
-    pkg: "{{ item }}"
+    pkg:
+      - git
+      - createrepo
+      - rpmdevtools
+      - autoconf
+      - automake
+      - libtool
+      - setup
+      - gcc-c++
+      - rubygems
+      - ruby-devel
     state: present
-  with_items:
-    - git
-    - createrepo
-    - rpmdevtools
-    - autoconf
-    - automake
-    - libtool
-    - setup
-    - gcc-c++
+
+- name: Install fpm
+  gem:
+    name: fpm
+    state: latest
 
 - name: Set up rpmbuild tree
   become: false
-  command: rpmdev-setuptree creates=~/rpmbuild/RPMS
+  command: rpmdev-setuptree
+  args:
+    creates: ~/rpmbuild/RPMS
 
