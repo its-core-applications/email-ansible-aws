@@ -1,0 +1,32 @@
+---
+
+- meta: flush_handlers
+
+- name: "Install build dependencies for {{ build_data.name }}"
+  yum:
+    name: "{{ build_data.deps }}"
+    state: latest
+  when: build_data.deps is defined
+
+- name: "Clone {{ build_data.name }} git repo"
+  become: false
+  git:
+    repo: "{{ build_data.repo }}"
+    dest: "~/{{ build_data.name }}"
+    version: "{{ build_data.version | default(omit) }}"
+    update: yes
+    force: yes
+
+- name: "Build {{ build_data.name }} RPM"
+  become: false
+  command: fpm -s python -t rpm --python-package-name-prefix python2 setup.py
+  args:
+    chdir: "~/{{ build_data.name }}"
+
+- name: "Copy RPM to local repo"
+  become: false
+  shell: cp -f ~/{{ build_data.name }}/*.rpm ~/rpmbuild/RPMS
+  args:
+    warn: no
+  notify: Update yum repository
+
