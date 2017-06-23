@@ -1,9 +1,9 @@
 discussions:
 
   default:
-      sa_client_email:' {{lookup('hashi_vault', 'secret=secret/google/discussions/id') }}'
+      sa_client_email: '{{ lookup('hashi_vault', 'secret=secret/google/discussions/id') }}'
       sa_private_key: "{{ lookup('hashi_vault', 'secret=secret/google/discussions/key') }}"
-      sa_actor:"admin-mgoogle@discussions.umich.edu"
+      sa_actor: "admin-mgoogle@discussions.umich.edu"
 
 google:
 

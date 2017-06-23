@@ -2,7 +2,12 @@
 
 - name: Install the oauth2client library for python
   pip:
-      - name: oauth2client
+    name: oauth2client
+    version: 1.5.2
+
+- name: Install the google-api-python-client library for python
+  pip:
+    name: google-api-python-client
 
 - name: Install google-admin-kit
   yum:
