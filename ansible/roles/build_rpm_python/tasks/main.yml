@@ -20,6 +20,12 @@
 - name: "Build {{ build_data.name }} RPM"
   become: false
   command: fpm -s python -t rpm --python-package-name-prefix python2 setup.py
+  register: result
+  failed_when:
+    - result.rc != 0
+    - not (result.stdout | search('File already exists, refusing to continue'))
+  changed_when:
+    - result.rc == 0
   args:
     chdir: "~/{{ build_data.name }}"
 

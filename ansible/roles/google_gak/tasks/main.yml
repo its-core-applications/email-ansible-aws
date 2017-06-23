@@ -1,8 +1,14 @@
 ---
 
+- name: Install the oauth2client library for python
+  pip:
+      - name: oauth2client
+
 - name: Install google-admin-kit
   yum:
-    pkg: google-admin-kit
+    pkg: 
+      - google-admin-kit
+      - google-admin-kit-umextras
     state: latest
 
 - name: Configure google-admin-kit
@@ -12,4 +18,3 @@
     owner: google
     group: root
     mode: 0640
-

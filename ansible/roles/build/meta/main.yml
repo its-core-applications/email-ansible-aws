@@ -153,6 +153,13 @@ dependencies:
       name: google-admin-kit
       repo: https://bitbucket.org/its-application-delivery/google-admin-kit.git
 
+  - role: build_rpm_git
+    tags:
+      - google
+      - google-admin-kit-umextras
+    build_data:
+      name: google-admin-kit-umextras
+      repo: https://bitbucket.org/its-application-delivery/google-admin-kit-um-extras.git
 
   - role: build_rpm_prebuilt
     tags: mod_auth_openidc
