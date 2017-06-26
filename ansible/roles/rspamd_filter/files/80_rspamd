@@ -2,8 +2,8 @@
 
 if check_dfile; then
     spamout=$(rspamc --json --ip="$SIMTA_REMOTE_IP" --from="$SIMTA_SMTP_MAIL_FROM" --helo="$SIMTA_SMTP_HELO" --hostname="$SIMTA_REMOTE_HOSTNAME" $SIMTA_DFILE | tail -n +2 2>/dev/null)
-    spamres=$(echo $spamout | jq -r '@text "\(.default.action) score=\(.default.score)"')
-    spamsymbols=$(echo $spamout | jq -j '.default[] | objects | del(.description) | flatten | @text')
+    spamres=$(echo $spamout | jq -r '@text "\(.action) score=\(.score)"')
+    spamsymbols=$(echo $spamout | jq -j '.symbols[] | del(.description) | flatten | @text')
     spamaction=${spamres% score=*}
 
     log "80_rspamd: $spamres symbols={$spamsymbols}"
