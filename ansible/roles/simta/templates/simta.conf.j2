@@ -57,6 +57,8 @@ TLS_LEGACY_PORT     ON
 TLS                 ON
 TLS_CERT            /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.crt
 TLS_CERT_KEY        /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.key
+TLS_CIPHERS         EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:DH+CHACHA20:DH+AES128:DH+AES256:DH+3DES:!MD5
+DELIVER_TLS_CIPHERS EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:!MD5
 {% endif %}
 
 {% if simta_relay == false %}
