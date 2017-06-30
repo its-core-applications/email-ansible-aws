@@ -48,7 +48,6 @@
     - 21_ubl
     - 30_nsrecord
     - 40_string
-    - 75_load
   when:
     - simta_localmail == false
     - simta_filters == true
