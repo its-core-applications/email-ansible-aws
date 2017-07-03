@@ -91,6 +91,9 @@ spf_thirdparty:
   - names: [ umdearborn-orsp ]
     record: 'a:in4corp.com'
 
+  - names: [ umditmais ]
+    record: 'include:itmnow.com'
+
   - names: [ umpark ]
     record: 'include:paypal.com'
 
