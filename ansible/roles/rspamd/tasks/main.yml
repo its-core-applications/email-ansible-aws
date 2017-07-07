@@ -22,6 +22,7 @@
     group: root
     mode: 0644
   with_items:
+    - local.d/arc.conf
     - local.d/dkim.conf
     - local.d/dmarc.conf
     - local.d/logging.inc
