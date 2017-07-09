@@ -25,6 +25,7 @@
     - local.d/arc.conf
     - local.d/dkim.conf
     - local.d/dmarc.conf
+    - local.d/emails.conf
     - local.d/logging.inc
     - local.d/metrics.conf
     - local.d/multimap.conf
