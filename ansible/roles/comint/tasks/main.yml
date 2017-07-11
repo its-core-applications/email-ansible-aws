@@ -22,7 +22,6 @@
     - /usr/local/collaboration/nag/local
     - /usr/local/collaboration/report
     - /usr/local/collaboration/report/local
-    - /usr/local/collaboration/report/watchdog.d
 
 - name: Set up monitoring skeleton
   template:
@@ -37,38 +36,3 @@
     - nag/nag.conf
     - report/report.conf
 
-- name: Install basic monitoring scripts
-  copy:
-    dest: "/usr/local/collaboration/{{ item }}"
-    src: "{{ item }}"
-    owner: collaborate
-    group: nonpeople
-    mode: 0755
-  with_items:
-    - report/watchdog
-    - report/watchdog.d/10overrides
-    - report/watchdog.d/15runlevel
-    - report/watchdog.d/30maxcpu
-    - report/watchdog.d/30maxswap
-    - report/watchdog.d/30maxvm
-    - report/watchdog.d/40orphans
-    - report/watchdog.d/40roadkill
-
-- name: Configure basic monitoring scripts
-  copy:
-    dest: "/usr/local/collaboration/{{ item }}"
-    src: "{{ item }}"
-    owner: collaborate
-    group: nonpeople
-    mode: 0644
-  with_items:
-    - report/watchdog.conf
-    - nag/psnag-functions
-
-- name: Set up cron job to run reports
-  cron:
-    user: collaborate
-    minute: 0
-    hour: 0
-    name: reports
-    job: "run-parts /usr/local/collaboration/report"
