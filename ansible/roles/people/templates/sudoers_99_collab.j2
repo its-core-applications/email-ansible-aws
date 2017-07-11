@@ -1,10 +1,17 @@
-User_Alias      COLLAB          = {{ user_accounts | selectattr('sudo_collaborate', 'defined') | selectattr('sudo_collaborate') | map(attribute='name') | join(',') }}
-User_Alias      COLLAB_ADMINS   = {{ user_accounts | selectattr('full_sudo', 'defined') | selectattr('full_sudo') | map(attribute='name') | join(',') }}
-User_Alias      EMAIL           = {{ user_accounts | selectattr('sudo_email', 'defined') | selectattr('sudo_email') | map(attribute='name') | join(',') }}
+User_Alias      COLLAB          = {{ user_accounts | selectattr('sudo_collaborate', 'defined') | selectattr('sudo_collaborate') | map(attribute='name') | sort | join(', ') }}
+User_Alias      COLLAB_ADMINS   = {{ user_accounts | selectattr('full_sudo', 'defined') | selectattr('full_sudo') | map(attribute='name') | sort | join(', ') }}
+User_Alias      EMAIL           = {{ user_accounts | selectattr('sudo_email', 'defined') | selectattr('sudo_email') | map(attribute='name') | sort | join(', ') }}
 
 Runas_Alias     NONPEOPLE = collaborate,email
 
-Cmnd_Alias      COLLAB_TOOLS = /usr/bin/bam, /usr/bin/gam, /usr/bin/gyb, /usr/bin/collab-*, /usr/bin/discussions-*, /usr/bin/google-*, /home/collaborate/examscan/exam_*
+Cmnd_Alias      COLLAB_TOOLS = \
+                    /usr/bin/bam, \
+                    /usr/bin/gam, \
+                    /usr/bin/gyb, \
+                    /usr/bin/collab-*, \
+                    /usr/bin/discussions-*, \
+                    /usr/bin/google-*, \
+                    /home/collaborate/examscan/exam_*
 
 COLLAB          ALL=(collaborate)   NOPASSWD: COLLAB_TOOLS
 COLLAB_ADMINS   ALL=(ALL)           ALL
