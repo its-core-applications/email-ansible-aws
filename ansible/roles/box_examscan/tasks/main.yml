@@ -1,13 +1,10 @@
 ---
 
-- name: Install wrappers
+- name: Set up examscan aliases
   copy:
-    dest: "/usr/bin/{{ item }}"
-    src: "{{ item }}.sh"
+    dest: /etc/profile.d/99_examscan.sh
+    src: 99_examscan.sh
     owner: root
     group: root
-    mode: 0755
-  with_items:
-    - exam_roster_process
-    - exam_scans_process
+    mode: 0644
 

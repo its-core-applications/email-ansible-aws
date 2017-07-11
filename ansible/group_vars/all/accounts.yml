@@ -1,13 +1,9 @@
 ---
 
 nonperson_accounts:
-  - name: box
-    comment: Box
-    uid: 1004
   - name: collaborate
     comment: Collaboration
     uid: 1000537
-    home: /usr/local/collaboration
   - name: email
     comment: Mail Routing
     uid: 1002
@@ -15,9 +11,6 @@ nonperson_accounts:
   - name: git
     comment: Gitolite
     uid: 1001
-  - name: google
-    comment: Google
-    uid: 1003
   - name: splunk
     comment: Splunk
     uid: 1005
@@ -34,8 +27,7 @@ user_accounts:
   - name: rsauosci
     comment: Richard Sawoscinski
     uid: 874078
-    sudo_box: true
-    sudo_google: true
+    sudo_collaborate: true
   - name: crm
     comment: Chris Mueller
     uid: 23449
@@ -44,18 +36,17 @@ user_accounts:
     comment: Jeffrey Cohen
     uid: 53720
     sudo_email: true
-    sudo_google: true
+    sudo_collaborate: true
   - name: awilkins
     comment: Adam Wilkinson
     uid: 56060
     sudo_email: true
-    sudo_google: true
+    sudo_collaborate: true
   - name: neda
     comment: Neda Ganjei
     uid: 23665
-    sudo_box: true
     sudo_email: true
-    sudo_google: true
+    sudo_collaborate: true
   - name: willrhee
     comment: Will Rhee
     uid: 48422

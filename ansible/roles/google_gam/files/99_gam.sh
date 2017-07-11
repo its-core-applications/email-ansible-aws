@@ -1,3 +1,3 @@
-if [[ $USER != 'google' ]]; then
-    alias gam='sudo -u google /usr/bin/gam'
+if [[ $USER != 'collaborate' ]]; then
+    alias gam='sudo -u collaborate /usr/bin/gam'
 fi

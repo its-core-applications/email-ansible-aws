@@ -23,3 +23,12 @@
     owner: google
     group: root
     mode: 0640
+
+- name: Set up admin kit aliases
+  copy:
+    dest: /etc/profile.d/99_gak.sh
+    src: 99_gak.sh
+    owner: root
+    group: root
+    mode: 0644
+

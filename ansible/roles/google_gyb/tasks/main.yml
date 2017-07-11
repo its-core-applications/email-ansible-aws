@@ -9,9 +9,9 @@
 
 - name: Configure GYB
   file:
-    dest: "/home/google/GYB/{{ item }}"
+    dest: "/home/collaborate/GYB/{{ item }}"
     state: touch
-    owner: google
+    owner: collaborate
     group: nonpeople
   with_items:
     - noupdatecheck.txt
@@ -28,7 +28,7 @@
 - name: Set up gyb alias
   copy:
     dest: /etc/profile.d/99_gyb.sh
-    src: 99_gam.sh
+    src: 99_gyb.sh
     owner: root
     group: root
     mode: 0644

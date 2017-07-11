@@ -1,12 +1,12 @@
-User_Alias      BOX         = {{ user_accounts | selectattr('sudo_box', 'defined') | selectattr('sudo_box') | map(attribute='name') | join(',') }}
-User_Alias      COLLAB      = {{ user_accounts | selectattr('full_sudo', 'defined') | selectattr('full_sudo') | map(attribute='name') | join(',') }}
-User_Alias      EMAIL       = {{ user_accounts | selectattr('sudo_email', 'defined') | selectattr('sudo_email') | map(attribute='name') | join(',') }}
-User_Alias      GOOGLE      = {{ user_accounts | selectattr('sudo_google', 'defined') | selectattr('sudo_google') | map(attribute='name') | join(',') }}
+User_Alias      COLLAB          = {{ user_accounts | selectattr('sudo_collaborate', 'defined') | selectattr('sudo_collaborate') | map(attribute='name') | join(',') }}
+User_Alias      COLLAB_ADMINS   = {{ user_accounts | selectattr('full_sudo', 'defined') | selectattr('full_sudo') | map(attribute='name') | join(',') }}
+User_Alias      EMAIL           = {{ user_accounts | selectattr('sudo_email', 'defined') | selectattr('sudo_email') | map(attribute='name') | join(',') }}
 
-Runas_Alias     NONPEOPLE = box,email,google
+Runas_Alias     NONPEOPLE = collaborate,email
 
-BOX         ALL=(box)       SETENV:NOPASSWD: ALL
-COLLAB      ALL=(ALL)       ALL
-COLLAB      ALL=(NONPEOPLE) SETENV:NOPASSWD: ALL
-EMAIL       ALL=(email)     ALL
-GOOGLE      ALL=(google)    NOPASSWD: /usr/bin/gam
+Cmnd_Alias      COLLAB_TOOLS = /usr/bin/bam, /usr/bin/gam, /usr/bin/gyb, /usr/bin/collab-*, /usr/bin/discussions-*, /usr/bin/google-*, /home/collaborate/examscan/exam_*
+
+COLLAB          ALL=(collaborate)   NOPASSWD: COLLAB_TOOLS
+COLLAB_ADMINS   ALL=(ALL)           ALL
+COLLAB_ADMINS   ALL=(NONPEOPLE)     SETENV:NOPASSWD: ALL
+EMAIL           ALL=(email)         ALL

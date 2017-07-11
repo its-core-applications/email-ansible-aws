@@ -1,3 +1,3 @@
 #!/bin/bash
 
-GAMUSERCONFIGDIR=/home/google/gam-config/umich.edu /home/google/GAM/src/gam.py "$@"
+GAMUSERCONFIGDIR=/home/collaborate/gam-config/umich.edu /home/collaborate/GAM/src/gam.py "$@"
