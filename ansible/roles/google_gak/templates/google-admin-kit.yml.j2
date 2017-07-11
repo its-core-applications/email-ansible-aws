@@ -1,6 +1,7 @@
 discussions:
 
   default:
+      domain: 'discussions.umich.edu'
       sa_client_email: '{{ lookup('hashi_vault', 'secret=secret/google/discussions/id') }}'
       sa_private_key: "{{ lookup('hashi_vault', 'secret=secret/google/discussions/key') }}"
       sa_actor: "admin-mgoogle@discussions.umich.edu"
@@ -33,7 +34,7 @@ google:
     gam_command: '/usr/bin/gam'
     log_dir: '/var/tmp'
     tempfile_suffix: 'google'
-    domain: '@{{ tld }}'
+    domain: '{{ tld }}'
     archive_destination: 'ftp.box.com'
     archive_username: 'its-collab-pyrocumulonimbus@umich.edu'
     archive_password: '{{ lookup('hashi_vault', 'secret=secret/box/its-collab-pyrocumulonimbus') }}'
