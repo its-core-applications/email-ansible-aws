@@ -20,6 +20,7 @@
     - { role: email_rbl-update, tags: email }
     - { role: google_gam, tags: google }
     - { role: google_gak, tags: google }
+    - { role: google_gyb, tags: google }
     - { role: box_bam, tags: box }
     - { role: box_examscan, tags: box }
     - { role: redis_master, tags: redis }

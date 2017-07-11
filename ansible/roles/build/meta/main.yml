@@ -268,4 +268,11 @@ dependencies:
       name: umich_gak_utils
       repo: https://bitbucket.org/its-application-delivery/google-admin-kit-utilities.git
 
+  - role: build_rpm_python
+    tags:
+      - box
+    build_data:
+      name: umich_box_utils
+      repo: https://bitbucket.org/its-application-delivery/box-utilities/
+
   - { role: s3repo_build, tags: always }

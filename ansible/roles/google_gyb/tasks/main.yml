@@ -1,0 +1,34 @@
+---
+
+- name: Install GYB
+  become_user: google
+  git:
+    repo: https://bitbucket.org/its-application-delivery/got-your-back/
+    dest: ~/GYB
+    force: yes
+
+- name: Configure GYB
+  file:
+    dest: "/home/google/GYB/{{ item }}"
+    state: touch
+    owner: google
+    group: nonpeople
+  with_items:
+    - noupdatecheck.txt
+    - nobrowser.txt
+
+- name: Install gyb wrapper
+  copy:
+    dest: /usr/bin/gyb
+    src: gyb.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Set up gyb alias
+  copy:
+    dest: /etc/profile.d/99_gyb.sh
+    src: 99_gam.sh
+    owner: root
+    group: root
+    mode: 0644
