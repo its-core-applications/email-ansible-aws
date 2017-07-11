@@ -20,7 +20,7 @@
   template:
     dest: /etc/google-admin-kit.yml
     src: google-admin-kit.yml.j2
-    owner: google
+    owner: collaborate
     group: root
     mode: 0640
 

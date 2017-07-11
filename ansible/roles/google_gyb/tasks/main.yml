@@ -1,7 +1,7 @@
 ---
 
 - name: Install GYB
-  become_user: google
+  become_user: collaborate
   git:
     repo: https://bitbucket.org/its-application-delivery/got-your-back/
     dest: ~/GYB
