@@ -95,6 +95,18 @@ dependencies:
 
   - role: build_rpm_git
     tags:
+      - openarc
+      - simta
+    build_data:
+      name: openarc
+      repo: http://scm.marwnad.com/misc/openarc.git
+      deps:
+        - libbsd-devel
+        - openssl-devel
+        - sendmail-devel
+      
+  - role: build_rpm_git
+    tags:
       - urcl
       - penaltybox
       - simvacation
