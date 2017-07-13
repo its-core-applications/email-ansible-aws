@@ -24,7 +24,7 @@ want to also install exmh.
 
 %build
 %configure --with-cyrus-sasl
-make %{?_smp_mflags} all dist
+make all dist
 
 %install
 rm -rf %{buildroot}
