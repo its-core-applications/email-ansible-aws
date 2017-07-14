@@ -52,3 +52,11 @@
     - carbon-aggregator
   notify: Restart carbon
 
+- name: Schedule cleanup of old whisper files
+  copy:
+    dest: /etc/cron.daily/carbon
+    src: carbon.cron
+    owner: root
+    group: root
+    mode: 0755
+
