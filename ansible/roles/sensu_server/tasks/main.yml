@@ -83,14 +83,3 @@
     - sensu-api
   notify: Restart sensu server
 
-- name: Install sensu plugins
-  environment: "{{ sensu_environment }}"
-  gem:
-    name: "{{ item }}"
-    executable: /opt/sensu/embedded/bin/gem
-    user_install: no
-    state: latest
-  with_items:
-    - sensu-plugins-sensu
-    - sensu-plugins-graphite
-

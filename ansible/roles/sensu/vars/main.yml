@@ -8,9 +8,11 @@ sensu_plugins:
   - sensu-plugins-aws
   - sensu-plugins-cpu-checks
   - sensu-plugins-disk-checks
+  - sensu-plugins-graphite
   - sensu-plugins-load-checks
   - sensu-plugins-memory-checks
   - sensu-plugins-network-checks
   - sensu-plugins-process-checks
   - sensu-plugins-redis
+  - sensu-plugins-sensu
   - sensu-plugins-ssl
