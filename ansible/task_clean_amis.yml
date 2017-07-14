@@ -14,13 +14,14 @@
           image_type: "{{ item }}"
         sort: name
         sort_order: descending
-        sort_start: 5
+        sort_start: "{{ (item == 'junk') | ternary(0, 5) }}"
       register: result
       with_items:
         - base
         - mx
         - egress
         - rbl
+        - junk
 
     - name: Delete excess AMIs and their snapshots
       ec2_ami:
