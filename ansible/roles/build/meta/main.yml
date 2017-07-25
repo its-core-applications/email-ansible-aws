@@ -261,9 +261,9 @@ dependencies:
     tags: splunk
     build_data:
       name: splunk
-      rpm: splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm
-      url: 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.1&product=universalforwarder&filename=splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm&wget=true'
-      checksum: 'md5:4e7ce1b21dd3ee3f09fad2626a07cc1d'
+      rpm: splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm
+      url: 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.2&product=universalforwarder&filename=splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm&wget=true'
+      checksum: 'md5:24dc39fa598290bebabf4eb55b24c71a'
 
   - role: build_rpm_spec
     tags: sshguard
