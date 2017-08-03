@@ -99,7 +99,7 @@ dependencies:
       - simta
     build_data:
       name: openarc
-      repo: http://scm.marwnad.com/misc/openarc.git
+      repo: https://github.com/mskucherawy/OpenARC.git
       deps:
         - libbsd-devel
         - openssl-devel
