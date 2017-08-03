@@ -41,4 +41,5 @@
       - vim
       - wget
       - whois
+      - zstd
     state: present
