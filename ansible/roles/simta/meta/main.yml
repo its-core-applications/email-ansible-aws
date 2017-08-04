@@ -16,3 +16,8 @@ dependencies:
     certificate_type: dkim
     when: simta_dkim
     tags: certificate
+  - role: certificate
+    certificate: "{{ simta_arc_selector }}._domainkey.{{ tld }}"
+    certificate_type: dkim
+    when: simta_arc
+    tags: certificate

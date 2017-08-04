@@ -45,6 +45,14 @@ DKIM_SELECTOR       {{ simta_dkim_selector }}
 DKIM_KEY            /etc/pki/collab/private/{{ simta_dkim_selector }}._domainkey.{{ tld }}.key
 
 {% endif %}
+{% if simta_arc %}
+ARC                     ON
+ARC_DOMAIN              {{ tld }}
+ARC_SELECTOR            {{ simta_arc_selector }}
+ARC_KEY                 /etc/pki/collab/private/{{ simta_arc_selector }}._domainkey.{{ tld }}.key
+AUTHN_RESULTS_DOMAIN    mx.{{ tld }}
+
+{% endif %}
 {% if simta_msa %}
 SUBMISSION_MODE     MSA
 SUBMISSION_PORT     ON

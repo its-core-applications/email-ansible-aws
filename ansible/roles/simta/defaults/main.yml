@@ -14,6 +14,7 @@ simta_srs_domain: "{{ tld }}"
 simta_vacationhost: vacation.mail.umich.edu
 simta_dkim: false
 simta_dkim_level: LOCAL
+simta_arc: false
 simta_loadbalanced: false
 simta_authn: false
 simta_relay: false
