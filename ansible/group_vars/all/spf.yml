@@ -97,14 +97,3 @@ spf_thirdparty:
   - names: [ umpark ]
     record: 'include:paypal.com'
 
-  - names:
-      - hr
-      - it
-      - it-support
-      - emailadmin
-      - suport
-      - linkedin
-      - ithelpdesk
-      - techsupport
-    record: 'include:_phishspf.knowbe4.com'
-
