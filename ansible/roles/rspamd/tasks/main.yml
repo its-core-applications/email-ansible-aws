@@ -26,6 +26,7 @@
     - local.d/dkim.conf
     - local.d/dmarc.conf
     - local.d/emails.conf
+    - local.d/fuzzy_check.conf
     - local.d/logging.inc
     - local.d/metrics.conf
     - local.d/multimap.conf
