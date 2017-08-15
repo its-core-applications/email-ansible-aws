@@ -19,6 +19,6 @@
 - name: Enable httpd
   systemd:
     name: httpd
-    enabled: yes
+    enabled: true
   notify: Restart httpd
 

@@ -14,8 +14,8 @@
     repo: "{{ build_data.repo }}"
     dest: "~/{{ build_data.name }}"
     version: "{{ build_data.version | default(omit) }}"
-    update: yes
-    force: yes
+    update: true
+    force: true
 
 - name: "Build {{ build_data.name }} RPM"
   become: false
@@ -33,6 +33,6 @@
   become: false
   shell: cp -f ~/{{ build_data.name }}/*.rpm ~/rpmbuild/RPMS
   args:
-    warn: no
+    warn: false
   notify: Update yum repository
 

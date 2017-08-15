@@ -97,7 +97,7 @@
     owner: root
     group: root
     mode: 0644
-    force: yes
+    force: true
   when: simta_localmail == false
   notify: Restart simta
   tags: mutable
@@ -185,7 +185,7 @@
   systemd:
     name: simta
     daemon_reload: true
-    enabled: yes
+    enabled: true
   notify: Restart simta
 
 - name: Install custom monitoring scripts

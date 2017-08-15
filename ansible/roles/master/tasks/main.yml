@@ -23,7 +23,7 @@
   filesystem:
     dev: /dev/xvdd
     fstype: xfs
-    force: no
+    force: false
 
 - name: Mount /home
   mount:

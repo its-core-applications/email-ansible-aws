@@ -19,7 +19,7 @@
     - name: "Set SOA for {{ subd }}"
       route53:
         command: create
-        overwrite: yes
+        overwrite: true
         zone: "{{ subd }}"
         record: "{{ subd }}"
         type: SOA

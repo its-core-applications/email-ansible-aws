@@ -6,7 +6,7 @@
       - /home/ec2-user/rpmbuild/RPMS
       - /var/tmp/sensugems/cache
     patterns: '*.rpm'
-    recurse: yes
+    recurse: true
   register: find_rpm
 
 - name: Upload files to S3

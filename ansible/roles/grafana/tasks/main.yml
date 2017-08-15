@@ -39,7 +39,7 @@
 - name: Enable grafana
   systemd:
     name: grafana-server
-    enabled: yes
+    enabled: true
   notify: Restart grafana
 
 - name: "Configure a vhost for graphs.{{ subd }}"

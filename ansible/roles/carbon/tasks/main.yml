@@ -4,7 +4,7 @@
   filesystem:
     dev: /dev/xvdf
     fstype: xfs
-    force: no
+    force: false
 
 - name: Mount carbon filesystem
   mount:
@@ -25,7 +25,7 @@
     state: directory
     owner: carbon
     group: carbon
-    recurse: yes
+    recurse: true
 
 - name: Configure carbon
   template:
@@ -46,7 +46,7 @@
 - name: Enable carbon daemons
   systemd:
     name: "{{ item }}"
-    enabled: yes
+    enabled: true
   with_items:
     - carbon-cache
     - carbon-aggregator

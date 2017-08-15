@@ -18,7 +18,7 @@
         state: present
         idle_timeout: 3600
         connection_draining_timeout: 120
-        cross_az_load_balancing: yes
+        cross_az_load_balancing: true
         security_group_names: mx-elb
         subnets: "{{ ec2_subnets.subnets | map(attribute='id') | list }}"
         listeners:

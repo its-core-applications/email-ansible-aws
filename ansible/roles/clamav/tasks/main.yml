@@ -30,7 +30,7 @@
 - name: Enable clamd
   service:
     name: clamav-daemon
-    enabled: yes
+    enabled: true
   notify: Restart clamd
 
 - name: Install clamav filter configuration files

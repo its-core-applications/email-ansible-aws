@@ -5,8 +5,8 @@
   git:
     repo: https://github.com/vstakhov/libucl.git
     dest: ~/libucl
-    update: yes
-    force: yes
+    update: true
+    force: true
     version: "{{ libucl_version }}"
 
 - name: Build libucl tarball (autogen.sh)

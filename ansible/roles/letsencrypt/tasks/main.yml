@@ -36,8 +36,8 @@
 - name: You challenge me, sirrah?
   route53:
     command: create
-    overwrite: yes
-    wait: yes
+    overwrite: true
+    wait: true
     zone: "{{ subd }}"
     record: "{{ acme_data.challenge_data[certificate]['dns-01']['resource'] }}.{{ certificate }}"
     type: TXT

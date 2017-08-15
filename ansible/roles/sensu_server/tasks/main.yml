@@ -8,7 +8,7 @@
     name: oncall
     display_name: ONC
     state: present
-    purge_subscriptions: no
+    purge_subscriptions: false
     subscriptions:
       - endpoint: "{{ lookup('hashi_vault', 'secret=secret/phone/pager') }}"
         protocol: 'sms'
@@ -21,7 +21,7 @@
     name: rootmail
     display_name: rootmail
     state: present
-    purge_subscriptions: no
+    purge_subscriptions: false
     subscriptions:
       - endpoint: "{{ ops_rootmail }}"
         protocol: 'email'

@@ -19,7 +19,7 @@
 - name: Create main SPF records
   route53:
     command: create
-    overwrite: yes
+    overwrite: true
     zone: "{{ spfd }}"
     record: "{{ item.name }}.{{ spfd }}"
     type: TXT
@@ -30,7 +30,7 @@
 - name: Create third-party SPF records
   route53:
     command: create
-    overwrite: yes
+    overwrite: true
     zone: "{{ spfd }}"
     record: "{{ item.1 }}._ext.{{ spfd }}"
     type: TXT

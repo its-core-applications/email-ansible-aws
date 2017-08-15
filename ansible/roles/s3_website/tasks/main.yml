@@ -15,7 +15,7 @@
 - name: "Set {{ s3_hostname }}"
   route53:
     command: create
-    overwrite: yes
+    overwrite: true
     zone: "{{ subd }}"
     record: "{{ s3_hostname }}"
     type: CNAME

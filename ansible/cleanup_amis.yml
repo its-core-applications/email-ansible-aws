@@ -27,5 +27,5 @@
         region: "{{ aws_region }}"
         image_id: "{{ item }}"
         state: absent
-        delete_snapshot: yes
+        delete_snapshot: true
       with_items: "{{ result | json_query('results[*].results[*].ami_id') }}"

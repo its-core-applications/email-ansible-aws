@@ -14,8 +14,8 @@
     repo: "{{ build_data.repo }}"
     dest: "~/{{ build_data.name }}"
     version: "{{ build_data.version | default(omit) }}"
-    update: yes
-    force: yes
+    update: true
+    force: true
 
 - name: "Build {{ build_data.name }} RPM (autoreconf)"
   become: false

@@ -25,7 +25,7 @@
       systemd:
         name: sensu-client
         state: stopped
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Set status to spundown
       delegate_to: localhost

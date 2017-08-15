@@ -43,7 +43,7 @@
         state: present
         scheme: internal
         idle_timeout: 3600
-        cross_az_load_balancing: yes
+        cross_az_load_balancing: true
         security_group_names: relay-elb
         subnets: "{{ ec2_subnets.subnets | map(attribute='id') | list }}"
         listeners:

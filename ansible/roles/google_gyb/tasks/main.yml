@@ -5,7 +5,7 @@
   git:
     repo: https://bitbucket.org/its-application-delivery/got-your-back/
     dest: ~/GYB
-    force: yes
+    force: true
 
 - name: Configure GYB
   file:

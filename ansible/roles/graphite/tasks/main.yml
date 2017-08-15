@@ -17,5 +17,5 @@
 - name: Enable graphite-api
   systemd:
     name: graphite-api
-    enabled: yes
+    enabled: true
   notify: Restart graphite

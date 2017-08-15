@@ -4,7 +4,7 @@
   filesystem:
     dev: /dev/xvde
     fstype: xfs
-    force: no
+    force: false
 
 - name: Mount splunk filesystem
   mount:

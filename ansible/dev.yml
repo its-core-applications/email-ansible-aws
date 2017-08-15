@@ -2,7 +2,7 @@
 
 - hosts: tag_Class_dev
   vars:
-    bootstrap: yes
+    bootstrap: true
   roles:
     - { role: base, tags: base }
     - { role: build, tags: build }

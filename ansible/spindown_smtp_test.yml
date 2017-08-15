@@ -15,5 +15,5 @@
       systemd:
         name: sensu-client
         state: stopped
-      ignore_errors: yes
+      ignore_errors: true
 

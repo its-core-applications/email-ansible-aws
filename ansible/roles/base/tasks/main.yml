@@ -62,15 +62,15 @@
   sysctl:
     name: kernel.core_pattern
     value: /var/tmp/%e.core.%p
-    reload: yes
-    ignoreerrors: yes
+    reload: true
+    ignoreerrors: true
 
 - name: Set fs.suid_dumpable
   sysctl:
     name: fs.suid_dumpable
     value: 2
-    reload: yes
-    ignoreerrors: yes
+    reload: true
+    ignoreerrors: true
 
 - name: Raise corefile limits
   copy:

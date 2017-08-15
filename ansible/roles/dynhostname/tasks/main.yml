@@ -37,7 +37,7 @@
 - name: Enable dynhostname
   systemd:
     name: dynhostname
-    enabled: yes
+    enabled: true
 
 - name: Schedule dynhostname public IP re-check
   copy:

@@ -11,7 +11,7 @@
 - name: Add sensu to extra groups
   user:
     name: sensu
-    append: yes
+    append: true
     groups: mail
   notify: Restart sensu
 
