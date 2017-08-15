@@ -1,14 +1,12 @@
 ---
 
-- include: task_find_ami.yml
-  vars:
-    launch_class: egress
-
 - hosts: localhost
-  connection: local
-  gather_facts: false
   become: false
   tasks:
+    - import_tasks: task_find_ami.yml
+      vars:
+        launch_class: egress
+
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_facts:
         region: "{{ aws_region }}"
@@ -34,17 +32,13 @@
       with_items: "{{ ec2_subnets.subnets }}"
       register: ec2
 
-- include: task_wait_for_launched.yml
+    - import_tasks: task_wait_for_launched.yml
 
-- hosts: localhost
-  roles:
-    - { role: redis_master, tags: redis }
+    - import_role:
+         name: redis_master
+      tags: redis
 
-- hosts: localhost
-  connection: local
-  become: false
-  tasks:
-    - include: task_dns_redis.yml
+    - import_tasks: task_dns_redis.yml
 
 - hosts: tag_Class_egress:&tag_Status_spinup
   become: false
@@ -73,12 +67,12 @@
           Status: production
 
 - hosts: localhost
-  connection: local
   become: false
   tasks:
     - meta: refresh_inventory
-    - include: task_dns_egress.yml
 
-- hosts: localhost
-  roles:
-    - { role: sensu_proxyclients, tags: sensu }
+    - import_tasks: task_dns_egress.yml
+
+    - import_role:
+        name: sensu_proxyclients
+      tags: sensu

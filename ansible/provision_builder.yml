@@ -1,12 +1,10 @@
 ---
 
-- include: task_find_ami.yml
-
 - hosts: localhost
-  connection: local
-  gather_facts: false
   become: false
   tasks:
+    - import_tasks: task_find_ami.yml
+
     - name: Create builder
       ec2:
         group: [ main-default ]
@@ -21,3 +19,4 @@
         exact_count: 1
         count_tag:
           Class: builder
+

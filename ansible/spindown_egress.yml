@@ -19,10 +19,9 @@
       when: result | changed
 
 - hosts: localhost
-  connection: local
   become: false
   tasks:
-    - include: task_dns_egress.yml
+    - import_tasks: task_dns_egress.yml
 
 - hosts: tag_Class_egress:&tag_Status_spindown
   tasks:
@@ -30,6 +29,7 @@
       systemd:
         name: sensu-client
         state: stopped
+      ignore_errors: yes
 
     - name: Wait for active connections to finish
       wait_for:
@@ -37,43 +37,12 @@
         port: 25
         state: drained
 
-    - include: task_spindown_redis.yml
+    - import_tasks: task_spindown_redis.yml
 
     - name: Give the queue a chance to quiesce
       pause: seconds=60
 
-    - name: Stop simta
-      systemd:
-        name: simta
-        state: stopped
-
-    - name: Clean queues
-      command: /usr/sbin/simta -C
-
-    - name: Create local queue storage directory
-      delegate_to: localhost
-      file:
-        dest: /home/ec2-user/simqtmp
-        state: directory
-
-    - name: Touch lockfile
-      delegate_to: localhost
-      file:
-        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_facts.ansible_date_time.epoch | to_uuid }}.lock"
-        state: touch
-
-    - name: Save queue
-      synchronize:
-        mode: pull
-        archive: true
-        src: /var/spool/simta/slow/
-        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_facts.ansible_date_time.epoch | to_uuid }}/"
-
-    - name: Remove lockfile
-      delegate_to: localhost
-      file:
-        dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_facts.ansible_date_time.epoch | to_uuid }}.lock"
-        state: absent
+    - import_tasks: task_spindown_simta.yml
 
     - name: Set status to spundown
       ec2_tag:
@@ -81,3 +50,4 @@
         resource: "{{ ec2_id }}"
         tags:
           Status: spundown
+

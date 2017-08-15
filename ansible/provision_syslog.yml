@@ -1,12 +1,10 @@
 ---
 
-- include: task_find_ami.yml
-
 - hosts: localhost
-  connection: local
-  gather_facts: false
   become: false
   tasks:
+    - import_tasks: task_find_ami.yml
+
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_facts:
         region: "{{ aws_region }}"
@@ -34,13 +32,8 @@
         - dummy
       register: ec2
 
-- include: task_wait_for_launched.yml
+    - import_tasks: task_wait_for_launched.yml
 
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  become: false
-  tasks:
     - name: Attach EBS log volume
       ec2_vol:
         name: logs
@@ -74,9 +67,9 @@
         encrypted: true
         delete_on_termination: false
 
+- import_playbook: syslog.yml
+
 - hosts: localhost
-  connection: local
-  gather_facts: false
   become: false
   tasks:
     - name: "Set syslog.{{ subd }}"
@@ -89,4 +82,3 @@
         ttl: 60
         value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
 
-- include: syslog.yml

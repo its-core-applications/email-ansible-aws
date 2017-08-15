@@ -1,12 +1,10 @@
 ---
 
-- include: task_find_ami.yml
-
 - hosts: localhost
-  connection: local
-  gather_facts: false
   become: false
   tasks:
+    - import_tasks: task_find_ami.yml
+
     - name: Create mx-test host
       ec2:
         group: [ main-default, mx-elb ]
@@ -26,13 +24,11 @@
         - dummy
       register: ec2
 
-- include: task_wait_for_launched.yml
+    - import_tasks: task_wait_for_launched.yml
 
-- include: mx_test.yml
+- import_playbook: mx_test.yml
 
 - hosts: localhost
-  connection: local
-  gather_facts: false
   become: false
   tasks:
     - name: "Set mx-test.{{ subd }}"

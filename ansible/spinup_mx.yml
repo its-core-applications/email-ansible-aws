@@ -1,15 +1,13 @@
 ---
 
-- include: task_find_ami.yml
-  vars:
-    launch_class: mx
-
 - hosts: localhost
-  connection: local
-  gather_facts: false
   become: false
   tasks:
-    - include: task_find_subnets.yml
+    - import_tasks: task_find_ami.yml
+      vars:
+        launch_class: mx
+
+    - import_tasks: task_find_subnets.yml
 
     - name: Create mx hosts 
       ec2:
@@ -31,6 +29,7 @@
       ignore_errors: yes
       register: ec2
 
-- include: task_wait_for_launched.yml
+    - import_tasks: task_wait_for_launched.yml
 
-- include: provision_mx.yml
+- import_playbook: provision_mx.yml
+

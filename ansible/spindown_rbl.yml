@@ -19,16 +19,19 @@
 
 - hosts: tag_Class_rbl:&tag_Status_spindown
   tasks:
-    - include: task_dns_rbl.yml
+    - import_tasks: task_dns_rbl.yml
 
     - name: Stop sensu
       systemd:
         name: sensu-client
         state: stopped
+      ignore_errors: yes
 
     - name: Set status to spundown
+      delegate_to: localhost
       ec2_tag:
         region: "{{ aws_region }}"
         resource: "{{ ec2_id }}"
         tags:
           Status: spundown
+

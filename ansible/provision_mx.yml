@@ -1,16 +1,15 @@
 ---
 
 - hosts: localhost
-  roles:
-    - { role: redis_master, tags: redis }
-
-- hosts: localhost
-  connection: local
   become: false
   tasks:
-    - include: task_dns_redis.yml
+    - import_role:
+        name: redis_master
+      tags: redis
 
-    - include: task_find_subnets.yml
+    - import_tasks: task_dns_redis.yml
+
+    - import_tasks: task_find_subnets.yml
 
     - name: "Create MX loadbalancer(s)"
       ec2_elb_lb:
@@ -62,7 +61,7 @@
       loop_control:
         label: "{{ item.elb.name }}.{{ subd }} -> {{ item.elb.dns_name }}"
 
-- hosts: localhost
-  roles:
-    - { role: sensu_proxyclients, tags: sensu }
+    - import_role:
+        name: sensu_proxyclients
+      tags: sensu
 

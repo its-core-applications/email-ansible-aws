@@ -1,14 +1,12 @@
 ---
 
-- include: task_find_ami.yml
-  vars:
-    launch_class: rbl
-
 - hosts: localhost
-  connection: local
-  gather_facts: false
   become: false
   tasks:
+    - import_tasks: task_find_ami.yml
+      vars:
+        launch_class: rbl
+
     - name: Create rbl servers
       ec2:
         group: [ main-default, rbl ]
@@ -30,10 +28,7 @@
         - dummy
       register: ec2
 
-- include: task_wait_for_launched.yml
+    - import_tasks: task_wait_for_launched.yml
 
-- hosts: localhost
-  connection: local
-  tasks:
-    - include: task_dns_rbl.yml
+    - import_tasks: task_dns_rbl.yml
 

@@ -1,9 +1,0 @@
----
-
-- include: setup_route53.yml
-- include: setup_securitygroups.yml
-- include: provision_syslog.yml
-- include: provision_rbl.yml
-- include: provision_egress.yml
-- include: spinup_mx.yml
-

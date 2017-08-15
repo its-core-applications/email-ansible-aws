@@ -1,8 +1,0 @@
----
-
-- include: master.yml
-- include: syslog.yml
-- include: rbl.yml
-- include: mx_test.yml
-- include: mx.yml
-- include: egress.yml

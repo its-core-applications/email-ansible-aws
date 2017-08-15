@@ -17,7 +17,7 @@
       - hvac
     state: latest
 
-- include: task_find_subnets.yml
+- import_tasks: task_find_subnets.yml
 
 - name: Create filesystem for /home
   filesystem:

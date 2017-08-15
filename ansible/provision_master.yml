@@ -1,12 +1,11 @@
 ---
 
-- include: task_find_ami.yml
-
 - hosts: localhost
-  connection: local
   gather_facts: false
   become: false
   tasks:
+    - import_tasks: task_find_ami.yml
+
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_facts:
         region: "{{ aws_region }}"
@@ -51,11 +50,6 @@
     - name: Wait for instance to be available
       pause: seconds=120
 
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  become: false
-  tasks:
     - name: Attach EBS home volume
       ec2_vol:
         name: master_home
@@ -67,5 +61,5 @@
         encrypted: true
         delete_on_termination: false
 
-- include: bootstrap_master.yml
+- import_playbook: bootstrap_master.yml
 

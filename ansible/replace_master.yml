@@ -1,13 +1,14 @@
 ---
 
-- include: setup_securitygroups.yml
-- include: spindown_master.yml
+- import_playbook: setup_securitygroups.yml
+
+- import_playbook: spindown_master.yml
 
 - hosts: localhost
-  gather_facts: false
   tasks:
-      - meta: refresh_inventory
+    - meta: refresh_inventory
 
-- include: deprovision_spundown.yml
-- include: provision_master.yml
+- import_playbook: deprovision_spundown.yml
+
+- import_playbook: provision_master.yml
 

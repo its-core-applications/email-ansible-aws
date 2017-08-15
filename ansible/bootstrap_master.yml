@@ -1,4 +1,5 @@
 ---
+
 - hosts: tag_Class_master
   vars:
     bootstrap: true

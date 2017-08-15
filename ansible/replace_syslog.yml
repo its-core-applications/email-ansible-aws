@@ -1,11 +1,12 @@
 ---
 
-- include: spindown_syslog.yml
+- import_playbook: spindown_syslog.yml
 
 - hosts: localhost
   tasks:
     - meta: refresh_inventory
 
-- include: deprovision_spundown.yml
+- import_playbook: deprovision_spundown.yml
 
-- include: provision_syslog.yml
+- import_playbook: provision_syslog.yml
+

@@ -23,7 +23,6 @@
   tasks:
     - name: Remove from loadbalancer
       delegate_to: localhost
-      connection: local
       become: false
       ec2_elb:
         region: "{{ aws_region }}"
@@ -34,6 +33,7 @@
       systemd:
         name: sensu-client
         state: stopped
+      ignore_errors: yes
 
     - name: Wait for active connections to finish
       wait_for:
@@ -44,14 +44,14 @@
 - hosts: tag_Class_mx:&tag_Status_spindown
   serial: 1
   tasks:
-    - include: task_spindown_redis.yml
+    - import_tasks: task_spindown_redis.yml
 
 - hosts: tag_Class_mx:&tag_Status_spindown
   tasks:
     - name: Give the queue a chance to quiesce
       pause: seconds=60
 
-    - include: task_spindown_simta.yml
+    - import_tasks: task_spindown_simta.yml
 
     - name: Set status to spundown
       ec2_tag:

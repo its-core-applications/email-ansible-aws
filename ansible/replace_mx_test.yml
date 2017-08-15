@@ -1,11 +1,12 @@
 ---
 
-- include: spindown_mx_test.yml
+- import_playbook: spindown_mx_test.yml
 
 - hosts: localhost
   tasks:
     - meta: refresh_inventory
 
-- include: deprovision_spundown.yml
+- import_playbook: deprovision_spundown.yml
 
-- include: provision_mx_test.yml
+- import_playbook: provision_mx_test.yml
+
