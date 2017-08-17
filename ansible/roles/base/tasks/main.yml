@@ -31,6 +31,10 @@
     group: root
     mode: 0644
 
+- name: Set correct timezone
+  timezone:
+    name: America/Detroit
+
 - name: Customize environment
   copy:
     dest: /etc/profile.d/99_custom.sh
