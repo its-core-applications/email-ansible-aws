@@ -17,8 +17,15 @@
       ],
       "interval": 300,
       "timeout": 240,
-      "occurrences": 2,
-      "refresh": 86400
+      "aggregate": "dnsl",
+      "handle": false
+    },
+    "dnsl-aggregate": {
+      "command": "check-aggregate.rb --age 300 --check dnsl -W 100 -C 10 --message 'malfunctioning DNS lists'",
+      "subscribers": [
+        "Class_syslog"
+      ],
+      "interval": 60
     }
   }
 }
