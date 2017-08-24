@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/dash
 
 skiplist=/etc/mail/trust.rcpt
 

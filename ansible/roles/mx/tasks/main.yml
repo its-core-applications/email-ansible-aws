@@ -28,6 +28,7 @@
     mode: 0755
   with_items:
     - 15_trust
+    - 35_recipient
 
 - name: Install ingress-specific templated filters
   template:
