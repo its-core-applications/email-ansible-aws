@@ -15,7 +15,17 @@
         "Class_mx_test",
         "Class_mx"
       ],
-      "interval": 60
+      "interval": 60,
+      "aggregate": "simta-expansion",
+      "handle": false
+    },
+    "simta-expansion-aggregate": {
+      "command": "check-aggregate.rb --age 180 --check simta-expansion --critical_count 1 --message 'simta expansion failed'",
+      "subscribers": [
+        "roundrobin:Class_syslog"
+      ],
+      "interval": 60,
+      "source": "{{ subd }}"
     },
     "simta-queue-fast": {
       "command": "/usr/libexec/simta-admin/check-simta-queue -q fast -w :::extra.simta.fastqwarn|1000::: -c :::extra.simta.fastqmax|2000:::",
