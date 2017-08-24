@@ -23,9 +23,10 @@
     "dnsl-aggregate": {
       "command": "check-aggregate.rb --age 900 --check dnsl --warning 100 --critical_count 1 --message 'malfunctioning DNS lists'",
       "subscribers": [
-        "Class_syslog"
+        "roundrobin:Class_syslog"
       ],
-      "interval": 60
+      "interval": 60,
+      "source": "{{ subd }}"
     }
   }
 }
