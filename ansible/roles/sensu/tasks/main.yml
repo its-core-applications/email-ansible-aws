@@ -15,6 +15,15 @@
     groups: mail
   notify: Restart sensu
 
+- name: Configure sensu startup
+  copy:
+    dest: /etc/default/sensu
+    src: sensu.default
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart sensu
+
 - name: Configure sensu
   template:
     dest: "/etc/sensu/conf.d/{{ item }}"
