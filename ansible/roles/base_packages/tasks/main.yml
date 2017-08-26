@@ -27,6 +27,7 @@
       - krb5-workstation
       - lsof
       - man
+      - man-pages
       - mosh
       - nc
       - openldap-clients
