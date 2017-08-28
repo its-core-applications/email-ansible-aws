@@ -56,3 +56,5 @@ simta_ldap_domains_mapped:
     prefix: ums
   - domain: wcbn.org
     prefix: wcbn
+  - domain: youthcivilrights.org
+    prefix: youthcivilrights
