@@ -18,6 +18,8 @@ simta_ldap_domains_mapped:
     prefix: affmichlaw
   - domain: chrt.org
     prefix: chrt
+  - domain: connectedcancercare.org
+    prefix: connectedcancercare
   - domain: elmuseodelnorte.org
     prefix: elmuseodelnorte
   - domain: environmentreport.org
