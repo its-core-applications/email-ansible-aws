@@ -25,7 +25,7 @@
         "roundrobin:Class_syslog"
       ],
       "interval": 60,
-      "source": "{{ aws_region }}"
+      "source": "{{ aws_region }}.aws.amazon.com"
     },
     "simta-queue-fast": {
       "command": "/usr/libexec/simta-admin/check-simta-queue -q fast -w :::extra.simta.fastqwarn|1000::: -c :::extra.simta.fastqmax|2000:::",
