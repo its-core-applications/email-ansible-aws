@@ -49,7 +49,7 @@
 
 - name: Enable saslauthd
   systemd:
-    name: simta
+    name: saslauthd
     daemon_reload: true
     enabled: true
   notify: Restart saslauthd
