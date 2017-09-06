@@ -1,6 +1,9 @@
-%define username	saslauth
-%define hint		Saslauthd user
-%define homedir		/run/saslauthd
+%global commit0 dc932eef2a5e53fc87a6fc875917866c95e0ab06 
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+
+%define username        saslauth
+%define hint            Saslauthd user
+%define homedir         /run/saslauthd
 
 %define _plugindir2 %{_libdir}/sasl2
 %define bootstrap_cyrus_sasl 0
@@ -9,61 +12,28 @@
 
 Summary: The Cyrus SASL library
 Name: cyrus-sasl
-Version: 2.1.26
-Release: 52%{?dist}
+Version: 2.1.27
+Release: 0.1.20170912.%{shortcommit0}%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
-Source0: ftp://ftp.cyrusimap.org/%{name}/%{name}-%{version}.tar.gz
+Source0: https://github.com/cyrusimap/%{name}/archive/%{commit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
 Source5: saslauthd.service
 Source9: saslauthd.sysconfig
 Requires: %{name}-lib%{?_isa} = %{version}-%{release}
-Patch1:  cyrus-sasl-2.1.26-servername.patch
-Patch11: cyrus-sasl-2.1.25-no_rpath.patch
-Patch15: cyrus-sasl-2.1.20-saslauthd.conf-path.patch
-Patch23: cyrus-sasl-2.1.23-man.patch
-Patch24: cyrus-sasl-2.1.21-sizes.patch
-Patch31: cyrus-sasl-2.1.22-kerberos4.patch
-Patch32: cyrus-sasl-2.1.26-warnings.patch
-Patch42: cyrus-sasl-2.1.26-relro.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=816250
-Patch43: cyrus-sasl-2.1.26-null-crypt.patch
-Patch44: cyrus-sasl-2.1.26-release-server_creds.patch
-# AM_CONFIG_HEADER is obsolete, use AC_CONFIG_HEADERS instead
-Patch45: cyrus-sasl-2.1.26-obsolete-macro.patch
-# missing size_t declaration in sasl.h
-Patch46: cyrus-sasl-2.1.26-size_t.patch
-# disable incorrect check for MkLinux
-Patch47: cyrus-sasl-2.1.26-ppc.patch
-# detect gsskrb5_register_acceptor_identity macro (#976538)
-Patch48: cyrus-sasl-2.1.26-keytab.patch
-Patch49: cyrus-sasl-2.1.26-md5global.patch
-# improve sql libraries detection (#1029918)
-Patch50: cyrus-sasl-2.1.26-sql.patch
-# Treat SCRAM-SHA-1/DIGEST-MD5 as more secure than PLAIN (#970718)
-Patch51: cyrus-sasl-2.1.26-prefer-SCRAM-SHA-1-over-PLAIN.patch
-# Revert updated GSSAPI flags as in RFC 4752 to restore backward compatibility (#1154566)
-Patch52: cyrus-sasl-2.1.26-revert-gssapi-flags.patch
-# Support non-confidentiality/non-integrity requests from AIX SASL GSSAPI implementation (#1174322)
-Patch54: cyrus-sasl-2.1.26-gssapi-non-encrypt.patch
-# Update client library to be thread safe (#1147659)
-Patch55: cyrus-sasl-2.1.26-make-client-thread-sage.patch
-# Parsing short prefix matches the whole mechanism name (#1089267)
-Patch56: cyrus-sasl-2.1.26-handle-single-character-mechanisms.patch
-# Fix confusing message when config file has typo (#1022479)
-Patch57: cyrus-sasl-2.1.26-error-message-when-config-has-typo.patch
-# GSSAPI: Use per-connection mutex where possible (#1263017)
-Patch58: cyrus-sasl-2.1.26-gssapi-use-per-connection-mutex.patch
-# Too much loogging in GSSAPI resolved (#1187097)
-Patch60: cyrus-sasl-2.1.26-user-specified-logging.patch
+# https://github.com/cyrusimap/cyrus-sasl/pull/472
+Patch0:  cyrus-sasl-2.1.27-saslauthd-krb5.patch
+# https://github.com/cyrusimap/cyrus-sasl/pull/471
+Patch1:  cyrus-sasl-2.1.27-gssapi-auxprop.patch
 
-Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: autoconf, automake, libtool, gdbm-devel, groff
 BuildRequires: krb5-devel >= 1.2.2, openssl-devel, pam-devel, pkgconfig
 BuildRequires: zlib-devel
-Requires(post): chkconfig, /sbin/service systemd-units
-Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd systemd-units
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel systemd-units
+BuildRequires: systemd
+%{?systemd_requires}
+Requires(post): chkconfig, /sbin/service
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 Requires: /sbin/nologin
 Requires: systemd >= 219
 Provides: user(%username)
@@ -96,35 +66,11 @@ compiling applications which use the Cyrus SASL library.
 
 
 %prep
-%setup -q
-chmod -x doc/*.html
+%autosetup -p 1 -n %{name}-%{commit0}
 chmod -x include/*.h
-%patch1  -p1 -b .servername
-%patch11 -p1 -b .no-rpath
-%patch15 -p1 -b .path
-%patch23 -p1 -b .man
-%patch24 -p1 -b .sizes
-%patch31 -p1 -b .krb4
-%patch32 -p1 -b .warnings
-%patch42 -p1 -b .relro
-%patch43 -p1 -b .null-crypt
-%patch44 -p1 -b .release-server_creds
-%patch45 -p1 -b .obsolete-macro
-%patch46 -p1 -b .size_t
-%patch47 -p1 -b .ppc
-%patch48 -p1 -b .keytab
-%patch49 -p1 -b .md5global.h
-%patch50 -p1 -b .sql
-%patch51 -p1 -b .sha1vsplain
-%patch52 -p1 -b .revert
-%patch54 -p1 -b .gssapi-non-encrypt
-%patch55 -p1 -b .threads
-%patch56 -p1 -b .prefix
-%patch57 -p1 -b .typo
-%patch58 -p1 -b .mutex
-%patch60 -p1 -b .too-much-logging
 
 %build
+autoreconf -fi
 # Find Kerberos.
 krb5_prefix=`krb5-config --prefix`
 if test x$krb5_prefix = x%{_prefix} ; then
@@ -175,23 +121,10 @@ echo "$LDFLAGS"
         "$@"
         # --enable-auth-sasldb -- EXPERIMENTAL
 make sasldir=%{_plugindir2}
-make -C saslauthd testsaslauthd
-make -C sample
 
 
 %install
-test "$RPM_BUILD_ROOT" != "/" && rm -rf $RPM_BUILD_ROOT
-
 make install DESTDIR=$RPM_BUILD_ROOT sasldir=%{_plugindir2}
-make install DESTDIR=$RPM_BUILD_ROOT sasldir=%{_plugindir2} -C plugins
-
-install -m755 -d $RPM_BUILD_ROOT%{_bindir}
-./libtool --mode=install \
-install -m755 sample/client $RPM_BUILD_ROOT%{_bindir}/sasl2-sample-client
-./libtool --mode=install \
-install -m755 sample/server $RPM_BUILD_ROOT%{_bindir}/sasl2-sample-server
-./libtool --mode=install \
-install -m755 saslauthd/testsaslauthd $RPM_BUILD_ROOT%{_sbindir}/testsaslauthd
 
 # Install the saslauthd mdoc page in the expected location.  Sure, it's not
 # really a man page, but groff seems to be able to cope with it.
@@ -216,9 +149,6 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/sasl2/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_mandir}/cat8/saslauthd.8
 
-
-%clean
-test "$RPM_BUILD_ROOT" != "/" && rm -rf $RPM_BUILD_ROOT
 
 %pre
 getent group %{username} >/dev/null || groupadd -g 76 -r %{username}
@@ -254,7 +184,7 @@ getent passwd %{username} >/dev/null || useradd -r -g %{username} -d %{homedir} 
 
 %files lib
 %defattr(-,root,root)
-%doc AUTHORS COPYING NEWS README doc/*.html
+%doc AUTHORS COPYING README
 %{_libdir}/libsasl*.so.*
 %dir %{_sysconfdir}/sasl2
 %dir %{_plugindir2}/
@@ -262,9 +192,6 @@ getent passwd %{username} >/dev/null || useradd -r -g %{username} -d %{homedir} 
 
 %files devel
 %defattr(-,root,root)
-%doc doc/*.txt
-%{_bindir}/sasl2-sample-client
-%{_bindir}/sasl2-sample-server
 %{_includedir}/*
 %{_libdir}/libsasl*.*so
 %{_libdir}/pkgconfig/*.pc

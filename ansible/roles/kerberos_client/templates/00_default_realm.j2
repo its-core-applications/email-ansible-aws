@@ -1,2 +1,5 @@
 [libdefaults]
     default_realm = {{ tld | upper }}
+
+[domain_realm]
+    .{{ tld }} = {{ tld | upper }}

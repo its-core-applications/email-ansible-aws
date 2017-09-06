@@ -1,8 +1,3 @@
 SOCKETDIR=/run/saslauthd
-
-# Mechanism to use when checking passwords.  Run "saslauthd -v" to get a list
-# of which mechanism your installation was compiled with the ablity to use.
 MECH=kerberos5
-
-# Additional flags to pass to saslauthd on the command line.
 FLAGS=-n 5

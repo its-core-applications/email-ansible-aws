@@ -3,7 +3,7 @@
 SOCKETDIR=/run/saslauthd
 
 # Mechanism to use when checking passwords.  Run "saslauthd -v" to get a list
-# of which mechanism your installation was compiled with the ablity to use.
+# of which mechanisms your installation was compiled with the ability to use.
 MECH=pam
 
 # Additional flags to pass to saslauthd on the command line.  See saslauthd(8)

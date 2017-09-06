@@ -1,6 +1,7 @@
 ---
 
 simta_config: smtp-test.a.mail
+simta_version: 1.1.1
 simta_authn: true
 simta_msa: true
 simta_relay: true

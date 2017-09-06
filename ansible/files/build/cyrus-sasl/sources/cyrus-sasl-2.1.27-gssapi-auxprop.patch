@@ -1,0 +1,32 @@
+From e5741a069bdca70cd5d08afb36259021e0ee77a1 Mon Sep 17 00:00:00 2001
+From: Paul Arthur <paul.arthur@flowerysong.com>
+Date: Wed, 6 Sep 2017 21:12:33 +0000
+Subject: [PATCH] Allow GSSAPI to work with no auxprop plugins
+
+a321326ae4d5d79d053926167f76fdad52ec627b made _sasl_auxprop_lookup
+return SASL_NOMECH when no auxprop plugins are found;
+setting SASL_CU_EXTERNALLY_VERIFIED will prevent this from being treated
+as an error.
+---
+ plugins/gssapi.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/plugins/gssapi.c b/plugins/gssapi.c
+index 15a8823..89daed0 100644
+--- a/plugins/gssapi.c
++++ b/plugins/gssapi.c
+@@ -1360,8 +1360,9 @@ gssapi_server_mech_ssfreq(context_t *text,
+ 	ret = params->canon_user(params->utils->conn,
+ 				 ((char *) output_token->value) + 4,
+ 				 (output_token->length - 4) * sizeof(char),
+-				 SASL_CU_AUTHZID, oparams);
+-	
++				 SASL_CU_AUTHZID | SASL_CU_EXTERNALLY_VERIFIED,
++				 oparams);
++
+ 	if (ret != SASL_OK) {
+ 	    sasl_gss_free_context_contents(text);
+ 	    return ret;
+-- 
+1.8.3.1
+

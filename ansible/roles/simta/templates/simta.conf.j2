@@ -25,6 +25,7 @@ TLS_CA_FILE /etc/pki/tls/certs/ca-bundle.crt
 {% if simta_authn %}
 AUTHN       SASL
 AUTHZ_DNS   DENY    ubl.dnsbl
+SASL_DOMAIN {{ simta_config }}.{{ tld }}
 
 {% endif %}
 {% if simta_relay %}

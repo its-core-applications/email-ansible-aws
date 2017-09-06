@@ -32,30 +32,8 @@ dependencies:
         - pam-devel
         - zlib-devel
       extra_sources:
-        - cyrus-sasl-2.1.20-saslauthd.conf-path.patch
-        - cyrus-sasl-2.1.21-sizes.patch
-        - cyrus-sasl-2.1.22-kerberos4.patch
-        - cyrus-sasl-2.1.23-man.patch
-        - cyrus-sasl-2.1.25-no_rpath.patch
-        - cyrus-sasl-2.1.26-error-message-when-config-has-typo.patch
-        - cyrus-sasl-2.1.26-gssapi-non-encrypt.patch
-        - cyrus-sasl-2.1.26-gssapi-use-per-connection-mutex.patch
-        - cyrus-sasl-2.1.26-handle-single-character-mechanisms.patch
-        - cyrus-sasl-2.1.26-keytab.patch
-        - cyrus-sasl-2.1.26-make-client-thread-sage.patch
-        - cyrus-sasl-2.1.26-md5global.patch
-        - cyrus-sasl-2.1.26-null-crypt.patch
-        - cyrus-sasl-2.1.26-obsolete-macro.patch
-        - cyrus-sasl-2.1.26-ppc.patch
-        - cyrus-sasl-2.1.26-prefer-SCRAM-SHA-1-over-PLAIN.patch
-        - cyrus-sasl-2.1.26-release-server_creds.patch
-        - cyrus-sasl-2.1.26-relro.patch
-        - cyrus-sasl-2.1.26-revert-gssapi-flags.patch
-        - cyrus-sasl-2.1.26-servername.patch
-        - cyrus-sasl-2.1.26-size_t.patch
-        - cyrus-sasl-2.1.26-sql.patch
-        - cyrus-sasl-2.1.26-user-specified-logging.patch
-        - cyrus-sasl-2.1.26-warnings.patch
+        - cyrus-sasl-2.1.27-gssapi-auxprop.patch
+        - cyrus-sasl-2.1.27-saslauthd-krb5.patch
         - saslauthd.service
         - saslauthd.sysconfig
 
