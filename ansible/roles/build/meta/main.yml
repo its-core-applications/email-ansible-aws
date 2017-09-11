@@ -77,7 +77,8 @@ dependencies:
       - simta
     build_data:
       name: openarc
-      repo: https://github.com/mskucherawy/OpenARC.git
+      repo: git://scm.marwnad.com/misc/openarc.git
+#      repo: https://github.com/mskucherawy/OpenARC.git
       deps:
         - libbsd-devel
         - openssl-devel
@@ -203,7 +204,7 @@ dependencies:
         - denser-devel
         - jemalloc-devel
         - libidn-devel
-        - libopendkim
+        - libopenarc-devel
         - libopendkim-devel
         - libsnet-devel
         - lmdb-devel
