@@ -31,11 +31,6 @@ dependencies:
         - openssl-devel
         - pam-devel
         - zlib-devel
-      extra_sources:
-        - cyrus-sasl-2.1.27-gssapi-auxprop.patch
-        - cyrus-sasl-2.1.27-saslauthd-krb5.patch
-        - saslauthd.service
-        - saslauthd.sysconfig
 
   - role: build_rpm_git
     tags:
@@ -107,21 +102,6 @@ dependencies:
         - ncurses-devel
         - sendmail-devel
         - tcp_wrappers-devel
-      extra_sources:
-        - README.fedora
-        - clamav-0.98-umask.patch
-        - clamav-0.98.6-jitoff.patch
-        - clamav-0.99-umich-safereload.patch
-        - clamav-milter.systemd
-        - clamav-notify-servers
-        - clamav-update.logrotate
-        - clamd-README
-        - clamd-gen
-        - clamd-wrapper
-        - clamd.logrotate
-        - clamd.sysconfig
-        - freshclam.sysconfig
-        - llvm-glibc.patch
 
   - role: build_rpm_git
     tags: comint
@@ -133,8 +113,6 @@ dependencies:
     tags: dash
     build_data:
       name: dash
-      extra_sources:
-        - dash-0.5.7-format-security.patch
 
   - role: build_rpm_git
     tags:
@@ -182,17 +160,6 @@ dependencies:
       name: redis
       deps:
         - jemalloc-devel
-      extra_sources:
-        - redis-3.2.5-use-system-jemalloc.patch
-        - redis-limit-init
-        - redis-limit-systemd
-        - redis-sentinel.init
-        - redis-sentinel.service
-        - redis-shutdown
-        - redis.init
-        - redis.logrotate
-        - redis.service
-        - redis.tmpfiles
 
   - role: build_rpm_git
     tags: simta
@@ -248,8 +215,6 @@ dependencies:
     tags: sshguard
     build_data:
       name: sshguard
-      extra_sources:
-        - sshguard.service
 
   - role: build_rpm_python
     tags:

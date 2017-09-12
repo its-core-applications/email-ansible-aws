@@ -21,9 +21,9 @@
 - name: "Install non-fetchable sources for {{ build_data.name }}"
   become: false
   copy:
-    src: "build/{{ build_data.name }}/sources/{{ item }}"
-    dest: "~/rpmbuild/SOURCES/{{ item }}"
-  with_items: "{{ build_data.extra_sources | default([]) }}"
+    src: "{{ item }}"
+    dest: "~/rpmbuild/SOURCES/{{ item | basename }}"
+  with_items: "{{ lookup('fileglob', 'build/{{ build_data.name }}/sources/*', wantlist=true) }}"
 
 - name: "Build {{ build_data.name }} RPM"
   become: false
