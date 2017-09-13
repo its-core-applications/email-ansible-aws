@@ -16,6 +16,10 @@ simta_alias_domains:
 simta_ldap_domains_mapped:
   - domain: affmichlaw.org
     prefix: affmichlaw
+  - domain: bmi2.org
+    prefix: bmi2
+  - domain: bmi2study.org
+    prefix: bmi2
   - domain: chrt.org
     prefix: chrt
   - domain: connectedcancercare.org
