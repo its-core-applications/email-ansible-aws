@@ -124,30 +124,30 @@ make sasldir=%{_plugindir2}
 
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT sasldir=%{_plugindir2}
+make install DESTDIR=%{buildroot} sasldir=%{_plugindir2}
 
 # Install the saslauthd mdoc page in the expected location.  Sure, it's not
 # really a man page, but groff seems to be able to cope with it.
-install -m755 -d $RPM_BUILD_ROOT%{_mandir}/man8/
-install -m644 -p saslauthd/saslauthd.mdoc $RPM_BUILD_ROOT%{_mandir}/man8/saslauthd.8
-install -m644 -p saslauthd/testsaslauthd.8 $RPM_BUILD_ROOT%{_mandir}/man8/testsaslauthd.8
+install -m755 -d %{buildroot}%{_mandir}/man8/
+install -m644 -p saslauthd/saslauthd.mdoc %{buildroot}%{_mandir}/man8/saslauthd.8
+install -m644 -p saslauthd/testsaslauthd.8 %{buildroot}%{_mandir}/man8/testsaslauthd.8
 
 # Install the init script for saslauthd and the init script's config file.
-install -m755 -d $RPM_BUILD_ROOT/etc/rc.d/init.d $RPM_BUILD_ROOT/etc/sysconfig
-install -d -m755 $RPM_BUILD_ROOT/%{_unitdir}
-install -m644 -p %{SOURCE5} $RPM_BUILD_ROOT/%{_unitdir}/saslauthd.service
-install -m644 -p %{SOURCE9} $RPM_BUILD_ROOT/etc/sysconfig/saslauthd
+install -m755 -d %{buildroot}/etc/sysconfig
+install -m755 -d %{buildroot}/%{_unitdir}
+install -m644 -p %{SOURCE5} %{buildroot}/%{_unitdir}/saslauthd.service
+install -m644 -p %{SOURCE9} %{buildroot}/etc/sysconfig/saslauthd
 
 # Install the config dirs if they're not already there.
-install -m755 -d $RPM_BUILD_ROOT/%{_sysconfdir}/sasl2
-install -m755 -d $RPM_BUILD_ROOT/%{_plugindir2}
+install -m755 -d %{buildroot}/%{_sysconfdir}/sasl2
+install -m755 -d %{buildroot}/%{_plugindir2}
 
 # Remove unpackaged files from the buildroot.
-rm -f $RPM_BUILD_ROOT%{_libdir}/sasl2/libotp.*
-rm -f $RPM_BUILD_ROOT%{_libdir}/sasl2/*.a
-rm -f $RPM_BUILD_ROOT%{_libdir}/sasl2/*.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
-rm -f $RPM_BUILD_ROOT%{_mandir}/cat8/saslauthd.8
+rm -f %{buildroot}%{_plugindir2}/libotp.*
+rm -f %{buildroot}%{_plugindir2}/*.a
+rm -f %{buildroot}%{_plugindir2}/*.la
+rm -f %{buildroot}%{_libdir}/*.la
+rm -f %{buildroot}%{_mandir}/cat8/saslauthd.8
 
 
 %pre
