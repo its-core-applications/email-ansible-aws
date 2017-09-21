@@ -2,6 +2,6 @@
 
 sensu_extra:
   simta:
-    slowqwarn: 4000
-    slowqmax: 6000
+    slowqwarn: 6000
+    slowqmax: 8000
 
