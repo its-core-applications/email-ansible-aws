@@ -2,6 +2,8 @@
 
 simta_config: mx.a.mail
 simta_loadbalanced: true
+simta_arc: true
+simta_arc_selector: arc-2017-08-04
 simta_dkim: true
 simta_ldap: true
 simta_ldap_red: RE
