@@ -23,7 +23,7 @@ aws_iam_groups:
       - 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess'
 
 yum_hostname: yum.{{ subd }}
-yum_repo_path: "{{ ansible_facts.ansible_distribution | lower }}/{{ ansible_facts.ansible_distribution_major_version }}"
+yum_repo_path: "{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}"
 
 master_hostname: mogo
 
