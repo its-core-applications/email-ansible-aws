@@ -16,11 +16,6 @@ scale_count=6
 min_count=3
 max_count=24
 
-minute=$(( ($(date +%-H) * 60) + $(date +%-M) ))
-if [[ $minute -gt 435 && $minute -lt 1095 ]]; then
-    min_count=9
-fi
-
 sendmetric() {
     echo "plasticman.${class}.$1 $2 $(date +%s)" | ncat $carbon_server $carbon_port
 }
