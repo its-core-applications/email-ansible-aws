@@ -2,7 +2,7 @@
 
 - name: Install unbound 
   yum:
-    pkg: unbound
+    name: unbound
     state: latest
   notify: Restart unbound 
 

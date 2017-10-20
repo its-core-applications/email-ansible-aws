@@ -7,7 +7,7 @@
     owner: root
     group: root
     mode: 0755
-  items:
+  loop:
     - simta-requeue
 
 - name: Schedule requeuing

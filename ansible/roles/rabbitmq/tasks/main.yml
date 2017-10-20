@@ -10,7 +10,7 @@
 
 - name: Install RabbitMQ
   yum:
-    pkg: rabbitmq-server
+    name: rabbitmq-server
     state: latest
   notify: Restart RabbitMQ
 

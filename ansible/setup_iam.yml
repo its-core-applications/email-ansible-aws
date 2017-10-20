@@ -18,6 +18,6 @@
                 StringEquals:
                   'SAML:aud': 'https://signin.aws.amazon.com/saml'
         managed_policy: "{{ item.policies }}"
-      with_items: "{{ aws_iam_groups }}"
+      loop: "{{ aws_iam_groups }}"
       loop_control:
         label: "{{ item.name }}"

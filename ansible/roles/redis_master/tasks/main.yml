@@ -3,7 +3,7 @@
 - name: Install redis
   become: true
   yum:
-    pkg: redis
+    name: redis
     state: present
 
 - name: Install management scripts
@@ -14,7 +14,7 @@
     owner: root
     group: root
     mode: 0755
-  items:
+  loop:
     - redis-manage
     - redis-remove
 

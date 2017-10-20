@@ -2,10 +2,8 @@
 
 - name: Install sasl
   yum:
-    pkg: "{{ item }}"
+    name: cyrus-sasl
     state: latest
-  with_items:
-    - cyrus-sasl
   notify: Restart saslauthd
 
 - name: Configure saslauthd service

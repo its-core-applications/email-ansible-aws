@@ -6,7 +6,7 @@
     user: ec2-user
     minute: "*/15"
     job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item }}.yml --tags mutable &>/dev/null"
-  with_items:
+  loop:
     - mx
     - egress
 

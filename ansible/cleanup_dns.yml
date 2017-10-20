@@ -26,7 +26,7 @@
         type: CNAME
         ttl: "{{ item.TTL }}"
         value: "{{ item.ResourceRecords.0.Value }}"
-      with_items: "{{ r53_rrs.ResourceRecordSets }}"
+      loop: "{{ r53_rrs.ResourceRecordSets }}"
       loop_control:
         label: "{{ item.Name ~ ' ' ~ item.Type }}"
       when:

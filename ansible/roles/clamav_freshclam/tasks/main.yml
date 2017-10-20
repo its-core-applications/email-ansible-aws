@@ -2,7 +2,7 @@
 
 - name: Install freshclam
   yum:
-    pkg: clamav-update
+    name: clamav-update
     state: latest
 
 - name: Configure freshclam

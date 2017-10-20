@@ -16,12 +16,10 @@
         instance_tags:
           Class: mx-test
           Status: development
-        exact_count: 1
-        count_tag:
-          Class: mx-test
+        count: 1
+      when: groups.tag_Class_mx_test | default([]) | intersect(groups.tag_Status_development | default([])) | length == 0
       # this is just to force a consistent result structure
-      with_items:
-        - dummy
+      loop: [ dummy ]
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml

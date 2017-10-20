@@ -10,13 +10,13 @@
 
 - name: Create wrapper scripts for each list
   template:
-    dest: "/usr/bin/{{ item[0] }}-{{ item[1] }}"
+    dest: "/usr/bin/{{ item.0 }}-{{ item.1 }}"
     src: rbl-update-wrapper.j2
     owner: root
     group: root
     mode: 0755
-  with_nested:
-    -
+  vars:
+    lists:
       - mx-accept
       - mx-deny
       - mx-trust
@@ -27,6 +27,7 @@
       - ubl
       - ubl-preemptive
       - deny-from
-    -
+    actions:
       - add
       - remove
+  loop: "{{ lookup('nested', lists, actions) }}"

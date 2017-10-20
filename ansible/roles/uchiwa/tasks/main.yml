@@ -2,7 +2,7 @@
 
 - name: Install uchiwa dashboard
   yum:
-    pkg: uchiwa
+    name: uchiwa
     state: latest
   notify: Restart uchiwa
 

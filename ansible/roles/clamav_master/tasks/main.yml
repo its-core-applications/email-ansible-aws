@@ -12,7 +12,7 @@
   yum:
     name: "{{ item }}"
     state: latest
-  with_items:
+  loop:
     - perl-Digest-SHA
     - perl-Time-Piece
     - clamav-update
@@ -24,7 +24,7 @@
     owner: root
     group: root
     mode: 0755
-  with_items:
+  loop:
     - clamav_aper_addresses
     - clamav_aper_links
 
@@ -43,21 +43,21 @@
   copy:
     src: "{{ item.name }}"
     dest: "{{ clamav_sigdir }}/{{ item.name }}"
-  with_items: "{{ clamav_custom_sigs.local }}"
+  loop: "{{ clamav_custom_sigs.local }}"
 
 - name: rsync custom signatures
   command: "rsync -t --timeout=60 {{ item.url }} {{ clamav_sigdir }}/{{ item.name }}"
-  with_items: "{{ clamav_custom_sigs.rsync }}"
+  loop: "{{ clamav_custom_sigs.rsync }}"
 
 - name: Fetch custom signatures
   get_url:
     url: "{{ item.url }}"
     dest: "{{ clamav_sigdir }}/{{ item.name }}.raw"
-  with_items: "{{ clamav_custom_sigs.http }}"
+  loop: "{{ clamav_custom_sigs.http }}"
 
 - name: Process custom signatures
   shell: "/usr/local/sbin/clamav_{{ item.process }} {{ clamav_sigdir }}/{{ item.name }}.raw | sort -u >| {{ clamav_sigdir }}/{{ item.name }}"
-  with_items: "{{ clamav_custom_sigs.http }}"
+  loop: "{{ clamav_custom_sigs.http }}"
 
 - name: Upload signature files to S3
   s3_sync:

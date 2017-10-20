@@ -10,7 +10,7 @@
 # Only for the fake hostname that packer uses when building the base image
 - name: Upgrade all packages
   yum:
-    pkg: "*"
+    name: "*"
     state: latest
   when: inventory_hostname == "base"
 

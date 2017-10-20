@@ -2,10 +2,8 @@
 
 - name: Install sensu
   yum:
-    pkg: "{{ item }}"
+    name: sensu
     state: latest
-  with_items:
-    - sensu
   notify: Restart sensu
 
 - name: Add sensu to extra groups
@@ -28,7 +26,7 @@
   template:
     dest: "/etc/sensu/conf.d/{{ item }}"
     src: "{{ item }}.j2"
-  with_items:
+  loop:
     - client.json
     - rabbitmq.json
     - transport.json
@@ -50,10 +48,9 @@
 
 - name: Install sensu plugins
   yum:
-    pkg: "sensugems-{{ item }}"
+    name: "{{ sensu_plugins | map('regex_replace', '^', 'sensugems-') | list }}"
     state: latest
   when: inventory_hostname not in (groups.tag_Class_builder | default([]))
-  with_items: "{{ sensu_plugins }}"
 
 - name: Enable sensu-client
   systemd:

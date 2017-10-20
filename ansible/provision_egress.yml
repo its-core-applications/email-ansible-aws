@@ -29,7 +29,7 @@
           redis: 'yes'
         count: 1
       when: groups.tag_Class_egress | default([]) | intersect(groups.tag_Status_production | default([]) | union(groups.tag_Status_spinup | default([]))) | intersect(groups[item.availability_zone] | default([])) | length == 0
-      with_items: "{{ ec2_subnets.subnets }}"
+      loop: "{{ ec2_subnets.subnets }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml

@@ -27,8 +27,7 @@
         count_tag:
           Class: smtp-test
       # this is just to force a consistent result structure
-      with_items:
-        - dummy
+      loop: [ dummy ]
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml

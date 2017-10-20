@@ -47,7 +47,7 @@
   file:
     dest: "{{ item }}"
     state: absent
-  with_items:
+  loop:
     - /etc/cron.daily/rhsmd
 
 - name: Configure tmux

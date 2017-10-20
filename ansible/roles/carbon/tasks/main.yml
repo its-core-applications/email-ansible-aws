@@ -15,7 +15,7 @@
 
 - name: Install carbon
   yum:
-    pkg: python-carbon
+    name: python-carbon
     state: latest
   notify: Restart carbon
 
@@ -34,7 +34,7 @@
     owner: root
     group: root
     mode: 0644
-  with_items:
+  loop:
     - carbon.conf
     - aggregation-rules.conf
     - rewrite-rules.conf
@@ -47,7 +47,7 @@
   systemd:
     name: "{{ item }}"
     enabled: true
-  with_items:
+  loop:
     - carbon-cache
     - carbon-aggregator
   notify: Restart carbon

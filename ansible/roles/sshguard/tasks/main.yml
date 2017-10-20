@@ -2,7 +2,7 @@
 
 - name: Install sshguard
   yum:
-    pkg: sshguard
+    name: sshguard
     state: latest
   notify: Restart sshguard
 

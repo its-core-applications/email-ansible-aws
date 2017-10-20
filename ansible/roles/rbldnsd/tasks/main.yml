@@ -2,7 +2,7 @@
 
 - name: Install rbldnsd
   yum:
-    pkg: rbldnsd
+    name: rbldnsd
     state: latest
   notify: Reconfigure rbldnsd
 

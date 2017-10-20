@@ -15,7 +15,7 @@
         sort_order: descending
         sort_start: "{{ (item == 'junk') | ternary(0, 5) }}"
       register: result
-      with_items:
+      loop:
         - base
         - mx
         - egress
@@ -28,4 +28,4 @@
         image_id: "{{ item }}"
         state: absent
         delete_snapshot: true
-      with_items: "{{ result | json_query('results[*].results[*].ami_id') }}"
+      loop: "{{ lookup('flattened', result | json_query('results[*].results[*].ami_id'), wantlist=True) }}"

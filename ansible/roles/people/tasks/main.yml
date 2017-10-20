@@ -17,7 +17,7 @@
     uid: "{{ item.uid }}"
     comment: "{{ item.comment }}"
     state: present
-  with_items: "{{ user_accounts }}"
+  loop: "{{ user_accounts }}"
   tags: mutable
 
 - name: Grant sudo access

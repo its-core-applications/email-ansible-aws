@@ -5,7 +5,7 @@
     name: "{{ item }}"
     daemon_reload: true
     state: restarted
-  with_items:
+  loop:
     - sensu-server
     - sensu-api
   listen: Restart sensu

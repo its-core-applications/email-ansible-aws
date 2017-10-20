@@ -18,7 +18,7 @@
     object: "{{ yum_repo_path }}/{{ item.path | basename }}"
     src: "{{ item.path }}"
     overwrite: never
-  with_items: "{{ find_rpm.files }}"
+  loop: "{{ find_rpm.files }}"
   loop_control:
     label: "{{ item.path | basename }}"
 
@@ -46,7 +46,7 @@
     object: "{{ item }}"
     dest: /var/cache/{{ yum_hostname }}/{{ item | basename }}
     overwrite: different
-  with_items: "{{ find_s3.s3_keys }}"
+  loop: "{{ find_s3.s3_keys }}"
   when: item | match(".*\\.rpm")
 
 - name: Build repodata
@@ -63,7 +63,7 @@
     region: "{{ yum_aws_region }}"
     mode: delobj
     object: "{{ item }}"
-  with_items: "{{ find_s3.s3_keys }}"
+  loop: "{{ find_s3.s3_keys }}"
   when: item | search('/repodata/')
 
 - name: Upload repodata
@@ -75,7 +75,7 @@
     object: "{{ yum_repo_path }}/repodata/{{ item.path | basename }}"
     src: "{{ item.path }}"
     overwrite: different
-  with_items: "{{ find_repodata.files }}"
+  loop: "{{ find_repodata.files }}"
   loop_control:
     label: "{{ item.path | basename }}"
 

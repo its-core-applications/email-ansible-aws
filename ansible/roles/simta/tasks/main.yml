@@ -1,16 +1,19 @@
 ---
 
 - name: Install simta
-  yum: name=simta-{{ simta_version }} state=present
+  yum:
+    name: simta-{{ simta_version }}
+    state: present
   notify: Restart simta
 
 - name: Install auxiliary packages
-  yum: name={{ item }} state=latest
-  with_items:
-    - denser-utils
-    - simta-mscan
-    - simta-admin
-    - simvacation
+  yum:
+    name:
+      - denser-utils
+      - simta-admin
+      - simta-mscan
+      - simvacation
+    state: latest
 
 - name: Create directories
   file:
@@ -19,7 +22,7 @@
     owner: root
     group: root
     mode: 0755
-  with_items:
+  loop:
     - /etc/mail
     - /etc/mail/filters
     - /etc/systemd/system/simta.service.d
@@ -39,7 +42,7 @@
     owner: root
     group: root
     mode: 0755
-  with_items:
+  loop:
     - 19_dropfrom
     - 20_auth
     - 20_from
@@ -64,30 +67,31 @@
 - name: Install /etc/mail/aliases
   copy:
     dest: /etc/mail/aliases
-    src: "{{ item }}"
+    src: "{{ lookup('first_found', 'aliases-' ~ simta_config, 'aliases') }}"
     owner: root
     group: root
     mode: 0644
-  with_first_found:
-    - aliases-{{ simta_config }}
-    - aliases
   notify: Rebuild aliases
   tags: mutable
 
 - name: Install /etc/hosts.allow
-  copy: dest=/etc/hosts.allow src={{ item }} owner=collaborate group=collaboration mode=0664
+  copy:
+    dest: /etc/hosts.allow
+    src: "{{ lookup('first_found', 'hosts.allow-' ~ simta_config, 'hosts.allow') }}"
+    owner: collaborate
+    group: collaboration
+    mode: 0664
   when: simta_tcpwrappers
-  with_first_found:
-    - hosts.allow-{{ simta_config }}
-    - hosts.allow
   tags: mutable
 
 - name: Install /etc/hosts.deny
-  copy: dest=/etc/hosts.deny src={{ item }} owner=collaborate group=collaboration mode=0664
+  copy:
+    dest: /etc/hosts.deny
+    src: "{{ lookup('first_found', 'hosts.deny-' ~ simta_config, 'hosts.deny') }}"
+    owner: collaborate
+    group: collaboration
+    mode: 0664
   when: simta_tcpwrappers
-  with_first_found:
-    - hosts.deny-{{ simta_config }}
-    - hosts.deny
   tags: mutable
 
 - name: Install the public suffix list
@@ -138,7 +142,7 @@
     owner: root
     group: root
     mode: 0644
-  with_items: "{{ simta_ldap_domains }}"
+  loop: "{{ simta_ldap_domains }}"
   notify: Restart simta
   when: simta_ldap
 
@@ -150,7 +154,7 @@
     group: root
     mode: 0644
   notify: Restart simta
-  with_items: "{{ simta_ldap_domains_mapped | default({}) }}"
+  loop: "{{ simta_ldap_domains_mapped | default([]) }}"
   when: simta_ldap
 
 - name: Install alias files for alias domains
@@ -160,7 +164,8 @@
     owner: root
     group: root
     mode: 0644
-  with_items: "{{ simta_alias_domains | default([]) }}"
+  notify: Restart simta
+  loop: "{{ simta_alias_domains | default([]) }}"
 
 - name: Configure simvacation
   template:
@@ -195,7 +200,7 @@
     owner: collaborate
     group: nonpeople
     mode: 0755
-  with_items:
+  loop:
     - check-dnsbl
     - check-dnsl
   when: trendmicro_key is defined

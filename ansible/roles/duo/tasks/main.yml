@@ -11,7 +11,7 @@
 
 - name: Install duo_unix
   yum:
-    pkg: duo_unix
+    name: duo_unix
     state: latest
 
 - name: Configure pam_duo

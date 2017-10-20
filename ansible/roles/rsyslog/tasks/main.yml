@@ -2,7 +2,7 @@
 
 - name: Install rsyslog-relp
   yum:
-    pkg: rsyslog-relp
+    name: rsyslog-relp
     state: present
 
 - name: Configure systemd-journald
@@ -44,7 +44,7 @@
   file:
     dest: "{{ item }}"
     state: absent
-  with_items:
+  loop:
     - /etc/rsyslog.d/21-cloudinit.conf
     - /etc/rsyslog.d/listen.conf
   notify: Restart rsyslog

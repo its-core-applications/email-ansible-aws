@@ -33,7 +33,7 @@
           interval: 30
           unhealthy_threshold: 2
           healthy_threshold: 5
-      with_items: "{{ mx_names }}"
+      loop: "{{ mx_names }}"
       register: result
 
     - name: "Add hosts to MX loadbalancer(s)"
@@ -43,9 +43,9 @@
         instance_id: "{{ item[1] }}"
         state: present
         wait: false
-      with_nested:
-        - "{{ mx_names }}"
-        - "{{ groups.tag_Class_mx | default([]) | map('extract', hostvars, 'ec2_id') | list }}"
+      vars:
+        mx_instances: "{{ groups.tag_Class_mx | default([]) | map('extract', hostvars, 'ec2_id') | list }}"
+      loop: "{{ lookup('nested', mx_names, mx_instances) }}"
 
     - name: "Set pretty DNS names for MX loadbalancer(s)"
       route53:
@@ -57,7 +57,7 @@
         alias: true
         alias_hosted_zone_id: "{{ item.elb.hosted_zone_id }}"
         value: "{{ item.elb.dns_name }}"
-      with_items: "{{ result.results }}"
+      loop: "{{ result.results }}"
       loop_control:
         label: "{{ item.elb.name }}.{{ subd }} -> {{ item.elb.dns_name }}"
 

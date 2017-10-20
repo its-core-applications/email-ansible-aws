@@ -10,7 +10,7 @@
 
 - name: Install grafana
   yum:
-    pkg: grafana
+    name: grafana
     state: latest
   notify: Restart grafana
 

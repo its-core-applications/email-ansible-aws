@@ -23,7 +23,7 @@
   copy:
     src: "{{ item }}"
     dest: "~/rpmbuild/SOURCES/{{ item | basename }}"
-  with_items: "{{ lookup('fileglob', 'build/{{ build_data.name }}/sources/*', wantlist=true) }}"
+  loop: "{{ lookup('fileglob', 'build/{{ build_data.name }}/sources/*', wantlist=True) }}"
 
 - name: "Build {{ build_data.name }} RPM"
   become: false

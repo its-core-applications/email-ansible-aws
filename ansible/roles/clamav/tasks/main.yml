@@ -2,12 +2,11 @@
 
 - name: Install clamav
   yum:
-    name: "{{ item }}"
+    name:
+      - clamav
+      - clamav-data-empty
+      - clamav-server
     state: latest
-  with_items:
-    - clamav-data-empty
-    - clamav
-    - clamav-server
 
 - name: Configure clamav
   copy:
@@ -40,7 +39,7 @@
     owner: root
     group: root
     mode: 0644
-  with_items:
+  loop:
     - clamav.badurl
     - clamav.delete
     - clamav.reject

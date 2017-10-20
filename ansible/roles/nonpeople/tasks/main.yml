@@ -16,7 +16,7 @@
     uid: "{{ item.uid }}"
     comment: "{{ item.comment }}"
     state: present
-  with_items: "{{ nonperson_accounts }}"
+  loop: "{{ nonperson_accounts }}"
   tags: mutable
 
 - name: Create .ssh directory for non-person accounts
@@ -26,7 +26,7 @@
     owner: "{{ item.name }}"
     group: nonpeople
     mode: 0755
-  with_items: "{{ nonperson_accounts }}"
+  loop: "{{ nonperson_accounts }}"
   tags: mutable
 
 - name: Install authorized_keys for non-person accounts
@@ -36,5 +36,5 @@
     owner: "{{ item.name }}"
     group: nonpeople
     mode: 0444
-  with_items: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
+  loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
   tags: mutable

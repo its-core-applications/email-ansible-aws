@@ -26,7 +26,7 @@
           Status: preproduction
         count: 1
       when: groups.tag_Class_relay | default([]) | intersect(groups[item.availability_zone] | default([])) | length == 0
-      with_items: "{{ ec2_subnets.subnets }}"
+      loop: "{{ ec2_subnets.subnets }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml
@@ -78,4 +78,4 @@
         instance_id: "{{ item }}"
         state: present
         wait: false
-      with_items: "{{ groups.tag_Class_relay | default([]) | map('extract', hostvars, 'ec2_id') | list }}"
+      loop: "{{ groups.tag_Class_relay | default([]) | map('extract', hostvars, 'ec2_id') | list }}"

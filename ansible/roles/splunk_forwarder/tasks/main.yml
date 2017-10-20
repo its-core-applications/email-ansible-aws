@@ -15,7 +15,7 @@
 
 - name: Install splunk forwarder
   yum:
-    pkg: splunkforwarder
+    name: splunkforwarder
     state: latest
   notify: Restart splunkforwarder
 

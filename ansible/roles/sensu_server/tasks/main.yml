@@ -33,7 +33,7 @@
     owner: root
     group: root
     mode: 0755
-  with_items:
+  loop:
     - handler-sns
 
 - name: Create the RabbitMQ vhost for sensu
@@ -56,7 +56,7 @@
   template:
     dest: "/etc/sensu/conf.d/{{ item }}"
     src: "{{ item }}.j2"
-  with_items:
+  loop:
     - api.json
     - redis.json
     - sensu_plugin.json
@@ -78,7 +78,7 @@
   systemd:
     name: "{{ item }}"
     enabled: true
-  with_items:
+  loop:
     - sensu-server
     - sensu-api
   notify: Restart sensu server

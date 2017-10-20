@@ -28,7 +28,7 @@
         - Status_production
         - tls
     status_code: 201
-  with_items: "{{ mx_names }}"
+  loop: "{{ mx_names }}"
 
 - name: Register sensu proxy client for egress
   uri:

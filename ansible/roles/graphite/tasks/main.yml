@@ -2,7 +2,7 @@
 
 - name: Install graphite-api
   yum:
-    pkg: graphite-api
+    name: graphite-api
     state: latest
   notify: Restart graphite
 

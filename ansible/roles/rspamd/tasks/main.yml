@@ -10,7 +10,7 @@
 
 - name: Install rspamd
   yum:
-    pkg: rspamd
+    name: rspamd
     state: latest
   notify: Restart rspamd
 
@@ -21,7 +21,7 @@
     owner: root
     group: root
     mode: 0644
-  with_items:
+  loop:
     - local.d/arc.conf
     - local.d/dkim.conf
     - local.d/dmarc.conf

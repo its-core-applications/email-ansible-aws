@@ -11,7 +11,7 @@
 
 - name: Install google-admin-kit
   yum:
-    pkg: 
+    name: 
       - google-admin-kit
       - google-admin-kit-umextras
     state: latest

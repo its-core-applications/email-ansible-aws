@@ -2,7 +2,7 @@
 
 - name: Install redis
   yum:
-    pkg: redis
+    name: redis
     state: latest
   notify: Restart redis
 
@@ -28,6 +28,6 @@
     owner: collaborate
     group: nonpeople
     mode: 0755
-  with_items:
+  loop:
     - check-redis-cluster
 

@@ -23,7 +23,7 @@
           Status: production
           redis: 'yes'
         count: 1
-      with_items: "{{ ec2_subnets.subnets }}"
+      loop: "{{ ec2_subnets.subnets }}"
       loop_control:
         label: "{{ item.availability_zone }} / {{ item.cidr_block }}"
       ignore_errors: true

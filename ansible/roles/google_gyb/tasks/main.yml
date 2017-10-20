@@ -13,7 +13,7 @@
     state: touch
     owner: collaborate
     group: nonpeople
-  with_items:
+  loop:
     - noupdatecheck.txt
     - nobrowser.txt
 

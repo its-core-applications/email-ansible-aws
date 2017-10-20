@@ -2,10 +2,8 @@
 
 - name: Install comint
   yum:
-    name: "{{ item }}"
+    name: comint
     state: latest
-  with_items:
-    - comint
 
 - name: Create directories
   file:
@@ -14,7 +12,7 @@
     owner: collaborate
     group: nonpeople
     mode: 0775
-  with_items:
+  loop:
     - /usr/local/collaboration
     - /usr/local/collaboration/dispatch
     - /usr/local/collaboration/dispatch/local
@@ -30,7 +28,7 @@
     owner: collaborate
     group: nonpeople
     mode: 0664
-  with_items:
+  loop:
     - comint.conf
     - dispatch/dispatch.conf
     - nag/nag.conf

@@ -2,11 +2,10 @@
 
 - name: Install extra Apache modules
   yum:
-    pkg: "{{ item }}"
+    name:
+      - mod_auth_openidc
+      - mod_ldap
     state: present
-  with_items:
-    - mod_auth_openidc
-    - mod_ldap
 
 - name: "Configure a vhost for dashboard.{{ subd }}"
   template:

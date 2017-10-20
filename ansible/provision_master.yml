@@ -30,8 +30,7 @@
         count_tag:
           Class: master
       # this is just to force a consistent result structure
-      with_items:
-        - dummy
+      loop: [ dummy ]
       register: ec2
 
     - name: "Set CNAMEs for vhosts"
@@ -43,12 +42,13 @@
         type: "CNAME"
         ttl: 60
         value: "{{ master_hostname }}.{{ subd }}"
-      with_items:
+      loop:
         - dashboard
         - graphs
 
     - name: Wait for instance to be available
-      pause: seconds=120
+      pause:
+        seconds: 120
 
     - name: Attach EBS home volume
       ec2_vol:
