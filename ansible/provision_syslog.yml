@@ -81,3 +81,7 @@
         ttl: 60
         value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
 
+- hosts: tag_Class_syslog
+  roles:
+    - { role: sensu_proxyclients, tags: sensu }
+

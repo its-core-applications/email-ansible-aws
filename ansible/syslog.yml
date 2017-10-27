@@ -12,5 +12,4 @@
     - { role: carbon, tags: carbon }
     - { role: graphite, tags: graphite }
     - { role: sensu_server, tags: sensu }
-    - { role: sensu_proxyclients, tags: sensu }
     - { role: uchiwa, tags: uchiwa }
