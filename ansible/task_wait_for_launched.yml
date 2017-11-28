@@ -1,7 +1,7 @@
 ---
 
 - name: Wait for launched instances to be available 
-  shell: "for i in {1..60}; do {{ hostvars[groups.tag_Class_master.0].inventory_dir }}/{{ hostvars[groups.tag_Class_master.0].inventory_file }} | grep -q {{ item.id }} && break; sleep 5; done"
+  shell: "for i in {1..60}; do {{ hostvars[groups.tag_Class_master.0].inventory_file }} | grep -q {{ item.id }} && break; sleep 5; done"
   when: item is defined
   loop: "{{ lookup('flattened', ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | list, wantlist=True) }}"
 
