@@ -9,6 +9,9 @@ server:
 
     do-ip6: no
 
+    access-control: ::1 allow_snoop
+    access-control: 127.0.0.0/8 allow_snoop
+
     num-threads: 4
     outgoing-range: 4096
 
