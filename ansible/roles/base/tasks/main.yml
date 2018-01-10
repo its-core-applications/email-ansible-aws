@@ -88,3 +88,14 @@
     group: root
     mode: 0644
 
+- name: Configure OpenSSH certificate generation
+  copy:
+    dest: "/etc/pki/tls/{{ item }}"
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - openssl.cnf
+    - openssl-san.cnf
+
