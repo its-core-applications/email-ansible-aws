@@ -1,13 +1,5 @@
 ---
 
-- name: Set up rspamd yum repo
-  copy:
-    dest: /etc/yum.repos.d/rspamd.repo
-    src: rspamd.repo
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Install rspamd
   yum:
     name: rspamd

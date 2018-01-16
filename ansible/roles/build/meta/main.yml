@@ -155,11 +155,47 @@ dependencies:
         - urcl-devel
 
   - role: build_rpm_spec
+    tags:
+      - hyperscan
+      - ragel
+      - rspamd
+    build_data:
+      name: ragel
+
+  - role: build_rpm_spec
+    tags:
+      - hyperscan
+      - rspamd
+    build_data:
+      name: hyperscan
+      deps:
+        - libpcap-devel
+        - ragel-6.10
+        - sqlite-devel
+
+  - role: build_rpm_spec
     tags: redis
     build_data:
       name: redis
       deps:
         - jemalloc-devel
+
+  - role: build_rpm_spec
+    tags: rspamd
+    build_data:
+      name: rspamd
+      deps:
+        - fann-devel
+        - file-devel
+        - glib2-devel
+        - hyperscan-devel
+        - libevent-devel
+        - libicu-devel
+        - luajit-devel
+        - openssl-devel
+        - perl-Digest-MD5
+        - ragel-6.10
+        - sqlite-devel
 
   - role: build_rpm_git
     tags: simta
