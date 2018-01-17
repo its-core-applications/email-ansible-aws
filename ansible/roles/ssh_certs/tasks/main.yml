@@ -7,4 +7,4 @@
   environment:
     VAULT_ADDR: http://127.0.0.1:8200
     VAULT_TOKEN: "{{ lookup('file', '~/.vault-token') }}"
-  loop: "{{ lookup('fileglob', '/etc/ssh/ssh_host_*_key', wantlist=True) }}"
+  loop: "{{ query('fileglob', '/etc/ssh/ssh_host_*_key') }}"

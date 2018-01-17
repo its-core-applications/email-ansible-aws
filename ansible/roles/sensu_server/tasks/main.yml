@@ -10,7 +10,7 @@
     state: present
     purge_subscriptions: false
     subscriptions:
-      - endpoint: "{{ lookup('hashi_vault', 'secret=secret/phone/pager') }}"
+      - endpoint: "{{ lookup('hashi_vault', 'secret=secret/phone/pager:value') }}"
         protocol: 'sms'
 
 - name: Create SNS topic for email
@@ -45,7 +45,7 @@
   rabbitmq_user:
     name: sensu
     state: present
-    password: "{{ lookup('hashi_vault', 'secret=secret/sensu/rabbitmq') }}"
+    password: "{{ lookup('hashi_vault', 'secret=secret/sensu/rabbitmq:value') }}"
     permissions:
       - vhost: /sensu
         configure_priv: .*

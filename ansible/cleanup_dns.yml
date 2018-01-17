@@ -31,6 +31,6 @@
         label: "{{ item.Name ~ ' ' ~ item.Type }}"
       when:
         - item.Type == 'CNAME'
-        - item.ResourceRecords.0.Value | match('.+\.compute\.amazonaws\.com')
+        - item.ResourceRecords.0.Value is match('.+\.compute\.amazonaws\.com')
         - item.Name[:-1] not in hostvars
 

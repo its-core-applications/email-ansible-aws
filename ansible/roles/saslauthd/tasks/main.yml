@@ -27,7 +27,7 @@
 - name: Copy the encoded keytab
   copy:
     dest: /etc/krb5.keytab.b64
-    content: "{{ lookup('hashi_vault', 'secret=secret/krb/' ~ simta_config ~ '.' ~ tld) }}"
+    content: "{{ lookup('hashi_vault', 'secret=secret/krb/' ~ simta_config ~ '.' ~ tld ~ ':value') }}"
     owner: root
     group: mail
     mode: 0640
@@ -35,7 +35,7 @@
 
 - name: Decode the keytab
   shell: base64 -d /etc/krb5.keytab.b64 > /etc/krb5.keytab
-  when: result|changed
+  when: result is changed
   notify: Restart saslauthd
 
 - name: Set permissions on the keytab

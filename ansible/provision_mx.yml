@@ -39,7 +39,7 @@
         wait: false
       vars:
         mx_instances: "{{ groups.tag_Class_mx | default([]) | intersect(groups.tag_Status_production | default([])) | map('extract', hostvars, 'ec2_id') | list }}"
-      loop: "{{ lookup('nested', mx_names, mx_instances) }}"
+      loop: "{{ query('nested', mx_names, mx_instances) }}"
 
     - name: "Set pretty DNS names for MX loadbalancer(s)"
       route53:

@@ -2,8 +2,8 @@ discussions:
 
   default:
       domain: 'discussions.umich.edu'
-      sa_client_email: '{{ lookup('hashi_vault', 'secret=secret/google/discussions/id') }}'
-      sa_private_key: "{{ lookup('hashi_vault', 'secret=secret/google/discussions/key') }}"
+      sa_client_email: '{{ lookup('hashi_vault', 'secret=secret/google/discussions/id:value') }}'
+      sa_private_key: "{{ lookup('hashi_vault', 'secret=secret/google/discussions/key:value') }}"
       sa_actor: "admin-mgoogle@discussions.umich.edu"
 
 google:
@@ -22,8 +22,8 @@ google:
   
   google-login-reporter:
     tempfile_suffix: '_loginReporter'
-    sa_client_email: '{{ lookup('hashi_vault', 'secret=secret/google/loginreporter/id') }}'
-    sa_private_key: "{{ lookup('hashi_vault', 'secret=secret/google/loginreporter/key') }}"
+    sa_client_email: '{{ lookup('hashi_vault', 'secret=secret/google/loginreporter/id:value') }}'
+    sa_private_key: "{{ lookup('hashi_vault', 'secret=secret/google/loginreporter/key:value') }}"
 
   gyb-multi-label:
     tempfile_suffix: '_mailTransfer'
@@ -36,4 +36,4 @@ google:
     domain: '{{ tld }}'
     archive_destination: 'ftp.box.com'
     archive_username: 'its-collab-pyrocumulonimbus@umich.edu'
-    archive_password: '{{ lookup('hashi_vault', 'secret=secret/box/its-collab-pyrocumulonimbus') }}'
+    archive_password: '{{ lookup('hashi_vault', 'secret=secret/box/its-collab-pyrocumulonimbus:value') }}'

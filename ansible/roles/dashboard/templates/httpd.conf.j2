@@ -16,9 +16,9 @@
     SSLHonorCipherOrder on
 
     OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration
-    OIDCClientID {{ lookup('hashi_vault', 'secret=secret/google/dashboard/id') }}
-    OIDCClientSecret {{ lookup('hashi_vault', 'secret=secret/google/dashboard/secret') }}
-    OIDCCryptoPassphrase {{ lookup('hashi_vault', 'secret=secret/google/dashboard/passphrase') }}
+    OIDCClientID {{ lookup('hashi_vault', 'secret=secret/google/dashboard/id:value') }}
+    OIDCClientSecret {{ lookup('hashi_vault', 'secret=secret/google/dashboard/secret:value') }}
+    OIDCCryptoPassphrase {{ lookup('hashi_vault', 'secret=secret/google/dashboard/passphrase:value') }}
     OIDCRedirectURI https://dashboard.{{ subd }}/login/google
     OIDCScope "openid email"
     OIDCRemoteUserClaim email

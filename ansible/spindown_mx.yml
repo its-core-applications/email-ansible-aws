@@ -17,7 +17,7 @@
       register: result
 
     - meta: refresh_inventory
-      when: result | changed
+      when: result is changed
 
 - hosts: tag_Class_mx:&tag_Status_spindown
   tasks:

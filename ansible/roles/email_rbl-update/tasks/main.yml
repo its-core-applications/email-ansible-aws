@@ -30,4 +30,4 @@
     actions:
       - add
       - remove
-  loop: "{{ lookup('nested', lists, actions) }}"
+  loop: "{{ query('nested', lists, actions) }}"

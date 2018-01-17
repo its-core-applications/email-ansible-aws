@@ -16,7 +16,7 @@
       register: result
 
     - meta: refresh_inventory
-      when: result | changed
+      when: result is changed
 
 - hosts: localhost
   become: false

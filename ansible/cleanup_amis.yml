@@ -28,4 +28,4 @@
         image_id: "{{ item }}"
         state: absent
         delete_snapshot: true
-      loop: "{{ lookup('flattened', result | json_query('results[*].results[*].ami_id'), wantlist=True) }}"
+      loop: "{{ query('flattened', result | json_query('results[*].results[*].ami_id')) }}"

@@ -21,7 +21,7 @@
 
 - name: Generate CSR
   command: "openssl req -new -sha256 -key /etc/pki/collab/private/{{ certificate }}.key -out /etc/pki/collab/{{ certificate }}.csr -subj /CN={{ certificate }}"
-  when: result | changed
+  when: result is changed
 
 - name: Get ACME challenge
   letsencrypt:
@@ -43,7 +43,7 @@
     type: TXT
     value: "\"{{ acme_data.challenge_data[certificate]['dns-01']['resource_value'] }}\""
     ttl: 30
-  when: acme_data | changed
+  when: acme_data is changed
 
 - name: Get certificate
   letsencrypt:

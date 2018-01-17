@@ -6,4 +6,4 @@ simta_egress: true
 simta_filters: false
 simta_dkim: true
 simta_connlimit: 0
-trendmicro_key: "{{ lookup( 'hashi_vault', 'secret=secret/simta/trendmicro' ) }}"
+trendmicro_key: "{{ lookup('hashi_vault', 'secret=secret/simta/trendmicro:value') }}"

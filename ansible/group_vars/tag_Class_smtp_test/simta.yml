@@ -6,4 +6,4 @@ simta_msa: true
 simta_relay: true
 simta_dkim: true
 simta_ldap: true
-simta_ldap_password: "{{ lookup( 'hashi_vault', 'secret=secret/simta/ldap_password' ) }}"
+simta_ldap_password: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value ) }}"

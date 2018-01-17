@@ -3,7 +3,7 @@
 - name: Install SSH private key
   copy:
     dest: /root/.ssh/id_rsa.rbldnsd
-    content: "{{ lookup('hashi_vault', 'secret=secret/ssh/rbldnsd' ) }}"
+    content: "{{ lookup('hashi_vault', 'secret=secret/ssh/rbldnsd:value' ) }}"
     owner: root
     group: root
     mode: 0400

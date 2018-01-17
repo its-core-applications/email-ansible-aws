@@ -47,7 +47,7 @@
     dest: /var/cache/{{ yum_hostname }}/{{ item | basename }}
     overwrite: different
   loop: "{{ find_s3.s3_keys }}"
-  when: item | match(".*\\.rpm")
+  when: item is match(".*\\.rpm")
 
 - name: Build repodata
   command: createrepo --database --update /var/cache/{{ yum_hostname }}/
@@ -64,7 +64,7 @@
     mode: delobj
     object: "{{ item }}"
   loop: "{{ find_s3.s3_keys }}"
-  when: item | search('/repodata/')
+  when: item is search('/repodata/')
 
 - name: Upload repodata
   s3:
