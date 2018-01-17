@@ -1,4 +1,4 @@
-%global commit0 dc932eef2a5e53fc87a6fc875917866c95e0ab06 
+%global commit0 7a912d90e2f2eccbc1ded619b21c681d7adec048
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 %define username        saslauth
@@ -13,7 +13,7 @@
 Summary: The Cyrus SASL library
 Name: cyrus-sasl
 Version: 2.1.27
-Release: 0.1.20170912.%{shortcommit0}%{?dist}
+Release: 0.1.20180117.%{shortcommit0}%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
@@ -23,8 +23,6 @@ Source9: saslauthd.sysconfig
 Requires: %{name}-lib%{?_isa} = %{version}-%{release}
 # https://github.com/cyrusimap/cyrus-sasl/pull/472
 Patch0:  cyrus-sasl-2.1.27-saslauthd-krb5.patch
-# https://github.com/cyrusimap/cyrus-sasl/pull/471
-Patch1:  cyrus-sasl-2.1.27-gssapi-auxprop.patch
 
 BuildRequires: autoconf, automake, libtool, gdbm-devel, groff
 BuildRequires: krb5-devel >= 1.2.2, openssl-devel, pam-devel, pkgconfig
