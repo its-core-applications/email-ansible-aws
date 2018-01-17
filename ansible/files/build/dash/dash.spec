@@ -9,8 +9,7 @@ Group:          System Environment/Shells
 # Copyright only: From src/hetio.h
 License:        BSD and GPLv2+ and Public Domain and Copyright only
 URL:            http://gondor.apana.org.au/~herbert/%{name}/
-#Source0:        http://gondor.apana.org.au/~herbert/%{name}/files/%{name}-%{version}.tar.gz
-Source0:        https://vereveel.marwnad.com/tmp/%{name}-%{version}.tar.gz
+Source0:        http://gondor.apana.org.au/~herbert/%{name}/files/%{name}-%{version}.tar.gz
 Patch0:         %{name}-0.5.7-format-security.patch
 
 %description
