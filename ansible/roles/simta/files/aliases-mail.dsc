@@ -4,7 +4,7 @@
 # Basic system aliases -- these MUST be present.
 
 mailer-daemon:postmaster
-postmaster:postmast@equilibrium.rsug.itd.umich.edu
+postmaster:postmast@hawkgirl.dsc.umich.edu
 
 # Aliases to handle mail to msgs and news
 

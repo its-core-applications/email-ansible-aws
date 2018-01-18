@@ -1,6 +1,6 @@
 # Basic system aliases -- these MUST be present.
 mailer-daemon:	postmaster
-postmaster:     postmast@equilibrium.rsug.itd.umich.edu
+postmaster:     postmast@hawkgirl.dsc.umich.edu
 
 # General redirections for pseudo accounts.
 bin:		root
