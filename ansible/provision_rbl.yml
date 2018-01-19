@@ -11,9 +11,9 @@
       ec2:
         group: [ main-default, rbl ]
         key_name: "{{ aws_ssh_key }}"
-        instance_type: m4.large
+        instance_type: m5.large
         region: "{{ aws_region }}"
-        image: "{{ find_ami.results.0.ami_id }}"
+        image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:
           Class: rbl

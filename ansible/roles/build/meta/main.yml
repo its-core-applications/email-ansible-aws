@@ -49,6 +49,8 @@ dependencies:
       - redis
     build_data:
       name: jemalloc
+      deps:
+        - libxslt
 
   - role: build_rpm_git
     tags:

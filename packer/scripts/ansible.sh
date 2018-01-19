@@ -1,8 +1,5 @@
 # Set up additional repositories
-sudo yum-config-manager --enable rhui-REGION-rhel-server-optional
-sudo yum-config-manager --enable rhui-REGION-rhel-server-extras
-sudo rpm -i http://mirrors.kernel.org/fedora-epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
-
+sudo yum -y install epel-release
 
 # Install ansible and required packages
 sudo yum -y install yum-utils libselinux ansible

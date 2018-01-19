@@ -1,0 +1,44 @@
+variables:
+  aws_region: us-west-2
+  base_ami: ami-e535c59d
+  image_type: base
+
+provisioners:
+  - type: shell
+    script: packer/scripts/ansible.sh
+
+  - type: ansible
+    playbook_file: 'ansible/{{ user `image_type` }}.yml'
+    ansible_env_vars:
+      - ANSIBLE_SSH_PIPELINING=False
+# To bootstrap without an existing custom yum repo.
+#    extra_arguments: [ '--extra-vars', '{ bootstrap: yes }' ]
+    host_alias: '{{ user `image_type` }}'
+    groups:
+      - tag_Class_{{ user `image_type` }}
+      - tag_Status_development
+
+  - type: shell
+    script: packer/scripts/cleanup.sh
+
+builders:
+  - type: amazon-ebs
+    region: '{{ user `aws_region` }}'
+    instance_type: t2.micro
+    source_ami: '{{ user `base_ami` }}'
+    ami_name: 'ami_centos7_{{ user `image_type` }}_{{ timestamp }}'
+    ami_block_device_mappings:
+      - delete_on_termination: true
+        device_name: /dev/sda1
+        encrypted: true
+        volume_type: gp2
+    encrypt_boot: true
+    ssh_keypair_name: '2015-10-16'
+    ssh_private_key_file: id_rsa
+    ssh_pty: true
+    ssh_username: ec2-user
+    tags:
+      image_type: '{{ user `image_type` }}'
+      os: centos7
+    user_data_file: packer/userdata
+

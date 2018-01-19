@@ -9,7 +9,7 @@
         region: "{{ aws_region }}"
         owner: self
         ami_tags:
-          os: rhel
+          os: centos
           image_type: "{{ item }}"
         sort: name
         sort_order: descending

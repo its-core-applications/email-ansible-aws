@@ -16,10 +16,10 @@
       ec2:
         group: [ vpn-default, relay ]
         key_name: "{{ aws_ssh_key }}"
-        instance_type: m4.large
+        instance_type: m5.large
         region: "{{ aws_region }}"
         vpc_subnet_id: "{{ item.id }}"
-        image: "{{ find_ami.results.0.ami_id }}"
+        image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:
           Class: relay

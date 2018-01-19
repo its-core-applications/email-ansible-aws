@@ -9,9 +9,9 @@
       ec2:
         group: [ main-default, mx-elb ]
         key_name: "{{ aws_ssh_key }}"
-        instance_type: t2.large
+        instance_type: t2.small
         region: "{{ aws_region }}"
-        image: "{{ find_ami.results.0.ami_id }}"
+        image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:
           Class: mx-test

@@ -13,10 +13,10 @@
       ec2:
         group: [ main-default, mx, redis ]
         key_name: "{{ aws_ssh_key }}"
-        instance_type: m4.xlarge
+        instance_type: m5.xlarge
         region: "{{ aws_region }}"
         vpc_subnet_id: "{{ item.id }}"
-        image: "{{ find_ami.results.0.ami_id }}"
+        image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:
           Class: mx

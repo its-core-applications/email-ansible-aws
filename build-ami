@@ -7,9 +7,15 @@ else
 fi
 
 if [[ $class = 'base' ]]; then
-    base=$(aws ec2 describe-images --filters "Name=owner-id,Values=309956199498" "Name=virtualization-type,Values=hvm" "Name=block-device-mapping.volume-type,Values=gp2" "Name=name,Values=RHEL-7.?_HVM_GA*" --query 'Images[*].{Name:Name,ImageId:ImageId}' --output=text | sort -k2 | awk 'END { print $1 }')
-else 
-    base=$(aws ec2 describe-images --owners self --filters "Name=tag:image_type,Values=base" --query 'Images[*].{Name:Name,ImageId:ImageId}' --output=text | sort -k2 | awk 'END { print $1 }')
+    base=$(aws ec2 describe-images --filters "Name=owner-id,Values=679593333241" "Name=product-code,Values=aw0evgkw8e5c1q413zgy5pjce" --query 'Images[*].{CreationDate:CreationDate,ImageId:ImageId}' --output=text | sort | awk 'END { print $2 }')
+else
+    base=$(aws ec2 describe-images --owners self --filters "Name=tag:image_type,Values=base" --query 'Images[*].{CreationDate:CreationDate,ImageId:ImageId}' --output=text | sort | awk 'END { print $2 }')
 fi
+
+python -c '
+import sys, json, yaml
+with open(sys.argv[1]) as f:
+   print json.dumps(yaml.load(f), indent=2)
+' packer/template.yml >| packer/template.json
 
 packer build -var "image_type=$class" -var "base_ami=$base" packer/template.json

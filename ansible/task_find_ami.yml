@@ -1,13 +1,15 @@
 ---
 
-- name: Find latest AMI
-  ec2_ami_find:
+- name: Get AMI data
+  ec2_ami_facts:
     region: "{{ aws_region }}"
-    owner: self
-    ami_tags:
-      os: rhel
-      image_type: "{{ launch_class | default('base') }}"
-    sort: name
-    sort_order: descending
-    sort_end: 1
-  register: find_ami
+    owners: self
+    filters:
+      "tag:os": centos7
+      "tag:image_type": "{{ launch_class | default('base') }}"
+  register: find_ami_facts
+
+- name: Find latest AMI
+  set_fact:
+    find_ami: "{{ find_ami_facts.images | sort(attribute='creation_date') | last }}"
+
