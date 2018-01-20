@@ -18,4 +18,10 @@ with open(sys.argv[1]) as f:
    print json.dumps(yaml.load(f), indent=2)
 ' packer/template.yml >| packer/template.json
 
+# Quick and dirty elision of unnecessary encryption step
+if [[ $class != 'base' ]]; then
+    jq 'del(.builders[0].encrypt_boot)' <packer/template.json >packer/munged
+    mv -f packer/munged packer/template.json
+fi
+
 packer build -var "image_type=$class" -var "base_ami=$base" packer/template.json
