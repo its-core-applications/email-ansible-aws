@@ -38,3 +38,10 @@
     - umich_bad_tld.inc
   notify: Restart rspamd
 
+- name: Enable rspamd
+  systemd:
+    name: rspamd
+    enabled: true
+    daemon_reload: true
+  notify: Restart rspamd
+
