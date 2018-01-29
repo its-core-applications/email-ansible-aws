@@ -3,12 +3,6 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
-        name: redis_master
-      tags: redis
-
-    - import_tasks: task_dns_redis.yml
-
     - import_tasks: task_find_subnets.yml
 
     - name: "Create MX loadbalancer(s)"
@@ -64,4 +58,10 @@
     - import_role:
         name: sensu_proxyclients
       tags: sensu
+
+    - import_role:
+        name: redis_master
+      tags: redis
+
+    - import_tasks: task_dns_redis.yml
 
