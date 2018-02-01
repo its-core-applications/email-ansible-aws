@@ -9,7 +9,7 @@ sethostname() {
     echo "Setting FQDN to $1"
     hostnamectl set-hostname $1
     systemctl try-restart rsyslog.service simta.service sensu-client.service
-    aws ec2 create-tags --region=$region --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1 
+    aws ec2 create-tags --region=$region --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1
 }
 
 zoneid=$(route53 ls | awk '/ID:/{ id=$NF } /Name: {{ subd }}.$/{ print id }')
@@ -35,8 +35,21 @@ if [[ $1 = 'clear' ]]; then
     exit $?
 fi
 
+try=0
+while [[ $try -le 5 ]] && [[ -z $tags ]]; do
+    tags=$(aws ec2 describe-tags --region=$region --filter="Name=resource-id,Values=$instanceid")
+    if [[ -z $tags ]]; then
+        if [[ $(( try++ )) -gt 5 ]]; then
+            echo "Failed to fetch tags, not setting hostname"
+            exit 1
+        fi
+        sleep 1
+    fi
+done
+
 # Fetch an existing DNS name, if set
-fqdn=$(aws ec2 describe-tags --region=$region --filter="Name=resource-id,Values=$instanceid" --output=text | awk '$2 == "CustomDNSName" { print $5 }')
+fqdn=$(echo $tags | jq -r '.Tags[] | select(.Key == "CustomDNSName") | .Value')
+
 if [[ $fqdn ]]; then
     sethostname $fqdn
     route53 change_record $zoneid $fqdn CNAME $publicname $ttl
@@ -44,7 +57,7 @@ if [[ $fqdn ]]; then
 fi
 
 # Otherwise generate one automatically
-class=$(aws ec2 describe-tags --region=$region --filter="Name=resource-id,Values=$instanceid" --output=text | awk '$2 == "Class" { print $5 }')
+class=$(echo $tags | jq -r '.Tags[] | select(.Key == "Class") | .Value')
 base={{ subd }}
 prefixes=/usr/share/hostname-prefixes
 suffixes=/usr/share/hostname-suffixes
