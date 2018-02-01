@@ -33,6 +33,7 @@ builders:
         volume_size: 12
         delete_on_termination: true
     encrypt_boot: true
+    ena_support: true
     ssh_keypair_name: '2015-10-16'
     ssh_private_key_file: id_rsa
     ssh_pty: true
