@@ -31,6 +31,20 @@
     group: root
     mode: 0644
 
+# Disable predictable network interface names
+- name: Configure grub
+  copy:
+    dest: /etc/default/grub
+    src: grub
+    owner: root
+    group: root
+    mode: 0640
+  register: result
+
+- name: Rebuild grub.cfg
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  when: result is changed
+
 - name: Set correct timezone
   timezone:
     name: America/Detroit
