@@ -1,7 +1,11 @@
 #!/bin/dash
 
 if check_dfile; then
-    spamout=$(rspamc --json --ip="$SIMTA_REMOTE_IP" --from="<$SIMTA_SMTP_MAIL_FROM>" --helo="$SIMTA_SMTP_HELO" --hostname="$SIMTA_REMOTE_HOSTNAME" $SIMTA_DFILE | tail -n +2 2>/dev/null)
+    # We have to throw away the first line and squash \\ down to
+    # \ to get valid JSON from rspamc.
+    spamout=$(rspamc --json --ip="$SIMTA_REMOTE_IP" --from="<$SIMTA_SMTP_MAIL_FROM>" --helo="$SIMTA_SMTP_HELO" --hostname="$SIMTA_REMOTE_HOSTNAME" $SIMTA_DFILE | sed '1d; s/\\\\/\\/g' 2>/dev/null)
+
+    # Use jq to format the JSON into the bits we want
     spamres=$(echo $spamout | jq -r '@text "\(.action) score=\(.score)"')
     if [ $? -ne 0 ]; then
         log "80_rspamd: bad return: $(echo $spamout | tr -d '\n')"
