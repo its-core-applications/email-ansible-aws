@@ -11,6 +11,7 @@
       tags: simta
     - { role: comint, tags: comint }
     - { role: localnameserver, tags: localnameserver }
+    - { role: sensu, tags: sensu }
     - { role: kitbag, tags: kitbag }
     - { role: vault, tags: vault }
     - { role: packer, tags: packer }

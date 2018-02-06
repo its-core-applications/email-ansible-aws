@@ -24,7 +24,7 @@
         instance_profile_name: master
         instance_tags:
           Class: master
-          Status: master
+          Status: production
           CustomDNSName: "{{ master_hostname }}.{{ subd }}"
         exact_count: 1
         count_tag:
