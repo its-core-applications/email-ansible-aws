@@ -102,6 +102,7 @@ dependencies:
         - gmp-devel
         - libxml2-devel
         - ncurses-devel
+        - openssl-devel
         - sendmail-devel
         - tcp_wrappers-devel
 
@@ -214,6 +215,7 @@ dependencies:
         - libsnet-devel
         - lmdb-devel
         - openldap-devel
+        - openssl-devel
         - procmail
         - sendmail-devel
         - tcp_wrappers-devel
