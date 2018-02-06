@@ -14,22 +14,26 @@
     dest: /home/ec2-user/simqtmp
     state: directory
 
-- name: Touch lockfile
-  delegate_to: localhost
-  file:
-    dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
-    state: touch
+- name: Lock and load
+  vars:
+    simqtmp: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_facts.date_time.epoch | to_uuid }}"
+  block:
+    - name: Touch lockfile
+      delegate_to: localhost
+      file:
+        dest: "{{ simqtmp }}.lock"
+        state: touch
 
-- name: Save queue
-  synchronize:
-    mode: pull
-    archive: true
-    src: /var/spool/simta/slow/
-    dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}/"
+    - name: Save queue
+      synchronize:
+        mode: pull
+        archive: true
+        src: /var/spool/simta/slow/
+        dest: "{{ simqtmp }}/"
 
-- name: Remove lockfile
-  delegate_to: localhost
-  file:
-    dest: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_date_time.epoch | to_uuid }}.lock"
-    state: absent
+    - name: Remove lockfile
+      delegate_to: localhost
+      file:
+        dest: "{{ simqtmp }}.lock"
+        state: absent
 
