@@ -5,7 +5,7 @@
     region: "{{ aws_region }}"
     owners: self
     filters:
-      "tag:os": centos7
+      "tag:os": amzn2
       "tag:image_type": "{{ launch_class | default('base') }}"
   register: find_ami_facts
 

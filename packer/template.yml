@@ -2,7 +2,8 @@ variables:
   aws_region: us-west-2
   base_ami: ami-e535c59d
   image_type: base
-  image_os: centos7
+  image_os: amzn2
+  root_device: /dev/xvda
 
 provisioners:
   - type: shell
@@ -29,7 +30,7 @@ builders:
     source_ami: '{{ user `base_ami` }}'
     ami_name: 'ami_{{ user `image_os` }}_{{ user `image_type` }}_{{ timestamp }}'
     launch_block_device_mappings:
-      - device_name: /dev/sda1
+      - device_name: '{{ user `root_device` }}'
         volume_type: gp2
         volume_size: 12
         delete_on_termination: true

@@ -1,8 +1,10 @@
 ---
 
-- name: Install sensu
+- name: Install sensu and dependencies
   yum:
-    name: sensu
+    name:
+      - sensu
+      - dbus-python
     state: latest
   notify: Restart sensu
 

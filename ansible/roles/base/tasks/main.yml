@@ -63,6 +63,7 @@
     state: absent
   loop:
     - /etc/cron.daily/rhsmd
+    - /etc/motd
 
 - name: Configure tmux
   copy:
