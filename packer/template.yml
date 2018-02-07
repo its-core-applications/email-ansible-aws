@@ -2,6 +2,7 @@ variables:
   aws_region: us-west-2
   base_ami: ami-e535c59d
   image_type: base
+  image_os: centos7
 
 provisioners:
   - type: shell
@@ -26,7 +27,7 @@ builders:
     region: '{{ user `aws_region` }}'
     instance_type: t2.small
     source_ami: '{{ user `base_ami` }}'
-    ami_name: 'ami_centos7_{{ user `image_type` }}_{{ timestamp }}'
+    ami_name: 'ami_{{ user `image_os` }}_{{ user `image_type` }}_{{ timestamp }}'
     launch_block_device_mappings:
       - device_name: /dev/sda1
         volume_type: gp2
@@ -40,6 +41,6 @@ builders:
     ssh_username: ec2-user
     tags:
       image_type: '{{ user `image_type` }}'
-      os: centos7
+      os: '{{ user `image_os` }}'
     user_data_file: packer/userdata
 
