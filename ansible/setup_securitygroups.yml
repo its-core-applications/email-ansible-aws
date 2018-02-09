@@ -85,7 +85,7 @@
         rules:
           - proto: tcp
             ports: 25
-            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | list }}"
+            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
 
     - name: Create security group for relay ELB
       ec2_group:
@@ -164,7 +164,7 @@
               - 4567 # sensu API
               - 5672 # RabbitMQ for sensu pub/sub
               - 8888 # graphite-api
-            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | list }}"
+            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
 
     - name: Create security group for RBL
       ec2_group:
@@ -175,7 +175,7 @@
         rules:
           - proto: udp
             ports: 53
-            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | list }}"
+            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
 
     - name: Create security group for redis
       ec2_group:
@@ -188,4 +188,4 @@
             ports:
               - 6379
               - 16379
-            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | list }}"
+            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"

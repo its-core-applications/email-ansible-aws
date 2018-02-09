@@ -3,3 +3,4 @@ ansible/keys
 packer/packer_cache
 packer/template.json
 private/
+*.pyc
