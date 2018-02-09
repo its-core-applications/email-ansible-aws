@@ -18,6 +18,7 @@
         key_name: "{{ aws_ssh_key }}"
         instance_type: t2.small
         region: "{{ aws_region }}"
+        assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:

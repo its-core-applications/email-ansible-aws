@@ -5,6 +5,10 @@
   tasks:
     - import_tasks: task_find_ami.yml
 
+    - import_tasks: task_find_subnets.yml
+      vars:
+        play_vpc: "{{ aws_vpn_vpc }}"
+
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_facts:
         region: "{{ aws_region }}"
@@ -19,6 +23,7 @@
         instance_type: m5.large
         region: "{{ aws_region }}"
         vpc_subnet_id: "{{ item.id }}"
+        assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:
@@ -26,7 +31,7 @@
           Status: preproduction
         count: 1
       when: groups.tag_Class_relay | default([]) | intersect(groups[item.availability_zone] | default([])) | length == 0
-      loop: "{{ ec2_subnets.subnets }}"
+      loop: "{{ ec2_subnets_sorted }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml
@@ -45,7 +50,7 @@
         idle_timeout: 3600
         cross_az_load_balancing: true
         security_group_names: relay-elb
-        subnets: "{{ ec2_subnets.subnets | map(attribute='id') | list }}"
+        subnets: "{{ ec2_subnets | map(attribute='id') | list }}"
         listeners:
           - protocol: tcp
             load_balancer_port: 25

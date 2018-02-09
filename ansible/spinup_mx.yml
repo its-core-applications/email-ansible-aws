@@ -16,6 +16,7 @@
         instance_type: m5.xlarge
         region: "{{ aws_region }}"
         vpc_subnet_id: "{{ item.id }}"
+        assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:
@@ -23,7 +24,7 @@
           Status: production
           redis: 'yes'
         count: 1
-      loop: "{{ ec2_subnets.subnets }}"
+      loop: "{{ ec2_subnets_sorted }}"
       loop_control:
         label: "{{ item.availability_zone }} / {{ item.cidr_block }}"
       ignore_errors: true

@@ -7,24 +7,23 @@
       vars:
         launch_class: rbl
 
+    - import_tasks: task_find_subnets.yml
+
     - name: Create rbl servers
       ec2:
         group: [ main-default, rbl ]
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
         region: "{{ aws_region }}"
+        vpc_subnet_id: "{{ ec2_subnets[item % (ec2_subnets | length)].id }}"
+        assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:
           Class: rbl
           Status: production
-        exact_count: 2
-        count_tag:
-          Class: rbl
-          Status: production
         wait: true
-      # this is just to force a consistent result structure
-      loop: [ dummy ]
+      loop: "{{ range(2 - (groups.tag_Class_rbl | length)) | list }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml

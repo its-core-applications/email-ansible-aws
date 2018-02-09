@@ -6,12 +6,7 @@
   tasks:
     - import_tasks: task_find_ami.yml
 
-    - name: Gather VPC subnet facts
-      ec2_vpc_subnet_facts:
-        region: "{{ aws_region }}"
-        filters:
-          vpc-id: "{{ aws_vpc }}"
-      register: ec2_subnets
+    - import_tasks: task_find_subnets.yml
 
     - name: Create master
       ec2:
@@ -19,7 +14,8 @@
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
         region: "{{ aws_region }}"
-        vpc_subnet_id: "{{ (ec2_subnets.subnets | sort(attribute='availability_zone'))[0]['id'] }}"
+        vpc_subnet_id: "{{ (ec2_subnets_sorted.0.id }}"
+        assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: master
         instance_tags:
