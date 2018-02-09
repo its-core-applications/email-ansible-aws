@@ -6,8 +6,6 @@
     - import_tasks: task_find_ami.yml
 
     - import_tasks: task_find_subnets.yml
-      vars:
-        play_vpc: "{{ aws_vpn_vpc }}"
 
     - name: Create syslog
       ec2:
@@ -15,7 +13,7 @@
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.xlarge
         region: "{{ aws_region }}"
-        vpc_subnet_id: "{{ ec2_subnets_sorted.0.id }}"
+        vpc_subnet_id: "{{ ec2_subnets_vpn_sorted.0.id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: standard

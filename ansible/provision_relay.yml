@@ -6,15 +6,6 @@
     - import_tasks: task_find_ami.yml
 
     - import_tasks: task_find_subnets.yml
-      vars:
-        play_vpc: "{{ aws_vpn_vpc }}"
-
-    - name: Gather VPC subnet facts
-      ec2_vpc_subnet_facts:
-        region: "{{ aws_region }}"
-        filters:
-          vpc-id: "{{ aws_vpn_vpc }}"
-      register: ec2_subnets
 
     - name: Create relay hosts
       ec2:
@@ -31,7 +22,7 @@
           Status: preproduction
         count: 1
       when: groups.tag_Class_relay | default([]) | intersect(groups[item.availability_zone] | default([])) | length == 0
-      loop: "{{ ec2_subnets_sorted }}"
+      loop: "{{ ec2_subnets_vpn_sorted }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml

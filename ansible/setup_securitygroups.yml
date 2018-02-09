@@ -3,10 +3,12 @@
 - hosts: localhost
   become: false
   tasks:
+    - import_tasks: task_find_subnets.yml
+
     - name: Create default security group
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
+        vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: main-default
         description: default VPC security group
         rules:
@@ -29,7 +31,7 @@
     - name: Create VPN default security group
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpn_vpc }}"
+        vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
         name: vpn-default
         description: default VPC security group
         rules:
@@ -49,7 +51,7 @@
     - name: Create security group for mx ELB
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
+        vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: mx-elb
         description: mx ELB
         rules:
@@ -66,7 +68,7 @@
     - name: Create security group for mx
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
+        vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: mx
         description: mx hosts
         rules:
@@ -77,20 +79,18 @@
     - name: Create security group for egress
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
+        vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: egress
         description: egress hosts
         rules:
           - proto: tcp
             ports: 25
-            cidr_ip:
-              - "{{ aws_vpn_subnet }}"
-              - "{{ aws_subnet }}"
+            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | list }}"
 
     - name: Create security group for relay ELB
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpn_vpc }}"
+        vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
         name: relay-elb
         description: relay ELB
         rules:
@@ -107,7 +107,7 @@
     - name: Create security group for relay
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpn_vpc }}"
+        vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
         name: relay
         description: relay hosts
         rules:
@@ -118,7 +118,7 @@
     - name: Create security group for smtp ELB
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
+        vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: smtp-elb
         description: auth SMTP ELB
         rules:
@@ -138,7 +138,7 @@
     - name: Create security group for smtp
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
+        vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: smtp
         description: auth SMTP hosts
         rules:
@@ -152,7 +152,7 @@
     - name: Create security group for rsyslog
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpn_vpc }}"
+        vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
         name: rsyslog
         description: rsyslog hosts
         rules:
@@ -164,27 +164,23 @@
               - 4567 # sensu API
               - 5672 # RabbitMQ for sensu pub/sub
               - 8888 # graphite-api
-            cidr_ip:
-              - "{{ aws_vpn_subnet }}"
-              - "{{ aws_subnet }}"
+            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | list }}"
 
     - name: Create security group for RBL
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
+        vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: rbl
         description: rbl hosts
         rules:
           - proto: udp
             ports: 53
-            cidr_ip:
-              - "{{ aws_vpn_subnet }}"
-              - "{{ aws_subnet }}"
+            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | list }}"
 
     - name: Create security group for redis
       ec2_group:
         region: "{{ aws_region }}"
-        vpc_id: "{{ aws_vpc }}"
+        vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: redis
         description: redis hosts
         rules:
@@ -192,7 +188,4 @@
             ports:
               - 6379
               - 16379
-            cidr_ip:
-              - "{{ aws_vpn_subnet }}"
-              - "{{ aws_subnet }}"
-
+            cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | list }}"
