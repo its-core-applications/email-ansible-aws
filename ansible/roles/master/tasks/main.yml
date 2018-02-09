@@ -13,11 +13,10 @@
 - name: Install extra pip packages
   pip:
     name:
+      - Jinja2
       - ftptool
       - hvac
     state: latest
-
-- import_tasks: task_find_subnets.yml
 
 - name: Create filesystem for /home
   filesystem:
