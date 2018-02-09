@@ -45,8 +45,9 @@ dependencies:
   - role: build_rpm_spec
     tags:
       - jemalloc
-      - simta
       - redis
+      - rspamd
+      - simta
     build_data:
       name: jemalloc
       deps:
@@ -173,6 +174,7 @@ dependencies:
       name: hyperscan
       deps:
         - libpcap-devel
+        - pcre-devel
         - ragel-6.10
         - sqlite-devel
 
@@ -192,6 +194,7 @@ dependencies:
         - file-devel
         - glib2-devel
         - hyperscan-devel
+        - jemalloc-devel
         - libevent-devel
         - libicu-devel
         - luajit-devel
