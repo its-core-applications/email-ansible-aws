@@ -12,6 +12,8 @@ else
     os=amzn2
 fi
 
+echo "Building $class image for $os"
+
 case $os in
     centos7)
         owner='679593333241'
