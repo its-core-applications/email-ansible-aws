@@ -87,6 +87,13 @@
     reload: true
     ignoreerrors: true
 
+- name: Set vm.overcommit_memory
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    reload: true
+    ignoreerrors: true
+
 - name: Raise corefile limits
   copy:
     dest: /etc/security/limits.d/core.conf
