@@ -1,16 +1,16 @@
 #!/bin/dash
 
 if check_dfile; then
-    # We have to throw away the first line, squash \\ down to \, and
-    # remove control characters to get valid JSON from rspamc.
-    spamout=$(rspamc --json --ip="$SIMTA_REMOTE_IP" --from="<$SIMTA_SMTP_MAIL_FROM>" --helo="$SIMTA_SMTP_HELO" --hostname="$SIMTA_REMOTE_HOSTNAME" $SIMTA_DFILE | sed '1d; s/\\\\/\\/g; s/[\x01-\x1F\x7F]//g' 2>/dev/null)
+    # We have to throw away the first line and remove vertical tabs to get
+    # valid JSON from rspamc.
+    spamout=$(rspamc --json --ip="$SIMTA_REMOTE_IP" --from="<$SIMTA_SMTP_MAIL_FROM>" --helo="$SIMTA_SMTP_HELO" --hostname="$SIMTA_REMOTE_HOSTNAME" $SIMTA_DFILE | sed '1d; s/\x0b//g' 2>/dev/null)
 
     # Use jq to format the JSON into the bits we want
-    spamres=$(echo $spamout | jq -r '@text "\(.action) score=\(.score)"')
+    spamres=$(printf '%s' $spamout | jq -r '@text "\(.action) score=\(.score)"')
     if [ $? -ne 0 ]; then
         log "80_rspamd: bad return: $(echo $spamout | tr -d '\n')"
     fi
-    spamsymbols=$(echo $spamout | jq -j '.symbols[] | del(.description) | flatten | @text')
+    spamsymbols=$(printf '%s' $spamout | jq -j '.symbols[] | del(.description) | flatten | @text')
     spamaction=${spamres% score=*}
 
     log "80_rspamd: $spamres symbols={$spamsymbols}"
