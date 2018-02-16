@@ -1,5 +1,5 @@
 Name:           jemalloc
-Version:        4.5.0
+Version:        5.0.1
 
 Release:        1%{?dist}
 Summary:        General-purpose scalable concurrent malloc implementation
@@ -28,7 +28,7 @@ developing applications that use %{name}.
 %setup -q
 
 %build
-%configure --enable-xmalloc
+%configure --enable-xmalloc --enable-prof
 make %{?_smp_mflags}
 
 %check
