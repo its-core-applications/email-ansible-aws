@@ -1,0 +1,99 @@
+From be56bbc5df534a8e5a494dfe2449c7c26fdfdac9 Mon Sep 17 00:00:00 2001
+From: EC2 Default User <ec2-user@yellow-gofannon.dev.a.mail.umich.edu>
+Date: Wed, 14 Feb 2018 16:05:09 -0500
+Subject: [PATCH 3/3] hack out UCL_STRING_ESCAPE
+
+---
+ contrib/libucl/ucl_util.c | 76 ++++-------------------------------------------
+ 1 file changed, 6 insertions(+), 70 deletions(-)
+
+diff --git a/contrib/libucl/ucl_util.c b/contrib/libucl/ucl_util.c
+index ee884709b..bf317e0ba 100644
+--- a/contrib/libucl/ucl_util.c
++++ b/contrib/libucl/ucl_util.c
+@@ -2021,76 +2021,12 @@ ucl_object_fromstring_common (const char *str, size_t len, enum ucl_string_flags
+ 		}
+ 
+ 		obj->type = UCL_STRING;
+-		if (flags & UCL_STRING_ESCAPE) {
+-			for (p = start, escaped_len = 0; p < end; p ++, escaped_len ++) {
+-				if (ucl_test_character (*p, UCL_CHARACTER_JSON_UNSAFE)) {
+-					if ( *p == '\v' ) {
+-						escaped_len += 4;
+-					}
+-					escaped_len ++;
+-				}
+-			}
+-			dst = malloc (escaped_len + 1);
+-			if (dst != NULL) {
+-				for (p = start, d = dst; p < end; p ++, d ++) {
+-					if (ucl_test_character (*p, UCL_CHARACTER_JSON_UNSAFE)) {
+-						switch (*p) {
+-						case '\n':
+-							*d++ = '\\';
+-							*d = 'n';
+-							break;
+-						case '\r':
+-							*d++ = '\\';
+-							*d = 'r';
+-							break;
+-						case '\b':
+-							*d++ = '\\';
+-							*d = 'b';
+-							break;
+-						case '\t':
+-							*d++ = '\\';
+-							*d = 't';
+-							break;
+-						case '\f':
+-							*d++ = '\\';
+-							*d = 'f';
+-							break;
+-						case '\v':
+-							*d++ = '\\';
+-							*d++ = 'u';
+-							*d++ = '0';
+-							*d++ = '0';
+-							*d++ = '0';
+-							*d   = 'B';
+-							break;
+-						case '\\':
+-							*d++ = '\\';
+-							*d = '\\';
+-							break;
+-						case '"':
+-							*d++ = '\\';
+-							*d = '"';
+-							break;
+-						}
+-					}
+-					else {
+-						*d = *p;
+-					}
+-				}
+-				*d = '\0';
+-				obj->value.sv = dst;
+-				obj->trash_stack[UCL_TRASH_VALUE] = dst;
+-				obj->len = escaped_len;
+-			}
+-		}
+-		else {
+-			dst = malloc (end - start + 1);
+-			if (dst != NULL) {
+-				ucl_strlcpy_unsafe (dst, start, end - start + 1);
+-				obj->value.sv = dst;
+-				obj->trash_stack[UCL_TRASH_VALUE] = dst;
+-				obj->len = end - start;
+-			}
++		dst = malloc (end - start + 1);
++		if (dst != NULL) {
++			ucl_strlcpy_unsafe (dst, start, end - start + 1);
++			obj->value.sv = dst;
++			obj->trash_stack[UCL_TRASH_VALUE] = dst;
++			obj->len = end - start;
+ 		}
+ 		if ((flags & UCL_STRING_PARSE) && dst != NULL) {
+ 			/* Parse what we have */
+-- 
+2.14.3
+

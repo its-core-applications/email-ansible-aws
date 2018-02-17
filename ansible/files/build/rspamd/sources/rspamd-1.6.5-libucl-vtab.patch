@@ -1,0 +1,79 @@
+From c94141de3c2fd108505d3141439cbb941a7443c7 Mon Sep 17 00:00:00 2001
+From: Paul Arthur <paul.arthur@flowerysong.com>
+Date: Fri, 9 Feb 2018 18:28:08 +0000
+Subject: [PATCH 2/3] libucl: Improve compatibility with JSON spec
+
+Mark '\v' unsafe for JSON
+
+ECMA-404:
+"All code points may be placed within the quotation marks except for
+the code points that must be escaped: quotation mark (U+0022), reverse
+solidus (U+005C), and the control characters U+0000 to U+001F."
+
+The vertical tab has a short escape in C ('\v') but not JSON, so we emit
+the long escape.
+---
+ contrib/libucl/ucl_chartable.h     |  2 +-
+ contrib/libucl/ucl_emitter_utils.c |  3 +++
+ contrib/libucl/ucl_util.c          | 11 +++++++++++
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/contrib/libucl/ucl_chartable.h b/contrib/libucl/ucl_chartable.h
+index db9f02900..fba276666 100644
+--- a/contrib/libucl/ucl_chartable.h
++++ b/contrib/libucl/ucl_chartable.h
+@@ -33,7 +33,7 @@ UCL_CHARACTER_DENIED, UCL_CHARACTER_DENIED,
+ UCL_CHARACTER_JSON_UNSAFE|UCL_CHARACTER_UCL_UNSAFE,
+ UCL_CHARACTER_WHITESPACE|UCL_CHARACTER_WHITESPACE_UNSAFE|UCL_CHARACTER_KEY_SEP|UCL_CHARACTER_JSON_UNSAFE|UCL_CHARACTER_UCL_UNSAFE,
+ UCL_CHARACTER_WHITESPACE_UNSAFE|UCL_CHARACTER_VALUE_END|UCL_CHARACTER_JSON_UNSAFE|UCL_CHARACTER_UCL_UNSAFE,
+-UCL_CHARACTER_WHITESPACE_UNSAFE,
++UCL_CHARACTER_WHITESPACE_UNSAFE|UCL_CHARACTER_JSON_UNSAFE|UCL_CHARACTER_UCL_UNSAFE,
+ UCL_CHARACTER_WHITESPACE_UNSAFE|UCL_CHARACTER_JSON_UNSAFE|UCL_CHARACTER_UCL_UNSAFE,
+ UCL_CHARACTER_WHITESPACE_UNSAFE|UCL_CHARACTER_VALUE_END|UCL_CHARACTER_JSON_UNSAFE|UCL_CHARACTER_UCL_UNSAFE,
+ UCL_CHARACTER_DENIED, UCL_CHARACTER_DENIED, UCL_CHARACTER_DENIED,
+diff --git a/contrib/libucl/ucl_emitter_utils.c b/contrib/libucl/ucl_emitter_utils.c
+index a2a69e443..43ea20965 100644
+--- a/contrib/libucl/ucl_emitter_utils.c
++++ b/contrib/libucl/ucl_emitter_utils.c
+@@ -122,6 +122,9 @@ ucl_elt_string_write_json (const char *str, size_t size,
+ 			case '\f':
+ 				func->ucl_emitter_append_len ("\\f", 2, func->ud);
+ 				break;
++			case '\v':
++				func->ucl_emitter_append_len ("\\u000B", 6, func->ud);
++				break;
+ 			case '\\':
+ 				func->ucl_emitter_append_len ("\\\\", 2, func->ud);
+ 				break;
+diff --git a/contrib/libucl/ucl_util.c b/contrib/libucl/ucl_util.c
+index f0ce5b5e3..ee884709b 100644
+--- a/contrib/libucl/ucl_util.c
++++ b/contrib/libucl/ucl_util.c
+@@ -2024,6 +2024,9 @@ ucl_object_fromstring_common (const char *str, size_t len, enum ucl_string_flags
+ 		if (flags & UCL_STRING_ESCAPE) {
+ 			for (p = start, escaped_len = 0; p < end; p ++, escaped_len ++) {
+ 				if (ucl_test_character (*p, UCL_CHARACTER_JSON_UNSAFE)) {
++					if ( *p == '\v' ) {
++						escaped_len += 4;
++					}
+ 					escaped_len ++;
+ 				}
+ 			}
+@@ -2052,6 +2055,14 @@ ucl_object_fromstring_common (const char *str, size_t len, enum ucl_string_flags
+ 							*d++ = '\\';
+ 							*d = 'f';
+ 							break;
++						case '\v':
++							*d++ = '\\';
++							*d++ = 'u';
++							*d++ = '0';
++							*d++ = '0';
++							*d++ = '0';
++							*d   = 'B';
++							break;
+ 						case '\\':
+ 							*d++ = '\\';
+ 							*d = '\\';
+-- 
+2.14.3
+

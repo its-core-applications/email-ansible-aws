@@ -7,7 +7,7 @@
 %define rspamd_wwwdir   %{_datadir}/rspamd/www
 
 Name:           rspamd
-Version:        1.6.5
+Version:        1.6.6
 Release:        1
 Summary:        Rapid spam filtering system
 License:        BSD2c
@@ -29,6 +29,11 @@ BuildRequires:  sqlite-devel
 Requires(pre):  shadow-utils
 BuildRequires:  luajit-devel
 Source0:        https://github.com/vstakhov/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+# Not upstreamed to rspamd and libucl yet, but the first two are pretty solid
+# and the third seems conceptually right.
+Patch0:         rspamd-1.6.5-libucl-escapelen.patch
+Patch1:         rspamd-1.6.5-libucl-vtab.patch
+Patch2:         rspamd-1.6.5-libucl-doubleescape.patch
 
 %description
 Rspamd is a rapid, modular and lightweight spam filter. It is designed to work
@@ -36,7 +41,7 @@ with large volumes of mail and can be easily extended with filters written in
 lua.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p 1 -n %{name}-%{version}
 
 %build
 cmake \
