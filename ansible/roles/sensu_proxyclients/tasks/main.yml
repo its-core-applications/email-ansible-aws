@@ -2,57 +2,14 @@
 
 - meta: flush_handlers
 
-- name: Register sensu proxy client for the AWS region
+- name: Register sensu proxy clients
   uri:
     url: http://syslog.{{ subd }}:4567/clients
     method: POST
     body_format: json
-    body:
-      name: "{{ aws_region }}.aws.amazon.com"
-      address: ""
-      subscriptions:
-        - Status_production
+    body: "{{ {'address': ''} | combine(item) }}"
     status_code: 201
-
-- name: Register sensu proxy client for MX loadbalancer(s)
-  uri:
-    url: http://syslog.{{ subd }}:4567/clients
-    method: POST
-    body_format: json
-    body:
-      name: "{{ item }}.{{ subd }}"
-      elb_name: "{{ item }}"
-      address: ""
-      subscriptions:
-        - Class_elb
-        - Status_production
-        - tls
-    status_code: 201
-  loop: "{{ mx_names }}"
-
-- name: Register sensu proxy client for egress
-  uri:
-    url: http://syslog.{{ subd }}:4567/clients
-    method: POST
-    body_format: json
-    body:
-      name: "egress.{{ subd }}"
-      address: ""
-      subscriptions:
-        - Status_production
-        - tls
-    status_code: 201
-
-- name: Register sensu proxy client for redis cluster
-  uri:
-    url: http://syslog.{{ subd }}:4567/clients
-    method: POST
-    body_format: json
-    body:
-      name: "pink.{{ subd }}"
-      address: ""
-      subscriptions:
-        - Class_redis_cluster
-        - Status_production
-    status_code: 201
+  loop: "{{ sensu_proxy_clients }}"
+  loop_control:
+    label: "{{ item.name }}"
 

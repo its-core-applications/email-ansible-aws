@@ -1,0 +1,23 @@
+---
+
+sensu_proxy_clients:
+  - name: "{{ aws_region }}.aws.amazon.com"
+    subscriptions:
+      - Status_production
+  - name: "mx1.{{ subd }}"
+    elb_name: mx1
+    subscriptions:
+      - Class_elb
+      - Status_production
+      - tls
+  - name: "egress.{{ subd }}"
+    subscriptions:
+      - Status_production
+  - name: "pink.{{ subd }}"
+    subscriptions:
+      - Class_redis_cluster
+      - Status_production
+  - name: box.com
+    subscriptions:
+      - Status_production
+
