@@ -1,12 +1,15 @@
 ---
 
-- name: Configure PackageCloud repository
+- name: Configure PackageCloud repositories
   copy:
-    dest: /etc/yum.repos.d/rabbitmq_rabbitmq-server.repo
-    src: rabbitmq_rabbitmq-server.repo
+    dest: "/etc/yum.repos.d/{{ item }}"
+    src: "{{ item }}"
     owner: root
     group: root
     mode: 0644
+  loop:
+    - rabbitmq_rabbitmq-server.repo
+    - rabbitmq_erlang.repo
 
 - name: Install RabbitMQ
   yum:
