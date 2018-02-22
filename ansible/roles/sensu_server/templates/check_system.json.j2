@@ -16,7 +16,8 @@
         "Status_production",
         "Status_development"
       ],
-      "interval": 60
+      "interval": 60,
+      "occurrences": 2
     },
     "disk-metrics": {
       "type": "metric",
@@ -30,11 +31,11 @@
     },
     "load": {
       "command": "check-load.rb -w 30,25,20 -c 35,30,25",
-      "occurrences": 30,
       "subscribers": [
         "Status_production"
       ],
-      "interval": 60
+      "interval": 60,
+      "occurrences": 30
     },
     "load-metrics": {
       "type": "metric",
@@ -51,7 +52,8 @@
       "subscribers": [
         "Status_production"
       ],
-      "interval": 60
+      "interval": 60,
+      "occurrences": 2
     },
     "memory-metrics": {
       "type": "metric",
