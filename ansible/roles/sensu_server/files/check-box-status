@@ -4,13 +4,19 @@ import sys
 import feedparser
 from html2text import html2text
 
+resolve_strings = [
+    '<strong>Resolved</strong>',
+    '<strong>Complete</strong>',
+    'Box has resolved',
+]
+
 retval = 0
 status = feedparser.parse('https://status.box.com/history.atom')
 
 for entry in status.entries:
     # There's no structured indicator of status, so we hope that they stick the
     # correct string in there.
-    if '<strong>Resolved</strong>' in entry.summary or '<strong>Complete</strong>' in entry.summary or 'Box has resolved' in entry.summary:
+    if any(x in entry.summary for x in resolve_strings):
         continue
 
     print html2text(entry.summary).strip()
