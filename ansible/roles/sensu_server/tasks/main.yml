@@ -34,7 +34,15 @@
     group: root
     mode: 0755
   loop:
+    - check-box-status
     - handler-sns
+
+- name: Install extra dependencies
+  yum:
+    pkg:
+      - python-feedparser
+      - python2-html2text
+    state: latest
 
 - name: Create the RabbitMQ vhost for sensu
   rabbitmq_vhost:
@@ -65,6 +73,7 @@
     - check_aws.json
     - check_cert.json
     - check_clamav.json
+    - check_cloud_services.json
     - check_dnsbl.json
     - check_elb.json
     - check_rbldnsd.json
