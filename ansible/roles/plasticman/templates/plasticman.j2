@@ -12,8 +12,7 @@ else
 fi
 
 # FIXME: This should probably go in a config file or a command line flag
-scale_count=6
-min_count=3
+min_count=6
 max_count=24
 
 sendmetric() {
@@ -61,8 +60,8 @@ getcount() {
 getcount
 sendmetric hostcount $count
 
-rup=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.up.*&from=-12minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
-rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.*.*&from=-60minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
+rup=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.up.*&from=-6minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
+rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.*.*&from=-30minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
 
 if [[ ${rup[0]} -eq 0 && ${rscale[0]} -eq 0 ]]; then
     outlog "no event data"
@@ -84,10 +83,10 @@ fi
 # load average was over 1
 hour=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-65minutes&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 1 { x++ } END{ print NR, x }'))
 
-# Check for datapoints in the last twelve minutes where it was over 4
-quint=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-12minutes&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 4 { x++ } END{ print NR, x }'))
+# Check for datapoints in the last six minutes where it was over 4
+quint=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-6minutes&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 4 { x++ } END{ print NR, x }'))
 
-if [[ $count -ge $(( min_count + scale_count )) && ${hour[1]} -eq 0 && $rscale -eq 0 ]]; then
+if [[ $count -gt $min_count && ${hour[1]} -eq 0 && $rscale -eq 0 ]]; then
     if [[ ${hour[0]} -lt 30 ]]; then
         outlog "too few datapoints to scale down"
     else

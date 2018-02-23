@@ -11,9 +11,23 @@
         tags:
           Status: spindown
       when:
-        - ec2_launch_time == groups.tag_Class_mx | intersect(groups[ec2_placement]) | map('extract', hostvars, 'ec2_launch_time') | sort | first
-        - groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | intersect(groups[ec2_placement]) | length == 0
-        - groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | intersect(groups[ec2_placement]) | length > 2
+        - (production_count | int) > (target_min | int)
+        - (production_count_az | int) > 1
+        - (spindown_count | int) < (target_spindown | int)
+        - (spindown_count_az | int) < (target_spindown_az | int)
+        - ec2_launch_time in ((groups.tag_Class_mx | intersect(groups[ec2_placement]) | map('extract', hostvars, 'ec2_launch_time') | sort)[:(target_spindown_az | int)])
+      vars:
+        target_min: 6
+        target_spindown: 3
+        # This is a tangled web, but it makes the conditionals more readable
+        # (modulo the lack of native type propagation in templated vars). We
+        # use '|int' on target* as well, in case they were passed on the CLI
+        # as k=v extra-vars to override the default.
+        target_spindown_az: "{{ ((target_spindown | int) / (groups.tag_Class_mx | map('extract', hostvars, 'ec2_placement') | unique | length)) | round(0, 'ceil') }}"
+        spindown_count: "{{ groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | length }}"
+        spindown_count_az: "{{ groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | intersect(groups[ec2_placement]) | length }}"
+        production_count: "{{ groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | length }}"
+        production_count_az: "{{ groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | intersect(groups[ec2_placement]) | length }}"
       register: result
 
     - meta: refresh_inventory
