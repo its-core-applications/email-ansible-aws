@@ -61,7 +61,7 @@ getcount
 sendmetric hostcount $count
 
 rup=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.up.*&from=-6minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
-rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.*.*&from=-30minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
+rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.*.*&from=-60minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
 
 if [[ ${rup[0]} -eq 0 && ${rscale[0]} -eq 0 ]]; then
     outlog "no event data"
