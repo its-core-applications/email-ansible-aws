@@ -53,7 +53,7 @@
         instance: "{{ groups.tag_Class_master | default({}) | map('extract', hostvars, 'ec2_id') | join }}"
         device_name: xvdd
         volume_type: gp2
-        volume_size: 20
+        volume_size: 40
         encrypted: true
         delete_on_termination: false
 
