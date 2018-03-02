@@ -11,7 +11,7 @@ class FilterModule(object):
     def filters(self):
         return { 'cidr_merge': cidr_merge }
 
-def cidr_merge(value, action='merge'):
+def cidr_merge(value, action='merge', slop=None):
     if not hasattr(value, '__iter__'):
         raise errors.AnsibleFilterError('cidr_merge: expected iterable, got ' + repr(value))
 
@@ -25,6 +25,26 @@ def cidr_merge(value, action='merge'):
             return str(netaddr.IPNetwork(value[0]))
         else:
             return str(netaddr.spanning_cidr(value))
+
+    elif action == 'subnetspan':
+        if len(value) == 0:
+            return []
+        try:
+            ips = sorted([netaddr.IPNetwork(v) for v in value])
+            ret = []
+            low = ips[0]
+            for ip in ips:
+                if ip.version != low.version:
+                    # We've moved from IPv4 to IPv6, add the range and restart
+                    ret.extend(netaddr.iprange_to_cidrs(low, high))
+                    low = ip
+                if slop and ip.prefixlen > slop:
+                    ip.prefixlen = slop
+                high = ip.broadcast
+            ret.extend(netaddr.iprange_to_cidrs(low, high))
+            return [str(ip) for ip in ret]
+        except Exception as e:
+            raise errors.AnsibleFilterError('cidr_merge: error in netaddr:\n%s' % e)
 
     else:
         raise errors.AnsibleFilterError("cidr_merge: invalid action '%s'" % action)
