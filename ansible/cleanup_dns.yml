@@ -9,28 +9,9 @@
         query: hosted_zone
       register: r53_zones
 
-    - name: Fetch resource records
-      route53_facts:
-        query: record_sets
-        # This is a lot of faffing about that would be unnecessary if the
-        # facts module were smarter.
-        hosted_zone_id: "{{ r53_zones | json_query(tld_query) | replace('/hostedzone/', '') }}"
+    - include_tasks: task_cleanup_dns.yml
       vars:
-        tld_query: "HostedZones[?Name=='{{ subd }}.'].Id | [0]"
-      register: r53_rrs
-
-    - route53:
-        command: delete
-        zone: "{{ subd }}"
-        record: "{{ item.Name }}"
-        type: CNAME
-        ttl: "{{ item.TTL }}"
-        value: "{{ item.ResourceRecords.0.Value }}"
-      loop: "{{ r53_rrs.ResourceRecordSets }}"
+        subd_zone: "{{ r53_zones.HostedZones | selectattr('Name', 'equalto', subd ~ '.') | first }}"
+      loop: "{{ range(0, ((subd_zone.ResourceRecordSetCount / 25) | int)) | list }}"
       loop_control:
-        label: "{{ item.Name ~ ' ' ~ item.Type }}"
-      when:
-        - item.Type == 'CNAME'
-        - item.ResourceRecords.0.Value is match('.+\.compute\.amazonaws\.com')
-        - item.Name[:-1] not in hostvars
-
+        loop_var: include_iteration
