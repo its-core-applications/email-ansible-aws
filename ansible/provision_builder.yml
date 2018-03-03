@@ -10,7 +10,7 @@
     - name: Create builder
       ec2:
         group: [ main-default ]
-        key_name: "2015-10-16"
+        key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
         region: "{{ aws_region }}"
         vpc_subnet_id: "{{ ec2_subnets_sorted.0.id }}"
