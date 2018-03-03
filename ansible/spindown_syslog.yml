@@ -1,13 +1,13 @@
 ---
 
-- hosts: tag_Class_syslog
+- hosts: Class_syslog
   gather_facts: false
   tasks:
     - name: Set status to spundown
       delegate_to: localhost
       ec2_tag:
         region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
+        resource: "{{ instance_id }}"
         tags:
           Status: spundown
 

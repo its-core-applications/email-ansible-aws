@@ -51,7 +51,7 @@
       ec2_vol:
         name: master_home
         region: "{{ aws_region }}"
-        instance: "{{ groups.tag_Class_master | default({}) | map('extract', hostvars, 'ec2_id') | join }}"
+        instance: "{{ groups.Class_master | default({}) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvdd
         volume_type: gp2
         volume_size: 40

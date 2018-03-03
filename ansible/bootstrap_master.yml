@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_master
+- hosts: Class_master
   vars:
     bootstrap: true
   roles:

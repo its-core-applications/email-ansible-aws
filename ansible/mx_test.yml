@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_mx_test
+- hosts: Class_mx_test
   roles:
     - { role: base, tags: base }
     - { role: rsyslog_forward, tags: rsyslog_forward }

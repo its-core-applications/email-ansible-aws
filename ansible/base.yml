@@ -1,6 +1,6 @@
 ---
 
-- hosts: all:!tag_Status_spindown:!tag_Status_spundown
+- hosts: all:!Status_spindown:!Status_spundown
   roles:
     - role: base
       tags: base

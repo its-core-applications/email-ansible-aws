@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_master
+- hosts: Class_master
   gather_facts: false
   tasks:
     - name: Set status to spundown
@@ -8,7 +8,7 @@
       become: false
       ec2_tag:
         region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
+        resource: "{{ instance_id }}"
         tags:
           Status: spundown
 

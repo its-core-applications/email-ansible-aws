@@ -1,13 +1,13 @@
 ---
 
-- hosts: tag_Class_mx:&tag_Status_production
+- hosts: Class_mx:&Status_production
   serial: 1
   gather_facts: false
   tasks:
     - name: Set status on oldest hosts to spindown
       ec2_tag:
         region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
+        resource: "{{ instance_id }}"
         tags:
           Status: spindown
       when:
@@ -15,7 +15,7 @@
         - (production_count_az | int) > 1
         - (spindown_count | int) < (target_spindown | int)
         - (spindown_count_az | int) < (target_spindown_az | int)
-        - ec2_launch_time in ((groups.tag_Class_mx | intersect(groups[ec2_placement]) | map('extract', hostvars, 'ec2_launch_time') | sort)[:(target_spindown_az | int)])
+        - launch_time in ((groups.Class_mx | intersect(groups['az_' ~ placement.availability_zone | replace('-', '_')]) | map('extract', hostvars, 'launch_time') | sort)[:(target_spindown_az | int)])
       vars:
         target_min: 6
         target_spindown: 3
@@ -23,24 +23,24 @@
         # (modulo the lack of native type propagation in templated vars). We
         # use '|int' on target* as well, in case they were passed on the CLI
         # as k=v extra-vars to override the default.
-        target_spindown_az: "{{ ((target_spindown | int) / (groups.tag_Class_mx | map('extract', hostvars, 'ec2_placement') | unique | length)) | round(0, 'ceil') }}"
-        spindown_count: "{{ groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | length }}"
-        spindown_count_az: "{{ groups.tag_Class_mx | intersect(groups.tag_Status_spindown | default([])) | intersect(groups[ec2_placement]) | length }}"
-        production_count: "{{ groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | length }}"
-        production_count_az: "{{ groups.tag_Class_mx | intersect(groups.tag_Status_production | default([])) | intersect(groups[ec2_placement]) | length }}"
+        target_spindown_az: "{{ ((target_spindown | int) / (groups.Class_mx | map('extract', hostvars, 'placement.availability_zone') | unique | length)) | round(0, 'ceil') }}"
+        spindown_count: "{{ groups.Class_mx | intersect(groups.Status_spindown | default([])) | length }}"
+        spindown_count_az: "{{ groups.Class_mx | intersect(groups.Status_spindown | default([])) | intersect(groups['az_' ~ placement.availability_zone | replace('-', '_')]) | length }}"
+        production_count: "{{ groups.Class_mx | intersect(groups.Status_production | default([])) | length }}"
+        production_count_az: "{{ groups.Class_mx | intersect(groups.Status_production | default([])) | intersect(groups['az_' ~ placement.availability_zone | replace('-', '_')]) | length }}"
       register: result
 
     - meta: refresh_inventory
       when: result is changed
 
-- hosts: tag_Class_mx:&tag_Status_spindown
+- hosts: Class_mx:&Status_spindown
   tasks:
     - name: Remove from loadbalancer
       delegate_to: localhost
       become: false
       ec2_elb:
         region: "{{ aws_region }}"
-        instance_id: "{{ ec2_id }}"
+        instance_id: "{{ instance_id }}"
         state: absent
 
     - name: Stop sensu
@@ -55,12 +55,12 @@
         port: 25
         state: drained
 
-- hosts: tag_Class_mx:&tag_Status_spindown
+- hosts: Class_mx:&Status_spindown
   serial: 1
   tasks:
     - import_tasks: task_spindown_redis.yml
 
-- hosts: tag_Class_mx:&tag_Status_spindown
+- hosts: Class_mx:&Status_spindown
   tasks:
     - name: Give the queue a chance to quiesce
       pause: seconds=60
@@ -70,6 +70,6 @@
     - name: Set status to spundown
       ec2_tag:
         region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
+        resource: "{{ instance_id }}"
         tags:
           Status: spundown

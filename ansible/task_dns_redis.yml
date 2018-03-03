@@ -11,6 +11,6 @@
     record: "{{ simta_redis_host }}"
     type: "A"
     ttl: 60
-    value: "{{ groups.tag_redis_yes | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
-  when: groups.tag_redis_yes is defined
+    value: "{{ groups.redis | default({}) | map('extract', hostvars, 'private_ip_address') | join(', ') }}"
+  when: groups.redis is defined
 

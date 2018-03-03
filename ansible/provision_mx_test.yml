@@ -21,7 +21,7 @@
           Class: mx-test
           Status: development
         count: 1
-      when: groups.tag_Class_mx_test | default([]) | intersect(groups.tag_Status_development | default([])) | length == 0
+      when: groups.Class_mx_test | default([]) | intersect(groups.Status_development | default([])) | length == 0
       # this is just to force a consistent result structure
       loop: [ dummy ]
       register: ec2
@@ -41,6 +41,6 @@
         record: "mx-test.{{ subd }}"
         type: "A"
         ttl: 60
-        value: "{{ groups.tag_Class_mx_test | default({}) | map('extract', hostvars, 'ec2_ip_address') | join(', ') }}"
-      when: groups.tag_Class_mx_test is defined
+        value: "{{ groups.Class_mx_test | default([]) | map('extract', hostvars, 'public_ip_address') | join(', ') }}"
+      when: groups.Class_mx_test is defined
 

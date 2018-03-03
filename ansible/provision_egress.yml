@@ -24,7 +24,7 @@
           Status: spinup
           redis: 'yes'
         count: 1
-      when: groups.tag_Class_egress | default([]) | intersect(groups.tag_Status_production | default([]) | union(groups.tag_Status_spinup | default([]))) | intersect(groups[item.availability_zone] | default([])) | length == 0
+      when: groups.Class_egress | default([]) | intersect(groups.Status_production | default([]) | union(groups.Status_spinup | default([]))) | intersect(groups[item.availability_zone] | default([])) | length == 0
       loop: "{{ ec2_subnets_sorted }}"
       register: ec2
 
@@ -36,7 +36,7 @@
 
     - import_tasks: task_dns_redis.yml
 
-- hosts: tag_Class_egress:&tag_Status_spinup
+- hosts: Class_egress:&Status_spinup
   become: false
   tasks:
     - name: Assign elastic IP
@@ -44,8 +44,8 @@
       # This is ugly, fragile, and limits us to one egress host per az
       ec2_eip:
         region: "{{ aws_region }}"
-        device_id: "{{ ec2_id }}"
-        ip: "{{ egress_eip[ec2_placement] }}"
+        device_id: "{{ instance_id }}"
+        ip: "{{ egress_eip[placement.availability_zone | replace('-', '_')] }}"
       register: eip
 
     - name: Wait for elastic IP
@@ -58,7 +58,7 @@
     - name: Set status to production
       ec2_tag:
         region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
+        resource: "{{ instance_id }}"
         tags:
           Status: production
 

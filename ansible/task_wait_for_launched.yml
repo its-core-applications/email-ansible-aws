@@ -1,16 +1,40 @@
 ---
 
-- name: Wait for launched instances to be available 
-  shell: "for i in {1..60}; do {{ hostvars[groups.tag_Class_master.0].inventory_file }} | grep -q {{ item.id }} && break; sleep 5; done"
-  when: item is defined
-  loop: "{{ query('flattened', ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | list) }}"
+- name: Wait for launched instances to have hostnames
+  ec2_instance_facts:
+    region: "{{ aws_region }}"
+    instance_ids: "{{ ec2_instances }}"
+  vars:
+    ec2_instances: "{{ query('flattened', ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | list) | map(attribute='id') | list }}"
+  when: ec2_instances | length
+  register: result
+  until: (result.instances | map(attribute='tags.CustomDNSName') | select('defined') | list | length) == (ec2_instances | length)
+  retries: 20
+  delay: 15
 
-- name: Wait some more
-  pause:
-    seconds: 30
+- name: Mark laggard instances as spundown
+  ec2_tag:
+    region: "{{ aws_region }}"
+    resource: "{{ item.instance_id }}"
+    Status: spundown
+  loop: "{{ result.instances | default([]) | rejectattr('tags.CustomDNSName', 'defined') | list }}"
+  loop_control:
+    label: "{{ item.instance_id }}"
+
+- meta: refresh_inventory
 
 - name: Flush DNS cache
   command: unbound-control reload
   become: true
+  when: result is not skipped
 
-- meta: refresh_inventory
+- name: Wait for launched instances to be available
+  delegate_to: "{{ item.tags.CustomDNSName }}"
+  wait_for_connection:
+    delay: 2
+    sleep: 2
+    timeout: 300
+  loop: "{{ result.instances | default([]) | selectattr('tags.CustomDNSName', 'defined') | list }}"
+  loop_control:
+    label: "{{ item.instance_id }}"
+

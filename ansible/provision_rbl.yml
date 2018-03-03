@@ -22,8 +22,7 @@
         instance_tags:
           Class: rbl
           Status: production
-        wait: true
-      loop: "{{ range(2 - (groups.tag_Class_rbl | length)) | list }}"
+      loop: "{{ range(2 - (groups.Class_rbl | length)) | list }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml

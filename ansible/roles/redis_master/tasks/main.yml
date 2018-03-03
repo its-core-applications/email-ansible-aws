@@ -19,11 +19,11 @@
     - redis-remove
 
 - name: Run provision script
-  command: "/usr/local/sbin/redis-manage {{ groups.tag_redis_yes | map('extract', hostvars, 'ec2_private_ip_address') | join(' ') }}"
+  command: "/usr/local/sbin/redis-manage {{ groups.redis | map('extract', hostvars, 'private_ip_address') | join(' ') }}"
   register: result
   failed_when: "result.rc > 1"
   changed_when: "result.rc == 0"
-  when: groups.tag_redis_yes is defined
+  when: groups.redis is defined
 
 - name: Schedule provision script runs
   cron:

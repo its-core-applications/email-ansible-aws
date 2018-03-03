@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_builder
+- hosts: Class_builder
   vars:
     bootstrap: true
   roles:

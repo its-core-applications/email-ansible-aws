@@ -1,0 +1,11 @@
+plugin: aws_ec2
+boto_profile: default
+filters:
+  instance-state-name:
+    - running
+regions:
+  - us-west-2
+hostnames:
+  - 'tag:CustomDNSName'
+  - dns-name
+

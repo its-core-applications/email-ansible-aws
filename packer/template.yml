@@ -17,8 +17,8 @@ provisioners:
 #    extra_arguments: [ '--extra-vars', '{ bootstrap: yes }' ]
     host_alias: '{{ user `image_type` }}'
     groups:
-      - tag_Class_{{ user `image_type` }}
-      - tag_Status_development
+      - Class_{{ user `image_type` }}
+      - Status_development
 
   - type: shell
     script: packer/scripts/cleanup.sh

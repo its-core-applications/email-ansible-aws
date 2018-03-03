@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_relay
+- hosts: Class_relay
   roles:
     - { role: base, tags: base }
 #    - { role: rsyslog_forward, tags: rsyslog_forward }

@@ -1,23 +1,23 @@
 ---
 
-- hosts: tag_Class_rbl
+- hosts: Class_rbl
   gather_facts: false
   serial: 1
   tasks:
     - name: Set status on oldest host to spindown
       ec2_tag:
         region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
+        resource: "{{ instance_id }}"
         tags:
           Status: spindown
       when:
-        - ec2_launch_time == groups.tag_Class_rbl | map('extract', hostvars, 'ec2_launch_time') | sort | first
-        - groups.tag_Class_rbl | intersect(groups.tag_Status_spindown | default([])) | length == 0
+        - launch_time == groups.Class_rbl | map('extract', hostvars, 'launch_time') | sort | first
+        - groups.Class_rbl | intersect(groups.Status_spindown | default([])) | length == 0
 
     - meta: refresh_inventory
-      when: groups.tag_Class_rbl | intersect(groups.tag_Status_spindown | default([])) | length == 0
+      when: groups.Class_rbl | intersect(groups.Status_spindown | default([])) | length == 0
 
-- hosts: tag_Class_rbl:&tag_Status_spindown
+- hosts: Class_rbl:&Status_spindown
   tasks:
     - import_tasks: task_dns_rbl.yml
 
@@ -31,7 +31,7 @@
       delegate_to: localhost
       ec2_tag:
         region: "{{ aws_region }}"
-        resource: "{{ ec2_id }}"
+        resource: "{{ instance_id }}"
         tags:
           Status: spundown
 

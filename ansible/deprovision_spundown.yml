@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Status_spundown
+- hosts: Status_spundown
   gather_facts: false
   tasks:
     - name: Destroy host
@@ -8,5 +8,5 @@
       delegate_to: localhost
       ec2:
         region: "{{ aws_region }}"
-        instance_id: "{{ ec2_id }}"
+        instance_id: "{{ instance_id }}"
         state: absent

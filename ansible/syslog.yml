@@ -1,6 +1,6 @@
 ---
 
-- hosts: tag_Class_syslog
+- hosts: Class_syslog
   roles:
     - { role: base, tags: base }
     - { role: rsyslog_aggregator, tags: rsyslog_aggregator }

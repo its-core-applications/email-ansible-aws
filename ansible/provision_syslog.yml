@@ -23,7 +23,6 @@
         exact_count: 1
         count_tag:
           Class: syslog
-        wait: true
       # this is just to force a consistent result structure
       loop: [ dummy ]
       register: ec2
@@ -34,7 +33,7 @@
       ec2_vol:
         name: logs
         region: "{{ aws_region }}"
-        instance: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_id') | join }}"
+        instance: "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvdd
         volume_type: gp2
         volume_size: 300
@@ -45,7 +44,7 @@
       ec2_vol:
         name: splunk
         region: "{{ aws_region }}"
-        instance:  "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_id') | join }}"
+        instance:  "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvde
         volume_type: gp2
         volume_size: 5
@@ -56,7 +55,7 @@
       ec2_vol:
         name: carbon
         region: "{{ aws_region }}"
-        instance: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_id') | join }}"
+        instance: "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvdf
         volume_type: gp2
         volume_size: 10
@@ -76,9 +75,9 @@
         record: "syslog.{{ subd }}"
         type: "A"
         ttl: 60
-        value: "{{ groups.tag_Class_syslog | default({}) | map('extract', hostvars, 'ec2_private_ip_address') | join(', ') }}"
+        value: "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'private_ip_address') | join(', ') }}"
 
-- hosts: tag_Class_syslog
+- hosts: Class_syslog
   roles:
     - { role: sensu_proxyclients, tags: sensu }
 

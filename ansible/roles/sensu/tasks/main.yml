@@ -52,7 +52,7 @@
   yum:
     name: "{{ sensu_plugins | map('regex_replace', '^', 'sensugems-') | list }}"
     state: latest
-  when: inventory_hostname not in (groups.tag_Class_builder | default([]))
+  when: inventory_hostname not in (groups.Class_builder | default([]))
 
 - name: Enable sensu-client
   systemd:
