@@ -9,7 +9,8 @@ HostCertificate /etc/ssh/ssh_host_ed25519_key-cert.pub
 SyslogFacility AUTHPRIV
 
 PermitRootLogin no
-AuthorizedKeysFile      .ssh/authorized_keys
+AuthorizedKeysFile .ssh/authorized_keys
+TrustedUserCAKeys /etc/ssh/ssh_client_ca.pub
 PasswordAuthentication no
 ChallengeResponseAuthentication yes
 GSSAPIAuthentication yes

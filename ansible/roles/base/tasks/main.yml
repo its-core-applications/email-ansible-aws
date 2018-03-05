@@ -13,6 +13,22 @@
     mode: 0644
   notify: Restart sshd
 
+- name: Install SSH client CA
+  copy:
+    dest: /etc/ssh/ssh_client_ca.pub
+    src: ssh_client_ca.pub
+    owner: root
+    group: root
+    mode: 0444
+
+- name: Trust SSH server CA
+  copy:
+    dest: /etc/ssh/ssh_known_hosts
+    src: ssh_known_hosts
+    owner: root
+    group: root
+    mode: 0444
+
 - name: Configure sudoers
   copy:
     dest: /etc/sudoers
@@ -110,7 +126,7 @@
     group: root
     mode: 0644
 
-- name: Configure OpenSSH certificate generation
+- name: Configure OpenSSL certificate generation
   copy:
     dest: "/etc/pki/tls/{{ item }}"
     src: "{{ item }}"
