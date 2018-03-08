@@ -3,7 +3,7 @@
 - name: Add duosecurity yum repository
   yum_repository:
     name: duosecurity
-    baseurl: http://pkg.duosecurity.com/RedHat/$releasever/$basearch
+    baseurl: http://pkg.duosecurity.com/RedHat/7Server/$basearch
     description: Duo Security repository
     enabled: true
     gpgcheck: true
