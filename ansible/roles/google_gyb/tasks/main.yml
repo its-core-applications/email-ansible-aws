@@ -1,5 +1,10 @@
 ---
 
+- name: Install extra dependencies
+  yum:
+    name: pyOpenSSL
+    state: latest
+
 - name: Install GYB
   become_user: collaborate
   git:
