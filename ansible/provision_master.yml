@@ -1,7 +1,6 @@
 ---
 
 - hosts: localhost
-  gather_facts: false
   become: false
   tasks:
     - import_tasks: task_find_ami.yml
@@ -14,7 +13,7 @@
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
         region: "{{ aws_region }}"
-        vpc_subnet_id: "{{ (ec2_subnets_sorted.0.id }}"
+        vpc_subnet_id: "{{ ec2_subnets_sorted.0.id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: master
@@ -45,6 +44,8 @@
     - name: Wait for instance to be available
       pause:
         seconds: 120
+
+    - meta: refresh_inventory
 
     - name: Attach EBS home volume
       ec2_vol:
