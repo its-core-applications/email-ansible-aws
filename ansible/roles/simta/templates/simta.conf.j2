@@ -24,7 +24,7 @@ TLS_CA_FILE /etc/pki/tls/certs/ca-bundle.crt
 {% if simta_localmail == false %}
 {% if simta_authn %}
 AUTHN       SASL
-AUTHZ_DNS   DENY    ubl.dnsbl
+DNS_LIST    authz   BLOCK   ubl.dnsbl
 SASL_DOMAIN {{ simta_config }}.{{ tld }}
 
 {% endif %}
@@ -72,15 +72,12 @@ TLS_CIPHERS         EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES2
 {% if simta_relay == false %}
 AUTHN       HONEYPOT
 
-RBL_TRUST   mx-trust.dnsal
-RBL_ACCEPT  mx-accept.dnsal
-RBL_BLOCK   mx-deny.dnsbl {{ simta_spambusters }}
+DNS_LIST    connect TRUST   mx-trust.dnsal
+DNS_LIST    connect ACCEPT  mx-accept.dnsal
+DNS_LIST    connect BLOCK   mx-deny.dnsbl {{ simta_spambusters }}
 
 {% for rbl in simta_rbls %}
-{%- if simta_ldap %}
-USER_
-{%- endif %}
-RBL_BLOCK {{ rbl.rjust( 12 ) }} {{ simta_spambusters }}
+DNS_LIST    {% if simta_ldap %}user   {% else %}connect{% endif %} BLOCK   {{ rbl }} {{ simta_spambusters }}
 {% endfor %}
 
 BANNER_DELAY            1
