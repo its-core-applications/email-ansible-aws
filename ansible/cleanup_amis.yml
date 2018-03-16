@@ -4,26 +4,16 @@
   gather_facts: false
   become: false
   tasks:
-    - name: Find excess AMIs
-      ec2_ami_find:
-        owner: self
-        ami_tags:
-          os: amzn2
-          image_type: "{{ item }}"
-        sort: name
-        sort_order: descending
-        sort_start: "{{ (item == 'junk') | ternary(0, 5) }}"
-      register: result
+    - name: Add tasks for each type of image
+      include_tasks: task_cleanup_amis.yml
+      vars:
+        image_retain: "{{ (image_type == 'junk') | ternary(0, 4) }}"
       loop:
         - base
         - mx
         - egress
         - rbl
         - junk
+      loop_control:
+        loop_var: image_type
 
-    - name: Delete excess AMIs and their snapshots
-      ec2_ami:
-        image_id: "{{ item }}"
-        state: absent
-        delete_snapshot: true
-      loop: "{{ query('flattened', result | json_query('results[*].results[*].ami_id')) }}"

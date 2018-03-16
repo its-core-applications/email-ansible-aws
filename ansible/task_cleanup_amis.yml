@@ -1,0 +1,16 @@
+---
+
+- name: "Find {{ image_type }} AMIs"
+  ec2_ami_facts:
+    owners: self
+    filters:
+      "tag:image_type": "{{ image_type }}"
+  register: result
+
+- name: "Delete excess {{ image_type }} AMIs"
+  ec2_ami:
+    image_id: "{{ item }}"
+    state: absent
+    delete_snapshot: true
+  loop: "{{ (result.images | sort(attribute='creation_date', reverse=True))[(image_retain | int):] | map(attribute='image_id') | list }}"
+
