@@ -52,4 +52,4 @@ if [[ $class != 'base' ]]; then
     mv -f packer/munged packer/template.json
 fi
 
-packer build -var "image_os=$os" -var "image_type=$class" -var "base_ami=$base" -var "root_device=$root" packer/template.json
+packer build -var "aws_region=$AWS_DEFAULT_REGION" -var "image_os=$os" -var "image_type=$class" -var "base_ami=$base" -var "root_device=$root" packer/template.json
