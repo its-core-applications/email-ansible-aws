@@ -6,7 +6,6 @@
   tasks:
     - name: Find excess AMIs
       ec2_ami_find:
-        region: "{{ aws_region }}"
         owner: self
         ami_tags:
           os: amzn2
@@ -24,7 +23,6 @@
 
     - name: Delete excess AMIs and their snapshots
       ec2_ami:
-        region: "{{ aws_region }}"
         image_id: "{{ item }}"
         state: absent
         delete_snapshot: true

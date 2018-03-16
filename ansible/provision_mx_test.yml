@@ -12,7 +12,6 @@
         group: [ main-default, mx-elb ]
         key_name: "{{ aws_ssh_key }}"
         instance_type: t2.small
-        region: "{{ aws_region }}"
         vpc_subnet_id: "{{ ec2_subnets_sorted.0.id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"

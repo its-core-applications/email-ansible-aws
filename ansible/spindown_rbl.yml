@@ -5,8 +5,9 @@
   serial: 1
   tasks:
     - name: Set status on oldest host to spindown
+      delegate_to: localhost
+      become: false
       ec2_tag:
-        region: "{{ aws_region }}"
         resource: "{{ instance_id }}"
         tags:
           Status: spindown
@@ -29,8 +30,8 @@
 
     - name: Set status to spundown
       delegate_to: localhost
+      become: false
       ec2_tag:
-        region: "{{ aws_region }}"
         resource: "{{ instance_id }}"
         tags:
           Status: spundown

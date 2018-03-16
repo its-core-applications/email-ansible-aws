@@ -2,7 +2,6 @@
 
 - name: Get AMI data
   ec2_ami_facts:
-    region: "{{ aws_region }}"
     owners: self
     filters:
       "tag:os": amzn2

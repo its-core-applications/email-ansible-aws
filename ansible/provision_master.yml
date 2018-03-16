@@ -12,7 +12,6 @@
         group: main-default
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
-        region: "{{ aws_region }}"
         vpc_subnet_id: "{{ ec2_subnets_sorted.0.id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"
@@ -50,7 +49,6 @@
     - name: Attach EBS home volume
       ec2_vol:
         name: master_home
-        region: "{{ aws_region }}"
         instance: "{{ groups.Class_master | default({}) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvdd
         volume_type: gp2

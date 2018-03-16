@@ -12,7 +12,6 @@
         group: [ vpn-default, relay ]
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
-        region: "{{ aws_region }}"
         vpc_subnet_id: "{{ item.id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"
@@ -35,7 +34,6 @@
     - name: "Create relay-{{ aws_region }} ELB"
       ec2_elb_lb:
         name: "relay-{{ aws_region }}"
-        region: "{{ aws_region }}"
         state: present
         scheme: internal
         idle_timeout: 3600
@@ -70,7 +68,6 @@
     - name: "Add instances to relay-{{ aws_region }}"
       ec2_elb:
         ec2_elbs: "relay-{{ aws_region }}"
-        region: "{{ aws_region }}"
         instance_id: "{{ item }}"
         state: present
         wait: false

@@ -7,6 +7,5 @@
       become: false
       delegate_to: localhost
       ec2:
-        region: "{{ aws_region }}"
         instance_id: "{{ instance_id }}"
         state: absent
