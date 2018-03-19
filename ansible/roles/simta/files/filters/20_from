@@ -1,14 +1,16 @@
 #!/bin/dash
-# deny based on envelope from
+# deny based on from address or domain
 
 dnsbl=deny-from.dnsbl
 
-if check_env \$SIMTA_SMTP_MAIL_FROM; then
-    from=$(echo -n $SIMTA_SMTP_MAIL_FROM | tr A-Z a-z | sha1sum)
-    from=${from%% *}
-    if ! simrbl -q -t -l $dnsbl $from; then
-	log "20_from: $dnsbl lists $SIMTA_SMTP_MAIL_FROM ($from)"
-	filter_exit ${MESSAGE_REJECT}
-    fi
-fi
-
+for addr in "$SIMTA_SMTP_MAIL_FROM" "$SIMTA_HEADER_FROM"; do
+    [ -z "$addr" ] && continue
+    for from in "$addr" "${addr%%@*}"; do
+        from=$(echo -n "$from" | tr A-Z a-z | sha1sum)
+        from=${from%% *}
+        if ! simrbl -q -t -l "$dnsbl" "$from"; then
+	    log "20_from: $dnsbl lists $addr ($from)"
+	    filter_exit ${MESSAGE_REJECT}
+        fi
+    done
+done
