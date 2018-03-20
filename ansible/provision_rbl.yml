@@ -20,11 +20,30 @@
         instance_profile_name: standard
         instance_tags:
           Class: rbl
-          Status: production
-      loop: "{{ range(2 - (groups.Class_rbl | length)) | list }}"
+          Status: spinup
+      loop: "{{ range(2 - (groups.Class_rbl | default([]) | intersect(groups.Status_production | default([])) | length)) | list }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml
 
+- hosts: Class_rbl:&Status_spinup
+  tasks:
+    - name: Sync DNSBLs
+      import_role:
+        name: rbldnsd_sync
+
+    - name: Set status to production
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        resource: "{{ instance_id }}"
+        tags:
+          Status: production
+
+    - meta: refresh_inventory
+
+- hosts: localhost
+  become: false
+  tasks:
     - import_tasks: task_dns_rbl.yml
 
