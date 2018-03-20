@@ -1,16 +1,19 @@
 #!/bin/dash
 # deny based on from address or domain
 
-dnsbl=deny-from.dnsbl
-
 for addr in "$SIMTA_SMTP_MAIL_FROM" "$SIMTA_HEADER_FROM"; do
     [ -z "$addr" ] && continue
     for from in "$addr" "${addr%%@*}"; do
         from=$(echo -n "$from" | tr A-Z a-z | sha1sum)
         from=${from%% *}
-        if ! simrbl -q -t -l "$dnsbl" "$from"; then
-	    log "20_from: $dnsbl lists $addr ($from)"
-	    filter_exit ${MESSAGE_REJECT}
-        fi
+        for dnsbl in deny-from.dnsbl iia-deny-from.dnsbl; do
+            if ! simrbl -q -t -l "$dnsbl" "$from"; then
+	        log "20_from: $dnsbl lists $addr ($from)"
+                # The IIA list is just data gathering for now
+                if [ $dnsbl != 'iia-deny-from.dnsbl' ]; then
+	            filter_exit ${MESSAGE_REJECT}
+                fi
+            fi
+        done
     done
 done

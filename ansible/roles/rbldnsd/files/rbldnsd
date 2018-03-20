@@ -7,6 +7,7 @@ RBLDNSD="- -q -a -t 30::300 -b 0.0.0.0 \
         deny-urls.dnsbl:dnset:/var/lib/rbldnsd/umich/deny-urls \
         iia-bad-urls.dnsbl:dnset:/var/lib/rbldnsd/iia/iia-bad-urls \
         iia-deny-urls.dnsbl:dnset:/var/lib/rbldnsd/iia/iia-deny-urls \
+        iia-deny-from.dnsbl:dnset:/var/lib/rbldnsd/iia/iia-deny-from \
         mx-deny.dnsbl:ip4set:/var/lib/rbldnsd/umich/mx-deny \
         smtp-deny.dnsbl:ip4set:/var/lib/rbldnsd/umich/smtp-deny \
         spamassassin-reject.dnsbl:ip4set:/var/lib/rbldnsd/umich/spamassassin-reject \
