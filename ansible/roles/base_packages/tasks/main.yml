@@ -3,6 +3,7 @@
 - name: Uninstall unwanted packages
   yum:
     name:
+      - amazon-ssm-agent
       - cronie-anacron
       - postfix
     state: absent
