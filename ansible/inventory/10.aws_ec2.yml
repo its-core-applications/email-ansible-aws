@@ -4,6 +4,7 @@ filters:
   instance-state-name:
     - running
 regions:
+  - us-east-2
   - us-west-2
 hostnames:
   - 'tag:CustomDNSName'
