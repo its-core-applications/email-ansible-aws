@@ -32,6 +32,7 @@
     - client.json
     - rabbitmq.json
     - transport.json
+  when: bootstrap == false
   notify: Restart sensu
   tags: mutable
 
@@ -52,7 +53,7 @@
   yum:
     name: "{{ sensu_plugins | map('regex_replace', '^', 'sensugems-') | list }}"
     state: latest
-  when: inventory_hostname not in (groups.Class_builder | default([]))
+  when: bootstrap == false
 
 - name: Enable sensu-client
   systemd:
