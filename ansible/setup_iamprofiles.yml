@@ -1,0 +1,75 @@
+---
+
+- hosts: localhost
+  become: false
+  tasks:
+    - name: Create IAM policy for EC2 tagging.
+      iam_managed_policy:
+        state: present
+        policy_name: UpdateEC2_tags
+        policy_description: Read and update tags for EC2 resources
+        policy:
+          Version: '2012-10-17'
+          Statement:
+            - Action: 'ec2:CreateTags'
+              Effect: Allow
+              Resource: '*'
+            - Action: 'ec2:DescribeTags'
+              Effect: Allow
+              Resource: '*'
+            - Action: 'ec2:DeleteTags'
+              Effect: Allow
+              Resource: '*'
+      register: pol_EC2tags
+
+    - name: Create builder role
+      iam_role:
+        name: builder
+        state: present
+        assume_role_policy_document:
+          Version : '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 'sts:AssumeRole'
+              Principal:
+                Service: ec2.amazonaws.com
+        managed_policy:
+          - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+          - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
+          - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
+          - "{{ pol_EC2tags.policy.arn }}"
+
+    - name: Create master role
+      iam_role:
+        name: master
+        state: present
+        assume_role_policy_document:
+          Version : '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 'sts:AssumeRole'
+              Principal:
+                Service: ec2.amazonaws.com
+        managed_policy:
+          - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+          - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess'
+          - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
+          - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
+          - "{{ pol_EC2tags.policy.arn }}"
+
+    - name: Create standard role
+      iam_role:
+        name: standard
+        state: present
+        assume_role_policy_document:
+          Version : '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 'sts:AssumeRole'
+              Principal:
+                Service: ec2.amazonaws.com
+        managed_policy:
+          - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess' 
+          - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
+          - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
+          - "{{ pol_EC2tags.policy.arn }}"

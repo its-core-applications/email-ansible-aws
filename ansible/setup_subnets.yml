@@ -1,0 +1,17 @@
+---                                                                                                                                                                   
+                                                                                                                                                                      
+- hosts: localhost                                                                                                                                                    
+  become: false                                                                                                                                                       
+  tasks:
+    - name: "Gather facts about VPC subnets"
+      ec2_vpc_subnet_facts: 
+      register: subnet_facts
+
+    - name: "Apply tags to subnets"
+      ec2_tag:
+        resource: "{{ item.id }}"
+        tags:
+          Class: "{{ item.tags.Name | regex_replace('Subnet.*') | lower }}"
+      loop: "{{ subnet_facts.subnets }}"
+      loop_control:
+        label: "{{ item.tags.Name }}"
