@@ -7,7 +7,7 @@ elif [ "x$SIMTA_DMARC_DOMAIN" = 'x{{ tld }}' -a "x$SIMTA_DMARC_RESULT" = 'xpass'
 elif [ "x$SIMTA_SPF_RESULT" != 'xpass' ]; then
     allow=$(simrbl -l mx-accept.dnsal -l umnetworks.dnsal "$SIMTA_REMOTE_IP")
     if [ $? -eq 1 ]; then
-        allow=${allow#found in }
+        allow=${allow#* found in }
         allow=${allow%%:*}
     fi
 

@@ -33,7 +33,7 @@ else
         -l pbl.dnsbl \
         "$SIMTA_REMOTE_IP")
     if [ $? -eq 1 ]; then
-        RBL=${RBL#found in }
+        RBL=${RBL#* found in }
         RBL=${RBL%%:*}
         reason="rbl $RBL"
     fi

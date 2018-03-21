@@ -9,7 +9,7 @@ printf %s\\n "$SIMTA_SMTP_MAIL_FROM" "$SIMTA_HEADER_FROM" "${SIMTA_SMTP_MAIL_FRO
         -l iia-deny-from.dnsbl \
         -t "$from")
     if [ $? -eq 1 ]; then
-        dnsbl=${dnsbl#found in }
+        dnsbl=${dnsbl#* found in }
         dnsbl=${dnsbl%%:*}
         log "20_from: $dnsbl lists $addr ($from)"
         # The IIA list is just data gathering for now
