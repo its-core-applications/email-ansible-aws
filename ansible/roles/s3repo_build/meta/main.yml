@@ -4,3 +4,4 @@ dependencies:
   - role: s3_website
     tags: s3_website
     s3_hostname: "{{ yum_hostname }}"
+    s3_region: "{{ yum_aws_region }}"
