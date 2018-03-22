@@ -3,7 +3,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - name: Create IAM policy for EC2 tagging.
+    - name: Create IAM policy for EC2 tagging
       iam_managed_policy:
         state: present
         policy_name: UpdateEC2_tags
@@ -20,7 +20,7 @@
             - Action: 'ec2:DeleteTags'
               Effect: Allow
               Resource: '*'
-      register: pol_EC2tags
+      register: tagpolicy
 
     - name: Create builder role
       iam_role:
@@ -37,7 +37,7 @@
           - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
           - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
           - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
-          - "{{ pol_EC2tags.policy.arn }}"
+          - "{{ tagpolicy.policy.arn }}"
 
     - name: Create master role
       iam_role:
@@ -55,7 +55,7 @@
           - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess'
           - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
           - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
-          - "{{ pol_EC2tags.policy.arn }}"
+          - "{{ tagpolicy.policy.arn }}"
 
     - name: Create standard role
       iam_role:
@@ -69,7 +69,7 @@
               Principal:
                 Service: ec2.amazonaws.com
         managed_policy:
-          - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess' 
+          - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess'
           - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
           - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
-          - "{{ pol_EC2tags.policy.arn }}"
+          - "{{ tagpolicy.policy.arn }}"

@@ -1,10 +1,10 @@
----                                                                                                                                                                   
-                                                                                                                                                                      
-- hosts: localhost                                                                                                                                                    
-  become: false                                                                                                                                                       
+---
+
+- hosts: localhost
+  become: false
   tasks:
     - name: "Gather facts about VPC subnets"
-      ec2_vpc_subnet_facts: 
+      ec2_vpc_subnet_facts:
       register: subnet_facts
 
     - name: "Apply tags to subnets"
