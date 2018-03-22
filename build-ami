@@ -55,6 +55,6 @@ if [[ $class != 'base' ]]; then
     mv -f packer/munged packer/template.json
 fi
 
-subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=public' | jq -r '.Subnets[0].SubnetId')
+subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=public' | jq -r '.Subnets[].SubnetId' | shuf | head -n 1)
 
 packer build -var "aws_region=$AWS_DEFAULT_REGION" -var "image_os=$os" -var "image_type=$class" -var "base_ami=$base" -var "root_device=$root" -var "subnet_id=$subnet_id" packer/template.json
