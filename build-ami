@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# packer needs to be run with a specific working directory
+cd $(readlink -fn $(dirname "$BASH_SOURCE"))
+
 if [[ $1 ]]; then
     class=$1
 else
