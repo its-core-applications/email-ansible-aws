@@ -5,7 +5,9 @@ export TLD=umich.edu
 
 # Set up Ansible
 hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
-. $hacking_dir/git/ansible.git/hacking/env-setup
+VIRTUAL_ENV_DISABLE_PROMPT=1
+. $hacking_dir/bin/python/bin/activate
+. $hacking_dir/bin/ansible/hacking/env-setup
 export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
 export ANSIBLE_PRIVATE_KEY_FILE=$hacking_dir/id_rsa
 export ANSIBLE_INVENTORY=$hacking_dir/ansible/inventory

@@ -1,0 +1,9 @@
+PyYAML
+boto
+boto3
+botocore
+cryptography
+jinja2
+netaddr
+paramiko
+setuptools

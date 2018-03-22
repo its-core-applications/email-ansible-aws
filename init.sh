@@ -1,5 +1,12 @@
 #!/bin/bash
 
+cd $(readlink -fn $(dirname "$BASH_SOURCE"))
+
+virtualenv bin/python
+. bin/python/bin/activate
+pip install -U pip
+pip install -r python-requirements.txt
+
 git submodule update --init --recursive
 
 if [[ ! -s id_rsa ]]; then
