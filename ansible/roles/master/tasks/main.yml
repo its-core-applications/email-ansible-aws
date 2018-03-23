@@ -8,6 +8,7 @@
       - openldap-clients
       - python-ldap
       - python-netaddr
+      - python-virtualenv
       - unzip
     state: latest
 
