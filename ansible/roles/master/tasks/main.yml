@@ -24,6 +24,31 @@
     dev: /dev/xvdd
     fstype: xfs
     force: false
+  register: result
+
+- name: Make new /home usable
+  when: bootstrap and result is changed
+  block:
+    - name: Temporarily mount /home
+      mount:
+        name: /var/tmp/home
+        src: /dev/xvdd
+        fstype: xfs
+        state: mounted
+      when: result is changed
+
+    - name: Copy the skeleton over
+      command: cp -rv /home/* /var/tmp/home
+
+    - name: Undo temporary mount
+      mount:
+        name: /var/tmp/home
+        state: unmounted
+
+    - name: Erase temporary mount
+      mount:
+        name: /var/tmp/home
+        state: absent
 
 - name: Mount /home
   mount:
