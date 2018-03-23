@@ -23,18 +23,26 @@
     mode: 0644
   notify: Restart grafana
 
-- name: Restore grafana.db
-  command: cp /home/email/grafana.db /var/lib/grafana
-  args:
-    creates: /var/lib/grafana/grafana.db
-  notify: Restart grafana
+- name: See if we have a database backup
+  stat:
+    path: /home/email/grafana.db
+  register: result
 
-- name: Fix permissions on grafana.db
-  file:
-    dest: /var/lib/grafana/grafana.db
-    owner: grafana
-    group: grafana
-    mode: 0644
+- name: Restore database backup
+  when: result.stat.exists
+  block:
+    - name: Restore grafana.db
+      command: cp /home/email/grafana.db /var/lib/grafana
+      args:
+        creates: /var/lib/grafana/grafana.db
+      notify: Restart grafana
+
+    - name: Fix permissions on grafana.db
+      file:
+        dest: /var/lib/grafana/grafana.db
+        owner: grafana
+        group: grafana
+        mode: 0644
 
 - name: Enable grafana
   systemd:
