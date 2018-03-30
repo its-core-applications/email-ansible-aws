@@ -2,10 +2,10 @@
 
 cd $(readlink -fn $(dirname "$BASH_SOURCE"))
 
-virtualenv bin/python
+virtualenv --system-site-packages bin/python
 . bin/python/bin/activate
 pip install -U pip
-pip install -r python-requirements.txt
+pip install -I -r python-requirements.txt
 
 git submodule update --init --recursive
 
