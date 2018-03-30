@@ -4,6 +4,7 @@
   delegate_to: localhost
   become: false
   ec2_tag:
+    region: "{{ aws_region }}"
     resource: "{{ instance_id }}"
     state: absent
     tags:

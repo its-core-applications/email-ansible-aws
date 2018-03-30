@@ -4,6 +4,7 @@
   delegate_to: localhost
   become: false
   ec2_vpc_subnet_facts:
+    region: "{{ aws_region }}"
   register: ec2_subnet_facts
 
 - name: Shuffle and sort subnets

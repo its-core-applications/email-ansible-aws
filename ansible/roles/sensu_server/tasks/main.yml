@@ -4,6 +4,7 @@
   delegate_to: localhost
   become: false
   sns_topic:
+    region: "{{ aws_region }}"
     name: oncall
     display_name: ONC
     state: present
@@ -16,6 +17,7 @@
   delegate_to: localhost
   become: false
   sns_topic:
+    region: "{{ aws_region }}"
     name: rootmail
     display_name: rootmail
     state: present

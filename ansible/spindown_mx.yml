@@ -8,6 +8,7 @@
       delegate_to: localhost
       become: false
       ec2_tag:
+        region: "{{ aws_region }}"
         resource: "{{ instance_id }}"
         tags:
           Status: spindown
@@ -40,6 +41,7 @@
       delegate_to: localhost
       become: false
       ec2_elb:
+        region: "{{ aws_region }}"
         instance_id: "{{ instance_id }}"
         state: absent
 
@@ -71,6 +73,7 @@
       delegate_to: localhost
       become: false
       ec2_tag:
+        region: "{{ aws_region }}"
         resource: "{{ instance_id }}"
         tags:
           Status: spundown

@@ -7,6 +7,7 @@
 
     - name: Create default security group
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: main-default
         description: default VPC security group
@@ -29,6 +30,7 @@
 
     - name: Create VPN default security group
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
         name: vpn-default
         description: default VPC security group
@@ -48,6 +50,7 @@
 
     - name: Create security group for mx ELB
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: mx-elb
         description: mx ELB
@@ -64,6 +67,7 @@
 
     - name: Create security group for mx
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: mx
         description: mx hosts
@@ -74,6 +78,7 @@
 
     - name: Create security group for egress
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: egress
         description: egress hosts
@@ -84,6 +89,7 @@
 
     - name: Create security group for relay ELB
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
         name: relay-elb
         description: relay ELB
@@ -100,6 +106,7 @@
 
     - name: Create security group for relay
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
         name: relay
         description: relay hosts
@@ -110,6 +117,7 @@
 
     - name: Create security group for smtp ELB
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: smtp-elb
         description: auth SMTP ELB
@@ -129,6 +137,7 @@
 
     - name: Create security group for smtp
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: smtp
         description: auth SMTP hosts
@@ -142,6 +151,7 @@
 
     - name: Create security group for rsyslog
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
         name: rsyslog
         description: rsyslog hosts
@@ -158,6 +168,7 @@
 
     - name: Create security group for RBL
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: rbl
         description: rbl hosts
@@ -168,6 +179,7 @@
 
     - name: Create security group for redis
       ec2_group:
+        region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
         name: redis
         description: redis hosts

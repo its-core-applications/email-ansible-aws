@@ -14,6 +14,7 @@
         group: [ main-default, rbl ]
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
+        region: "{{ aws_region }}"
         vpc_subnet_id: "{{ ec2_subnets[item % (ec2_subnets | length)].id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"

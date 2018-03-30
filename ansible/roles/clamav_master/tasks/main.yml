@@ -63,6 +63,7 @@
   s3_sync:
     mode: push
     bucket: "clamav.{{ subd }}"
+    region: "{{ aws_region }}"
     permission: public-read
     file_change_strategy: checksum
     file_root: "{{ clamav_sigdir }}"
