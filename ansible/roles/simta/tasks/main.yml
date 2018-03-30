@@ -74,23 +74,16 @@
   notify: Rebuild aliases
   tags: mutable
 
-- name: Install /etc/hosts.allow
+- name: Configure tcpwrappers
   copy:
-    dest: /etc/hosts.allow
-    src: "{{ lookup('first_found', 'hosts.allow-' ~ simta_config, 'hosts.allow') }}"
+    dest: /etc/{{ item }}
+    src: "{{ lookup('first_found', item ~ '-' ~ simta_config, item) }}"
     owner: collaborate
     group: collaboration
     mode: 0664
-  when: simta_tcpwrappers
-  tags: mutable
-
-- name: Install /etc/hosts.deny
-  copy:
-    dest: /etc/hosts.deny
-    src: "{{ lookup('first_found', 'hosts.deny-' ~ simta_config, 'hosts.deny') }}"
-    owner: collaborate
-    group: collaboration
-    mode: 0664
+  loop:
+    - hosts.allow
+    - hosts.deny
   when: simta_tcpwrappers
   tags: mutable
 
