@@ -1,0 +1,313 @@
+---
+
+- import_role:
+    name: rpmbuild
+  tags: always
+
+- import_role:
+    name: localrepo
+  tags: always
+
+- import_role:
+    name: build_sensu_plugins
+  tags: sensu
+
+- import_role:
+    name: build_rpm_prebuilt
+  tags:
+    - cjose
+    - mod_auth_openidc
+  vars:
+    build_name: cjose
+    rpm: cjose-0.4.1-1.el7.centos.x86_64.rpm
+    rpm_url: https://github.com/pingidentity/mod_auth_openidc/releases/download/v2.1.3/cjose-0.4.1-1.el7.centos.x86_64.rpm
+    rpm_checksum: sha256:37a93d7cd98012915a0940f281388b22a12ea325e2b8f5d83e89278ca9da21a5
+
+- import_role:
+    name: build_rpm_spec
+  tags:
+    - sasl
+    - libsnet
+    - simta
+  vars:
+    build_name: cyrus-sasl
+    build_deps:
+      - gdbm-devel
+      - groff
+      - krb5-devel
+      - openssl-devel
+      - pam-devel
+      - zlib-devel
+
+- import_role:
+    name: build_rpm_git
+  tags:
+    - denser
+    - simta
+  vars:
+    build_name: denser
+    build_repo: https://github.com/simta/denser.git
+    build_deps:
+      - openssl-devel
+
+- import_role:
+    name: build_rpm_spec
+  tags:
+    - jemalloc
+    - redis
+    - rspamd
+    - simta
+  vars:
+    build_name: jemalloc
+    build_deps:
+      - libxslt
+
+- import_role:
+    name: build_rpm_git
+  tags:
+    - libsnet
+    - simta
+  vars:
+    build_name: libsnet
+    build_repo: https://github.com/simta/libsnet.git
+    build_deps:
+      - cyrus-sasl-devel
+      - openssl-devel
+
+- import_role:
+    name: build_libucl
+  tags:
+    - libucl
+    - simvacation
+
+- import_role:
+    name: build_rpm_git
+  tags:
+    - openarc
+    - simta
+  vars:
+    build_name: openarc
+    build_repo: git://scm.marwnad.com/misc/openarc.git
+#      build_repo: https://github.com/mskucherawy/OpenARC.git
+    build_deps:
+      - libbsd-devel
+      - openssl-devel
+      - sendmail-devel
+
+- import_role:
+    name: build_rpm_git
+  tags:
+    - urcl
+    - penaltybox
+    - simvacation
+  vars:
+    build_name: urcl
+    build_repo: https://github.com/simta/urcl.git
+    build_deps:
+      - hiredis-devel
+
+- import_role:
+    name: build_rpm_spec
+  tags: clamav
+  vars:
+    build_name: clamav
+    build_deps:
+      - bzip2-devel
+      - curl-devel
+      - gmp-devel
+      - libxml2-devel
+      - ncurses-devel
+      - openssl-devel
+      - sendmail-devel
+      - tcp_wrappers-devel
+
+- import_role:
+    name: build_rpm_git
+  tags: comint
+  vars:
+    build_name: comint
+    build_repo: http://scm.marwnad.com/umich/comint.git/
+
+- import_role:
+    name: build_rpm_spec
+  tags: dash
+  vars:
+    build_name: dash
+
+- import_role:
+    name: build_rpm_git
+  tags:
+    - google
+    - google-admin-kit
+  vars:
+    build_name: google-admin-kit
+    build_repo: https://bitbucket.org/its-application-delivery/google-admin-kit.git
+
+- import_role:
+    name: build_rpm_git
+  tags:
+    - google
+    - google-admin-kit-umextras
+  vars:
+    build_name: google-admin-kit-umextras
+    build_repo: https://bitbucket.org/its-application-delivery/google-admin-kit-um-extras.git
+
+- import_role:
+    name: build_rpm_prebuilt
+  tags: mod_auth_openidc
+  vars:
+    build_name: mod_auth_openidc
+    rpm: mod_auth_openidc-2.1.6-1.el7.centos.x86_64.rpm
+    rpm_url: https://github.com/pingidentity/mod_auth_openidc/releases/download/v2.1.6/mod_auth_openidc-2.1.6-1.el7.centos.x86_64.rpm
+    rpm_checksum: sha256:8d444197fb481a5d48bcd7c6f3881b49b505072b85b75888d47cd751501290bf
+
+- import_role:
+    name: build_rpm_spec
+  tags: nmh
+  vars:
+    build_name: nmh
+    build_deps:
+      - flex
+      - ncurses-devel
+
+- import_role:
+    name: build_rpm_git
+  tags: penaltybox
+  vars:
+    build_name: penaltybox
+    build_repo: https://github.com/simta/penaltybox.git
+    build_deps:
+      - urcl-devel
+
+- import_role:
+    name: build_rpm_spec
+  tags:
+    - hyperscan
+    - ragel
+    - rspamd
+  vars:
+    build_name: ragel
+
+- import_role:
+    name: build_rpm_spec
+  tags:
+    - hyperscan
+    - rspamd
+  vars:
+    build_name: hyperscan
+    build_deps:
+      - libpcap-devel
+      - pcre-devel
+      - ragel-6.10
+      - sqlite-devel
+
+- import_role:
+    name: build_rpm_spec
+  tags: redis
+  vars:
+    build_name: redis
+    build_deps:
+      - jemalloc-devel
+
+- import_role:
+    name: build_rpm_spec
+  tags: rspamd
+  vars:
+    build_name: rspamd
+    build_deps:
+      - fann-devel
+      - file-devel
+      - glib2-devel
+      - hyperscan-devel
+      - jemalloc-devel
+      - libevent-devel
+      - libicu-devel
+      - luajit-devel
+      - openssl-devel
+      - perl-Digest-MD5
+      - ragel-6.10
+      - sqlite-devel
+
+- import_role:
+    name: build_rpm_git
+  tags: simta
+  vars:
+    build_name: simta
+    build_repo: https://github.com/simta/simta.git
+    build_version: master
+    build_deps:
+      - denser-devel
+      - jemalloc-devel
+      - libidn-devel
+      - libopenarc-devel
+      - libopendkim-devel
+      - libsnet-devel
+      - lmdb-devel
+      - openldap-devel
+      - openssl-devel
+      - procmail
+      - sendmail-devel
+      - tcp_wrappers-devel
+
+- import_role:
+    name: build_rpm_git
+  tags: simta-admin
+  vars:
+    build_name: simta-admin
+    build_repo: https://github.com/simta/simta-admin.git
+
+- import_role:
+    name: build_rpm_git
+  tags: simta-mscan
+  vars:
+    build_name: simta-mscan
+    build_repo: https://github.com/simta/simta-mscan.git
+
+- import_role:
+    name: build_rpm_git
+  tags: simvacation
+  vars:
+    build_name: simvacation
+    build_repo: https://github.com/simta/simvacation.git
+    build_deps:
+      - libucl-devel
+      - lmdb-devel
+      - openldap-devel
+      - urcl-devel
+
+- import_role:
+    name: build_rpm_prebuilt
+  tags: splunk
+  vars:
+    build_name: splunk
+    rpm: splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm
+    rpm_url: https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.2&product=universalforwarder&filename=splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm&wget=true
+    rpm_checksum: md5:24dc39fa598290bebabf4eb55b24c71a
+
+- import_role:
+    name: build_rpm_spec
+  tags: sshguard
+  vars:
+    build_name: sshguard
+
+- import_role:
+    name: build_rpm_python
+  tags:
+    - google
+    - gak_utils
+  vars:
+    build_name: umich_gak_utils
+    build_repo: https://bitbucket.org/its-application-delivery/google-admin-kit-utilities.git
+
+- import_role:
+    name: build_rpm_python
+  tags:
+    - box
+  vars:
+    build_name: umich_box_utils
+    build_repo: https://bitbucket.org/its-application-delivery/box-utilities/
+
+- import_role:
+    name: s3repo_build
+  tags: always
+

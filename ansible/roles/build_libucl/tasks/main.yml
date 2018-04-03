@@ -1,44 +1,41 @@
 ---
 
-- name: Clone libucl
+- name: Build libucl
   become: false
-  git:
-    repo: https://github.com/vstakhov/libucl.git
-    dest: ~/libucl
-    update: true
-    force: true
-    version: "{{ libucl_version }}"
+  block:
+    - name: Clone libucl
+      git:
+        repo: https://github.com/vstakhov/libucl.git
+        dest: ~/libucl
+        update: true
+        force: true
+        version: "{{ libucl_version }}"
 
-- name: Build libucl tarball (autogen.sh)
-  become: false
-  command: ./autogen.sh
-  args:
-    chdir: ~/libucl
+    - name: Build libucl tarball (autogen.sh)
+      command: ./autogen.sh
+      args:
+        chdir: ~/libucl
 
-- name: Build libucl tarball (configure)
-  become: false
-  command: ./configure
-  args:
-    chdir: ~/libucl
+    - name: Build libucl tarball (configure)
+      command: ./configure
+      args:
+        chdir: ~/libucl
 
-- name: Build libucl tarball (make dist)
-  become: false
-  make:
-    chdir: ~/libucl
-    target: dist
+    - name: Build libucl tarball (make dist)
+      make:
+        chdir: ~/libucl
+        target: dist
 
-- name: Move tarball into SOURCES
-  become: false
-  shell: "mv -f ~/libucl/libucl-{{ libucl_version }}.tar.xz ~/rpmbuild/SOURCES/"
+    - name: Move tarball into SOURCES
+      shell: mv -f ~/libucl/libucl-{{ libucl_version }}.tar.xz ~/rpmbuild/SOURCES/
 
-- name: Install spec file
-  become: false
-  template:
-    dest: ~/libucl.spec
-    src: libucl.spec.j2
+    - name: Install spec file
+      template:
+        dest: ~/libucl.spec
+        src: libucl.spec.j2
 
-- name: Build libucl RPM
-  become: false
-  command: rpmbuild -ba ~/libucl.spec
-  notify: Update yum repository
+    - name: Build libucl RPM
+      command: rpmbuild -ba ~/libucl.spec
 
+- import_role:
+    name: localrepo_update

@@ -1,5 +1,5 @@
 ---
 
 dependencies:
-  - { role: rpmbuild, tags: rpmbuild }
-  - { role: sensu, tags: sensu }
+  - role: sensu
+    tags: sensu

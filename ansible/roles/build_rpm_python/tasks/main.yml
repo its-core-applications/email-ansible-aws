@@ -1,38 +1,37 @@
 ---
 
-- meta: flush_handlers
-
-- name: "Install build dependencies for {{ build_data.name }}"
+- name: Install build dependencies for {{ build_name }}
   yum:
-    name: "{{ build_data.deps }}"
+    name: "{{ build_deps }}"
     state: latest
-  when: build_data.deps is defined
+  when: build_deps is defined
 
-- name: "Clone {{ build_data.name }} git repo"
+- name: Build {{ build_name }}
   become: false
-  git:
-    repo: "{{ build_data.repo }}"
-    dest: "~/{{ build_data.name }}"
-    version: "{{ build_data.version | default(omit) }}"
-    update: true
-    force: true
+  block:
+    - name: Clone {{ build_name }} git repo
+      git:
+        repo: "{{ build_repo }}"
+        dest: ~/{{ build_name }}
+        version: "{{ build_version | default(omit) }}"
+        update: true
+        force: true
 
-- name: "Build {{ build_data.name }} RPM"
-  become: false
-  command: fpm -s python -t rpm --python-package-name-prefix python2 setup.py
-  register: result
-  failed_when:
-    - result.rc != 0
-    - result.stdout is not search('File already exists, refusing to continue')
-  changed_when:
-    - result.rc == 0
-  args:
-    chdir: "~/{{ build_data.name }}"
+    - name: Build {{ build_name }} RPM
+      command: fpm -s python -t rpm --python-package-name-prefix python2 setup.py
+      register: result
+      failed_when:
+        - result.rc != 0
+        - result.stdout is not search('File already exists, refusing to continue')
+      changed_when:
+        - result.rc == 0
+      args:
+        chdir: ~/{{ build_name }}
 
-- name: "Copy RPM to local repo"
-  become: false
-  shell: cp -f ~/{{ build_data.name }}/*.rpm ~/rpmbuild/RPMS
-  args:
-    warn: false
-  notify: Update yum repository
+    - name: Copy RPM to local repo
+      shell: cp -f ~/{{ build_name }}/*.rpm ~/rpmbuild/RPMS
+      args:
+        warn: false
 
+- import_role:
+    name: localrepo_update

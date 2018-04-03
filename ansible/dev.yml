@@ -3,7 +3,11 @@
 - hosts: Class_dev
   vars:
     bootstrap: true
-  roles:
-    - { role: base, tags: base }
-    - { role: build, tags: build }
+  tasks:
+    - import_role:
+        name: base
+      tags: base
+    - import_role:
+        name: build
+      tags: build
 

@@ -1,34 +1,33 @@
 ---
 
-- meta: flush_handlers
-
-- name: "Install build dependencies for {{ build_data.name }}"
+- name: Install build dependencies for {{ build_name }}
   yum:
-    name: "{{ build_data.deps }}"
+    name: "{{ build_deps }}"
     state: latest
-  when: build_data.deps is defined
+  when: build_deps is defined
 
-- name: "Install spec file for {{ build_data.name }}"
+- name: Build {{ build_name }}
   become: false
-  copy:
-    src: "build/{{ build_data.name }}/{{ build_data.name }}.spec"
-    dest: "~/{{ build_data.name }}.spec"
+  block:
+    - name: Install spec file for {{ build_name }}
+      copy:
+        src: build/{{ build_name }}/{{ build_name }}.spec
+        dest: ~/{{ build_name }}.spec
 
-- name: "Fetch sources for {{ build_data.name }}"
-  become: false
-  command: "spectool -g -R ~/{{ build_data.name }}.spec"
+    - name: Fetch sources for {{ build_name }}
+      command: spectool -g -R ~/{{ build_name }}.spec
 
-- name: "Install non-fetchable sources for {{ build_data.name }}"
-  become: false
-  copy:
-    src: "{{ item }}"
-    dest: "~/rpmbuild/SOURCES/{{ item | basename }}"
-  loop: "{{ query('fileglob', 'build/{{ build_data.name }}/sources/*') }}"
+    - name: Install non-fetchable sources for {{ build_name }}
+      copy:
+        src: "{{ item }}"
+        dest: ~/rpmbuild/SOURCES/{{ item | basename }}
+      loop: "{{ query('fileglob', 'build/' ~ build_name ~ '/sources/*') }}"
 
-- name: "Build {{ build_data.name }} RPM"
-  become: false
-  command: "rpmbuild -ba ~/{{ build_data.name }}.spec"
-  environment:
-      QA_RPATHS: 1
-  notify: Update yum repository
+    - name: Build {{ build_name }} RPM
+      command: rpmbuild -ba ~/{{ build_name }}.spec
+      environment:
+          QA_RPATHS: 1
+
+- import_role:
+    name: localrepo_update
 

@@ -1,38 +1,37 @@
 ---
 
-- meta: flush_handlers
-
-- name: "Install build dependencies for {{ build_data.name }}"
+- name: Install build dependencies for {{ build_name }}
   yum:
-    name: "{{ build_data.deps }}"
+    name: "{{ build_deps }}"
     state: latest
-  when: build_data.deps is defined
+  when: build_deps is defined
 
-- name: "Clone {{ build_data.name }} git repo"
+- name: Build {{ build_name }}
   become: false
-  git:
-    repo: "{{ build_data.repo }}"
-    dest: "~/{{ build_data.name }}"
-    version: "{{ build_data.version | default(omit) }}"
-    update: true
-    force: true
+  block:
+    - name: Clone {{ build_name }} git repo
+      git:
+        repo: "{{ build_repo }}"
+        dest: ~/{{ build_name }}
+        version: "{{ build_version | default(omit) }}"
+        update: true
+        force: true
 
-- name: "Build {{ build_data.name }} RPM (autoreconf)"
-  become: false
-  command: autoreconf -fiv
-  args:
-    chdir: "~/{{ build_data.name }}"
+    - name: Build {{ build_name }} RPM (autoreconf)
+      command: autoreconf -fiv
+      args:
+        chdir: ~/{{ build_name }}
 
-- name: "Build {{ build_data.name }} RPM (configure)"
-  become: false
-  command: ./configure
-  args:
-    chdir: "~/{{ build_data.name }}"
+    - name: Build {{ build_name }} RPM (configure)
+      command: ./configure
+      args:
+        chdir: ~/{{ build_name }}
 
-- name: "Build {{ build_data.name }} RPM (make rpm)"
-  become: false
-  make:
-    chdir:  "~/{{ build_data.name }}"
-    target: rpm
-  notify: Update yum repository
+    - name: Build {{ build_name }} RPM (make rpm)
+      make:
+        chdir: ~/{{ build_name }}
+        target: rpm
+
+- import_role:
+    name: localrepo_update
 

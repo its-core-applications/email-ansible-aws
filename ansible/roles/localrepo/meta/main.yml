@@ -1,4 +1,5 @@
 ---
 
 dependencies:
-  - { role: rpmbuild, tags: rpmbuild }
+  - role: rpmbuild
+    tags: rpmbuild

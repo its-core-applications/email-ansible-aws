@@ -1,8 +1,7 @@
 ---
 
-- name: Create yum repository
-  become: false
-  command: createrepo --database ~/rpmbuild/RPMS
+- import_role:
+    name: localrepo_update
 
 - name: Configure local yum repo
   copy:
@@ -10,5 +9,5 @@
     src: local.repo
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
