@@ -1,0 +1,36 @@
+---
+
+- name: Install user config files
+  become: false
+  block:
+    - name: Configure vim
+      copy:
+        src: vimrc
+        dest: ~/.vimrc
+
+    - name: Create ssh directory
+      file:
+        dest: ~/.ssh
+        state: directory
+        mode: '0700'
+
+    - name: Configure ssh
+      template:
+        src: ssh_config.j2
+        dest: ~/.ssh/config
+        mode: '0600'
+
+    - name: Install ssh private key
+      copy:
+        content: "{{ lookup('hashi_vault', 'secret=secret/ssh/ec2-user:value') }}"
+        dest: ~/.ssh/id_rsa.ec2
+        mode: '0400'
+      when:
+        - bootstrap == false
+        - "'Class_master' in group_names"
+
+    - name: Configure git
+      copy:
+        src: gitconfig
+        dest: ~/.gitconfig
+

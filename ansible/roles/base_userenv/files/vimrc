@@ -1,0 +1,14 @@
+set nocompatible
+set bs=2
+set ai
+set history=50
+set ruler
+syntax on
+
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+
+set modeline
+
+autocmd FileType yaml set softtabstop=2 shiftwidth=2

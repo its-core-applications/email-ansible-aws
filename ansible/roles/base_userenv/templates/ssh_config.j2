@@ -1,0 +1,14 @@
+Host *.{{ subd }}
+    IdentityFile ~/.ssh/id_rsa.ec2
+    User {{ ansible_user }}
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+    LogLevel error
+
+Host *.{{ tld }}
+    IdentityFile ~/.ssh/id_rsa.{{ tld }}
+    User root
+
+Host bitbucket.org
+    IdentityFile ~/.ssh/id_ed25519.git
+    User git

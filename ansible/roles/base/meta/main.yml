@@ -3,6 +3,8 @@
 dependencies:
   - role: base_packages
     tags: base_packages
+  - role: base_userenv
+    tags: base_userenv
   - role: dynhostname
     tags: dynhostname
   - role: nonpeople
