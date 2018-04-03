@@ -1,6 +1,6 @@
 Name:           sshguard
-Version:        2.0.0
-Release:        2%{?dist}
+Version:        2.1.0
+Release:        1%{?dist}
 Summary:        Protect hosts from brute-force attacks
 License:        ISC and BSD and Public Domain
 URL:            http://www.sshguard.net/
