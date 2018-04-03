@@ -12,19 +12,19 @@
       file:
         dest: ~/.ssh
         state: directory
-        mode: '0700'
+        mode: "0700"
 
     - name: Configure ssh
       template:
         src: ssh_config.j2
         dest: ~/.ssh/config
-        mode: '0600'
+        mode: "0600"
 
     - name: Install ssh private key
       copy:
         content: "{{ lookup('hashi_vault', 'secret=secret/ssh/ec2-user:value') }}"
         dest: ~/.ssh/id_rsa.ec2
-        mode: '0400'
+        mode: "0400"
       when:
         - bootstrap == false
         - "'Class_master' in group_names"
