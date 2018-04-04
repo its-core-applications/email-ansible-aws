@@ -9,7 +9,9 @@
 
     - name: Create syslog
       ec2:
-        group: [ vpn-default, rsyslog ]
+        group:
+          - vpn-default
+          - rsyslog
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.xlarge
         region: "{{ aws_region }}"
@@ -67,17 +69,19 @@
 - hosts: localhost
   become: false
   tasks:
-    - name: "Set syslog.{{ subd }}"
+    - name: Set syslog.{{ subd }}
       route53:
-        command: "create"
+        command: create
         overwrite: true
         zone: "{{ subd }}"
-        record: "syslog.{{ subd }}"
-        type: "A"
+        record: syslog.{{ subd }}
+        type: A
         ttl: 60
         value: "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'private_ip_address') | join(', ') }}"
+        wait: true
 
 - hosts: Class_syslog
   roles:
-    - { role: sensu_proxyclients, tags: sensu }
+    - role: sensu_proxyclients
+      tags: sensu
 
