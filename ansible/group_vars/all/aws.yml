@@ -4,6 +4,7 @@ tld: "{{ lookup( 'env', 'TLD' ) }}"
 subd: "a.mail.{{ tld }}"
 
 aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
+sns_region: us-west-2
 aws_ssh_key: '2015-10-16'
 
 aws_iam_saml: 'arn:aws:iam::236262816615:saml-provider/UM_PROD_SHIB'

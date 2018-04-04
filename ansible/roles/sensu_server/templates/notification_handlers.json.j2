@@ -42,17 +42,17 @@
   "handlers": {
     "page": {
       "type": "pipe",
-      "command": "handler-sns -r {{ aws_region }} -t oncall",
+      "command": "handler-sns -r {{ sns_region }} -t oncall",
       "filters": [ "occurrences", "production", "critical", "good_hostname" ]
     },
     "email": {
       "type": "pipe",
-      "command": "handler-sns -r {{ aws_region }} -t rootmail",
+      "command": "handler-sns -r {{ sns_region }} -t rootmail",
       "filters": [ "occurrences", "good_hostname" ]
     },
     "fyi": {
       "type": "pipe",
-      "command": "handler-sns -r {{ aws_region }} -t rootmail",
+      "command": "handler-sns -r {{ sns_region }} -t rootmail",
       "filters": [ "state_change_only" ]
     },
     "kill_bad_clients": {
