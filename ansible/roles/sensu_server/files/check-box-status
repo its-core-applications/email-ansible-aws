@@ -8,19 +8,25 @@ from html2text import html2text
 # Make python's print() actually work
 sys.stdout = getwriter('utf8')(sys.stdout)
 
-resolve_strings = [
+ok_strings = [
     '<strong>Resolved</strong>',
     '<strong>Complete</strong>',
     'Box has resolved',
+    '<strong>Monitoring</strong>',
 ]
 
 retval = 0
 status = feedparser.parse('https://status.box.com/history.atom')
 
+if 'bozo_exception' in status:
+    print "feedparser.parse failed"
+    print status.bozo_exception
+    sys.exit(3)
+
 for entry in status.entries:
     # There's no structured indicator of status, so we hope that they stick the
     # correct string in there.
-    if any(x in entry.summary for x in resolve_strings):
+    if any(x in entry.summary for x in ok_strings):
         continue
 
     print html2text(entry.summary).strip()
