@@ -24,6 +24,8 @@ yum_repo_path: "{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distri
 
 master_hostname: mogo
 
+rbldnsd_master: 141.211.21.71, 141.211.7.108
+
 ops_email: "blackops@{{ tld }}"
 ops_rootmail: "blackops.root@{{ tld }}"
 

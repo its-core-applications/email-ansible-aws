@@ -30,3 +30,14 @@
       route53_zone:
         zone: "{{ spfd }}"
         state: present
+
+    - name: Create rbldnsd-master.{{ subd }}
+      route53:
+        command: create
+        overwrite: true
+        zone: "{{ subd }}"
+        record: rbldnsd-master.{{ subd }}
+        type: A
+        ttl: 300
+        value: "{{ rbldnsd_master }}"
+
