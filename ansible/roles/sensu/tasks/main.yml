@@ -16,12 +16,12 @@
   notify: Restart sensu
 
 - name: Configure sensu startup
-  copy:
+  template:
     dest: /etc/default/sensu
-    src: sensu.default
+    src: sensu.default.j2
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify: Restart sensu
 
 - name: Configure sensu

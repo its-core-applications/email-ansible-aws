@@ -23,7 +23,7 @@
 
 - name: Install local monitoring scripts
   copy:
-    dest: "/usr/local/collaboration/{{ item }}"
+    dest: "{{ comint_base }}/{{ item }}"
     src: "{{ item }}"
     owner: collaborate
     group: nonpeople

@@ -1,2 +1,0 @@
-EMBEDDED_RUBY=true
-PLUGINS_DIR=$PLUGINS_DIR:/usr/local/collaboration

@@ -1,7 +1,7 @@
 {
   "checks": {
     "dnsbl": {
-      "command": "/usr/local/collaboration/check-dnsbl",
+      "command": "check-dnsbl",
       "subscribers": [
         "Class_egress"
       ],
@@ -9,7 +9,7 @@
       "timeout": 240
     },
     "dnsl": {
-      "command": "/usr/local/collaboration/check-dnsl",
+      "command": "check-dnsl",
       "subscribers": [
         "Class_mx_test",
         "Class_mx",

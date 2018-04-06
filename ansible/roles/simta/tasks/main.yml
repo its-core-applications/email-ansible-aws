@@ -188,7 +188,7 @@
 
 - name: Install custom monitoring scripts
   template:
-    dest: "/usr/local/collaboration/{{ item }}"
+    dest: "{{ comint_base }}/{{ item }}"
     src: "{{ item }}.j2"
     owner: collaborate
     group: nonpeople
