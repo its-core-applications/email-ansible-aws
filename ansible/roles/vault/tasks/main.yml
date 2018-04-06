@@ -36,3 +36,10 @@
     name: vault
     enabled: true
 
+- name: Install custom monitoring script
+  copy:
+    dest: "{{ comint_base }}/check-vault-seal"
+    src: check-vault-seal
+    owner: collaborate
+    group: nonpeople
+    mode: "0755"

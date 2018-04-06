@@ -62,8 +62,9 @@
 
 - name: Configure sensu server
   template:
-    dest: "/etc/sensu/conf.d/{{ item }}"
+    dest: /etc/sensu/conf.d/{{ item }}
     src: "{{ item }}.j2"
+    validate: jq . %s
   loop:
     - api.json
     - redis.json
@@ -81,6 +82,7 @@
     - check_rspamd.json
     - check_simta.json
     - check_system.json
+    - check_vault.json
   notify: Restart sensu
 
 - name: Enable sensu server
