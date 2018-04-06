@@ -4,6 +4,7 @@
   yum:
     name: comint
     state: latest
+  when: bootstrap == false
 
 - name: Create directories
   file:
@@ -13,17 +14,17 @@
     group: nonpeople
     mode: 0775
   loop:
-    - /usr/local/collaboration
-    - /usr/local/collaboration/dispatch
-    - /usr/local/collaboration/dispatch/local
-    - /usr/local/collaboration/nag
-    - /usr/local/collaboration/nag/local
-    - /usr/local/collaboration/report
-    - /usr/local/collaboration/report/local
+    - "{{ comint_base }}"
+    - "{{ comint_base }}/dispatch"
+    - "{{ comint_base }}/dispatch/local"
+    - "{{ comint_base }}/nag"
+    - "{{ comint_base }}/nag/local"
+    - "{{ comint_base }}/report"
+    - "{{ comint_base }}/report/local"
 
 - name: Set up monitoring skeleton
   template:
-    dest: "/usr/local/collaboration/{{ item }}"
+    dest: "{{ comint_base }}/{{ item }}"
     src: "{{ item }}.j2"
     owner: collaborate
     group: nonpeople
