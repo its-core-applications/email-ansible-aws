@@ -1,0 +1,26 @@
+#!/bin/bash
+
+tmpfile=$(mktemp --tmpdir eicar.XXXXXXXX)
+
+# Reversed EICAR
+racie='*H+H$!ELIF-TSET-SURIVITNA-DRADNATS-RACIE$}7)CC7)^P(45XZP\4[PA@%P!O5X'
+
+echo "$racie" | rev > $tmpfile
+
+result=$(clamdscan --config-file /etc/clamd.conf --no-summary $tmpfile 2>&1)
+clamrc=$?
+
+if [[ $clamrc -eq 1 ]]; then
+    retval=0
+elif [[ $clamrc -eq 2 ]]; then
+    echo "clamdscan error:"
+    retval=2
+else
+    echo "EICAR not detected"
+    retval=2
+fi
+
+echo $result
+
+rm -f $tmpfile
+exit $retval

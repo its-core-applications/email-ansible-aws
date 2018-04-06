@@ -7,6 +7,18 @@
         "Class_mx"
       ],
       "interval": 60
+    },
+    "clamav-eicar": {
+      "command": "check-clamd-eicar",
+      "subscribers": [
+        "Class_mx_test",
+        "Class_mx"
+      ],
+      "interval": 60,
+      "occurrences": 2,
+      "dependencies": [
+        "clamav"
+      ]
     }
   }
 }

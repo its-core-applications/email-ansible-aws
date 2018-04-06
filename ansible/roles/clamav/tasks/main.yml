@@ -32,6 +32,14 @@
     enabled: true
   notify: Restart clamd
 
+- name: Install custom monitoring script
+  copy:
+    dest: "{{ comint_base }}/check-clamd-eicar"
+    src: check-clamd-eicar
+    owner: collaborate
+    group: nonpeople
+    mode: "0755"
+
 - name: Install clamav filter configuration files
   copy:
     dest: "/etc/mail/{{ item }}"
