@@ -9,6 +9,11 @@ else
     class=base
 fi
 
+if [[ ! -f ansible/${class}.yml ]]; then
+    echo "ansible/${class}.yml doesn't exist, aborting"
+    exit 1
+fi
+
 if [[ $2 ]]; then
     os=$2
 else

@@ -1,6 +1,6 @@
 ---
 
-- hosts: Class_rbl
+- hosts: Class_dnsbl
   gather_facts: false
   serial: 1
   tasks:
@@ -13,15 +13,15 @@
         tags:
           Status: spindown
       when:
-        - launch_time == groups.Class_rbl | map('extract', hostvars, 'launch_time') | sort | first
-        - groups.Class_rbl | intersect(groups.Status_spindown | default([])) | length == 0
+        - launch_time == groups.Class_dnsbl | map('extract', hostvars, 'launch_time') | sort | first
+        - groups.Class_dnsbl | intersect(groups.Status_spindown | default([])) | length == 0
 
     - meta: refresh_inventory
-      when: groups.Class_rbl | intersect(groups.Status_spindown | default([])) | length == 0
+      when: groups.Class_dnsbl | intersect(groups.Status_spindown | default([])) | length == 0
 
-- hosts: Class_rbl:&Status_spindown
+- hosts: Class_dnsbl:&Status_spindown
   tasks:
-    - import_tasks: task_dns_rbl.yml
+    - import_tasks: task_dns_rbldnsd.yml
 
     - name: Stop sensu
       systemd:
@@ -37,4 +37,3 @@
         resource: "{{ instance_id }}"
         tags:
           Status: spundown
-

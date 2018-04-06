@@ -21,7 +21,7 @@ elif [ $SIMTA_REVERSE_LOOKUP -ne 0 ]; then
 elif [ $SIMTA_WRITE_BEFORE_BANNER -ne 0 ]; then
     reason='write before banner'
 else
-    RBL=$(simrbl \
+    DNSBL=$(simrbl \
         -l {{ trendmicro_key }}.r.mail-abuse.com \
         -l {{ trendmicro_key }}.q.mail-abuse.com \
         -l sip24.dnsbl \
@@ -33,9 +33,9 @@ else
         -l pbl.dnsbl \
         "$SIMTA_REMOTE_IP")
     if [ $? -eq 1 ]; then
-        RBL=${RBL#*found in }
-        RBL=${RBL%%:*}
-        reason="rbl $RBL"
+        DNSBL=${DNSBL#*found in }
+        DNSBL=${DNSBL%%:*}
+        reason="dnsbl $DNSBL"
     fi
 fi
 

@@ -5,13 +5,13 @@
   tasks:
     - import_tasks: task_find_ami.yml
       vars:
-        launch_class: rbl
+        launch_class: dnsbl
 
     - import_tasks: task_find_subnets.yml
 
-    - name: Create rbl servers
+    - name: Create dnsbl servers
       ec2:
-        group: [ main-default, rbl ]
+        group: [ main-default, rbldnsd ]
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
         region: "{{ aws_region }}"
@@ -20,14 +20,14 @@
         image: "{{ find_ami.image_id }}"
         instance_profile_name: standard
         instance_tags:
-          Class: rbl
+          Class: dnsbl
           Status: spinup
-      loop: "{{ range(2 - (groups.Class_rbl | default([]) | intersect(groups.Status_production | default([])) | length)) | list }}"
+      loop: "{{ range(2 - (groups.Class_dnsbl | default([]) | intersect(groups.Status_production | default([])) | length)) | list }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml
 
-- hosts: Class_rbl:&Status_spinup
+- hosts: Class_dnsbl:&Status_spinup
   tasks:
     - name: Sync DNSBLs
       import_role:
@@ -46,5 +46,4 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_tasks: task_dns_rbl.yml
-
+    - import_tasks: task_dns_rbldnsd.yml

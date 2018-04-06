@@ -166,12 +166,12 @@
               - 8888 # graphite-api
             cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
 
-    - name: Create security group for RBL
+    - name: Create security group for rbldnsd
       ec2_group:
         region: "{{ aws_region }}"
         vpc_id: "{{ ec2_subnets.0.vpc_id }}"
-        name: rbl
-        description: rbl hosts
+        name: rbldnsd
+        description: rbldnsd hosts
         rules:
           - proto: udp
             ports: 53

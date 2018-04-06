@@ -1,6 +1,6 @@
 ---
 
-- hosts: Class_rbl
+- hosts: Class_dnsbl
   roles:
     - { role: base, tags: base }
     - { role: rsyslog_forward, tags: rsyslog }

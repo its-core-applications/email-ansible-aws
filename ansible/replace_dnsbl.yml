@@ -1,6 +1,6 @@
 ---
 
-- import_playbook: spindown_rbl.yml
+- import_playbook: spindown_dnsbl.yml
 
 - hosts: localhost
   tasks:
@@ -8,4 +8,4 @@
 
 - import_playbook: deprovision_spundown.yml
 
-- import_playbook: provision_rbl.yml
+- import_playbook: provision_dnsbl.yml

@@ -7,11 +7,12 @@
     - name: Add tasks for each type of image
       include_tasks: task_cleanup_amis.yml
       vars:
-        image_retain: "{{ (image_type == 'junk') | ternary(0, 4) }}"
+        image_retain: "{{ (image_type in [ 'junk', 'rbl' ]) | ternary(0, 4) }}"
       loop:
         - base
         - mx
         - egress
+        - dnsbl
         - rbl
         - junk
       loop_control:

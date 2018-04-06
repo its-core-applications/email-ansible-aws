@@ -1,9 +1,9 @@
 ---
 
-- name: Install rbl-update script
+- name: Install dnsbl-update script
   template:
-    dest: /usr/bin/rbl-update
-    src: rbl-update.j2
+    dest: /usr/bin/dnsbl-update
+    src: dnsbl-update.j2
     owner: root
     group: root
     mode: 0755
@@ -11,12 +11,12 @@
 - name: Create wrapper scripts for each list
   template:
     dest: "/usr/bin/{{ item.0 }}-{{ item.1 }}"
-    src: rbl-update-wrapper.j2
+    src: dnsbl-update-wrapper.j2
     owner: root
     group: root
     mode: 0755
   vars:
-    lists:
+    dnsbls:
       - mx-accept
       - mx-deny
       - mx-trust
@@ -30,4 +30,4 @@
     actions:
       - add
       - remove
-  loop: "{{ query('nested', lists, actions) }}"
+  loop: "{{ dnsbls | product(actions) | list }}"

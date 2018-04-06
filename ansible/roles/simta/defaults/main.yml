@@ -24,7 +24,7 @@ simta_egress: false
 simta_localmail: false
 simta_filters: true
 
-simta_rbls:
+simta_dnsbls:
   - xbl.dnsbl
   - pbl.dnsbl
   - sbl.dnsbl

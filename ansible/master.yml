@@ -18,7 +18,7 @@
     - { role: nonpeople, tags: nonpeople }
     - { role: people, tags: people }
     - { role: duo, tags: duo }
-    - { role: email_rbl-update, tags: email }
+    - { role: email_dnsbl-update, tags: email }
     - { role: google_gam, tags: google }
     - { role: google_gak, tags: google }
     - { role: google_gyb, tags: google }
