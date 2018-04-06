@@ -5,6 +5,7 @@ sensu_environment:
   GEM_PATH: /opt/sensu/embedded/lib/ruby/gems/2.4.0
 
 sensu_plugins:
+  - sensu-plugin
   - sensu-plugins-aws
   - sensu-plugins-cpu-checks
   - sensu-plugins-disk-checks
