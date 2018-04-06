@@ -1,5 +1,18 @@
 ---
 
+sensu_sns:
+  - name: oncall
+    display_name: ONC
+    subscriptions:
+      - endpoint: "{{ lookup('hashi_vault', 'secret=secret/phone/pager:value') }}"
+        protocol: sms
+
+  - name: rootmail
+    display_name: rootmail
+    subscriptions:
+      - endpoint: "{{ ops_rootmail }}"
+        protocol: email
+
 sensu_proxy_clients:
   - name: "{{ aws_region }}.aws.amazon.com"
     subscriptions:

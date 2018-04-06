@@ -1,30 +1,16 @@
 ---
 
-- name: Create SNS topic for paging
+- name: Create SNS topics
   delegate_to: localhost
   become: false
   sns_topic:
     region: "{{ sns_region }}"
-    name: oncall
-    display_name: ONC
+    name: "{{ item.name }}"
+    display_name: "{{ item.display_name }}"
     state: present
     purge_subscriptions: false
-    subscriptions:
-      - endpoint: "{{ lookup('hashi_vault', 'secret=secret/phone/pager:value') }}"
-        protocol: 'sms'
-
-- name: Create SNS topic for email
-  delegate_to: localhost
-  become: false
-  sns_topic:
-    region: "{{ sns_region }}"
-    name: rootmail
-    display_name: rootmail
-    state: present
-    purge_subscriptions: false
-    subscriptions:
-      - endpoint: "{{ ops_rootmail }}"
-        protocol: 'email'
+    subscriptions: "{{ item.subscriptions }}"
+  loop: "{{ sensu_sns }}"
 
 - name: Install custom plugins
   copy:
