@@ -5,7 +5,7 @@
     region: "{{ aws_region }}"
     instance_ids: "{{ ec2_instances }}"
   vars:
-    ec2_instances: "{{ query('flattened', ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | list) | map(attribute='id') | list }}"
+    ec2_instances: "{{ ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | flatten | map(attribute='id') | list }}"
   when: ec2_instances | length
   register: result
   until: (result.instances | map(attribute='tags.CustomDNSName') | select('defined') | list | length) == (ec2_instances | length)
