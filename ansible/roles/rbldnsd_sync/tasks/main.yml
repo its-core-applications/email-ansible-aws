@@ -6,25 +6,27 @@
     content: "{{ lookup('hashi_vault', 'secret=secret/ssh/rbldnsd:value' ) }}"
     owner: root
     group: root
-    mode: 0400
+    mode: "0400"
 
 - name: Install sync script
   template:
-    dest: /usr/local/sbin/rbl-sync
-    src: rbl-sync.j2
+    dest: /usr/local/sbin/dnsbl-sync
+    src: dnsbl-sync.j2
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
-- name: Sync RBLs
-  command: /usr/local/sbin/rbl-sync
+- name: Sync DNSBLs
+  command: /usr/local/sbin/dnsbl-sync
+  environment:
+    RETURN_RC: 1
   tags: mutable
 
 - name: Schedule syncing
   copy:
-    dest: /etc/cron.d/rbl-sync
-    src: rbl-sync.cron
+    dest: /etc/cron.d/dnsbl-sync
+    src: dnsbl-sync.cron
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
