@@ -1,0 +1,34 @@
+#!/bin/bash
+
+spamout=$(rspamc --json --ip='127.0.0.1' --from='<gtube@example.com>' --helo='example.com' --hostname='example.com' <<EOF
+Subject: Test GTUBE
+Message-ID: <GTUBE.10110111@example.com>
+Date: Thu, 05 Apr 2018 20:00:00 +0000
+From: GTUBE <gtube@example.com>
+To: undisclosed-recipients:;
+
+This is a test email containing the GTUBE string.
+
+XJS*C4JDBQADN1.NSBN3*2IDNEN*GTUBE-STANDARD-ANTI-UBE-TEST-EMAIL*C.34X
+
+How exciting.
+EOF
+| sed '1d' 2>/dev/null)
+
+spamres=$(printf '%s' $spamout | jq -r '@text "\(.action) score=\(.score)"')
+if [[ $? -ne 0 ]]; then
+    echo "Unable to parse returned data"
+    exit 1
+fi
+spamaction=${spamres% score=*}
+
+if [[ $spamaction != 'reject' ]]; then
+    retval=2
+    echo "Incorrect action returned:"
+else
+    retval=0
+    echo "All good:"
+fi
+echo $spamres
+
+exit $retval

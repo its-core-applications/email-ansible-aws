@@ -7,6 +7,18 @@
         "Class_mx_test"
       ],
       "interval": 60
+    },
+    "rspamd-gtube": {
+      "command": "check-rspamd-gtube",
+      "subscribers": [
+        "Class_mx",
+        "Class_mx_test"
+      ],
+      "interval": 60,
+      "occurrences": 2,
+      "dependencies": [
+        "rspamd"
+      ]
     }
   }
 }

@@ -8,11 +8,11 @@
 
 - name: Local rspamd configuration
   copy:
-    dest: "/etc/rspamd/{{ item }}"
+    dest: /etc/rspamd/{{ item }}
     src: "{{ item }}"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   loop:
     - local.d/arc.conf
     - local.d/dkim.conf
@@ -37,3 +37,10 @@
     daemon_reload: true
   notify: Restart rspamd
 
+- name: Install custom monitoring script
+  copy:
+    dest: "{{ comint_base }}/check-rspamd-gtube"
+    src: check-rspamd-gtube
+    owner: collaborate
+    group: nonpeople
+    mode: "0755"
