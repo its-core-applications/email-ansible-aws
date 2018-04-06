@@ -34,7 +34,10 @@
         "Class_mx",
         "Class_egress"
       ],
-      "interval": 60
+      "interval": 60,
+      "dependencies": [
+        "simta"
+      ]
     },
     "simta-queue-slow": {
       "command": "/usr/libexec/simta-admin/check-simta-queue -q slow -w :::extra.simta.slowqwarn|100::: -c :::extra.simta.slowqmax|200:::",
@@ -43,7 +46,10 @@
         "Class_mx",
         "Class_egress"
       ],
-      "interval": 60
+      "interval": 60,
+      "dependencies": [
+        "simta"
+      ]
     },
     "simta-queue-local": {
       "command": "/usr/libexec/simta-admin/check-simta-queue -q local -w :::extra.simta.localqwarn|100::: -c :::extra.simta.localqmax|20:::",
@@ -52,7 +58,10 @@
         "Class_mx",
         "Class_egress"
       ],
-      "interval": 60
+      "interval": 60,
+      "dependencies": [
+        "simta"
+      ]
     },
     "simta-queue-dead": {
       "command": "/usr/libexec/simta-admin/check-simta-queue -q dead -c 1",
@@ -70,7 +79,10 @@
         "Class_mx",
         "Class_egress"
       ],
-      "interval": 60
+      "interval": 60,
+      "dependencies": [
+        "simta"
+      ]
     },
     "simta-queue-fast-age": {
       "command": "/usr/libexec/simta-admin/check-simta-queue-age -q fast -a 120 -c 0",
@@ -79,7 +91,10 @@
         "Class_mx",
         "Class_egress"
       ],
-      "interval": 300
+      "interval": 300,
+      "dependencies": [
+        "simta"
+      ]
     },
     "simta-metrics": {
       "type": "metric",
