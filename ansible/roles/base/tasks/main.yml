@@ -89,26 +89,21 @@
     group: root
     mode: 0644
 
-- name: Set kernel.core_pattern
+- name: Set sysctl parameters
   sysctl:
-    name: kernel.core_pattern
-    value: /var/tmp/%e.core.%p
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     reload: true
     ignoreerrors: true
-
-- name: Set fs.suid_dumpable
-  sysctl:
-    name: fs.suid_dumpable
-    value: 2
-    reload: true
-    ignoreerrors: true
-
-- name: Set vm.overcommit_memory
-  sysctl:
-    name: vm.overcommit_memory
-    value: 1
-    reload: true
-    ignoreerrors: true
+  loop:
+    - name: kernel.core_pattern
+      value: /var/tmp/%e.core.%p
+    - name: kernel.pid_max
+      value: 4194304
+    - name: fs.suid_dumpable
+      value: 2
+    - name: vm.overcommit_memory
+      value: 1
 
 - name: Raise corefile limits
   copy:
