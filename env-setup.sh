@@ -35,10 +35,10 @@ function _sshcomplete() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     cur="${COMP_WORDS[COMP_CWORD]}"
     if [[ $prev = 'ssh' ]]; then
-        if [[ ! -s ~/.aws-hosts || $(stat --format %Y ~/.aws-hosts) -lt $(( $(date +%s) - 30 )) ]]; then
-            aws ec2 describe-instances --filters 'Name=instance-state-name,Values=running' --output=text | awk '/CustomDNSName/{print $NF}' >| ~/.aws-hosts
+        if [[ ! -s ~/.sshcomplete ]] || [[ $(stat --format %Y ~/.sshcomplete) -lt $(( $(date +%s) - 60 )) ]]; then
+            ansible --list-hosts all | sed -e '1d; s/^  *//' > ~/.sshcomplete
         fi
-        COMPREPLY=( $(cat ~/.aws-hosts ~/umce/hosts.* | grep "^$cur" | sort -u) )
+        COMPREPLY=( $(grep "^$cur" ~/.sshcomplete | sort -u) )
     fi
     return 0
 }

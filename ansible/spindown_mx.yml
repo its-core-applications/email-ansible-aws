@@ -8,11 +8,12 @@
       delegate_to: localhost
       become: false
       ec2_tag:
-        region: "{{ aws_region }}"
+        region: "{{ region }}"
         resource: "{{ instance_id }}"
         tags:
           Status: spindown
       when:
+        - region == aws_region
         - (production_count | int) > (target_min | int)
         - (production_count_az | int) > 1
         - (spindown_count | int) < (target_spindown | int)
@@ -26,9 +27,9 @@
         # use '|int' on target* as well, in case they were passed on the CLI
         # as k=v extra-vars to override the default.
         target_spindown_az: "{{ ((target_spindown | int) / (groups.Class_mx | map('extract', hostvars, 'placement') | map(attribute='availability_zone') | unique | length)) | round(0, 'ceil') }}"
-        spindown_count: "{{ groups.Class_mx | intersect(groups.Status_spindown | default([])) | length }}"
+        spindown_count: "{{ groups.Class_mx | intersect(aws_region_group) | intersect(groups.Status_spindown | default([])) | length }}"
         spindown_count_az: "{{ groups.Class_mx | intersect(groups.Status_spindown | default([])) | intersect(groups['az_' ~ placement.availability_zone | replace('-', '_')]) | length }}"
-        production_count: "{{ groups.Class_mx | intersect(groups.Status_production | default([])) | length }}"
+        production_count: "{{ groups.Class_mx | intersect(groups.Status_production | default([])) | intersect(aws_region_group) | length }}"
         production_count_az: "{{ groups.Class_mx | intersect(groups.Status_production | default([])) | intersect(groups['az_' ~ placement.availability_zone | replace('-', '_')]) | length }}"
       register: result
 
@@ -37,43 +38,50 @@
 
 - hosts: Class_mx:&Status_spindown
   tasks:
-    - name: Remove from loadbalancer
-      delegate_to: localhost
-      become: false
-      ec2_elb:
-        region: "{{ aws_region }}"
-        instance_id: "{{ instance_id }}"
-        state: absent
+    - when: region == aws_region
+      block:
+        - name: Remove from loadbalancer
+          delegate_to: localhost
+          become: false
+          ec2_elb:
+            region: "{{ region }}"
+            instance_id: "{{ instance_id }}"
+            state: absent
 
-    - name: Stop sensu
-      systemd:
-        name: sensu-client
-        state: stopped
-      ignore_errors: true
+        - name: Stop sensu
+          systemd:
+            name: sensu-client
+            state: stopped
+          ignore_errors: true
 
-    - name: Wait for active connections to finish
-      wait_for:
-        host: 0.0.0.0
-        port: 25
-        state: drained
+        - name: Wait for active connections to finish
+          wait_for:
+            host: 0.0.0.0
+            port: 25
+            state: drained
 
 - hosts: Class_mx:&Status_spindown
   serial: 1
   tasks:
-    - import_tasks: task_spindown_redis.yml
+    - when: region == aws_region
+      block:
+        - import_tasks: task_spindown_redis.yml
 
 - hosts: Class_mx:&Status_spindown
   tasks:
-    - name: Give the queue a chance to quiesce
-      pause: seconds=60
+    - when: region == aws_region
+      block:
+        - name: Give the queue a chance to quiesce
+          pause: seconds=60
 
-    - import_tasks: task_spindown_simta.yml
+        - import_tasks: task_spindown_simta.yml
 
-    - name: Set status to spundown
-      delegate_to: localhost
-      become: false
-      ec2_tag:
-        region: "{{ aws_region }}"
-        resource: "{{ instance_id }}"
-        tags:
-          Status: spundown
+        - name: Set status to spundown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spundown
+

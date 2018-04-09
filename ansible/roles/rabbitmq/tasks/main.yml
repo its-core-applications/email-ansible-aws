@@ -1,26 +1,30 @@
 ---
 
-- name: Configure PackageCloud repositories
-  copy:
-    dest: "/etc/yum.repos.d/{{ item }}"
-    src: "{{ item }}"
-    owner: root
-    group: root
-    mode: 0644
-  loop:
-    - rabbitmq_rabbitmq-server.repo
-    - rabbitmq_erlang.repo
+- tags:
+    - rabbitmq
+  block:
+    - name: Configure PackageCloud repositories
+      copy:
+        dest: /etc/yum.repos.d/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - rabbitmq_rabbitmq-server.repo
+        - rabbitmq_erlang.repo
 
-- name: Install RabbitMQ
-  yum:
-    name: rabbitmq-server
-    state: latest
-  notify: Restart RabbitMQ
+    - name: Install RabbitMQ
+      yum:
+        name: rabbitmq-server
+        state: latest
+      notify: Restart RabbitMQ
 
-- name: Enable RabbitMQ
-  systemd:
-    name: rabbitmq-server
-    enabled: true
-  notify: Restart RabbitMQ
+    - name: Enable RabbitMQ
+      systemd:
+        name: rabbitmq-server
+        enabled: true
+      notify: Restart RabbitMQ
 
-- meta: flush_handlers
+    - meta: flush_handlers
+

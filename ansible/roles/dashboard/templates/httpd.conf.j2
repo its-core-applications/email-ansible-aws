@@ -36,8 +36,8 @@
             </RequireAll>
         </LimitExcept>
 
-        ProxyPass http://syslog.{{ subd }}:3000/
-        ProxyPassReverse http://syslog.{{ subd }}:3000/
+        ProxyPass http://{{ sensu_server }}:3000/
+        ProxyPassReverse http://{{ sensu_server }}:3000/
     </Location>
 {% for loc in ['bower_components','config','health','metrics','user'] %}
     <Location /{{ loc }}>

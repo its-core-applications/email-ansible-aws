@@ -1,13 +1,26 @@
 ---
 
 - hosts: Class_dnsbl
-  roles:
-    - { role: base, tags: base }
-    - { role: rsyslog_forward, tags: rsyslog }
-    - role: simta
-      simta_localmail: true
-      simta_tls: false
-      tags: simta
-    - { role: rbldnsd, tags: rbldnsd }
-    - { role: rbldnsd_sync, tags: rbldnsd }
-    - { role: sensu, tags: sensu }
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: base
+
+        - import_role:
+            name: rsyslog_forward
+
+        - import_role:
+            name: simta
+          vars:
+            simta_localmail: true
+            simta_tls: false
+
+        - import_role:
+            name: rbldnsd
+
+        - import_role:
+            name: rbldnsd_sync
+
+        - import_role:
+            name: sensu

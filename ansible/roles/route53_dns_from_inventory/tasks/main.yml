@@ -1,0 +1,21 @@
+---
+
+- tags:
+    - route53
+    - dns
+  block:
+    - name: Set {{ dns_host }}.{{ aws_region }}.{{ subd }}
+      delegate_to: localhost
+      become: false
+      run_once: true
+      route53:
+        command: create
+        overwrite: true
+        zone: "{{ subd }}"
+        record: "{{ dns_host }}.{{ aws_region }}.{{ subd }}"
+        type: A
+        ttl: 60
+        value: "{{ dns_inventory_hosts | map('extract', hostvars, 'private_ip_address') | list }}"
+      when: dns_inventory_hosts | length > 0
+      vars:
+        dns_inventory_hosts: "{{ groups[dns_group] | default([]) | intersect(groups.Status_production | default([])) | intersect(aws_region_group) }}"

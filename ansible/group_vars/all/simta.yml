@@ -3,18 +3,26 @@
 # Because we have other people's MX records pointing at our servers,
 # we don't want to tie the DNS name to the region name.
 mx_names:
-  - mx1
+  us-west-2:
+    - mx1
+  us-east-2:
+    - mx2
 
 egress_eip:
-  us-west-2a: 52.37.117.118
-  us-west-2b: 35.162.59.88
-  us-west-2c: 35.161.254.188
+  prod:
+    us-west-2a: 52.37.117.118
+    us-west-2b: 35.162.59.88
+    us-west-2c: 35.161.254.188
+  nonprod:
+    us-east-2a: 18.188.71.144
+    us-east-2b: 18.216.123.1
+    us-east-2c: 18.218.43.255
 
 simta_version: 1.1.3.5
 simta_dkim_selector: mx-2017-01-03
 simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
 simta_ldap_host: 'ldap-mail.itd.umich.edu'
-simta_redis_host: "pink.{{ subd }}"
+simta_redis_host: "pink.{{ aws_region }}.{{ subd }}"
 
 simta_ldap_domains:
   - alumni.engin

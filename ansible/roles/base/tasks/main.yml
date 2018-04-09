@@ -1,134 +1,137 @@
 ---
 
-- name: Disable SELinux
-  selinux:
-    state: disabled
+- tags:
+    - base
+  block:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
 
-- name: Configure sshd
-  copy:
-    dest: /etc/ssh/sshd_config
-    src: sshd_config
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart sshd
+    - name: Configure sshd
+      copy:
+        dest: /etc/ssh/sshd_config
+        src: sshd_config
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart sshd
 
-- name: Install SSH client CA
-  copy:
-    dest: /etc/ssh/ssh_client_ca.pub
-    src: ssh_client_ca.pub
-    owner: root
-    group: root
-    mode: 0444
+    - name: Install SSH client CA
+      copy:
+        dest: /etc/ssh/ssh_client_ca.pub
+        src: ssh_client_ca.pub
+        owner: root
+        group: root
+        mode: "0444"
 
-- name: Trust SSH server CA
-  copy:
-    dest: /etc/ssh/ssh_known_hosts
-    src: ssh_known_hosts
-    owner: root
-    group: root
-    mode: 0444
+    - name: Trust SSH server CA
+      copy:
+        dest: /etc/ssh/ssh_known_hosts
+        src: ssh_known_hosts
+        owner: root
+        group: root
+        mode: "0444"
 
-- name: Configure sudoers
-  template:
-    dest: /etc/sudoers
-    src: sudoers.j2
-    owner: root
-    group: root
-    mode: 0440
-    validate: 'visudo -cf %s'
-  tags: mutable
+    - name: Configure sudoers
+      template:
+        dest: /etc/sudoers
+        src: sudoers.j2
+        owner: root
+        group: root
+        mode: 0440
+        validate: visudo -cf %s
+      tags: mutable
 
-- name: Configure cloud-init
-  template:
-    dest: /etc/cloud/cloud.cfg
-    src: cloud.cfg.j2
-    owner: root
-    group: root
-    mode: 0644
+    - name: Configure cloud-init
+      template:
+        dest: /etc/cloud/cloud.cfg
+        src: cloud.cfg.j2
+        owner: root
+        group: root
+        mode: "0644"
 
-# Disable predictable network interface names
-- name: Configure grub
-  copy:
-    dest: /etc/default/grub
-    src: grub
-    owner: root
-    group: root
-    mode: 0640
-  register: result
+    # Disable predictable network interface names
+    - name: Configure grub
+      copy:
+        dest: /etc/default/grub
+        src: grub
+        owner: root
+        group: root
+        mode: "0640"
+      register: result
 
-- name: Rebuild grub.cfg
-  command: grub2-mkconfig -o /boot/grub2/grub.cfg
-  when: result is changed
+    - name: Rebuild grub.cfg
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg
+      when: result is changed
 
-- name: Set correct timezone
-  timezone:
-    name: America/Detroit
+    - name: Set correct timezone
+      timezone:
+        name: America/Detroit
 
-- name: Customize environment
-  copy:
-    dest: /etc/profile.d/99_custom.sh
-    src: profile.sh
-    owner: root
-    group: root
-    mode: 0644
+    - name: Customize environment
+      copy:
+        dest: /etc/profile.d/99_custom.sh
+        src: profile.sh
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Remove RHEL file cruft
-  file:
-    dest: "{{ item }}"
-    state: absent
-  loop:
-    - /etc/cron.daily/rhsmd
-    - /etc/motd
+    - name: Remove RHEL file cruft
+      file:
+        dest: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/cron.daily/rhsmd
+        - /etc/motd
 
-- name: Configure tmux
-  copy:
-    dest: /etc/tmux.conf
-    src: tmux.conf
-    owner: root
-    group: root
-    mode: 0644
+    - name: Configure tmux
+      copy:
+        dest: /etc/tmux.conf
+        src: tmux.conf
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Set sysctl parameters
-  sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    reload: true
-    ignoreerrors: true
-  loop:
-    - name: kernel.core_pattern
-      value: /var/tmp/%e.core.%p
-    - name: kernel.pid_max
-      value: 4194304
-    - name: fs.suid_dumpable
-      value: 2
-    - name: vm.overcommit_memory
-      value: 1
+    - name: Set sysctl parameters
+      sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        reload: true
+        ignoreerrors: true
+      loop:
+        - name: kernel.core_pattern
+          value: /var/tmp/%e.core.%p
+        - name: kernel.pid_max
+          value: 4194304
+        - name: fs.suid_dumpable
+          value: 2
+        - name: vm.overcommit_memory
+          value: 1
 
-- name: Raise corefile limits
-  copy:
-    dest: /etc/security/limits.d/core.conf
-    src: core.conf
-    owner: root
-    group: root
-    mode: 0644
+    - name: Raise corefile limits
+      copy:
+        dest: /etc/security/limits.d/core.conf
+        src: core.conf
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Configure cron scheduled jobs
-  copy:
-    dest: /etc/cron.d/dailyjobs
-    src: dailyjobs.cron
-    owner: root
-    group: root
-    mode: 0644
+    - name: Configure cron scheduled jobs
+      copy:
+        dest: /etc/cron.d/dailyjobs
+        src: dailyjobs.cron
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Configure OpenSSL certificate generation
-  copy:
-    dest: "/etc/pki/tls/{{ item }}"
-    src: "{{ item }}"
-    owner: root
-    group: root
-    mode: 0644
-  loop:
-    - openssl.cnf
-    - openssl-san.cnf
+    - name: Configure OpenSSL certificate generation
+      copy:
+        dest: /etc/pki/tls/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - openssl.cnf
+        - openssl-san.cnf
 

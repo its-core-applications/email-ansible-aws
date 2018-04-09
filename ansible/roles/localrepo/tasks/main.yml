@@ -1,13 +1,16 @@
 ---
 
-- import_role:
-    name: localrepo_update
+- tags:
+    - build
+  block:
+    - import_role:
+        name: localrepo_update
 
-- name: Configure local yum repo
-  template:
-    dest: /etc/yum.repos.d/local.repo
-    src: local.repo.j2
-    owner: root
-    group: root
-    mode: "0644"
+    - name: Configure local yum repo
+      template:
+        dest: /etc/yum.repos.d/local.repo
+        src: local.repo.j2
+        owner: root
+        group: root
+        mode: "0644"
 

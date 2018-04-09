@@ -3,11 +3,13 @@
 - hosts: Class_dev:!Status_spundown
   gather_facts: false
   tasks:
-    - name: Set status to spundown
-      delegate_to: localhost
-      become: false
-      ec2_tag:
-        region: "{{ aws_region }}"
-        resource: "{{ instance_id }}"
-        tags:
-          Status: spundown
+    - when: region == aws_region
+      block:
+        - name: Set status to spundown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spundown

@@ -1,83 +1,86 @@
 ---
 
-- name: Create SNS topics
-  delegate_to: localhost
-  become: false
-  sns_topic:
-    region: "{{ sns_region }}"
-    name: "{{ item.name }}"
-    display_name: "{{ item.display_name }}"
-    state: present
-    purge_subscriptions: false
-    subscriptions: "{{ item.subscriptions }}"
-  loop: "{{ sensu_sns }}"
+- tags:
+    - sensu
+  block:
+    - name: Create SNS topics
+      delegate_to: localhost
+      become: false
+      sns_topic:
+        region: "{{ sns_region }}"
+        name: "{{ item.name }}"
+        display_name: "{{ item.display_name }}"
+        state: present
+        purge_subscriptions: false
+        subscriptions: "{{ item.subscriptions[aws_status] }}"
+      loop: "{{ sensu_sns }}"
 
-- name: Install custom plugins
-  copy:
-    dest: "/etc/sensu/plugins/{{ item }}"
-    src: "{{ item }}"
-    owner: root
-    group: root
-    mode: 0755
-  loop:
-    - check-box-status
-    - check-google-status
-    - handler-sns
+    - name: Install custom plugins
+      copy:
+        dest: /etc/sensu/plugins/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - check-box-status
+        - check-google-status
+        - handler-sns
 
-- name: Install extra dependencies
-  yum:
-    pkg:
-      - python-feedparser
-      - python2-html2text
-    state: latest
+    - name: Install extra dependencies
+      yum:
+        pkg:
+          - python-feedparser
+          - python2-html2text
+        state: latest
 
-- name: Create the RabbitMQ vhost for sensu
-  rabbitmq_vhost:
-    name: /sensu
-    state: present
+    - name: Create the RabbitMQ vhost for sensu
+      rabbitmq_vhost:
+        name: /sensu
+        state: present
 
-- name: Create the RabbitMQ user for sensu
-  rabbitmq_user:
-    name: sensu
-    state: present
-    password: "{{ lookup('hashi_vault', 'secret=secret/sensu/rabbitmq:value') }}"
-    permissions:
-      - vhost: /sensu
-        configure_priv: .*
-        read_priv: .*
-        write_priv: .*
+    - name: Create the RabbitMQ user for sensu
+      rabbitmq_user:
+        name: sensu
+        state: present
+        password: "{{ lookup('hashi_vault', 'secret=secret/sensu/rabbitmq:value') }}"
+        permissions:
+          - vhost: /sensu
+            configure_priv: .*
+            read_priv: .*
+            write_priv: .*
 
-- name: Configure sensu server
-  template:
-    dest: /etc/sensu/conf.d/{{ item }}
-    src: "{{ item }}.j2"
-    validate: jq . %s
-  loop:
-    - api.json
-    - redis.json
-    - sensu_plugin.json
-    - notification_handlers.json
-    - handle_deregistration.json
-    - check_aws.json
-    - check_cert.json
-    - check_clamav.json
-    - check_cloud_services.json
-    - check_dnsbl.json
-    - check_elb.json
-    - check_rbldnsd.json
-    - check_redis.json
-    - check_rspamd.json
-    - check_simta.json
-    - check_system.json
-    - check_vault.json
-  notify: Restart sensu
+    - name: Configure sensu server
+      template:
+        dest: /etc/sensu/conf.d/{{ item }}
+        src: "{{ item }}.j2"
+        validate: jq . %s
+      loop:
+        - api.json
+        - redis.json
+        - sensu_plugin.json
+        - notification_handlers.json
+        - handle_deregistration.json
+        - check_aws.json
+        - check_cert.json
+        - check_clamav.json
+        - check_cloud_services.json
+        - check_dnsbl.json
+        - check_elb.json
+        - check_rbldnsd.json
+        - check_redis.json
+        - check_rspamd.json
+        - check_simta.json
+        - check_system.json
+        - check_vault.json
+      notify: Restart sensu
 
-- name: Enable sensu server
-  systemd:
-    name: "{{ item }}"
-    enabled: true
-  loop:
-    - sensu-server
-    - sensu-api
-  notify: Restart sensu server
+    - name: Enable sensu server
+      systemd:
+        name: "{{ item }}"
+        enabled: true
+      loop:
+        - sensu-server
+        - sensu-api
+      notify: Restart sensu server
 

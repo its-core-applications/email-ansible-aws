@@ -1,39 +1,43 @@
 ---
 
-- name: Install extra dependencies
-  yum:
-    name: pyOpenSSL
-    state: latest
+- tags:
+    - google
+  block:
+    - name: Install extra dependencies
+      yum:
+        name: pyOpenSSL
+        state: latest
 
-- name: Install GYB
-  become_user: collaborate
-  git:
-    repo: https://bitbucket.org/its-application-delivery/got-your-back/
-    dest: ~/GYB
-    force: true
+    - name: Install GYB
+      become_user: collaborate
+      git:
+        repo: https://bitbucket.org/its-application-delivery/got-your-back/
+        dest: ~/GYB
+        force: true
 
-- name: Configure GYB
-  file:
-    dest: "/home/collaborate/GYB/{{ item }}"
-    state: touch
-    owner: collaborate
-    group: nonpeople
-  loop:
-    - noupdatecheck.txt
-    - nobrowser.txt
+    - name: Configure GYB
+      file:
+        dest: /home/collaborate/GYB/{{ item }}
+        state: touch
+        owner: collaborate
+        group: nonpeople
+      loop:
+        - noupdatecheck.txt
+        - nobrowser.txt
 
-- name: Install gyb wrapper
-  copy:
-    dest: /usr/bin/gyb
-    src: gyb.sh
-    owner: root
-    group: root
-    mode: 0755
+    - name: Install gyb wrapper
+      copy:
+        dest: /usr/bin/gyb
+        src: gyb.sh
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Set up gyb alias
-  copy:
-    dest: /etc/profile.d/99_gyb.sh
-    src: 99_gyb.sh
-    owner: root
-    group: root
-    mode: 0644
+    - name: Set up gyb alias
+      copy:
+        dest: /etc/profile.d/99_gyb.sh
+        src: 99_gyb.sh
+        owner: root
+        group: root
+        mode: "0644"
+

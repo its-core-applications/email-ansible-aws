@@ -1,17 +1,22 @@
 ---
 
-- name: Install bam wrapper
-  copy:
-    dest: /usr/bin/bam
-    src: bam.sh
-    owner: root
-    group: root
-    mode: 0755
+- tags:
+    - box
+    - box_bam
+  block:
+    - name: Install bam wrapper
+      copy:
+        dest: /usr/bin/bam
+        src: bam.sh
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Set up bam alias
-  copy:
-    dest: /etc/profile.d/99_bam.sh
-    src: 99_bam.sh
-    owner: root
-    group: root
-    mode: 0644
+    - name: Set up bam alias
+      copy:
+        dest: /etc/profile.d/99_bam.sh
+        src: 99_bam.sh
+        owner: root
+        group: root
+        mode: "0644"
+

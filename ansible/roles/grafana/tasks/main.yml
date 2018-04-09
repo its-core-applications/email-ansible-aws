@@ -1,66 +1,70 @@
 ---
 
-- name: Configure grafana repo
-  copy:
-    dest: /etc/yum.repos.d/grafana.repo
-    src: grafana.repo
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Install grafana
-  yum:
-    name: grafana
-    state: latest
-  notify: Restart grafana
-
-- name: Configure grafana
-  template:
-    dest: /etc/grafana/grafana.ini
-    src: grafana.ini.j2
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart grafana
-
-- name: See if we have a database backup
-  stat:
-    path: /home/email/grafana.db
-  register: result
-
-- name: Restore database backup
-  when: result.stat.exists
+- tags:
+    - grafana
   block:
-    - name: Restore grafana.db
-      command: cp /home/email/grafana.db /var/lib/grafana
-      args:
-        creates: /var/lib/grafana/grafana.db
+    - name: Configure grafana repo
+      copy:
+        dest: /etc/yum.repos.d/grafana.repo
+        src: grafana.repo
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Install grafana
+      yum:
+        name: grafana
+        state: latest
       notify: Restart grafana
 
-    - name: Fix permissions on grafana.db
-      file:
-        dest: /var/lib/grafana/grafana.db
-        owner: grafana
-        group: grafana
-        mode: 0644
+    - name: Configure grafana
+      template:
+        dest: /etc/grafana/grafana.ini
+        src: grafana.ini.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart grafana
 
-- name: Enable grafana
-  systemd:
-    name: grafana-server
-    enabled: true
-  notify: Restart grafana
+    - name: See if we have a database backup
+      stat:
+        path: /home/email/grafana.db
+      register: result
 
-- name: "Configure a vhost for graphs.{{ subd }}"
-  template:
-    dest: "/etc/httpd/conf.d/graphs.{{ subd }}.conf"
-    src: httpd.conf.j2
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart httpd
+    - name: Restore database backup
+      when: result.stat.exists
+      block:
+        - name: Restore grafana.db
+          command: cp /home/email/grafana.db /var/lib/grafana
+          args:
+            creates: /var/lib/grafana/grafana.db
+          notify: Restart grafana
 
-- name: Schedule backups of grafana.db
-  cron:
-    name: backup grafana.db
-    minute: "*/10"
-    job: "cp /var/lib/grafana/grafana.db /home/email/"
+        - name: Fix permissions on grafana.db
+          file:
+            dest: /var/lib/grafana/grafana.db
+            owner: grafana
+            group: grafana
+            mode: "0644"
+
+    - name: Enable grafana
+      systemd:
+        name: grafana-server
+        enabled: true
+      notify: Restart grafana
+
+    - name: Configure a vhost for graphs.{{ subd }}
+      template:
+        dest: /etc/httpd/conf.d/graphs.{{ subd }}.conf
+        src: httpd.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart httpd
+
+    - name: Schedule backups of grafana.db
+      cron:
+        name: backup grafana.db
+        minute: "*/10"
+        job: cp /var/lib/grafana/grafana.db /home/email/
+

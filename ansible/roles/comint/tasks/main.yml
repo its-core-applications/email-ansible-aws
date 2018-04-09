@@ -1,37 +1,40 @@
 ---
 
-- name: Install comint
-  yum:
-    name: comint
-    state: latest
-  when: bootstrap == false
+- tags:
+    - comint
+  block:
+    - name: Install comint
+      yum:
+        name: comint
+        state: latest
+      when: bootstrap == false
 
-- name: Create directories
-  file:
-    dest: "{{ item }}"
-    state: directory
-    owner: collaborate
-    group: nonpeople
-    mode: 0775
-  loop:
-    - "{{ comint_base }}"
-    - "{{ comint_base }}/dispatch"
-    - "{{ comint_base }}/dispatch/local"
-    - "{{ comint_base }}/nag"
-    - "{{ comint_base }}/nag/local"
-    - "{{ comint_base }}/report"
-    - "{{ comint_base }}/report/local"
+    - name: Create directories
+      file:
+        dest: "{{ item }}"
+        state: directory
+        owner: collaborate
+        group: nonpeople
+        mode: "0775"
+      loop:
+        - "{{ comint_base }}"
+        - "{{ comint_base }}/dispatch"
+        - "{{ comint_base }}/dispatch/local"
+        - "{{ comint_base }}/nag"
+        - "{{ comint_base }}/nag/local"
+        - "{{ comint_base }}/report"
+        - "{{ comint_base }}/report/local"
 
-- name: Set up monitoring skeleton
-  template:
-    dest: "{{ comint_base }}/{{ item }}"
-    src: "{{ item }}.j2"
-    owner: collaborate
-    group: nonpeople
-    mode: 0664
-  loop:
-    - comint.conf
-    - dispatch/dispatch.conf
-    - nag/nag.conf
-    - report/report.conf
+    - name: Set up monitoring skeleton
+      template:
+        dest: "{{ comint_base }}/{{ item }}"
+        src: "{{ item }}.j2"
+        owner: collaborate
+        group: nonpeople
+        mode: "0664"
+      loop:
+        - comint.conf
+        - dispatch/dispatch.conf
+        - nag/nag.conf
+        - report/report.conf
 

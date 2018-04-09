@@ -35,7 +35,7 @@
       ec2_vol:
         name: logs
         region: "{{ aws_region }}"
-        instance: "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'instance_id') | join }}"
+        instance: "{{ groups.Class_syslog | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvdd
         volume_type: gp2
         volume_size: 300
@@ -46,7 +46,7 @@
       ec2_vol:
         name: splunk
         region: "{{ aws_region }}"
-        instance:  "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'instance_id') | join }}"
+        instance:  "{{ groups.Class_syslog | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvde
         volume_type: gp2
         volume_size: 5
@@ -57,7 +57,7 @@
       ec2_vol:
         name: carbon
         region: "{{ aws_region }}"
-        instance: "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'instance_id') | join }}"
+        instance: "{{ groups.Class_syslog | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvdf
         volume_type: gp2
         volume_size: 10
@@ -69,19 +69,27 @@
 - hosts: localhost
   become: false
   tasks:
-    - name: Set syslog.{{ subd }}
+    - import_role:
+        name: route53_dns_from_inventory
+      vars:
+        dns_host: syslog
+
+    - name: Set aliases
       route53:
         command: create
         overwrite: true
         zone: "{{ subd }}"
-        record: syslog.{{ subd }}
-        type: A
+        record: "{{ item }}.{{ aws_region }}.{{ subd }}"
+        type: CNAME
         ttl: 60
-        value: "{{ groups.Class_syslog | default({}) | map('extract', hostvars, 'private_ip_address') | join(', ') }}"
-        wait: true
+        value: "{{ syslog_server }}"
+      loop:
+        - graphite
+        - sensu
 
 - hosts: Class_syslog
-  roles:
-    - role: sensu_proxyclients
-      tags: sensu
-
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: sensu_proxyclients

@@ -1,60 +1,63 @@
 ---
 
-- name: Install extra packages
-  yum:
-    name:
-      - gitolite3
-      - opendkim
-      - openldap-clients
-      - python-ldap
-      - python-netaddr
-      - python-virtualenv
-      - unzip
-    state: latest
-
-- name: Install extra pip packages
-  pip:
-    name:
-      - Jinja2
-      - ftptool
-      - hvac
-    state: latest
-
-- name: Create filesystem for /home
-  filesystem:
-    dev: /dev/xvdd
-    fstype: xfs
-    force: false
-  register: result
-
-- name: Make new /home usable
-  when: bootstrap and result is changed
+- tags:
+    - master
   block:
-    - name: Temporarily mount /home
+    - name: Install extra packages
+      yum:
+        name:
+          - gitolite3
+          - opendkim
+          - openldap-clients
+          - python-ldap
+          - python-netaddr
+          - python-virtualenv
+          - unzip
+        state: latest
+
+    - name: Install extra pip packages
+      pip:
+        name:
+          - Jinja2
+          - ftptool
+          - hvac
+        state: latest
+
+    - name: Create filesystem for /home
+      filesystem:
+        dev: /dev/xvdd
+        fstype: xfs
+        force: false
+      register: result
+
+    - name: Make new /home usable
+      when: bootstrap and result is changed
+      block:
+        - name: Temporarily mount /home
+          mount:
+            name: /var/tmp/home
+            src: /dev/xvdd
+            fstype: xfs
+            state: mounted
+          when: result is changed
+
+        - name: Copy the skeleton over
+          command: cp -rv /home/* /var/tmp/home
+
+        - name: Undo temporary mount
+          mount:
+            name: /var/tmp/home
+            state: unmounted
+
+        - name: Erase temporary mount
+          mount:
+            name: /var/tmp/home
+            state: absent
+
+    - name: Mount /home
       mount:
-        name: /var/tmp/home
+        name: /home
         src: /dev/xvdd
         fstype: xfs
         state: mounted
-      when: result is changed
-
-    - name: Copy the skeleton over
-      command: cp -rv /home/* /var/tmp/home
-
-    - name: Undo temporary mount
-      mount:
-        name: /var/tmp/home
-        state: unmounted
-
-    - name: Erase temporary mount
-      mount:
-        name: /var/tmp/home
-        state: absent
-
-- name: Mount /home
-  mount:
-    name: /home
-    src: /dev/xvdd
-    fstype: xfs
-    state: mounted
 

@@ -1,10 +1,13 @@
 ---
 
-- name: Configure umcollab yum repo
-  template:
-    dest: /etc/yum.repos.d/umcollab.repo
-    src: umcollab.repo.j2
-    owner: root
-    group: root
-    mode: 0644
+- tags:
+    - s3repo
+  block:
+    - name: Configure umcollab yum repo
+      template:
+        dest: /etc/yum.repos.d/umcollab.repo
+        src: umcollab.repo.j2
+        owner: root
+        group: root
+        mode: "0644"
 

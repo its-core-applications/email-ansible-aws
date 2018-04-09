@@ -11,7 +11,9 @@
 
     - name: Create dnsbl servers
       ec2:
-        group: [ main-default, rbldnsd ]
+        group:
+          - main-default
+          - rbldnsd
         key_name: "{{ aws_ssh_key }}"
         instance_type: m5.large
         region: "{{ aws_region }}"
@@ -22,28 +24,35 @@
         instance_tags:
           Class: dnsbl
           Status: spinup
-      loop: "{{ range(2 - (groups.Class_dnsbl | default([]) | intersect(groups.Status_production | default([])) | length)) | list }}"
+      loop: "{{ range(2 - (groups.Class_dnsbl | default([]) | intersect(aws_region_group) | intersect(groups.Status_production | default([])) | length)) | list }}"
       register: ec2
 
     - import_tasks: task_wait_for_launched.yml
 
 - hosts: Class_dnsbl:&Status_spinup
   tasks:
-    - name: Sync DNSBLs
-      import_role:
-        name: rbldnsd_sync
+    - when: region == aws_region
+      block:
+        - name: Sync DNSBLs
+          import_role:
+            name: rbldnsd_sync
 
-    - name: Set status to production
-      delegate_to: localhost
-      become: false
-      ec2_tag:
-        resource: "{{ instance_id }}"
-        tags:
-          Status: production
+        - name: Set status to production
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            resource: "{{ instance_id }}"
+            tags:
+              Status: production
 
-    - meta: refresh_inventory
+        - meta: refresh_inventory
 
 - hosts: localhost
   become: false
   tasks:
-    - import_tasks: task_dns_rbldnsd.yml
+    - import_role:
+        name: route53_dns_from_inventory
+      vars:
+        dns_host: rbldnsd
+        dns_group: Class_dnsbl
+

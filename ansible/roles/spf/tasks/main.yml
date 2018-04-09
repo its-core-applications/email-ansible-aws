@@ -2,6 +2,8 @@
 
 - tags:
     - spf
+    - dns
+    - route53
   block:
     - name: Install script dependencies
       yum:
@@ -16,7 +18,7 @@
         src: spf-flatten
         owner: root
         group: root
-        mode: 0755
+        mode: "0755"
 
     - name: Create main SPF records
       route53:

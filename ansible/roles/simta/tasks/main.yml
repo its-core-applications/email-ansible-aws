@@ -1,200 +1,203 @@
 ---
 
-- name: Install simta
-  yum:
-    name: simta-{{ simta_version }}
-    state: present
-  notify: Restart simta
+- tags:
+    - simta
+  block:
+    - name: Install simta
+      yum:
+        name: simta-{{ simta_version }}
+        state: present
+      notify: Restart simta
 
-- name: Install auxiliary packages
-  yum:
-    name:
-      - denser-utils
-      - simta-admin
-      - simta-mscan
-      - simvacation
-    state: latest
+    - name: Install auxiliary packages
+      yum:
+        name:
+          - denser-utils
+          - simta-admin
+          - simta-mscan
+          - simvacation
+        state: latest
 
-- name: Create directories
-  file:
-    dest: "{{ item }}"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  loop:
-    - /etc/mail
-    - /etc/mail/filters
-    - /etc/systemd/system/simta.service.d
+    - name: Create directories
+      file:
+        dest: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - /etc/mail
+        - /etc/mail/filters
+        - /etc/systemd/system/simta.service.d
 
-- name: Enable core files
-  copy:
-    dest: /etc/systemd/system/simta.service.d/core.conf
-    src: systemd-core.conf
-    owner: root
-    group: root
-    mode: 0644
+    - name: Enable core files
+      copy:
+        dest: /etc/systemd/system/simta.service.d/core.conf
+        src: systemd-core.conf
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Install standard filters
-  copy:
-    dest: /etc/mail/filters/{{ item }}
-    src: "filters/{{ item }}"
-    owner: root
-    group: root
-    mode: 0755
-  loop:
-    - 19_dropfrom
-    - 20_auth
-    - 20_from
-    - 21_domain
-    - 21_to
-    - 21_ubl
-    - 30_nsrecord
-    - 40_string
-  when:
-    - simta_localmail == false
-    - simta_filters == true
+    - name: Install standard filters
+      copy:
+        dest: /etc/mail/filters/{{ item }}
+        src: filters/{{ item }}
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - 19_dropfrom
+        - 20_auth
+        - 20_from
+        - 21_domain
+        - 21_to
+        - 21_ubl
+        - 30_nsrecord
+        - 40_string
+      when:
+        - simta_localmail == false
+        - simta_filters == true
 
-- name: Configure simta
-  template:
-    dest: /etc/simta.conf
-    src: simta.conf.j2
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart simta
+    - name: Configure simta
+      template:
+        dest: /etc/simta.conf
+        src: simta.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart simta
 
-- name: Install /etc/mail/aliases
-  copy:
-    dest: /etc/mail/aliases
-    src: "{{ lookup('first_found', 'aliases-' ~ simta_config, 'aliases') }}"
-    owner: root
-    group: root
-    mode: 0644
-  notify: Rebuild aliases
-  tags: mutable
+    - name: Install /etc/mail/aliases
+      copy:
+        dest: /etc/mail/aliases
+        src: "{{ lookup('first_found', 'aliases-' ~ simta_config, 'aliases') }}"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Rebuild aliases
+      tags: mutable
 
-- name: Configure tcpwrappers
-  copy:
-    dest: /etc/{{ item }}
-    src: "{{ lookup('first_found', item ~ '-' ~ simta_config, item) }}"
-    owner: collaborate
-    group: collaboration
-    mode: 0664
-  loop:
-    - hosts.allow
-    - hosts.deny
-  when: simta_tcpwrappers
-  tags: mutable
+    - name: Configure tcpwrappers
+      copy:
+        dest: /etc/{{ item }}
+        src: "{{ lookup('first_found', item ~ '-' ~ simta_config, item) }}"
+        owner: collaborate
+        group: collaboration
+        mode: "0664"
+      loop:
+        - hosts.allow
+        - hosts.deny
+      when: simta_tcpwrappers
+      tags: mutable
 
-- name: Install the public suffix list
-  get_url:
-    dest: /etc/mail/public_suffix_list.dat
-    url: https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat
-    owner: root
-    group: root
-    mode: 0644
-    force: true
-  when: simta_localmail == false
-  notify: Restart simta
-  tags: mutable
+    - name: Install the public suffix list
+      get_url:
+        dest: /etc/mail/public_suffix_list.dat
+        url: https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat
+        owner: root
+        group: root
+        mode: "0644"
+        force: true
+      when: simta_localmail == false
+      notify: Restart simta
+      tags: mutable
 
-- name: Create /etc/mail/ldap
-  file:
-    dest: /etc/mail/ldap
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  when: simta_ldap
+    - name: Create /etc/mail/ldap
+      file:
+        dest: /etc/mail/ldap
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      when: simta_ldap
 
-- name: Configure OpenLDAP defaults
-  copy:
-    dest: /etc/openldap/ldap.conf
-    src: ldap.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart simta
-  when: simta_ldap
+    - name: Configure OpenLDAP defaults
+      copy:
+        dest: /etc/openldap/ldap.conf
+        src: ldap.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart simta
+      when: simta_ldap
 
-- name: "Install LDAP config file for {{ tld }}"
-  template:
-    dest: "/etc/mail/ldap/{{ tld }}"
-    src: ldap/tld.j2
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart simta
-  when: simta_ldap
+    - name: Install LDAP config file for {{ tld }}
+      template:
+        dest: /etc/mail/ldap/{{ tld }}
+        src: ldap/tld.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart simta
+      when: simta_ldap
 
-- name: Install LDAP config files for subdomains
-  template:
-    dest: "/etc/mail/ldap/{{ item }}.{{ tld }}"
-    src: ldap/subdomain.j2
-    owner: root
-    group: root
-    mode: 0644
-  loop: "{{ simta_ldap_domains }}"
-  notify: Restart simta
-  when: simta_ldap
+    - name: Install LDAP config files for subdomains
+      template:
+        dest: /etc/mail/ldap/{{ item }}.{{ tld }}
+        src: ldap/subdomain.j2
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ simta_ldap_domains }}"
+      notify: Restart simta
+      when: simta_ldap
 
-- name: Install LDAP config files for mapped domains
-  template:
-    dest: "/etc/mail/ldap/{{ item.domain }}"
-    src: ldap/mapped_domain.j2
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart simta
-  loop: "{{ simta_ldap_domains_mapped | default([]) }}"
-  when: simta_ldap
+    - name: Install LDAP config files for mapped domains
+      template:
+        dest: /etc/mail/ldap/{{ item.domain }}
+        src: ldap/mapped_domain.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart simta
+      loop: "{{ simta_ldap_domains_mapped | default([]) }}"
+      when: simta_ldap
 
-- name: Install alias files for alias domains
-  copy:
-    dest: "/etc/mail/aliases-{{ item }}"
-    src: "aliases-{{ item }}"
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart simta
-  loop: "{{ simta_alias_domains | default([]) }}"
+    - name: Install alias files for alias domains
+      copy:
+        dest: /etc/mail/aliases-{{ item }}
+        src: aliases-{{ item }}
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart simta
+      loop: "{{ simta_alias_domains | default([]) }}"
 
-- name: Configure simvacation
-  template:
-    dest: /etc/mail/simvacation.conf
-    src: simvacation.conf.j2
-    owner: root
-    group: root
-    mode: 0644
-  when: simta_ldap
+    - name: Configure simvacation
+      template:
+        dest: /etc/mail/simvacation.conf
+        src: simvacation.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
+      when: simta_ldap
 
-- name: Install SASL config file
-  copy:
-    dest: /etc/sasl2/simta.conf
-    src: simta.sasl2
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart simta
-  when: simta_authn
+    - name: Install SASL config file
+      copy:
+        dest: /etc/sasl2/simta.conf
+        src: simta.sasl2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart simta
+      when: simta_authn
 
-- name: Enable simta
-  systemd:
-    name: simta
-    daemon_reload: true
-    enabled: true
-  notify: Restart simta
+    - name: Enable simta
+      systemd:
+        name: simta
+        daemon_reload: true
+        enabled: true
+      notify: Restart simta
 
-- name: Install custom monitoring scripts
-  template:
-    dest: "{{ comint_base }}/{{ item }}"
-    src: "{{ item }}.j2"
-    owner: collaborate
-    group: nonpeople
-    mode: 0755
-  loop:
-    - check-dnsbl
-    - check-dnsl
-  when: trendmicro_key is defined
+    - name: Install custom monitoring scripts
+      template:
+        dest: "{{ comint_base }}/{{ item }}"
+        src: "{{ item }}.j2"
+        owner: collaborate
+        group: nonpeople
+        mode: "0755"
+      loop:
+        - check-dnsbl
+        - check-dnsl
+      when: trendmicro_key is defined
 

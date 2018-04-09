@@ -1,10 +1,18 @@
 ---
 
 - hosts: Class_egress
-  roles:
-    - { role: base, tags: base }
-    - { role: rsyslog_forward, tags: rsyslog_forward }
-    - { role: localnameserver, tags: localnameserver }
-    - { role: simta, tags: simta }
-    - { role: redis, tags: redis }
-    - { role: sensu, tags: sensu }
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: base
+        - import_role:
+            name: rsyslog_forward
+        - import_role:
+            name: localnameserver
+        - import_role:
+            name: simta
+        - import_role:
+            name: redis
+        - import_role:
+            name: sensu

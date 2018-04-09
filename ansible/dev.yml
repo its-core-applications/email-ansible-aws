@@ -4,10 +4,10 @@
   vars:
     bootstrap: true
   tasks:
-    - import_role:
-        name: base
-      tags: base
-    - import_role:
-        name: build
-      tags: build
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: base
+        - import_role:
+            name: build
 

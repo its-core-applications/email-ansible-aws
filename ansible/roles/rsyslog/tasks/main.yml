@@ -1,69 +1,72 @@
 ---
 
-- name: Install rsyslog-relp
-  yum:
-    name: rsyslog-relp
-    state: present
+- tags:
+    - rsyslog
+  block:
+    - name: Install rsyslog-relp
+      yum:
+        name: rsyslog-relp
+        state: present
 
-- name: Configure systemd-journald
-  copy:
-    dest: /etc/systemd/journald.conf
-    src: journald.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart systemd-journald
+    - name: Configure systemd-journald
+      copy:
+        dest: /etc/systemd/journald.conf
+        src: journald.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart systemd-journald
 
-- name: Configure rsyslog
-  copy:
-    dest: /etc/rsyslog.conf
-    src: rsyslog.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart rsyslog
+    - name: Configure rsyslog
+      copy:
+        dest: /etc/rsyslog.conf
+        src: rsyslog.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart rsyslog
 
-- name: Create /etc/systemd/system/rsyslog.service.d
-  file:
-    dest: /etc/systemd/system/rsyslog.service.d
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+    - name: Create /etc/systemd/system/rsyslog.service.d
+      file:
+        dest: /etc/systemd/system/rsyslog.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Configure rsyslog umask
-  copy:
-    dest: /etc/systemd/system/rsyslog.service.d/umask.conf
-    src: rsyslog.umask
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart rsyslog
+    - name: Configure rsyslog umask
+      copy:
+        dest: /etc/systemd/system/rsyslog.service.d/umask.conf
+        src: rsyslog.umask
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart rsyslog
 
-- name: Remove RHEL rsyslog cruft
-  file:
-    dest: "{{ item }}"
-    state: absent
-  loop:
-    - /etc/rsyslog.d/21-cloudinit.conf
-    - /etc/rsyslog.d/listen.conf
-  notify: Restart rsyslog
+    - name: Remove RHEL rsyslog cruft
+      file:
+        dest: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/rsyslog.d/21-cloudinit.conf
+        - /etc/rsyslog.d/listen.conf
+      notify: Restart rsyslog
 
-- name: Configure logrotate
-  copy:
-    dest: /etc/logrotate.conf
-    src: logrotate.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: Run logrotate
+    - name: Configure logrotate
+      copy:
+        dest: /etc/logrotate.conf
+        src: logrotate.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Run logrotate
 
-- name: Configure logrotate for syslog files
-  copy:
-    dest: /etc/logrotate.d/syslog
-    src: logrotate.syslog
-    owner: root
-    group: root
-    mode: 0644
-  notify: Run logrotate
+    - name: Configure logrotate for syslog files
+      copy:
+        dest: /etc/logrotate.d/syslog
+        src: logrotate.syslog
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Run logrotate
 

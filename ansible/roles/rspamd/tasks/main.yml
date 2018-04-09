@@ -1,46 +1,50 @@
 ---
 
-- name: Install rspamd
-  yum:
-    name: rspamd
-    state: latest
-  notify: Restart rspamd
+- tags:
+    - rspamd
+  block:
+    - name: Install rspamd
+      yum:
+        name: rspamd
+        state: latest
+      notify: Restart rspamd
 
-- name: Local rspamd configuration
-  copy:
-    dest: /etc/rspamd/{{ item }}
-    src: "{{ item }}"
-    owner: root
-    group: root
-    mode: "0644"
-  loop:
-    - local.d/arc.conf
-    - local.d/dkim.conf
-    - local.d/dmarc.conf
-    - local.d/emails.conf
-    - local.d/fuzzy_check.conf
-    - local.d/logging.inc
-    - local.d/metrics.conf
-    - local.d/multimap.conf
-    - local.d/rbl.conf
-    - local.d/spf.conf
-    - local.d/surbl.conf
-    - local.d/worker-proxy.inc
-    - override.d/metrics.conf
-    - umich_bad_tld.inc
-  notify: Restart rspamd
+    - name: Local rspamd configuration
+      copy:
+        dest: /etc/rspamd/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - local.d/arc.conf
+        - local.d/dkim.conf
+        - local.d/dmarc.conf
+        - local.d/emails.conf
+        - local.d/fuzzy_check.conf
+        - local.d/logging.inc
+        - local.d/metrics.conf
+        - local.d/multimap.conf
+        - local.d/rbl.conf
+        - local.d/spf.conf
+        - local.d/surbl.conf
+        - local.d/worker-proxy.inc
+        - override.d/metrics.conf
+        - umich_bad_tld.inc
+      notify: Restart rspamd
 
-- name: Enable rspamd
-  systemd:
-    name: rspamd
-    enabled: true
-    daemon_reload: true
-  notify: Restart rspamd
+    - name: Enable rspamd
+      systemd:
+        name: rspamd
+        enabled: true
+        daemon_reload: true
+      notify: Restart rspamd
 
-- name: Install custom monitoring script
-  copy:
-    dest: "{{ comint_base }}/check-rspamd-gtube"
-    src: check-rspamd-gtube
-    owner: collaborate
-    group: nonpeople
-    mode: "0755"
+    - name: Install custom monitoring script
+      copy:
+        dest: "{{ comint_base }}/check-rspamd-gtube"
+        src: check-rspamd-gtube
+        owner: collaborate
+        group: nonpeople
+        mode: "0755"
+

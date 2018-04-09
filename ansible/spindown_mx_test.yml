@@ -7,7 +7,7 @@
       delegate_to: localhost
       become: false
       ec2_tag:
-        region: "{{ aws_region }}"
+        region: "{{ region }}"
         resource: "{{ instance_id }}"
         tags:
           Status: spundown

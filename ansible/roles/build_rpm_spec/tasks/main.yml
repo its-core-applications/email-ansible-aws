@@ -1,33 +1,36 @@
 ---
 
-- name: Install build dependencies for {{ build_name }}
-  yum:
-    name: "{{ build_deps }}"
-    state: latest
-  when: build_deps is defined
-
-- name: Build {{ build_name }}
-  become: false
+- tags:
+    - build
   block:
-    - name: Install spec file for {{ build_name }}
-      copy:
-        src: build/{{ build_name }}/{{ build_name }}.spec
-        dest: ~/{{ build_name }}.spec
+    - name: Install build dependencies for {{ build_name }}
+      yum:
+        name: "{{ build_deps }}"
+        state: latest
+      when: build_deps is defined
 
-    - name: Fetch sources for {{ build_name }}
-      command: spectool -g -R ~/{{ build_name }}.spec
+    - name: Build {{ build_name }}
+      become: false
+      block:
+        - name: Install spec file for {{ build_name }}
+          copy:
+            src: build/{{ build_name }}/{{ build_name }}.spec
+            dest: ~/{{ build_name }}.spec
 
-    - name: Install non-fetchable sources for {{ build_name }}
-      copy:
-        src: "{{ item }}"
-        dest: ~/rpmbuild/SOURCES/{{ item | basename }}
-      loop: "{{ query('fileglob', 'build/' ~ build_name ~ '/sources/*') }}"
+        - name: Fetch sources for {{ build_name }}
+          command: spectool -g -R ~/{{ build_name }}.spec
 
-    - name: Build {{ build_name }} RPM
-      command: rpmbuild -ba ~/{{ build_name }}.spec
-      environment:
-          QA_RPATHS: 1
+        - name: Install non-fetchable sources for {{ build_name }}
+          copy:
+            src: "{{ item }}"
+            dest: ~/rpmbuild/SOURCES/{{ item | basename }}
+          loop: "{{ query('fileglob', 'build/' ~ build_name ~ '/sources/*') }}"
 
-- import_role:
-    name: localrepo_update
+        - name: Build {{ build_name }} RPM
+          command: rpmbuild -ba ~/{{ build_name }}.spec
+          environment:
+              QA_RPATHS: 1
+
+    - import_role:
+        name: localrepo_update
 

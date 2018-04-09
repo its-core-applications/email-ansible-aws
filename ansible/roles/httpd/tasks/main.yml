@@ -1,23 +1,26 @@
 ---
 
-- name: Install httpd
-  yum:
-    name:
-      - httpd
-      - mod_ssl
-    state: latest
-  notify: Restart httpd
+- tags:
+    - httpd
+  block:
+    - name: Install httpd
+      yum:
+        name:
+          - httpd
+          - mod_ssl
+        state: latest
+      notify: Restart httpd
 
-- name: Remove unwanted config files
-  file:
-    dest: "{{ item }}"
-    state: absent
-  loop:
-    - /etc/httpd/conf.d/welcome.conf
+    - name: Remove unwanted config files
+      file:
+        dest: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/httpd/conf.d/welcome.conf
 
-- name: Enable httpd
-  systemd:
-    name: httpd
-    enabled: true
-  notify: Restart httpd
+    - name: Enable httpd
+      systemd:
+        name: httpd
+        enabled: true
+      notify: Restart httpd
 

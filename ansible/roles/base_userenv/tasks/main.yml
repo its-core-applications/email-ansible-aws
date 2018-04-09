@@ -2,6 +2,9 @@
 
 - name: Install user config files
   become: false
+  tags:
+    - base
+    - base_userenv
   block:
     - name: Configure bash
       template:

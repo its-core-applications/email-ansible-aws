@@ -1,5 +1,8 @@
 ---
 
-- name: Update yum repository
-  become: false
-  command: createrepo --database ~/rpmbuild/RPMS
+- tags:
+    - build
+  block:
+    - name: Update yum repository
+      become: false
+      command: createrepo --database ~/rpmbuild/RPMS

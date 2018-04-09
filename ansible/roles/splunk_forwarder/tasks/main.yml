@@ -1,44 +1,47 @@
 ---
 
-- name: Create splunk filesystem
-  filesystem:
-    dev: /dev/xvde
-    fstype: xfs
-    force: false
+- tags:
+    - splunk
+  block:
+    - name: Create splunk filesystem
+      filesystem:
+        dev: /dev/xvde
+        fstype: xfs
+        force: false
 
-- name: Mount splunk filesystem
-  mount:
-    name: /opt/splunkforwarder
-    src: /dev/xvde
-    fstype: xfs
-    state: mounted
+    - name: Mount splunk filesystem
+      mount:
+        name: /opt/splunkforwarder
+        src: /dev/xvde
+        fstype: xfs
+        state: mounted
 
-- name: Install splunk forwarder
-  yum:
-    name: splunkforwarder
-    state: latest
-  notify: Restart splunkforwarder
+    - name: Install splunk forwarder
+      yum:
+        name: splunkforwarder
+        state: latest
+      notify: Restart splunkforwarder
 
-- name: Install systemd unit file for splunk
-  copy:
-    dest: /etc/systemd/system/splunkforwarder.service
-    src: splunkforwarder.service
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart splunkforwarder
+    - name: Install systemd unit file for splunk
+      copy:
+        dest: /etc/systemd/system/splunkforwarder.service
+        src: splunkforwarder.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart splunkforwarder
 
-- name: Configure splunk deploymentclient
-  copy:
-    dest: /opt/splunkforwarder/etc/system/default/deploymentclient.conf
-    src: deploymentclient.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart splunkforwarder
+    - name: Configure splunk deploymentclient
+      copy:
+        dest: /opt/splunkforwarder/etc/system/default/deploymentclient.conf
+        src: deploymentclient.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart splunkforwarder
 
-- name: Enable splunk service
-  service:
-    name: splunkforwarder
-    enabled: true
+    - name: Enable splunk service
+      service:
+        name: splunkforwarder
+        enabled: true
 

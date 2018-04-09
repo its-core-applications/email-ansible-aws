@@ -1,37 +1,40 @@
 ---
 
-- name: Install build dependencies for {{ build_name }}
-  yum:
-    name: "{{ build_deps }}"
-    state: latest
-  when: build_deps is defined
-
-- name: Build {{ build_name }}
-  become: false
+- tags:
+    - build
   block:
-    - name: Clone {{ build_name }} git repo
-      git:
-        repo: "{{ build_repo }}"
-        dest: ~/{{ build_name }}
-        version: "{{ build_version | default(omit) }}"
-        update: true
-        force: true
+    - name: Install build dependencies for {{ build_name }}
+      yum:
+        name: "{{ build_deps }}"
+        state: latest
+      when: build_deps is defined
 
-    - name: Build {{ build_name }} RPM (autoreconf)
-      command: autoreconf -fiv
-      args:
-        chdir: ~/{{ build_name }}
+    - name: Build {{ build_name }}
+      become: false
+      block:
+        - name: Clone {{ build_name }} git repo
+          git:
+            repo: "{{ build_repo }}"
+            dest: ~/{{ build_name }}
+            version: "{{ build_version | default(omit) }}"
+            update: true
+            force: true
 
-    - name: Build {{ build_name }} RPM (configure)
-      command: ./configure
-      args:
-        chdir: ~/{{ build_name }}
+        - name: Build {{ build_name }} RPM (autoreconf)
+          command: autoreconf -fiv
+          args:
+            chdir: ~/{{ build_name }}
 
-    - name: Build {{ build_name }} RPM (make rpm)
-      make:
-        chdir: ~/{{ build_name }}
-        target: rpm
+        - name: Build {{ build_name }} RPM (configure)
+          command: ./configure
+          args:
+            chdir: ~/{{ build_name }}
 
-- import_role:
-    name: localrepo_update
+        - name: Build {{ build_name }} RPM (make rpm)
+          make:
+            chdir: ~/{{ build_name }}
+            target: rpm
+
+    - import_role:
+        name: localrepo_update
 

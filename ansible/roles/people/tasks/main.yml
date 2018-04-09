@@ -1,31 +1,36 @@
 ---
 
-- name: Create staff group
-  group:
-    name: staff
-    gid: 1100
-    state: present
-  tags: mutable
+- tags:
+    - people
+    - accounts
+  block:
+    - name: Create staff group
+      group:
+        name: staff
+        gid: 1100
+        state: present
+      tags: mutable
 
-- name: Create user accounts
-  user:
-    name: "{{ item.name }}"
-    group: staff
-    home: "/home/{{ item.name }}"
-    shell: /bin/bash
-    password: "{{ lookup('hashi_vault', 'secret=secret/shadow/' ~ item.name ~ ':value' ) }}"
-    uid: "{{ item.uid }}"
-    comment: "{{ item.comment }}"
-    state: present
-  loop: "{{ user_accounts }}"
-  tags: mutable
+    - name: Create user accounts
+      user:
+        name: "{{ item.name }}"
+        group: staff
+        home: /home/{{ item.name }}
+        shell: /bin/bash
+        password: "{{ lookup('hashi_vault', 'secret=secret/shadow/' ~ item.name ~ ':value' ) }}"
+        uid: "{{ item.uid }}"
+        comment: "{{ item.comment }}"
+        state: present
+      loop: "{{ user_accounts }}"
+      tags: mutable
 
-- name: Grant sudo access
-  template:
-    dest: /etc/sudoers.d/99_collab
-    src: sudoers_99_collab.j2
-    owner: root
-    group: root
-    mode: 0440
-    validate: 'visudo -cf %s'
-  tags: mutable
+    - name: Grant sudo access
+      template:
+        dest: /etc/sudoers.d/99_collab
+        src: sudoers_99_collab.j2
+        owner: root
+        group: root
+        mode: "0440"
+        validate: visudo -cf %s
+      tags: mutable
+

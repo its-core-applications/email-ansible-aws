@@ -3,7 +3,12 @@
 - hosts: Class_builder
   vars:
     bootstrap: true
-  roles:
-    - { role: base, tags: base }
-    - { role: build, tags: build }
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: base
+
+        - import_role:
+            name: build
 

@@ -1,33 +1,38 @@
 ---
 
-- name: Install redis
-  become: true
-  yum:
-    name: redis
-    state: present
+- tags:
+    - redis
+    - master
+  block:
+    - name: Install redis
+      become: true
+      yum:
+        name: redis
+        state: present
 
-- name: Install management scripts
-  become: true
-  copy:
-    dest: "/usr/local/sbin/{{ item }}"
-    src: "{{ item }}"
-    owner: root
-    group: root
-    mode: 0755
-  loop:
-    - redis-manage
-    - redis-remove
+    - name: Install management scripts
+      become: true
+      copy:
+        dest: /usr/local/sbin/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - redis-manage
+        - redis-remove
 
-- name: Run provision script
-  command: "/usr/local/sbin/redis-manage {{ groups.redis | map('extract', hostvars, 'private_ip_address') | join(' ') }}"
-  register: result
-  failed_when: "result.rc > 1"
-  changed_when: "result.rc == 0"
-  when: groups.redis is defined
+    - name: Run provision script
+      command: "/usr/local/sbin/redis-manage {{ groups.redis | intersect(aws_region_group) | map('extract', hostvars, 'private_ip_address') | join(' ') }}"
+      register: result
+      failed_when: result.rc > 1
+      changed_when: result.rc == 0
+      when: groups.redis is defined
 
-- name: Schedule provision script runs
-  cron:
-    name: redis-manage
-    user: "{{ ansible_user }}"
-    minute: "*/20"
-    job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags redis"
+    - name: Schedule provision script runs
+      cron:
+        name: redis-manage
+        user: "{{ ansible_user }}"
+        minute: "*/20"
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags redis
+

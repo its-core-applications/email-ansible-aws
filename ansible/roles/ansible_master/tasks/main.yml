@@ -1,19 +1,23 @@
 ---
 
-- name: Schedule mutable updates
-  cron:
-    name: "ansible-mutable-{{ item }}"
-    user: "{{ ansible_user }}"
-    minute: "*/15"
-    job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item }}.yml --tags mutable &>/dev/null"
-  loop:
-    - mx
-    - egress
+- tags:
+    - ansible
+    - master
+  block:
+    - name: Schedule mutable updates
+      cron:
+        name: ansible-mutable-{{ item }}
+        user: "{{ ansible_user }}"
+        minute: "*/15"
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item }}.yml --tags mutable &>/dev/null
+      loop:
+        - mx
+        - egress
 
-- name: Schedule deprovisioning of spundown hosts
-  cron:
-    name: "ansible-deprovision"
-    user: "{{ ansible_user }}"
-    minute: "13,28,43,58"
-    job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/deprovision_spundown.yml &>/dev/null"
+    - name: Schedule deprovisioning of spundown hosts
+      cron:
+        name: ansible-deprovision
+        user: "{{ ansible_user }}"
+        minute: 13,28,43,58
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/deprovision_spundown.yml &>/dev/null
 

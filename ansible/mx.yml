@@ -1,13 +1,32 @@
 ---
 
 - hosts: Class_mx
-  roles:
-    - { role: base, tags: base }
-    - { role: rsyslog_forward, tags: rsyslog_forward }
-    - { role: localnameserver, tags: localnameserver }
-    - { role: simta, tags: simta }
-    - { role: clamav_filter, tags: clamav }
-    - { role: rspamd_filter, tags: rspamd }
-    - { role: redis, tags: redis }
-    - { role: sensu, tags: sensu }
-    - { role: mx, tags: mx }
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: base
+
+        - import_role:
+            name: rsyslog_forward
+
+        - import_role:
+            name: localnameserver
+
+        - import_role:
+            name: simta
+
+        - import_role:
+            name: clamav_filter
+
+        - import_role:
+            name: rspamd_filter
+
+        - import_role:
+            name: redis
+
+        - import_role:
+            name: sensu
+
+        - import_role:
+            name: mx

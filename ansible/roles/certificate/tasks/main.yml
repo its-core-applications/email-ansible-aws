@@ -1,26 +1,30 @@
 ---
 
-- name: Create certificate storage directory
-  file:
-    dest: /etc/pki/collab/private
-    owner: root
-    group: mail
-    mode: 0750
-    state: directory
+- tags:
+    - certificate
+  block:
+  - name: Create certificate storage directory
+    file:
+      dest: /etc/pki/collab/private
+      owner: root
+      group: mail
+      mode: "0750"
+      state: directory
 
-- name: "{{ certificate }} : Install private key"
-  copy:
-    dest: "/etc/pki/collab/private/{{ certificate }}.key"
-    content: "{{ lookup('hashi_vault', 'secret=secret/cert/' ~ certificate ~ ':value') }}"
-    owner: root
-    group: mail
-    mode: 0640
+  - name: "{{ certificate }} : Install private key"
+    copy:
+      dest: /etc/pki/collab/private/{{ certificate }}.key
+      content: "{{ lookup('hashi_vault', 'secret=secret/cert/' ~ certificate ~ ':value') }}"
+      owner: root
+      group: mail
+      mode: "0640"
 
-- name: "{{ certificate }} : Install certificate"
-  copy:
-    dest: "/etc/pki/collab/private/{{ certificate }}.crt"
-    content: "{{ lookup('hashi_vault', 'secret=secret/cert/' ~ certificate ~ '/certificate:value') }}"
-    owner: root
-    group: mail
-    mode: 0644
-  when: certificate_type == 'tls'
+  - name: "{{ certificate }} : Install certificate"
+    copy:
+      dest: /etc/pki/collab/private/{{ certificate }}.crt
+      content: "{{ lookup('hashi_vault', 'secret=secret/cert/' ~ certificate ~ '/certificate:value') }}"
+      owner: root
+      group: mail
+      mode: "0644"
+    when: certificate_type == 'tls'
+

@@ -1,40 +1,44 @@
 ---
 
-- name: Create log storage filesystem
-  filesystem:
-    dev: /dev/xvdd
-    fstype: xfs
-    force: false
+- tags:
+    - rsyslog
+  block:
+    - name: Create log storage filesystem
+      filesystem:
+        dev: /dev/xvdd
+        fstype: xfs
+        force: false
 
-- name: Mount log storage filesystem
-  mount:
-    name: /var/log/remote
-    src: /dev/xvdd
-    fstype: xfs
-    state: mounted
-  notify: Restart rsyslog
+    - name: Mount log storage filesystem
+      mount:
+        name: /var/log/remote
+        src: /dev/xvdd
+        fstype: xfs
+        state: mounted
+      notify: Restart rsyslog
 
-- name: Configure rsyslog listener
-  copy:
-    dest: /etc/rsyslog.d/imrelp.conf
-    src: imrelp.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart rsyslog
+    - name: Configure rsyslog listener
+      copy:
+        dest: /etc/rsyslog.d/imrelp.conf
+        src: imrelp.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart rsyslog
 
-- name: Configure logrotate for remote logs
-  copy:
-    dest: /etc/logrotate.remote.conf
-    src: logrotate.remote.conf
-    owner: root
-    group: root
-    mode: 0644
+    - name: Configure logrotate for remote logs
+      copy:
+        dest: /etc/logrotate.remote.conf
+        src: logrotate.remote.conf
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Schedule rotation for remote logs
-  copy:
-    dest: /etc/cron.daily/logrotate.remote.cron
-    src: logrotate.remote.cron
-    owner: root
-    group: root
-    mode: 0755
+    - name: Schedule rotation for remote logs
+      copy:
+        dest: /etc/cron.daily/logrotate.remote.cron
+        src: logrotate.remote.cron
+        owner: root
+        group: root
+        mode: "0755"
+

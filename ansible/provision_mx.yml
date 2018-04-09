@@ -5,7 +5,7 @@
   tasks:
     - import_tasks: task_find_subnets.yml
 
-    - name: "Create MX loadbalancer(s)"
+    - name: Create MX loadbalancer(s)
       ec2_elb_lb:
         name: "{{ item }}"
         region: "{{ aws_region }}"
@@ -27,10 +27,10 @@
           interval: 30
           unhealthy_threshold: 2
           healthy_threshold: 5
-      loop: "{{ mx_names }}"
+      loop: "{{ mx_names[aws_region] }}"
       register: result
 
-    - name: "Add hosts to MX loadbalancer(s)"
+    - name: Add hosts to MX loadbalancer(s)
       ec2_elb:
         ec2_elbs: "{{ item[0] }}"
         region: "{{ aws_region }}"
@@ -38,16 +38,16 @@
         state: present
         wait: false
       vars:
-        mx_instances: "{{ groups.Class_mx | default([]) | intersect(groups.Status_production | default([])) | map('extract', hostvars, 'instance_id') | list }}"
-      loop: "{{ query('nested', mx_names, mx_instances) }}"
+        mx_instances: "{{ groups.Class_mx | default([]) | intersect(groups.Status_production | default([])) | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | list }}"
+      loop: "{{ query('nested', mx_names[aws_region], mx_instances) }}"
 
-    - name: "Set pretty DNS names for MX loadbalancer(s)"
+    - name: Set pretty DNS names for MX loadbalancer(s)
       route53:
-        command: "create"
+        command: create
         overwrite: true
         zone: "{{ subd }}"
         record: "{{ item.elb.name }}.{{ subd }}"
-        type: "A"
+        type: A
         alias: true
         alias_hosted_zone_id: "{{ item.elb.hosted_zone_id }}"
         value: "{{ item.elb.dns_name }}"
@@ -57,11 +57,13 @@
 
     - import_role:
         name: sensu_proxyclients
-      tags: sensu
 
     - import_role:
         name: redis_master
-      tags: redis
 
-    - import_tasks: task_dns_redis.yml
+    - import_role:
+        name: route53_dns_from_inventory
+      vars:
+        dns_host: pink
+        dns_group: redis
 

@@ -1,34 +1,92 @@
 ---
 - hosts: Class_master
-  roles:
-    - { role: base, tags: base }
-    - { role: master, tags: master }
-    - { role: ssh_certs, tags: ssh_certs }
-    - { role: rsyslog_forward, tags: rsyslog }
-    - role: simta
-      simta_localmail: true
-      simta_tls: false
-      tags: simta
-    - { role: comint, tags: comint }
-    - { role: localnameserver, tags: localnameserver }
-    - { role: sensu, tags: sensu }
-    - { role: kitbag, tags: kitbag }
-    - { role: vault, tags: vault }
-    - { role: packer, tags: packer }
-    - { role: nonpeople, tags: nonpeople }
-    - { role: people, tags: people }
-    - { role: duo, tags: duo }
-    - { role: email_dnsbl-update, tags: email }
-    - { role: google_gam, tags: google }
-    - { role: google_gak, tags: google }
-    - { role: google_gyb, tags: google }
-    - { role: google_report_logins, tags: google }
-    - { role: box_bam, tags: box }
-    - { role: box_examscan, tags: box }
-    - { role: redis_master, tags: redis }
-    - { role: simta_master, tags: simta }
-    - { role: plasticman, tags: plasticman }
-    - { role: ansible_master, tags: ansible }
-    - { role: dashboard, tags: dashboard }
-    - { role: grafana, tags: grafana }
-    - { role: clamav_master, tags: clamav }
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: base
+
+        - import_role:
+            name: master
+
+        - import_role:
+            name: ssh_certs
+
+        - import_role:
+            name: rsyslog_forward
+
+        - import_role:
+            name: simta
+          vars:
+            simta_localmail: true
+            simta_tls: false
+
+        - import_role:
+            name: comint
+
+        - import_role:
+            name: localnameserver
+
+        - import_role:
+            name: sensu
+
+        - import_role:
+            name: kitbag
+
+        - import_role:
+            name: vault
+
+        - import_role:
+            name: packer
+
+        - import_role:
+            name: nonpeople
+
+        - import_role:
+            name: people
+
+        - import_role:
+            name: duo
+
+        - import_role:
+            name: email_dnsbl-update
+
+        - import_role:
+            name: google_gam
+
+        - import_role:
+            name: google_gak
+
+        - import_role:
+            name: google_gyb
+
+        - import_role:
+            name: google_report_logins
+          when: aws_region == 'us-west-2'
+
+        - import_role:
+            name: box_bam
+
+        - import_role:
+            name: box_examscan
+
+        - import_role:
+            name: redis_master
+
+        - import_role:
+            name: simta_master
+
+        - import_role:
+            name: plasticman
+
+        - import_role:
+            name: ansible_master
+
+        - import_role:
+            name: dashboard
+
+        - import_role:
+            name: grafana
+
+        - import_role:
+            name: clamav_master

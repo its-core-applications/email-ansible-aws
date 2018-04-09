@@ -1,18 +1,21 @@
 ---
 
-- name: Download {{ build_name }} RPM
-  get_url:
-    url: "{{ rpm_url }}"
-    dest: /var/tmp/{{ rpm }}
-    checksum: "{{ rpm_checksum }}"
+- tags:
+    - build
+  block:
+    - name: Download {{ build_name }} RPM
+      get_url:
+        url: "{{ rpm_url }}"
+        dest: /var/tmp/{{ rpm }}
+        checksum: "{{ rpm_checksum }}"
 
-- name: Upload {{ build_name }} RPM
-  s3:
-    bucket: "{{ yum_hostname }}"
-    region: "{{ yum_aws_region }}"
-    mode: put
-    permission: public-read
-    object: "{{ yum_repo_path }}/{{ rpm }}"
-    src: /var/tmp/{{ rpm }}
-    overwrite: never
+    - name: Upload {{ build_name }} RPM
+      s3:
+        bucket: "{{ yum_hostname }}"
+        region: "{{ yum_aws_region }}"
+        mode: put
+        permission: public-read
+        object: "{{ yum_repo_path }}/{{ rpm }}"
+        src: /var/tmp/{{ rpm }}
+        overwrite: never
 

@@ -1,22 +1,19 @@
 #!/bin/bash
 
 name=plasticman
-carbon_server=syslog.{{ subd }}
+carbon_server={{ graphite_server }}
 carbon_port=2003
-graphite_server=syslog.{{ subd }}:8888
+graphite_server={{ graphite_server }}:8888
 
-if [[ $1 ]]; then
-    class=$1
-else
-    class=mx
-fi
+class=${1:-mx}
+region=${2:-{{ aws_region }}}
 
 # FIXME: This should probably go in a config file or a command line flag
 min_count=6
 max_count=24
 
 sendmetric() {
-    echo "plasticman.${class}.$1 $2 $(date +%s)" | ncat $carbon_server $carbon_port
+    echo "plasticman.${region}.${class}.$1 $2 $(date +%s)" | ncat $carbon_server $carbon_port
 }
 
 outlog() {
@@ -24,7 +21,7 @@ outlog() {
 }
 
 getcount() {
-    count=$(ansible --list-hosts "Class_$class:&Status_production" | awk '/  hosts \(/{gsub(/[():]/, "", $2); print $2}')
+    count=$(ansible --list-hosts "Class_$class:&Status_production:&region_$region" | awk '/  hosts \(/{gsub(/[():]/, "", $2); print $2}')
 }
 
 checkcount() {
@@ -53,15 +50,11 @@ scaleup() {
     checkcount
 }
 
-getcount() {
-    count=$(ansible --list-hosts "Class_$class:&Status_production" | awk '/  hosts \(/{gsub(/[():]/, "", $2); print $2}')
-}
-
 getcount
 sendmetric hostcount $count
 
-rup=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.up.*&from=-6minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
-rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${class}.scale.*.*&from=-60minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
+rup=($(curl -s "http://${graphite_server}/render?target=${name}.${region}.${class}.scale.up.*&from=-6minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
+rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${region}.${class}.scale.*.*&from=-60minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
 
 if [[ ${rup[0]} -eq 0 && ${rscale[0]} -eq 0 ]]; then
     outlog "no event data"

@@ -1,53 +1,58 @@
 ---
 
-- name: Update RubyGems
-  environment: "{{ sensu_environment }}"
-  command: gem update --system --no-ri --no-rdoc
+- tags:
+    - build
+    - sensu
+  block:
+    - name: Update RubyGems
+      environment: "{{ sensu_environment }}"
+      command: gem update --system --no-ri --no-rdoc
 
-- name: Install build dependencies
-  environment: "{{ sensu_environment }}"
-  gem:
-    name: "{{ item }}"
-    state: latest
-    user_install: false
-  loop:
-    - fpm
-    - mini_portile2
+    - name: Install build dependencies
+      environment: "{{ sensu_environment }}"
+      gem:
+        name: "{{ item }}"
+        state: latest
+        user_install: false
+      loop:
+        - fpm
+        - mini_portile2
 
-- name: Create tmpdir
-  file:
-    name: /var/tmp/sensugems
-    state: directory
-    owner: sensu
-    group: sensu
-    mode: 0755
+    - name: Create tmpdir
+      file:
+        name: /var/tmp/sensugems
+        state: directory
+        owner: sensu
+        group: sensu
+        mode: "0755"
 
-- name: Build plugins and their dependencies in tmpdir
-  become_user: sensu
-  environment: "{{ sensu_environment }}"
-  command: "gem install --no-ri --no-rdoc --install-dir /var/tmp/sensugems/ {{ item }}"
-  args:
-    chdir: /var/tmp/sensugems
-  loop: "{{ sensu_plugins }}"
+    - name: Build plugins and their dependencies in tmpdir
+      become_user: sensu
+      environment: "{{ sensu_environment }}"
+      command: gem install --no-ri --no-rdoc --install-dir /var/tmp/sensugems/ {{ item }}
+      args:
+        chdir: /var/tmp/sensugems
+      loop: "{{ sensu_plugins }}"
 
-- name: Find the list of gems to package
-  find:
-    paths: /var/tmp/sensugems/cache
-    patterns: "*.gem"
-  register: gems
+    - name: Find the list of gems to package
+      find:
+        paths: /var/tmp/sensugems/cache
+        patterns: "*.gem"
+      register: gems
 
-- name: Rebuild gems as packages using fpm
-  become_user: sensu
-  environment: "{{ sensu_environment }}"
-  command: "fpm --verbose -s gem -t rpm --gem-disable-dependency ffi --gem-disable-dependency json --gem-disable-dependency minitest --gem-disable-dependency sensu-plugin --gem-disable-dependency mixlib-cli --gem-package-name-prefix sensugems --rpm-dist el7 {{ item.path }}"
-  args:
-    chdir: /var/tmp/sensugems/cache
-  register: result
-  failed_when:
-    - result.rc != 0
-    - result.stdout is not search('File already exists, refusing to continue')
-  changed_when:
-    - result.rc == 0
-  loop: "{{ gems.files }}"
-  loop_control:
-    label: "{{ item.path | basename }}"
+    - name: Rebuild gems as packages using fpm
+      become_user: sensu
+      environment: "{{ sensu_environment }}"
+      command: fpm --verbose -s gem -t rpm --gem-disable-dependency ffi --gem-disable-dependency json --gem-disable-dependency minitest --gem-disable-dependency sensu-plugin --gem-disable-dependency mixlib-cli --gem-package-name-prefix sensugems --rpm-dist el7 {{ item.path }}
+      args:
+        chdir: /var/tmp/sensugems/cache
+      register: result
+      failed_when:
+        - result.rc != 0
+        - result.stdout is not search('File already exists, refusing to continue')
+      changed_when:
+        - result.rc == 0
+      loop: "{{ gems.files }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+

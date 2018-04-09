@@ -1,25 +1,29 @@
 ---
 
-- name: Install kitbag
-  template:
-    dest: "{{ comint_base }}/dispatch/kitbag"
-    src: kitbag.j2
-    owner: collaborate
-    group: nonpeople
-    mode: "0755"
+- tags:
+    - kitbag
+  block:
+    - name: Install kitbag
+      template:
+        dest: "{{ comint_base }}/dispatch/kitbag"
+        src: kitbag.j2
+        owner: collaborate
+        group: nonpeople
+        mode: "0755"
 
-- name: Configure kitbag
-  template:
-    dest: "{{ comint_base }}/dispatch/kitbag.conf"
-    src: kitbag.conf.j2
-    owner: collaborate
-    group: nonpeople
-    mode: "0640"
+    - name: Configure kitbag
+      template:
+        dest: "{{ comint_base }}/dispatch/kitbag.conf"
+        src: kitbag.conf.j2
+        owner: collaborate
+        group: nonpeople
+        mode: "0640"
 
-- name: Schedule kitbag
-  template:
-    dest: /etc/cron.daily/kitbag
-    src: kitbag.cron.j2
-    owner: root
-    group: root
-    mode: "0755"
+    - name: Schedule kitbag
+      template:
+        dest: /etc/cron.daily/kitbag
+        src: kitbag.cron.j2
+        owner: root
+        group: root
+        mode: "0755"
+

@@ -20,6 +20,7 @@ provisioners:
     groups:
       - Class_{{ user `image_type` }}
       - Status_development
+      - packer
 
   - type: shell
     script: packer/scripts/cleanup.sh

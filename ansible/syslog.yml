@@ -1,15 +1,32 @@
 ---
 
 - hosts: Class_syslog
-  roles:
-    - { role: base, tags: base }
-    - { role: rsyslog_aggregator, tags: rsyslog_aggregator }
-    - role: simta
-      simta_localmail: true
-      simta_tls: false
-      tags: simta
-    - { role: splunk_forwarder, tags: splunk_forwarder }
-    - { role: carbon, tags: carbon }
-    - { role: graphite, tags: graphite }
-    - { role: sensu_server, tags: sensu }
-    - { role: uchiwa, tags: uchiwa }
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: base
+
+        - import_role:
+            name: rsyslog_aggregator
+
+        - import_role:
+            name: simta
+          vars:
+            simta_localmail: true
+            simta_tls: false
+
+        - import_role:
+            name: splunk_forwarder
+
+        - import_role:
+            name: carbon
+
+        - import_role:
+            name: graphite
+
+        - import_role:
+            name: sensu_server
+
+        - import_role:
+            name: uchiwa

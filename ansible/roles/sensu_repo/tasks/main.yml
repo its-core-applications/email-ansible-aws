@@ -1,10 +1,13 @@
 ---
 
-- name: Configure the Sensu Core repository
-  copy:
-    dest: /etc/yum.repos.d/sensu.repo
-    src: sensu.repo
-    owner: root
-    group: root
-    mode: 0644
+- tags:
+    - sensu
+  block:
+    - name: Configure the Sensu Core repository
+      copy:
+        dest: /etc/yum.repos.d/sensu.repo
+        src: sensu.repo
+        owner: root
+        group: root
+        mode: "0644"
 

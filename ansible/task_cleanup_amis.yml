@@ -1,14 +1,16 @@
 ---
 
-- name: "Find {{ image_type }} AMIs"
+- name: Find {{ image_type }} AMIs
   ec2_ami_facts:
+    region: "{{ aws_region }}"
     owners: self
     filters:
       "tag:image_type": "{{ image_type }}"
   register: result
 
-- name: "Delete excess {{ image_type }} AMIs"
+- name: Delete excess {{ image_type }} AMIs
   ec2_ami:
+    region: "{{ aws_region }}"
     image_id: "{{ item }}"
     state: absent
     delete_snapshot: true

@@ -1,63 +1,66 @@
 ---
 
-- name: Install sensu and dependencies
-  yum:
-    name:
-      - sensu
-      - dbus-python
-    state: latest
-  notify: Restart sensu
+- tags:
+    - sensu
+  block:
+    - name: Install sensu and dependencies
+      yum:
+        name:
+          - sensu
+          - dbus-python
+        state: latest
+      notify: Restart sensu
 
-- name: Add sensu to extra groups
-  user:
-    name: sensu
-    append: true
-    groups: mail
-  notify: Restart sensu
+    - name: Add sensu to extra groups
+      user:
+        name: sensu
+        append: true
+        groups: mail
+      notify: Restart sensu
 
-- name: Configure sensu startup
-  template:
-    dest: /etc/default/sensu
-    src: sensu.default.j2
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Restart sensu
+    - name: Configure sensu startup
+      template:
+        dest: /etc/default/sensu
+        src: sensu.default.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart sensu
 
-- name: Configure sensu
-  template:
-    dest: "/etc/sensu/conf.d/{{ item }}"
-    src: "{{ item }}.j2"
-  loop:
-    - client.json
-    - rabbitmq.json
-    - transport.json
-  when: bootstrap == false
-  notify: Restart sensu
-  tags: mutable
+    - name: Configure sensu
+      template:
+        dest: /etc/sensu/conf.d/{{ item }}
+        src: "{{ item }}.j2"
+      loop:
+        - client.json
+        - rabbitmq.json
+        - transport.json
+      when: bootstrap == false
+      notify: Restart sensu
+      tags: mutable
 
-- name: Install sensu-dynsubs
-  copy:
-    dest: /usr/local/sbin/sensu-dynsubs
-    src: sensu-dynsubs
-    owner: root
-    group: root
-    mode: 0755
+    - name: Install sensu-dynsubs
+      copy:
+        dest: /usr/local/sbin/sensu-dynsubs
+        src: sensu-dynsubs
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Schedule sensu-dynsubs
-  cron:
-    name: update sensu subscriptions
-    job: /usr/local/sbin/sensu-dynsubs
+    - name: Schedule sensu-dynsubs
+      cron:
+        name: update sensu subscriptions
+        job: /usr/local/sbin/sensu-dynsubs
 
-- name: Install sensu plugins
-  yum:
-    name: "{{ sensu_plugins | map('regex_replace', '^', 'sensugems-') | list }}"
-    state: latest
-  when: bootstrap == false
+    - name: Install sensu plugins
+      yum:
+        name: "{{ sensu_plugins | map('regex_replace', '^', 'sensugems-') | list }}"
+        state: latest
+      when: bootstrap == false
 
-- name: Enable sensu-client
-  systemd:
-    name: sensu-client
-    enabled: true
-  notify: Restart sensu-client
+    - name: Enable sensu-client
+      systemd:
+        name: sensu-client
+        enabled: true
+      notify: Restart sensu-client
 

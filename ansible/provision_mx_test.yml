@@ -9,7 +9,9 @@
 
     - name: Create mx-test host
       ec2:
-        group: [ main-default, mx-elb ]
+        group:
+          - main-default
+          - mx-elb
         key_name: "{{ aws_ssh_key }}"
         instance_type: t2.small
         region: "{{ aws_region }}"
@@ -21,7 +23,7 @@
           Class: mx-test
           Status: development
         count: 1
-      when: groups.Class_mx_test | default([]) | intersect(groups.Status_development | default([])) | length == 0
+      when: groups.Class_mx_test | default([]) | intersect(groups.Status_development | default([])) | intersect(aws_region_group) | length == 0
       # this is just to force a consistent result structure
       loop: [ dummy ]
       register: ec2
@@ -33,13 +35,13 @@
 - hosts: localhost
   become: false
   tasks:
-    - name: "Set mx-test.{{ subd }}"
+    - name: Set mx-test.{{ aws_region }}.{{ subd }}
       route53:
         command: "create"
         overwrite: true
         zone: "{{ subd }}"
-        record: "mx-test.{{ subd }}"
-        type: "A"
+        record: mx-test.{{ aws_region }}.{{ subd }}
+        type: A
         ttl: 60
         value: "{{ groups.Class_mx_test | default([]) | map('extract', hostvars, 'public_ip_address') | join(', ') }}"
       when: groups.Class_mx_test is defined

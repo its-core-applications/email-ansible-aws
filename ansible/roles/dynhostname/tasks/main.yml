@@ -1,48 +1,52 @@
 ---
 
-- name: Install hostname data files
-  copy:
-    dest: "/usr/share/{{ item }}"
-    src: "{{ item }}"
-    owner: root
-    group: root
-    mode: 0644
-  loop:
-    - hostname-prefixes
-    - hostname-suffixes
-    - hostname-suffixes-builder
-    - hostname-suffixes-egress
-    - hostname-suffixes-mx
-    - hostname-suffixes-mx-test
-    - hostname-suffixes-relay
-    - hostname-suffixes-smtp
-    - hostname-suffixes-smtp-test
+- tags:
+    - dynhostname
+  block:
+    - name: Install hostname data files
+      copy:
+        dest: /usr/share/{{ item }}
+        src: "{{ lookup('first_found', item ~ '.' ~ aws_status, item) }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - hostname-prefixes
+        - hostname-suffixes
+        - hostname-suffixes-builder
+        - hostname-suffixes-egress
+        - hostname-suffixes-mx
+        - hostname-suffixes-mx-test
+        - hostname-suffixes-relay
+        - hostname-suffixes-smtp
+        - hostname-suffixes-smtp-test
 
-- name: Install script
-  template:
-    dest: /usr/local/sbin/dynhostname
-    src: dynhostname.j2
-    owner: root
-    group: root
-    mode: 0755
+    - name: Install script
+      template:
+        dest: /usr/local/sbin/dynhostname
+        src: dynhostname.j2
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Install systemd unit
-  copy: 
-    dest: /etc/systemd/system/dynhostname.service
-    src: dynhostname.service
-    owner: root
-    group: root
-    mode: 0644
+    - name: Install systemd unit
+      copy:
+        dest: /etc/systemd/system/dynhostname.service
+        src: dynhostname.service
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Enable dynhostname
-  systemd:
-    name: dynhostname
-    enabled: true
+    - name: Enable dynhostname
+      systemd:
+        name: dynhostname
+        enabled: true
 
-- name: Schedule dynhostname public IP re-check
-  copy:
-    dest: /etc/cron.d/dynhostname
-    src: dynhostname.cron
-    owner: root
-    group: root
-    mode: 0644
+    - name: Schedule dynhostname public IP re-check
+      copy:
+        dest: /etc/cron.d/dynhostname
+        src: dynhostname.cron
+        owner: root
+        group: root
+        mode: "0644"
+

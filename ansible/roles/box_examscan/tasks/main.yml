@@ -1,10 +1,14 @@
 ---
 
-- name: Set up examscan aliases
-  copy:
-    dest: /etc/profile.d/99_examscan.sh
-    src: 99_examscan.sh
-    owner: root
-    group: root
-    mode: 0644
+- tags:
+    - box
+    - box_examscan
+  block:
+    - name: Set up examscan aliases
+      copy:
+        dest: /etc/profile.d/99_examscan.sh
+        src: 99_examscan.sh
+        owner: root
+        group: root
+        mode: "0644"
 

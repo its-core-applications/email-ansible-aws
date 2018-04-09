@@ -1,48 +1,52 @@
 ---
 
-- name: Install extra dependencies
-  yum:
-    name:
-      - cairo
-    state: latest
+- tags:
+    graphite
+  block:
+    - name: Install extra dependencies
+      yum:
+        name:
+          - cairo
+        state: latest
 
-- name: Install graphite-api
-  pip:
-    name:
-      - graphite-api
-      - gunicorn
-    state: latest
-  notify: Restart graphite
+    - name: Install graphite-api
+      pip:
+        name:
+          - graphite-api
+          - gunicorn
+        state: latest
+      notify: Restart graphite
 
-- name: Configure graphite-api service
-  copy:
-    dest: /usr/lib/systemd/system/graphite-api.service
-    src: graphite-api.service
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Restart graphite
+    - name: Configure graphite-api service
+      copy:
+        dest: /usr/lib/systemd/system/graphite-api.service
+        src: graphite-api.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart graphite
 
-- name: Configure graphite-api
-  copy:
-    dest: /etc/graphite-api.yaml
-    src: graphite-api.yaml
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Restart graphite
+    - name: Configure graphite-api
+      copy:
+        dest: /etc/graphite-api.yaml
+        src: graphite-api.yaml
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart graphite
 
-- name: Create graphite-api storage directory
-  file:
-    dest: /var/lib/graphite-api
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
+    - name: Create graphite-api storage directory
+      file:
+        dest: /var/lib/graphite-api
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Enable graphite-api
-  systemd:
-    name: graphite-api
-    enabled: true
-    daemon-reload: true
-  notify: Restart graphite
+    - name: Enable graphite-api
+      systemd:
+        name: graphite-api
+        enabled: true
+        daemon-reload: true
+      notify: Restart graphite
+

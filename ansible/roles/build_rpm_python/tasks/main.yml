@@ -1,37 +1,40 @@
 ---
 
-- name: Install build dependencies for {{ build_name }}
-  yum:
-    name: "{{ build_deps }}"
-    state: latest
-  when: build_deps is defined
-
-- name: Build {{ build_name }}
-  become: false
+- tags:
+    - build
   block:
-    - name: Clone {{ build_name }} git repo
-      git:
-        repo: "{{ build_repo }}"
-        dest: ~/{{ build_name }}
-        version: "{{ build_version | default(omit) }}"
-        update: true
-        force: true
+    - name: Install build dependencies for {{ build_name }}
+      yum:
+        name: "{{ build_deps }}"
+        state: latest
+      when: build_deps is defined
 
-    - name: Build {{ build_name }} RPM
-      command: fpm -s python -t rpm --python-package-name-prefix python2 setup.py
-      register: result
-      failed_when:
-        - result.rc != 0
-        - result.stdout is not search('File already exists, refusing to continue')
-      changed_when:
-        - result.rc == 0
-      args:
-        chdir: ~/{{ build_name }}
+    - name: Build {{ build_name }}
+      become: false
+      block:
+        - name: Clone {{ build_name }} git repo
+          git:
+            repo: "{{ build_repo }}"
+            dest: ~/{{ build_name }}
+            version: "{{ build_version | default(omit) }}"
+            update: true
+            force: true
 
-    - name: Copy RPM to local repo
-      shell: cp -f ~/{{ build_name }}/*.rpm ~/rpmbuild/RPMS
-      args:
-        warn: false
+        - name: Build {{ build_name }} RPM
+          command: fpm -s python -t rpm --python-package-name-prefix python2 setup.py
+          register: result
+          failed_when:
+            - result.rc != 0
+            - result.stdout is not search('File already exists, refusing to continue')
+          changed_when:
+            - result.rc == 0
+          args:
+            chdir: ~/{{ build_name }}
 
-- import_role:
-    name: localrepo_update
+        - name: Copy RPM to local repo
+          shell: cp -f ~/{{ build_name }}/*.rpm ~/rpmbuild/RPMS
+          args:
+            warn: false
+
+    - import_role:
+        name: localrepo_update

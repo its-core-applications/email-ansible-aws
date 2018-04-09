@@ -1,0 +1,33 @@
+all:
+  children:
+    umce:
+      vars:
+        ansible_user: root
+      children:
+        Class_staff:
+          hosts:
+            alien.mr.itd.umich.edu:
+        Class_ctools:
+          hosts:
+            snowcake.mr.itd.umich.edu:
+        Class_jail:
+          hosts:
+            petsemetary.mr.itd.umich.edu:
+        Class_massmail:
+          hosts:
+            mimic.mr.itd.umich.edu:
+            ghoulies.mr.itd.umich.edu:
+        Class_mailrelay:
+          hosts:
+            bonecollector.mr.itd.umich.edu:
+            girlinterrupted.mr.itd.umich.edu:
+            foxfire.mr.itd.umich.edu:
+        Class_puntrelay:
+          hosts:
+            28dayslater.mr.itd.umich.edu:
+            planetterror.mr.itd.umich.edu:
+            zombieland.mr.itd.umich.edu:
+        Class_smtp:
+          hosts:
+            tombraider.mr.itd.umich.edu:
+            maleficent.mr.itd.umich.edu:

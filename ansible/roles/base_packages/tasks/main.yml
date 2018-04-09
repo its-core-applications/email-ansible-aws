@@ -1,48 +1,53 @@
 ---
 
-- name: Uninstall unwanted packages
-  yum:
-    name:
-      - amazon-ssm-agent
-      - cronie-anacron
-      - postfix
-    state: absent
+- tags:
+    - base
+    - base_packages
+  block:
+    - name: Uninstall unwanted packages
+      yum:
+        name:
+          - amazon-ssm-agent
+          - cronie-anacron
+          - postfix
+        state: absent
 
-# Only for the fake hostname that packer uses when building the base image
-- name: Upgrade all packages
-  yum:
-    name: "*"
-    state: latest
-  when: inventory_hostname == "base"
+    # Only for the fake hostname that packer uses when building the base image
+    - name: Upgrade all packages
+      yum:
+        name: "*"
+        state: latest
+      when: inventory_hostname == 'base'
 
-- name: Install basic QoL packages
-  yum:
-    name:
-      - awscli
-      - bind-utils
-      - cloud-init
-      - cronie-noanacron
-      - expect
-      - gdb
-      - git
-      - jq
-      - krb5-workstation
-      - lsof
-      - man
-      - man-pages
-      - mosh
-      - nc
-      - openldap-clients
-      - pv
-      - python-boto
-      - python-pip
-      - python2-boto3
-      - strace
-      - sysstat
-      - telnet
-      - tmux
-      - vim
-      - wget
-      - whois
-      - zstd
-    state: present
+    - name: Install basic QoL packages
+      yum:
+        name:
+          - awscli
+          - bind-utils
+          - cloud-init
+          - cronie-noanacron
+          - expect
+          - gdb
+          - git
+          - jq
+          - krb5-workstation
+          - lsof
+          - man
+          - man-pages
+          - mosh
+          - nc
+          - openldap-clients
+          - pv
+          - python-boto
+          - python-pip
+          - python2-boto3
+          - strace
+          - sysstat
+          - telnet
+          - tmux
+          - vim
+          - wget
+          - whois
+          - zstd
+        state: present
+

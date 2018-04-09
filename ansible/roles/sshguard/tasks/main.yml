@@ -1,24 +1,27 @@
 ---
 
-- name: Install sshguard
-  yum:
-    name: sshguard
-    state: latest
-  notify: Restart sshguard
+- tags:
+    - sshguard
+  block:
+    - name: Install sshguard
+      yum:
+        name: sshguard
+        state: latest
+      notify: Restart sshguard
 
-- name: Configure sshguard
-  copy:
-    dest: /etc/sshguard.conf
-    src: sshguard.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart sshguard
+    - name: Configure sshguard
+      copy:
+        dest: /etc/sshguard.conf
+        src: sshguard.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart sshguard
 
-- name: Enable sshguard
-  systemd:
-    name: sshguard
-    enabled: true
-    daemon-reload: true
-  notify: Restart sshguard
+    - name: Enable sshguard
+      systemd:
+        name: sshguard
+        enabled: true
+        daemon-reload: true
+      notify: Restart sshguard
 

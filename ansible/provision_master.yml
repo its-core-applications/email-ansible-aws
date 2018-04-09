@@ -20,7 +20,7 @@
         instance_tags:
           Class: master
           Status: production
-          CustomDNSName: "{{ master_hostname }}.{{ subd }}"
+          CustomDNSName: "{{ master_hostname }}"
         exact_count: 1
         count_tag:
           Class: master
@@ -28,15 +28,15 @@
       loop: [ dummy ]
       register: ec2
 
-    - name: "Set CNAMEs for vhosts"
+    - name: Set CNAMEs for vhosts
       route53:
-        command: "create"
+        command: create
         overwrite: true
         zone: "{{ subd }}"
         record: "{{ item }}.{{ subd }}"
-        type: "CNAME"
+        type: CNAME
         ttl: 60
-        value: "{{ master_hostname }}.{{ subd }}"
+        value: "{{ master_hostname }}"
       loop:
         - dashboard
         - graphs
@@ -51,7 +51,7 @@
       ec2_vol:
         name: master_home
         region: "{{ aws_region }}"
-        instance: "{{ groups.Class_master | default({}) | map('extract', hostvars, 'instance_id') | join }}"
+        instance: "{{ hostvars[master_hostname]['instance_id'] }}"
         device_name: xvdd
         volume_type: gp2
         volume_size: 40

@@ -1,17 +1,20 @@
 ---
 
-- name: Install rbldnsd
-  yum:
-    name: rbldnsd
-    state: latest
-  notify: Reconfigure rbldnsd
+- tags:
+    - rbldnsd
+  block:
+    - name: Install rbldnsd
+      yum:
+        name: rbldnsd
+        state: latest
+      notify: Reconfigure rbldnsd
 
-- name: Configure rbldnsd
-  copy:
-    dest: /etc/sysconfig/rbldnsd
-    src: rbldnsd
-    owner: root
-    group: root
-    mode: 0644
-  notify: Reconfigure rbldnsd
+    - name: Configure rbldnsd
+      copy:
+        dest: /etc/sysconfig/rbldnsd
+        src: rbldnsd
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reconfigure rbldnsd
 

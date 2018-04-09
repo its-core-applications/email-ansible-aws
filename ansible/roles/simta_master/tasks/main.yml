@@ -1,24 +1,28 @@
 ---
 
-- name: Install simta-requeue
-  template:
-    dest: /usr/local/sbin/simta-requeue
-    src: simta-requeue.j2
-    owner: root
-    group: root
-    mode: "0755"
+- tags:
+    - simta
+    - master
+  block:
+    - name: Install simta-requeue
+      template:
+        dest: /usr/local/sbin/simta-requeue
+        src: simta-requeue.j2
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Schedule requeuing
-  cron:
-    name: simta-requeue
-    user: "{{ ansible_user }}"
-    minute: "*/5"
-    job: . ~/ansible-aws/env-setup.sh && /usr/local/sbin/simta-requeue
+    - name: Schedule requeuing
+      cron:
+        name: simta-requeue
+        user: "{{ ansible_user }}"
+        minute: "*/5"
+        job: . ~/ansible-aws/env-setup.sh && /usr/local/sbin/simta-requeue
 
-- name: Schedule SPF updates
-  cron:
-    name: ansible-spf-update
-    user: "{{ ansible_user }}"
-    minute: 23,53
-    job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/setup_spf.yml
+    - name: Schedule SPF updates
+      cron:
+        name: ansible-spf-update
+        user: "{{ ansible_user }}"
+        minute: 23,53
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/setup_spf.yml
 

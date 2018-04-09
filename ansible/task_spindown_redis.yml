@@ -4,7 +4,7 @@
   delegate_to: localhost
   become: false
   ec2_tag:
-    region: "{{ aws_region }}"
+    region: "{{ region }}"
     resource: "{{ instance_id }}"
     state: absent
     tags:
@@ -12,7 +12,11 @@
 
 - meta: refresh_inventory
 
-- import_tasks: task_dns_redis.yml
+- import_role:
+    name: route53_dns_from_inventory
+  vars:
+    dns_host: pink
+    dns_group: redis
 
 - name: Remove from redis cluster
   delegate_to: localhost

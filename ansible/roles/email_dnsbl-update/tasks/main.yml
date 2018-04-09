@@ -1,33 +1,37 @@
 ---
 
-- name: Install dnsbl-update script
-  template:
-    dest: /usr/bin/dnsbl-update
-    src: dnsbl-update.j2
-    owner: root
-    group: root
-    mode: 0755
+- tags:
+    - email
+  block:
+    - name: Install dnsbl-update script
+      template:
+        dest: /usr/bin/dnsbl-update
+        src: dnsbl-update.j2
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Create wrapper scripts for each list
-  template:
-    dest: "/usr/bin/{{ item.0 }}-{{ item.1 }}"
-    src: dnsbl-update-wrapper.j2
-    owner: root
-    group: root
-    mode: 0755
-  vars:
-    dnsbls:
-      - mx-accept
-      - mx-deny
-      - mx-trust
-      - penaltybox-skip
-      - smtp-deny
-      - spamassassin-reject
-      - ual
-      - ubl
-      - ubl-preemptive
-      - deny-from
-    actions:
-      - add
-      - remove
-  loop: "{{ dnsbls | product(actions) | list }}"
+    - name: Create wrapper scripts for each list
+      template:
+        dest: /usr/bin/{{ item.0 }}-{{ item.1 }}
+        src: dnsbl-update-wrapper.j2
+        owner: root
+        group: root
+        mode: "0755"
+      vars:
+        dnsbls:
+          - mx-accept
+          - mx-deny
+          - mx-trust
+          - penaltybox-skip
+          - smtp-deny
+          - spamassassin-reject
+          - ual
+          - ubl
+          - ubl-preemptive
+          - deny-from
+        actions:
+          - add
+          - remove
+      loop: "{{ dnsbls | product(actions) | list }}"
+

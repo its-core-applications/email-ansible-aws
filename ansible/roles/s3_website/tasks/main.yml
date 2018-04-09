@@ -1,24 +1,28 @@
 ---
 
-- name: Create S3 bucket for website
-  s3_bucket:
-    name: "{{ s3_hostname }}"
-    region: "{{ s3_region }}"
-    state: present
+- tags:
+    - s3
+    - s3_website
+  block:
+    - name: Create S3 bucket for website
+      s3_bucket:
+        name: "{{ s3_hostname }}"
+        region: "{{ s3_region }}"
+        state: present
 
-- name: Configure the S3 bucket as a website
-  s3_website:
-    name: "{{ s3_hostname }}"
-    region: "{{ s3_region }}"
-    state: present
+    - name: Configure the S3 bucket as a website
+      s3_website:
+        name: "{{ s3_hostname }}"
+        region: "{{ s3_region }}"
+        state: present
 
-- name: "Set {{ s3_hostname }}"
-  route53:
-    command: create
-    overwrite: true
-    zone: "{{ subd }}"
-    record: "{{ s3_hostname }}"
-    type: CNAME
-    value: "{{ s3_hostname }}.s3-{{ s3_region }}.amazonaws.com"
-    ttl: 300
+    - name: "Set {{ s3_hostname }}"
+      route53:
+        command: create
+        overwrite: true
+        zone: "{{ subd }}"
+        record: "{{ s3_hostname }}"
+        type: CNAME
+        value: "{{ s3_hostname }}.s3-{{ s3_region }}.amazonaws.com"
+        ttl: 300
 

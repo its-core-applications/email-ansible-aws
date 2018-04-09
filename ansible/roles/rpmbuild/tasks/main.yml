@@ -1,31 +1,35 @@
 ---
 
-- name: Install basic build dependencies
-  yum:
-    name:
-      - autoconf
-      - automake
-      - ccache
-      - cmake
-      - createrepo
-      - gcc-c++
-      - git
-      - libtool
-      - rpmdevtools
-      - ruby-devel
-      - rubygems
-      - setup
-    state: present
+- tags:
+    - build
+    - rpmbuild
+  block:
+    - name: Install basic build dependencies
+      yum:
+        name:
+          - autoconf
+          - automake
+          - ccache
+          - cmake
+          - createrepo
+          - gcc-c++
+          - git
+          - libtool
+          - rpmdevtools
+          - ruby-devel
+          - rubygems
+          - setup
+        state: present
 
-- name: Install fpm
-  gem:
-    name: fpm
-    user_install: false
-    state: latest
+    - name: Install fpm
+      gem:
+        name: fpm
+        user_install: false
+        state: latest
 
-- name: Set up rpmbuild tree
-  become: false
-  command: rpmdev-setuptree
-  args:
-    creates: ~/rpmbuild/RPMS
+    - name: Set up rpmbuild tree
+      become: false
+      command: rpmdev-setuptree
+      args:
+        creates: ~/rpmbuild/RPMS
 

@@ -72,9 +72,9 @@ forward-zone:
 
 stub-zone:
     name: "dnsbl"
-    stub-host: rbldnsd.{{ subd }}
+    stub-host: rbldnsd.{{ aws_region }}.{{ subd }}
 
 stub-zone:
     name: "dnsal"
-    stub-host: rbldnsd.{{ subd }}
+    stub-host: rbldnsd.{{ aws_region }}.{{ subd }}
 

@@ -1,32 +1,36 @@
 ---
 
-- name: Install uchiwa dashboard
-  yum:
-    name: uchiwa
-    state: latest
-  notify: Restart uchiwa
+- tags:
+    - uchiwa
+    - sensu
+  block:
+    - name: Install uchiwa dashboard
+      yum:
+        name: uchiwa
+        state: latest
+      notify: Restart uchiwa
 
-- name: Install systemd unit
-  copy:
-    dest: /etc/systemd/system/uchiwa.service
-    src: uchiwa.service
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart uchiwa
+    - name: Install systemd unit
+      copy:
+        dest: /etc/systemd/system/uchiwa.service
+        src: uchiwa.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart uchiwa
 
-- name: Configure uchiwa
-  template:
-    dest: /etc/uchiwa.json
-    src: uchiwa.json.j2
-    owner: root
-    group: root
-    mode: 0644
-  notify: Restart uchiwa
+    - name: Configure uchiwa
+      template:
+        dest: /etc/uchiwa.json
+        src: uchiwa.json.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart uchiwa
 
-- name: Enable uchiwa
-  systemd:
-    name: uchiwa
-    enabled: true
-  notify: Restart uchiwa
+    - name: Enable uchiwa
+      systemd:
+        name: uchiwa
+        enabled: true
+      notify: Restart uchiwa
 
