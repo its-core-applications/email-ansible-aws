@@ -14,3 +14,7 @@ sudo find /var/log -type f -delete -print
 echo "Cleaning redis state..."
 sudo systemctl status redis &>/dev/null && sudo systemctl stop redis
 sudo rm -fv /var/lib/redis/nodes.conf
+
+# get rid of the ephemeral key
+echo "Cleaning ssh..."
+rm -f ~/.ssh/authorized_keys
