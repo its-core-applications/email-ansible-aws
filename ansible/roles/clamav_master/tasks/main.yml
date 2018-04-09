@@ -72,7 +72,7 @@
 - name: Schedule signature updates
   cron:
     name: ansible-clamav-sync
-    user: ec2-user
+    user: "{{ ansible_user }}"
     minute: '10,25,40,55'
     job: '. ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags clamav'
 

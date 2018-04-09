@@ -10,7 +10,7 @@
 
 - name: Schedule plasticman
   cron:
-    user: ec2-user
+    user: "{{ ansible_user }}"
     name: autoscale MX hosts
     minute: '*/2'
     job: '. ~/ansible-aws/env-setup.sh && /usr/local/sbin/plasticman mx &>/dev/null'

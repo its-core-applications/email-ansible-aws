@@ -30,9 +30,9 @@
     mode: 0444
 
 - name: Configure sudoers
-  copy:
+  template:
     dest: /etc/sudoers
-    src: sudoers
+    src: sudoers.j2
     owner: root
     group: root
     mode: 0440
@@ -40,9 +40,9 @@
   tags: mutable
 
 - name: Configure cloud-init
-  copy:
+  template:
     dest: /etc/cloud/cloud.cfg
-    src: cloud.cfg
+    src: cloud.cfg.j2
     owner: root
     group: root
     mode: 0644

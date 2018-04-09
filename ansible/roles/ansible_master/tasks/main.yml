@@ -3,7 +3,7 @@
 - name: Schedule mutable updates
   cron:
     name: "ansible-mutable-{{ item }}"
-    user: ec2-user
+    user: "{{ ansible_user }}"
     minute: "*/15"
     job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item }}.yml --tags mutable &>/dev/null"
   loop:
@@ -13,7 +13,7 @@
 - name: Schedule deprovisioning of spundown hosts
   cron:
     name: "ansible-deprovision"
-    user: ec2-user
+    user: "{{ ansible_user }}"
     minute: "13,28,43,58"
     job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/deprovision_spundown.yml &>/dev/null"
 

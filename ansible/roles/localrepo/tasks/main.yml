@@ -4,9 +4,9 @@
     name: localrepo_update
 
 - name: Configure local yum repo
-  copy:
+  template:
     dest: /etc/yum.repos.d/local.repo
-    src: local.repo
+    src: local.repo.j2
     owner: root
     group: root
     mode: "0644"

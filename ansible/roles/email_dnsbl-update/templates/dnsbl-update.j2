@@ -8,7 +8,7 @@ name="$file-$action"
 
 shift 2
 
-if [[ $SUDO_USER && $SUDO_USER != 'root' && $SUDO_USER != 'ec2-user' ]]; then
+if [[ $SUDO_USER && $SUDO_USER != 'root' && $SUDO_USER != '{{ ansible_user }}' ]]; then
     export GIT_AUTHOR_EMAIL="${SUDO_USER}@{{ tld }}"
     export GIT_AUTHOR_NAME=$(grep "^${SUDO_USER}:" /etc/passwd | cut -d: -f5)
     export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"

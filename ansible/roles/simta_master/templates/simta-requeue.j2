@@ -2,7 +2,7 @@
 
 name=simta-requeue
 confdir={{ comint_base }}/dispatch
-workdir=/home/ec2-user/simqtmp
+workdir=/home/{{ ansible_user }}/simqtmp
 lockfile=$workdir/${name}
 log="logger -p cron.info -t ${name}[$$]"
 

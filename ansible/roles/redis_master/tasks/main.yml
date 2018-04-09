@@ -28,6 +28,6 @@
 - name: Schedule provision script runs
   cron:
     name: redis-manage
-    user: ec2-user
+    user: "{{ ansible_user }}"
     minute: "*/20"
     job: ". ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags redis"

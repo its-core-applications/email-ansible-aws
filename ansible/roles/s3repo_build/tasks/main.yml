@@ -3,7 +3,7 @@
 - name: Find files to upload
   find:
     paths:
-      - /home/ec2-user/rpmbuild/RPMS
+      - /home/{{ ansible_user }}/rpmbuild/RPMS
       - /var/tmp/sensugems/cache
     patterns: '*.rpm'
     recurse: true

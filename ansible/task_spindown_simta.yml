@@ -8,16 +8,17 @@
 - name: Clean queues
   command: /usr/sbin/simta -C
 
-- name: Create local queue storage directory
-  delegate_to: localhost
-  file:
-    dest: /home/ec2-user/simqtmp
-    state: directory
-
 - name: Lock and load
   vars:
-    simqtmp: "/home/ec2-user/simqtmp/inbound/{{ inventory_hostname }}-{{ ansible_facts.date_time.epoch | to_uuid }}"
+    simqtmp_base: /home/{{ lookup('env', 'USER') }}/simqtmp
+    simqtmp: "{{ simqtmp_base }}/inbound/{{ inventory_hostname }}-{{ ansible_facts.date_time.epoch | to_uuid }}"
   block:
+    - name: Create local queue storage directory
+      delegate_to: localhost
+      file:
+        dest: "{{ simqtmp_base }}"
+        state: directory
+
     - name: Touch lockfile
       delegate_to: localhost
       file:
