@@ -4,6 +4,8 @@ tld: "{{ lookup( 'env', 'TLD' ) }}"
 subd: "a.mail.{{ tld }}"
 
 aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
+aws_status: prod
+
 sns_region: us-west-2
 aws_ssh_key: '2015-10-16'
 

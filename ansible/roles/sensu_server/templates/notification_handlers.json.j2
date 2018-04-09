@@ -42,7 +42,7 @@
   "handlers": {
     "page": {
       "type": "pipe",
-      "command": "handler-sns -r {{ sns_region }} -t oncall",
+      "command": "handler-sns -r {{ sns_region }} -t oncall -d {{ aws_status }}/{{ aws_region }}",
       "filters": [
         "occurrences",
         "check_dependencies",
@@ -53,7 +53,7 @@
     },
     "email": {
       "type": "pipe",
-      "command": "handler-sns -r {{ sns_region }} -t rootmail",
+      "command": "handler-sns -r {{ sns_region }} -t rootmail -d {{ aws_status }}/{{ aws_region }}",
       "filters": [
         "occurrences",
         "check_dependencies",
@@ -62,7 +62,7 @@
     },
     "fyi": {
       "type": "pipe",
-      "command": "handler-sns -r {{ sns_region }} -t rootmail",
+      "command": "handler-sns -r {{ sns_region }} -t rootmail -d {{ aws_status }}/{{ aws_region }}",
       "filters": [
         "state_change_only",
         "check_dependencies"
