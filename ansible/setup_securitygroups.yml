@@ -92,16 +92,18 @@
             ports: 25
             cidr_ip: "{{ (ec2_subnets + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
 
-    - name: Create security group for relay ELB
+    - name: Create security group for relay
       ec2_group:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile[aws_status][aws_region] }}"
         vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
-        name: relay-elb
-        description: relay ELB
+        name: relay
+        description: relay hosts
         rules:
           - proto: tcp
-            ports: 25
+            ports:
+              - 25
+              - 587
             cidr_ip: 0.0.0.0/0
           - proto: icmp
             ports: -1
@@ -109,17 +111,6 @@
         rules_egress:
           - proto: all
             cidr_ip: 0.0.0.0/0
-
-    - name: Create security group for relay
-      ec2_group:
-        region: "{{ aws_region }}"
-        vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
-        name: relay
-        description: relay hosts
-        rules:
-          - proto: tcp
-            ports: 25
-            group_name: relay-elb
 
     - name: Create security group for smtp ELB
       ec2_group:

@@ -3,4 +3,4 @@
 simta_config: relay.mail
 simta_bitbucket: true
 simta_relay: true
-simta_loadbalanced: true
+simta_msa: true
