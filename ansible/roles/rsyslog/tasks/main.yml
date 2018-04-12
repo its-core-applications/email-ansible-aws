@@ -18,9 +18,9 @@
       notify: Restart systemd-journald
 
     - name: Configure rsyslog
-      copy:
+      template:
         dest: /etc/rsyslog.conf
-        src: rsyslog.conf
+        src: rsyslog.conf.j2
         owner: root
         group: root
         mode: "0644"

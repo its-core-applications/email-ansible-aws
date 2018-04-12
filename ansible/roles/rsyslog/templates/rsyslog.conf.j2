@@ -27,11 +27,15 @@ template(
     string="/var/log/%syslogfacility-text%"
 )
 
+{% if rsyslog_verbose == false %}
 if $syslogfacility-text != 'mail' or $syslogseverity < 5 then {
-    action(
-        type="omfile"
-        dynaFile="DynFile"
-        template="RSYSLOG_FileFormat"
-        fileCreateMode="0644"
-    )
+{% endif %}
+action(
+    type="omfile"
+    dynaFile="DynFile"
+    template="RSYSLOG_FileFormat"
+    fileCreateMode="0644"
+)
+{% if rsyslog_verbose == false %}
 }
+{% endif %}
