@@ -1,0 +1,91 @@
+---
+
+- tags:
+    - ec2_launch
+    - ec2
+    - launch
+  become: false
+  block:
+    - name: Get AMI data
+      ec2_ami_facts:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        owners: self
+        filters:
+          "tag:os": amzn2
+          "tag:image_type": "{{ launch_ami_class | default(launch_class) }}"
+      register: find_ami_facts
+
+    - name: Find latest AMI
+      set_fact:
+        find_ami: "{{ find_ami_facts.images | sort(attribute='creation_date') | last }}"
+
+    - import_role:
+        name: ec2_find_subnets
+
+    - name: Create {{ launch_class }} instance(s)
+      ec2:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        group: "{{ launch_groups_default | union(launch_groups | default([])) }}"
+        key_name: "{{ aws_ssh_key[aws_status][aws_region] }}"
+        instance_type: "{{ aws_instance_types[aws_status][launch_class] | default(aws_instance_types[aws_status]['default']) }}"
+        vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[item % (ec2_subnets | length)])).id }}"
+        assign_public_ip: true
+        image: "{{ find_ami.image_id }}"
+        instance_profile_name: "{{ launch_profile | default('standard') }}"
+        instance_tags: "{{ launch_tags_default | combine(launch_tags | default({})) }}"
+        count: 1
+      vars:
+        ec2_subnets: "{{ hostvars[inventory_hostname]['ec2_subnets_' ~ (launch_subnet_type | default('public'))] }}"
+        launch_count_default: "{{ aws_instance_counts[aws_status][launch_class] | default(1) - (groups['Class_' ~ launch_class] | default([]) | intersect(aws_region_group) | intersect(groups.Status_production | default([]) | union(groups.Status_spinup | default([])) | union(groups.Status_development | default([]))) | length) }}"
+        launch_groups_default:
+          - "{{ launch_subnet_type | default('public') }}-default"
+        launch_tags_default:
+          Class: "{{ launch_class }}"
+          Status: spinup
+      loop: "{{ range(launch_count | default(launch_count_default) | int) | list }}"
+      ignore_errors: true
+      register: ec2
+
+    - name: Wait for launched instances to have hostnames
+      ec2_instance_facts:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        instance_ids: "{{ ec2_instances }}"
+      vars:
+        ec2_instances: "{{ ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | flatten | map(attribute='id') | list }}"
+      when: ec2_instances | length
+      register: result
+      until: (result.instances | map(attribute='tags.CustomDNSName') | select('defined') | list | length) == (ec2_instances | length)
+      retries: 20
+      delay: 15
+
+    - name: Mark laggard instances as spundown
+      ec2_tag:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        resource: "{{ item.instance_id }}"
+        Status: spundown
+      loop: "{{ result.instances | default([]) | rejectattr('tags.CustomDNSName', 'defined') | list }}"
+      loop_control:
+        label: "{{ item.instance_id }}"
+
+    - meta: refresh_inventory
+
+    - name: Flush DNS cache
+      command: unbound-control reload
+      become: true
+      when: result is not skipped
+
+    - name: Wait for launched instances to be available
+      delegate_to: "{{ item.tags.CustomDNSName }}"
+      wait_for_connection:
+        delay: 2
+        sleep: 2
+        timeout: 300
+      when: launch_wait | default(true)
+      loop: "{{ result.instances | default([]) | selectattr('tags.CustomDNSName', 'defined') | list }}"
+      loop_control:
+        label: "{{ item.instance_id }}"
+

@@ -3,7 +3,8 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_tasks: task_find_subnets.yml
+    - import_role:
+        name: ec2_find_subnets
 
     - name: Create MX loadbalancer(s)
       ec2_elb_lb:
@@ -15,7 +16,7 @@
         connection_draining_timeout: 120
         cross_az_load_balancing: true
         security_group_names: mx-elb
-        subnets: "{{ ec2_subnets | map(attribute='id') | list }}"
+        subnets: "{{ ec2_subnets_public | map(attribute='id') | list }}"
         listeners:
           - protocol: tcp
             load_balancer_port: 25

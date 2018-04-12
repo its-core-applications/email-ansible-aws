@@ -5,12 +5,13 @@
   become: false
   ec2_vpc_subnet_facts:
     region: "{{ aws_region }}"
+    profile: "{{ aws_profile[aws_status][aws_region] }}"
   register: ec2_subnet_facts
 
 - name: Shuffle and sort subnets
   set_fact:
-    ec2_subnets: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | shuffle(seed=ansible_facts.date_time.epoch) }}"
-    ec2_subnets_sorted: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }}"
+    ec2_subnets_public: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | shuffle(seed=ansible_facts.date_time.epoch) }}"
+    ec2_subnets_public_sorted: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }}"
     ec2_subnets_vpn: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'vpn') | shuffle(seed=ansible_facts.date_time.epoch) }}"
     ec2_subnets_vpn_sorted: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'vpn') | sort(attribute='availability_zone') }}"
     

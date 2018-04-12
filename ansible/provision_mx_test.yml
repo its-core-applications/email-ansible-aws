@@ -3,32 +3,13 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_tasks: task_find_ami.yml
-
-    - import_tasks: task_find_subnets.yml
-
-    - name: Create mx-test host
-      ec2:
-        group:
-          - main-default
+    - import_role:
+        name: ec2_launch
+      vars:
+        launch_class: mx-test
+        launch_ami_class: base
+        launch_groups:
           - mx-elb
-        key_name: "{{ aws_ssh_key }}"
-        instance_type: t2.small
-        region: "{{ aws_region }}"
-        vpc_subnet_id: "{{ ec2_subnets_sorted.0.id }}"
-        assign_public_ip: true
-        image: "{{ find_ami.image_id }}"
-        instance_profile_name: standard
-        instance_tags:
-          Class: mx-test
-          Status: development
-        count: 1
-      when: groups.Class_mx_test | default([]) | intersect(groups.Status_development | default([])) | intersect(aws_region_group) | length == 0
-      # this is just to force a consistent result structure
-      loop: [ dummy ]
-      register: ec2
-
-    - import_tasks: task_wait_for_launched.yml
 
 - import_playbook: mx_test.yml
 

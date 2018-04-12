@@ -3,33 +3,20 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_tasks: task_find_ami.yml
+    - import_role:
+        name: ec2_find_subnets
 
-    - import_tasks: task_find_subnets.yml
-
-    - name: Create syslog
-      ec2:
-        group:
-          - vpn-default
+    - import_role:
+        name: ec2_launch
+      vars:
+        launch_class: syslog
+        launch_ami_class: base
+        launch_subnet: "{{ ec2_subnets_vpn_sorted.0 }}"
+        launch_subnet_type: vpn
+        launch_groups:
           - rsyslog
-        key_name: "{{ aws_ssh_key }}"
-        instance_type: m5.xlarge
-        region: "{{ aws_region }}"
-        vpc_subnet_id: "{{ ec2_subnets_vpn_sorted.0.id }}"
-        assign_public_ip: true
-        image: "{{ find_ami.image_id }}"
-        instance_profile_name: standard
-        instance_tags:
-          Class: syslog
+        launch_tags:
           Status: production
-        exact_count: 1
-        count_tag:
-          Class: syslog
-      # this is just to force a consistent result structure
-      loop: [ dummy ]
-      register: ec2
-
-    - import_tasks: task_wait_for_launched.yml
 
     - name: Attach EBS log volume
       ec2_vol:

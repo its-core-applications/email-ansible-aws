@@ -3,31 +3,12 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_tasks: task_find_ami.yml
+    - import_role:
+        name: ec2_launch
       vars:
         launch_class: dnsbl
-
-    - import_tasks: task_find_subnets.yml
-
-    - name: Create dnsbl servers
-      ec2:
-        group:
-          - main-default
+        launch_groups:
           - rbldnsd
-        key_name: "{{ aws_ssh_key }}"
-        instance_type: m5.large
-        region: "{{ aws_region }}"
-        vpc_subnet_id: "{{ ec2_subnets[item % (ec2_subnets | length)].id }}"
-        assign_public_ip: true
-        image: "{{ find_ami.image_id }}"
-        instance_profile_name: standard
-        instance_tags:
-          Class: dnsbl
-          Status: spinup
-      loop: "{{ range(2 - (groups.Class_dnsbl | default([]) | intersect(aws_region_group) | intersect(groups.Status_production | default([])) | length)) | list }}"
-      register: ec2
-
-    - import_tasks: task_wait_for_launched.yml
 
 - hosts: Class_dnsbl:&Status_spinup
   tasks:

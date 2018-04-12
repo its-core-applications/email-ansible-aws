@@ -3,24 +3,11 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_tasks: task_find_ami.yml
-
-    - import_tasks: task_find_subnets.yml
-
-    - name: Create builder
-      ec2:
-        group: [ main-default ]
-        key_name: "{{ aws_ssh_key }}"
-        instance_type: m5.large
-        region: "{{ aws_region }}"
-        vpc_subnet_id: "{{ ec2_subnets_sorted.0.id }}"
-        assign_public_ip: true
-        image: "{{ find_ami.image_id }}"
-        instance_profile_name: builder
-        instance_tags:
-          Class: builder
+    - import_role:
+        name: ec2_launch
+      vars:
+        launch_class: builder
+        launch_ami_class: base
+        launch_profile: builder
+        launch_tags:
           Status: development
-        exact_count: 1
-        count_tag:
-          Class: builder
-

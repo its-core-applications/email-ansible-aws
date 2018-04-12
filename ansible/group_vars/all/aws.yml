@@ -23,7 +23,33 @@ aws_profile:
     us-east-2: vdc-nonprod
 
 sns_region: us-west-2
-aws_ssh_key: '2015-10-16'
+
+aws_ssh_key:
+  prod:
+    us-west-2: '2015-10-16'
+  nonprod:
+    us-east-2: blackops-nonproduction
+
+aws_instance_types:
+  prod:
+    default: m5.large
+    mx: m5.xlarge
+    egress: m5.2xlarge
+    mx-test: t2.small
+    smtp-test: t2.small
+  nonprod:
+    default: t2.small
+    master: m5.large
+    relay: m5.large
+
+aws_instance_counts:
+  prod:
+    egress: 3
+    dnsbl: 2
+    mx: 6
+  nonprod:
+    egress: 2
+    mx: 3
 
 aws_iam_saml: 'arn:aws:iam::236262816615:saml-provider/UM_PROD_SHIB'
 aws_iam_groups:
