@@ -1,6 +1,7 @@
 #!/bin/bash
 
 tmpfile=$(mktemp --tmpdir eicar.XXXXXXXX)
+chmod 644 $tmpfile
 
 # Reversed EICAR
 racie='*H+H$!ELIF-TSET-SURIVITNA-DRADNATS-RACIE$}7)CC7)^P(45XZP\4[PA@%P!O5X'
