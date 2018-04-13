@@ -1,5 +1,11 @@
 ---
 
+- name: Install extra dependencies
+  yum:
+    name:
+      - cairo
+    state: latest
+
 - name: Install graphite-api
   pip:
     name:
