@@ -13,9 +13,9 @@ XJS*C4JDBQADN1.NSBN3*2IDNEN*GTUBE-STANDARD-ANTI-UBE-TEST-EMAIL*C.34X
 
 How exciting.
 EOF
-| sed '1d' 2>/dev/null)
+2>/dev/null)
 
-spamres=$(printf '%s' $spamout | jq -r '@text "\(.action) score=\(.score)"')
+spamres=$(printf '%s' "$spamout" | sed '1d' | jq -r '@text "\(.action) score=\(.score)"')
 if [[ $? -ne 0 ]]; then
     echo "Unable to parse returned data"
     exit 1
