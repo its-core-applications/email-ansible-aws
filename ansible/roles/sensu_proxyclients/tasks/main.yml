@@ -1,15 +1,22 @@
 ---
 
-- meta: flush_handlers
+- tags:
+    - sensu
+  block:
+    - meta: flush_handlers
 
-- name: Register sensu proxy clients
-  uri:
-    url: http://syslog.{{ subd }}:4567/clients
-    method: POST
-    body_format: json
-    body: "{{ {'address': ''} | combine(item) }}"
-    status_code: 201
-  loop: "{{ sensu_proxy_clients }}"
-  loop_control:
-    label: "{{ item.name }}"
+    - name: Register sensu proxy clients
+      uri:
+        url: http://syslog.{{ subd }}:4567/clients
+        method: POST
+        body_format: json
+        body: "{{ {'address': ''} | combine(item) }}"
+        status_code: 201
+      loop: "{{ sensu_proxy_clients }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: result
+      until: result is success
+      retries: 4
+      delay: 15
 

@@ -21,6 +21,7 @@
     mode: 0755
   loop:
     - check-box-status
+    - check-google-status
     - handler-sns
 
 - name: Install extra dependencies

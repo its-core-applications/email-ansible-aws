@@ -33,4 +33,7 @@ sensu_proxy_clients:
   - name: box.com
     subscriptions:
       - Status_production
+  - name: google.com
+    subscriptions:
+      - Status_productions
 
