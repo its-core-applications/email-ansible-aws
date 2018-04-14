@@ -4,9 +4,11 @@ import argparse
 import dns.resolver
 import netaddr
 import re
+import sys
 
 ip_list = []
 unresolvable_mechs = []
+strict = False
 
 def main():
     parser = argparse.ArgumentParser()
@@ -16,13 +18,18 @@ def main():
     format_parser = parser.add_mutually_exclusive_group()
     format_parser.add_argument('-s', '--splunk', action='store_true', help='Return a Splunk search')
     format_parser.add_argument('-t', '--txt', action='store_true', help='Return a pre-formatted TXT record')
+    parser.add_argument('-S', '--strict', action='store_true', help='Fail if any mechanisms fail to resolve')
     parser.add_argument('-u', '--unresolvable', action='store_true', help='Include unresolvable mechanisms')
     args = parser.parse_args()
+
+    if args.strict:
+        global strict
+        strict = True
 
     if args.domain:
         parse_domain(args.domain)
     elif args.record:
-        parse_record(args.record, None)
+        parse_record('v=spf1 ' + args.record, None)
 
     merged_ip_list = netaddr.cidr_merge(ip_list)
 
@@ -52,11 +59,13 @@ def main():
 def parse_domain(domain):
     try:
         records = dns.resolver.query(domain, 'TXT')
-    except dns.exception.DNSException:
-        return
-
-    for record in records:
-        parse_record(record, domain)
+    except dns.exception.DNSException as e:
+        if strict:
+            print(e)
+            sys.exit(1)
+    else:
+        for record in records:
+            parse_record(record, domain)
 
 def parse_record(record, domain):
     # Collapse the record into a single unquoted string and split it
@@ -93,26 +102,38 @@ def parse_mech(mech, domain):
 def resolve_addr(domain):
     try:
         records = dns.resolver.query(domain, 'A')
+    except dns.resolver.NoAnswer:
+        pass
+    except dns.exception.DNSException as e:
+        if strict:
+            print(e)
+            sys.exit(1)
+    else:
         for ip in records:
             ip_list.append(netaddr.IPNetwork(str(ip)))
-    except dns.exception.DNSException:
-        pass
 
     try:
         records = dns.resolver.query(domain, "AAAA")
+    except dns.resolver.NoAnswer:
+        pass
+    except dns.exception.DNSException as e:
+        if strict:
+            print(e)
+            sys.exit(1)
+    else:
         for ip in records:
             ip_list.append(netaddr.IPNetwork(str(ip)))
-    except dns.exception.DNSException:
-        pass
 
 # Resolve MX records and add them to the list
 def resolve_mx(domain):
     try:
         records = dns.resolver.query(domain, "MX")
-    except dns.exception.DNSException:
-        return
-
-    for record in records:
-        resolve_addr(str(record).split(' ')[1])
+    except dns.exception.DNSException as e:
+        if strict:
+            print(e)
+            sys.exit(1)
+    else:
+        for record in records:
+            resolve_addr(str(record).split(' ')[1])
 
 if __name__ == "__main__": main()
