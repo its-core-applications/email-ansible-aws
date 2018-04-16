@@ -25,8 +25,8 @@
           redis: 'yes'
         count: 1
       vars:
-        ec2_launch_count: 3
-      loop: "{{ range(ec2_launch_count) | list }}"
+        launch_count: 3
+      loop: "{{ range(launch_count) | list }}"
       ignore_errors: true
       register: ec2
 
