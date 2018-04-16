@@ -25,7 +25,7 @@
         # (modulo the lack of native type propagation in templated vars). We
         # use '|int' on target* as well, in case they were passed on the CLI
         # as k=v extra-vars to override the default.
-        target_spindown_az: "{{ ((target_spindown | int) / (groups.Class_mx | map('extract', hostvars, 'placement.availability_zone') | unique | length)) | round(0, 'ceil') }}"
+        target_spindown_az: "{{ ((target_spindown | int) / (groups.Class_mx | map('extract', hostvars, 'placement') | map(attribute='availability_zone') | unique | length)) | round(0, 'ceil') }}"
         spindown_count: "{{ groups.Class_mx | intersect(groups.Status_spindown | default([])) | length }}"
         spindown_count_az: "{{ groups.Class_mx | intersect(groups.Status_spindown | default([])) | intersect(groups['az_' ~ placement.availability_zone | replace('-', '_')]) | length }}"
         production_count: "{{ groups.Class_mx | intersect(groups.Status_production | default([])) | length }}"
