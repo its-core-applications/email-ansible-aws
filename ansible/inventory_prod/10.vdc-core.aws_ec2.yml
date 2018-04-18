@@ -1,0 +1,12 @@
+plugin: aws_ec2
+boto_profile: vdc-core
+filters:
+  instance-state-name:
+    - running
+  "tag:BusinessOwner": its application delivery
+regions:
+  - us-east-2
+hostnames:
+  - 'tag:CustomDNSName'
+  - dns-name
+

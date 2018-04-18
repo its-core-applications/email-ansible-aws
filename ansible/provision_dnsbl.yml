@@ -41,6 +41,8 @@
           delegate_to: localhost
           become: false
           ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile[aws_status][region] }}"
             resource: "{{ instance_id }}"
             tags:
               Status: production

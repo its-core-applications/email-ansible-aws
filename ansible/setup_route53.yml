@@ -3,21 +3,24 @@
 - hosts: localhost
   become: false
   tasks:
-    - name: "Create {{ subd }}"
+    - name: Create {{ subd }}
       route53_zone:
+        profile: "{{ aws_profile[aws_status].subd }}"
         zone: "{{ subd }}"
         state: present
 
-    - name: "Get SOA for {{ subd }}"
+    - name: Get SOA for {{ subd }}
       route53:
+        profile: "{{ aws_profile[aws_status].subd }}"
         command: get
         zone: "{{ subd }}"
         record: "{{ subd }}"
         type: SOA
       register: result
 
-    - name: "Set SOA for {{ subd }}"
+    - name: Set SOA for {{ subd }}
       route53:
+        profile: "{{ aws_profile[aws_status].subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"
@@ -26,13 +29,15 @@
         ttl: 300
         value: "{{ result.set.value.split()[0:3] | join(' ') }} 7200 900 1209600 60"
 
-    - name: "Create {{ spfd }}"
+    - name: Create {{ spfd }}
       route53_zone:
+        profile: "{{ aws_profile[aws_status].spfd }}"
         zone: "{{ spfd }}"
         state: present
 
     - name: Create rbldnsd-master.{{ subd }}
       route53:
+        profile: "{{ aws_profile[aws_status].subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"

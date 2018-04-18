@@ -1,6 +1,6 @@
 ---
 
-spfd: "spf.mail.{{ tld }}"
+spfd: "{{ (aws_status == 'prod') | ternary('spf.mail.' ~ tld, 'spf.' ~ subd) }}"
 
 spf_main:
   - name: _umich

@@ -2,6 +2,7 @@
 
 - name: Fetch resource records
   route53_facts:
+    profile: "{{ aws_profile[aws_status].subd }}"
     query: record_sets
     start_record_name: "{{ (r53_rrs | default({})).NextRecordName | default(omit) }}"
     max_items: 25
@@ -27,6 +28,7 @@
 
 - name: Delete definitively unused CNAMEs
   route53:
+    profile: "{{ aws_profile[aws_status].subd }}"
     command: delete
     zone: "{{ subd }}"
     record: "{{ item.item.Name }}"

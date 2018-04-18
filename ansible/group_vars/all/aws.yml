@@ -5,7 +5,22 @@ subd: "{{ [( aws_status == 'prod' ) | ternary('a', 'x'), 'mail', tld ] | join('.
 
 aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
 aws_region_group: "{{ groups['region_' ~ aws_region | replace('-', '_')] | default([]) }}"
-aws_status: prod
+aws_status: "{{ lookup('env', 'AWS_STATUS') }}"
+
+aws_profile:
+  prod:
+    s3: umcollab
+    sns: umcollab
+    spfd: umcollab
+    subd: umcollab
+    us-east-2: vdc-prod
+    us-west-2: umcollab
+  nonprod:
+    s3: vdc-nonprod
+    sns: vdc-nonprod
+    spfd: vdc-nonprod
+    subd: vdc-nonprod
+    us-east-2: vdc-nonprod
 
 sns_region: us-west-2
 aws_ssh_key: '2015-10-16'
@@ -34,7 +49,9 @@ master_hostnames:
     us-west-2: mogo
     us-east-2: ego
 
-rbldnsd_master: 141.211.21.71, 141.211.7.108
+rbldnsd_master:
+  - 141.211.21.71
+  - 141.211.7.108
 
 ops_email: blackops@{{ tld }}
 ops_rootmail: blackops.{{ (aws_status == 'prod') | ternary('root', 'nonprod') }}@{{ tld }}

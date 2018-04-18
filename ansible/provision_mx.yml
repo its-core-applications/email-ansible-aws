@@ -9,6 +9,7 @@
       ec2_elb_lb:
         name: "{{ item }}"
         region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         state: present
         idle_timeout: 3600
         connection_draining_timeout: 120
@@ -43,6 +44,7 @@
 
     - name: Set pretty DNS names for MX loadbalancer(s)
       route53:
+        profile: "{{ aws_profile[aws_status].subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"

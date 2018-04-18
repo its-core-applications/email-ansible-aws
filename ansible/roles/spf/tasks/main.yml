@@ -22,6 +22,7 @@
 
     - name: Create main SPF records
       route53:
+        profile: "{{ aws_profile[aws_status].spfd }}"
         command: create
         overwrite: true
         zone: "{{ spfd }}"
@@ -33,6 +34,7 @@
 
     - name: Create third-party SPF records
       route53:
+        profile: "{{ aws_profile[aws_status].spfd }}"
         command: create
         overwrite: true
         zone: "{{ spfd }}"

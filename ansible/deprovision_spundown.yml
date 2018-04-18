@@ -8,5 +8,6 @@
       delegate_to: localhost
       ec2:
         region: "{{ region }}"
+        profile: "{{ aws_profile[aws_status][region] }}"
         instance_id: "{{ instance_id }}"
         state: absent

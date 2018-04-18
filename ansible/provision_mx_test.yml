@@ -37,12 +37,12 @@
   tasks:
     - name: Set mx-test.{{ aws_region }}.{{ subd }}
       route53:
+        profile: "{{ aws_profile[aws_status].subd }}"
         command: "create"
         overwrite: true
         zone: "{{ subd }}"
         record: mx-test.{{ aws_region }}.{{ subd }}
         type: A
         ttl: 60
-        value: "{{ groups.Class_mx_test | default([]) | map('extract', hostvars, 'public_ip_address') | join(', ') }}"
-      when: groups.Class_mx_test is defined
+        value: "{{ groups.Class_mx_test | default([]) | intersect(aws_region_group) | map('extract', hostvars, 'public_ip_address') | list }}"
 

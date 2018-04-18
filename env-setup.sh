@@ -10,9 +10,14 @@ VIRTUAL_ENV_DISABLE_PROMPT=1
 . $hacking_dir/bin/ansible/hacking/env-setup
 export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
 export ANSIBLE_PRIVATE_KEY_FILE=$hacking_dir/id_rsa
-export ANSIBLE_INVENTORY=$hacking_dir/ansible/inventory
+export AWS_STATUS=prod
 export AWS_DEFAULT_REGION=us-west-2
-export AWS_PROFILE=default
+
+if [[ -s $hacking_dir/localenv ]]; then
+    . $hacking_dir/localenv
+fi
+
+export ANSIBLE_INVENTORY=$hacking_dir/ansible/inventory_${AWS_STATUS}
 
 # Set up Vault
 export VAULT_ADDR='http://127.0.0.1:8200'

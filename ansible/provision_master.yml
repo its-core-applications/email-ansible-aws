@@ -30,6 +30,7 @@
 
     - name: Set CNAMEs for vhosts
       route53:
+        profile: "{{ aws_profile[aws_status].subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"
@@ -51,6 +52,7 @@
       ec2_vol:
         name: master_home
         region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         instance: "{{ hostvars[master_hostname]['instance_id'] }}"
         device_name: xvdd
         volume_type: gp2

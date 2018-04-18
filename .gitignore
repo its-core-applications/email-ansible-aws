@@ -1,5 +1,6 @@
 id_rsa
 ansible/keys
+localenv
 packer/packer_cache
 packer/template.json
 private/

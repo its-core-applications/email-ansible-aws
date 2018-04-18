@@ -38,7 +38,10 @@
       register: acme_data
 
     - name: You challenge me, sirrah?
+      delegate_to: localhost
+      become: false
       route53:
+        profile: "{{ aws_profile[aws_status].subd }}"
         command: create
         overwrite: true
         wait: true

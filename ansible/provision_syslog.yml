@@ -35,6 +35,7 @@
       ec2_vol:
         name: logs
         region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         instance: "{{ groups.Class_syslog | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvdd
         volume_type: gp2
@@ -46,6 +47,7 @@
       ec2_vol:
         name: splunk
         region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         instance:  "{{ groups.Class_syslog | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvde
         volume_type: gp2
@@ -57,6 +59,7 @@
       ec2_vol:
         name: carbon
         region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         instance: "{{ groups.Class_syslog | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | join }}"
         device_name: xvdf
         volume_type: gp2
@@ -76,6 +79,7 @@
 
     - name: Set aliases
       route53:
+        profile: "{{ aws_profile[aws_status].subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"

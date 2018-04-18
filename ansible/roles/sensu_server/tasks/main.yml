@@ -8,6 +8,7 @@
       become: false
       sns_topic:
         region: "{{ sns_region }}"
+        profile: "{{ aws_profile[aws_status].sns }}"
         name: "{{ item.name }}"
         display_name: "{{ item.display_name }}"
         state: present

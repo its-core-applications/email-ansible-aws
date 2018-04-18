@@ -5,6 +5,8 @@
   tasks:
     - name: Create IAM policy for EC2 tagging
       iam_managed_policy:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         state: present
         policy_name: UpdateEC2_tags
         policy_description: Read and update tags for EC2 resources
@@ -24,6 +26,8 @@
 
     - name: Create builder role
       iam_role:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         name: builder
         state: present
         assume_role_policy_document:
@@ -41,6 +45,8 @@
 
     - name: Create master role
       iam_role:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         name: master
         state: present
         assume_role_policy_document:
@@ -59,6 +65,8 @@
 
     - name: Create standard role
       iam_role:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
         name: standard
         state: present
         assume_role_policy_document:

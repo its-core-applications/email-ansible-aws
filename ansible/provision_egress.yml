@@ -35,13 +35,15 @@
 
 - hosts: Class_egress:&Status_spinup
   tasks:
-    - delegate_to: localhost
+    - when: region == aws_region
+      delegate_to: localhost
       become: false
       block:
         - name: Assign elastic IP
           # This is ugly, fragile, and limits us to one egress host per az
           ec2_eip:
             region: "{{ region }}"
+            profile: "{{ aws_profile[aws_status][region] }}"
             device_id: "{{ instance_id }}"
             ip: "{{ egress_eip[aws_status][placement.availability_zone] }}"
           register: result
@@ -55,6 +57,7 @@
         - name: Set status to production
           ec2_tag:
             region: "{{ region }}"
+            profile: "{{ aws_profile[aws_status][region] }}"
             resource: "{{ instance_id }}"
             tags:
               Status: production
