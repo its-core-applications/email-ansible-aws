@@ -4,38 +4,53 @@
   become: false
   tasks:
     - import_role:
-        name: ec2_find_subnets
+        name: ec2_class_eips
+      vars:
+        eip_class: egress
 
     - include_role:
         name: ec2_launch
       vars:
         launch_class: egress
-        launch_count: 1
         launch_groups:
           - egress
           - redis
         launch_tags:
           redis: 'yes'
-      when: groups.Class_egress | default([]) | intersect(groups.Status_production | default([]) | union(groups.Status_spinup | default([]))) | intersect(groups['az_' ~ launch_subnet.availability_zone | replace('-', '_')] | default([])) | length == 0
-      loop: "{{ ec2_subnets_public }}"
-      loop_control:
-        loop_var: launch_subnet
 
 - hosts: Class_egress:&Status_spinup
+  serial: 1
   tasks:
     - when: region == aws_region
       delegate_to: localhost
       become: false
       block:
+        - name: Fetch egress EIPs
+          ec2_eip_facts:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile[aws_status][region] }}"
+            filters:
+              "tag:Class": egress
+          register: result
+
+        - name: Make sure we have a free EIP
+          assert:
+            that: result.addresses | rejectattr('association_id', 'defined') | list | length > 0
+            msg: No available egress EIPs
+
         - name: Assign elastic IP
-          # This is ugly, fragile, and limits us to one egress host per az
           ec2_eip:
             region: "{{ region }}"
             profile: "{{ aws_profile[aws_status][region] }}"
             device_id: "{{ instance_id }}"
-            ip: "{{ egress_eip[aws_status][placement.availability_zone] }}"
+            public_ip: "{{ (result.addresses | rejectattr('association_id', 'defined') | first).public_ip }}"
           register: result
 
+- hosts: Class_egress:&Status_spinup
+  tasks:
+    - delegate_to: localhost
+      become: false
+      block:
         - name: Wait for elastic IP
           wait_for:
             host: "{{ result.public_ip }}"

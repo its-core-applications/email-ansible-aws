@@ -3,6 +3,7 @@ boto
 boto3
 botocore
 cryptography
+dnspython
 hvac
 jinja2
 netaddr

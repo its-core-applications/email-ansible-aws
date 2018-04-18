@@ -55,6 +55,17 @@
 
         - import_tasks: task_spindown_simta.yml
 
+        - name: Disassociate EIP
+          delegate_to: localhost
+          become: false
+          ec2_eip:
+            region: "{{ region }}"
+            profile: "{{ aws_profile[aws_status][region] }}"
+            device_id: "{{ instance_id }}"
+            public_ip: "{{ public_ip_address }}"
+            state: absent
+            release_on_disassociation: false
+
         - name: Set status to spundown
           delegate_to: localhost
           become: false
