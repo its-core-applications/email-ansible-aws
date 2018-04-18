@@ -16,8 +16,12 @@
     - name: Create local queue storage directory
       delegate_to: localhost
       file:
-        dest: "{{ simqtmp_base }}"
+        dest: "{{ item }}"
         state: directory
+        owner: "{{ ansible_user }}"
+      loop:
+        - "{{ simqtmp_base }}"
+        - "{{ simqtmp_base }}/inbound"
 
     - name: Touch lockfile
       delegate_to: localhost
