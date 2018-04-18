@@ -22,7 +22,7 @@ redis-cli -h $1 CLUSTER NODES > $tmpfile
 
 myid=$(grep myself $tmpfile | awk '{print $1}')
 
-if grep -q myself,master $tmpfile; then
+if [[ $(awk '$9 && $3 == "myself,master"' $tmpfile) ]]; then
     # Grab the first replica
     replica=$(sed -n -e "/slave $myid/{s/:.*//;s/.* //;p;q}" $tmpfile)
     try=0
@@ -61,19 +61,20 @@ if grep -q myself,master $tmpfile; then
             res=$(redis-cli -h $replica CLUSTER FAILOVER)
         done
     fi
+
+    try=0
+    until grep -q myself,slave $tmpfile; do
+        [[ $(( try % 5 )) -eq 0 ]] && outlog "Waiting for $1 to stop being a master..."
+        if [[ $(( try++ )) -gt 30 ]]; then
+            outlog "$1 is still a master, we can't remove it!" >&2
+            rm -f $tmpfile
+            exit 1
+        fi
+        sleep 1
+        redis-cli -h $1 CLUSTER NODES > $tmpfile
+    done
 fi
 
-try=0
-until grep -q myself,slave $tmpfile; do
-    [[ $(( try % 5 )) -eq 0 ]] && outlog "Waiting for $1 to stop being a master..."
-    if [[ $(( try++ )) -gt 30 ]]; then
-        outlog "$1 is still a master, we can't remove it!" >&2
-        rm -f $tmpfile
-        exit 1
-    fi
-    sleep 1
-    redis-cli -h $1 CLUSTER NODES > $tmpfile
-done
 
 try=0
 while grep -q "slave $myid" $tmpfile; do

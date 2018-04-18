@@ -27,13 +27,24 @@ for rhost in "${rhosts[@]}"; do
             outlog "$rhost is lonesome"
             badhosts+=( $rhost )
         else
-            outlog "$rhost is good"
-            goodhosts+=( $rhost )
+            if [[ $(redis-cli -h $rhost CLUSTER NODES | awk '! $9 && $3 == "myself,master"') ]]; then
+                outlog "$rhost is a clustered master with no slots"
+                badhosts+=( $rhost )
+            else
+                outlog "$rhost is good"
+                goodhosts+=( $rhost )
+            fi
         fi
-        redis-cli -h $rhost CLUSTER NODES | awk '{sub(/:[0-9]+/, "", $2); print $1, $2}' | while read nid nip; do
-            echo "${rhosts[@]}" | fgrep -wq $nip
-            if [[ $? -eq 1 ]]; then
-                outlog "forgetting $nip on $rhost"
+        redis-cli -h $rhost CLUSTER NODES | while read nid nip flags junk; do
+            nip=${nip%:*}
+            if [[ $nip ]]; then
+                echo "${rhosts[@]}" | fgrep -wq $nip
+                if [[ $? -eq 1 ]]; then
+                    outlog "forgetting $nip on $rhost"
+                    redis-cli -h $rhost CLUSTER FORGET $nid
+                fi
+            else
+                outlog "forgetting noaddr $nid on $rhost"
                 redis-cli -h $rhost CLUSTER FORGET $nid
             fi
         done
@@ -54,10 +65,15 @@ if [[ ${#goodhosts[@]} -eq 0 ]]; then
     badhosts=(${badhosts[@]:3})
 fi
 
+for rhost in ${goodhosts[@]}; do
+    # Make sure the cluster knows about itself
+    redis-cli -h ${goodhosts[0]} CLUSTER MEET $rhost 6379
+done
+
 ghost=${goodhosts[0]}
 for rhost in ${badhosts[@]}; do
     outlog "Adding $rhost to the cluster using $ghost"
-    loser=$(redis-cli -h $ghost CLUSTER NODES | awk '/slave [a-f0-9]{40}/{ master[$4]++ } END{ x=99; for (id in master) if( master[id] < x ) { x=master[id]; loser=id }; print loser }')
+    loser=$(redis-cli -h $ghost CLUSTER NODES | awk '/slave [a-f0-9]{40}/{ master[$4]++ } $9 && /master -/{ master[$1]++ } END{ x=99; for (id in master) if( master[id] < x ) { x=master[id]; loser=id }; print loser }')
     redis-cli -h $ghost CLUSTER MEET $rhost 6379
     until redis-cli -h $rhost CLUSTER NODES | grep -q "^$loser"; do
         outlog "Waiting for $rhost to know about $loser"
