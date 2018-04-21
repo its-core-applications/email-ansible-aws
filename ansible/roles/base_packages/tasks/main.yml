@@ -4,6 +4,9 @@
     - base
     - base_packages
   block:
+    - include_role:
+        name: s3repo
+
     - name: Uninstall unwanted packages
       yum:
         name:
