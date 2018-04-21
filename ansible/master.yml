@@ -49,6 +49,9 @@
             name: duo
 
         - import_role:
+            name: aws_saml_login
+
+        - import_role:
             name: email_dnsbl-update
 
         - import_role:
