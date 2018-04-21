@@ -11,13 +11,13 @@
         group: root
         mode: "0755"
 
-    - name: Create wrapper scripts for each list
+    - name: Set up aliases
       template:
-        dest: /usr/bin/{{ item.0 }}-{{ item.1 }}
-        src: dnsbl-update-wrapper.j2
+        dest: /etc/profile.d/99_dnsbl-update.sh
+        src: 99_dnsbl-update.sh.j2
         owner: root
         group: root
-        mode: "0755"
+        mode: "0644"
       vars:
         dnsbls:
           - mx-accept
@@ -33,5 +33,4 @@
         actions:
           - add
           - remove
-      loop: "{{ dnsbls | product(actions) | list }}"
 

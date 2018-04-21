@@ -1,0 +1,5 @@
+{% for list in dnsbls %}
+{% for action in actions %}
+alias {{ list }}-{{ action }}='sudo -u email dnsbl-update {{ list }} {{ action }}'
+{% endfor %}
+{% endfor %}
