@@ -1,12 +1,34 @@
 ---
 
-- name: Gather VPC subnet facts
-  delegate_to: localhost
+- delegate_to: localhost
   become: false
-  ec2_vpc_subnet_facts:
-    region: "{{ aws_region }}"
-    profile: "{{ aws_profile[aws_status][aws_region] }}"
-  register: ec2_subnet_facts
+  block:
+    - name: Gather VPC subnet facts
+      ec2_vpc_subnet_facts:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
+      register: subnet_facts
+
+    - name: Apply tags to subnets
+      ec2_tag:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        resource: "{{ item.id }}"
+        tags:
+          Class: "{{ item.tags.Name | regex_replace('Subnet.*') | lower }}"
+      loop: "{{ subnet_facts.subnets }}"
+      when:
+        - item.tags is defined
+        - item.tags.Name is defined
+        - item.tags.Class is not defined
+      loop_control:
+        label: "{{ item.tags.Name }}"
+
+    - name: Gather VPC subnet facts
+      ec2_vpc_subnet_facts:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile[aws_status][aws_region] }}"
+      register: ec2_subnet_facts
 
 - name: Shuffle and sort subnets
   set_fact:
