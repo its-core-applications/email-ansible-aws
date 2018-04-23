@@ -76,7 +76,9 @@
     - name: Flush DNS cache
       command: unbound-control reload
       become: true
-      when: result is not skipped
+      when:
+        - result is not skipped
+        - lookup('env', 'USER') == ansible_user
 
     - name: Wait for launched instances to be available
       delegate_to: "{{ item.tags.CustomDNSName }}"
