@@ -19,7 +19,9 @@
   become: false
   tasks:
     - assert:
-        that: aws_status == 'nonprod'
+        that:
+          - aws_status == 'nonprod'
+          - BURNTHEWORLD | default(false)
         msg: Sarah Connor?
 
     # FIXME: use elb_network_lb_facts once it exists
