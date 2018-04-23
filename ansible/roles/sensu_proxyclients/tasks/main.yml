@@ -17,5 +17,5 @@
         label: "{{ item.name }}"
       register: result
       until: result is success
-      retries: 4
-      delay: 15
+      retries: 9
+      delay: 10
