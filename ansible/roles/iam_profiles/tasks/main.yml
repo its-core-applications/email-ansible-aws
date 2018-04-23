@@ -1,8 +1,10 @@
 ---
 
-- hosts: localhost
+- tags:
+    - aws
+    - iam
   become: false
-  tasks:
+  block:
     - name: Create IAM policy for EC2 tagging
       iam_managed_policy:
         region: "{{ aws_region }}"

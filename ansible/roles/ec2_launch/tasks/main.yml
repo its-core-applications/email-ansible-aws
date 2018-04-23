@@ -5,7 +5,18 @@
     - ec2
     - launch
   become: false
+  vars:
+    launch_groups_default:
+       - "{{ launch_subnet_type | default('public') }}-default"
   block:
+    - import_role:
+        name: iam_profiles
+
+    - import_role:
+        name: ec2_security_groups
+      vars:
+        ec2sg_groups: "{{ launch_groups_default | union(launch_groups | default([])) }}"
+
     - name: Get AMI data
       ec2_ami_facts:
         region: "{{ aws_region }}"
@@ -39,8 +50,6 @@
       vars:
         ec2_subnets: "{{ hostvars[inventory_hostname]['ec2_subnets_' ~ (launch_subnet_type | default('public'))] }}"
         launch_count_default: "{{ aws_instance_counts[aws_status][launch_class] | default(1) - (groups['Class_' ~ launch_class] | default([]) | intersect(aws_region_group) | intersect(groups.Status_production | default([]) | union(groups.Status_spinup | default([])) | union(groups.Status_development | default([]))) | length) }}"
-        launch_groups_default:
-          - "{{ launch_subnet_type | default('public') }}-default"
         launch_tags_default:
           Class: "{{ launch_class }}"
           Status: spinup

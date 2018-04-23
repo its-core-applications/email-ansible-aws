@@ -1,0 +1,19 @@
+- tags:
+    - aws
+    - ec2
+  delegate_to: localhost
+  become: false
+  block:
+    - import_role:
+        name: ec2_find_subnets
+
+    - name: Create security groups
+      ec2_group:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        name: "{{ item }}"
+        vpc_id: "{{ ec2_sg[item].vpc_id }}"
+        description: "{{ ec2_sg[item].description }}"
+        rules: "{{ ec2_sg[item].rules }}"
+        rules_egress: "{{ ec2_sg[item].rules_egress | default(omit) }}"
+      loop: "{{ ec2sg_groups }}"

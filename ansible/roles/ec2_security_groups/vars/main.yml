@@ -1,0 +1,126 @@
+---
+
+ec2_sg:
+  public-default:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: default VPC security group
+    rules:
+      - proto: icmp
+        ports: -1
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        ports:
+          - 22
+          - 80
+          - 443
+        cidr_ip: 0.0.0.0/0
+      - proto: udp
+        ports: 60000-61000
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+  vpn-default:
+    vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
+    description: default VPC security group
+    rules:
+      - proto: icmp
+        ports: -1
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        ports: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: udp
+        ports: 60000-61000
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+
+  mx-elb:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: mx ELB
+    rules:
+      - proto: tcp
+        ports: 25
+        cidr_ip: 0.0.0.0/0
+      - proto: icmp
+        ports: -1
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+
+  egress:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: egress hosts
+    rules:
+      - proto: tcp
+        ports: 25
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+
+  relay:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: relay hosts
+    rules:
+      - proto: tcp
+        ports:
+          - 25
+          - 587
+        cidr_ip: 0.0.0.0/0
+      - proto: icmp
+        ports: -1
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+
+  smtp:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: auth SMTP
+    rules:
+      - proto: tcp
+        ports:
+          - 25
+          - 465
+          - 587
+        cidr_ip: 0.0.0.0/0
+      - proto: icmp
+        ports: -1
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+
+  rsyslog:
+    vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
+    description: rsyslog hosts
+    rules:
+      - proto: tcp
+        ports:
+          - 2003 # carbon-aggregator
+          - 2514 # Remote syslog using RELP
+          - 3000 # uchiwa
+          - 4567 # sensu API
+          - 5672 # RabbitMQ for sensu pub/sub
+          - 8888 # graphite-api
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+
+  rbldnsd:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: rbldnsd hosts
+    rules:
+      - proto: udp
+        ports: 53
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+
+  redis:
+    vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
+    description: redis hosts
+    rules:
+      - proto: tcp
+        ports:
+          - 6379
+          - 16379
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+
