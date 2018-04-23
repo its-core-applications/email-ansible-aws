@@ -9,7 +9,7 @@
     - name: Get AMI data
       ec2_ami_facts:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         owners: self
         filters:
           "tag:os": amzn2
@@ -26,7 +26,7 @@
     - name: Create {{ launch_class }} instance(s)
       ec2:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         group: "{{ launch_groups_default | union(launch_groups | default([])) }}"
         key_name: "{{ aws_ssh_key[aws_status][aws_region] }}"
         instance_type: "{{ aws_instance_types[aws_status][launch_class] | default(aws_instance_types[aws_status]['default']) }}"
@@ -51,7 +51,7 @@
     - name: Wait for launched instances to have hostnames
       ec2_instance_facts:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         instance_ids: "{{ ec2_instances }}"
       vars:
         ec2_instances: "{{ ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | flatten | map(attribute='id') | list }}"
@@ -64,7 +64,7 @@
     - name: Mark laggard instances as spundown
       ec2_tag:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         resource: "{{ item.instance_id }}"
         Status: spundown
       loop: "{{ result.instances | default([]) | rejectattr('tags.CustomDNSName', 'defined') | list }}"

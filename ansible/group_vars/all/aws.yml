@@ -7,7 +7,7 @@ aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
 aws_region_group: "{{ groups['region_' ~ aws_region | replace('-', '_')] | default([]) }}"
 aws_status: "{{ lookup('env', 'AWS_STATUS') }}"
 
-aws_profile:
+aws_profiles:
   prod:
     s3: umcollab
     sns: umcollab
@@ -21,6 +21,13 @@ aws_profile:
     spfd: vdc-nonprod
     subd: vdc-nonprod
     us-east-2: vdc-nonprod
+
+aws_profile: "{{ aws_profiles[aws_status][aws_region] }}"
+aws_profile_ec2: "{{ aws_profiles[aws_status][region] }}"
+aws_profile_s3: "{{ aws_profiles[aws_status].s3 }}"
+aws_profile_subd: "{{ aws_profiles[aws_status].subd }}"
+aws_profile_spfd: "{{ aws_profiles[aws_status].spfd }}"
+aws_profile_sns: "{{ aws_profiles[aws_status].sns }}"
 
 sns_region: us-west-2
 

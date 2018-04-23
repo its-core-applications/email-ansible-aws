@@ -28,7 +28,7 @@
         - name: Fetch egress EIPs
           ec2_eip_facts:
             region: "{{ aws_region }}"
-            profile: "{{ aws_profile[aws_status][region] }}"
+            profile: "{{ aws_profile_ec2 }}"
             filters:
               "tag:Class": egress
           register: result
@@ -41,7 +41,7 @@
         - name: Assign elastic IP
           ec2_eip:
             region: "{{ region }}"
-            profile: "{{ aws_profile[aws_status][region] }}"
+            profile: "{{ aws_profile_ec2 }}"
             device_id: "{{ instance_id }}"
             public_ip: "{{ (result.addresses | rejectattr('association_id', 'defined') | first).public_ip }}"
           register: result
@@ -60,7 +60,7 @@
         - name: Set status to production
           ec2_tag:
             region: "{{ region }}"
-            profile: "{{ aws_profile[aws_status][region] }}"
+            profile: "{{ aws_profile_ec2 }}"
             resource: "{{ instance_id }}"
             tags:
               Status: production

@@ -6,7 +6,7 @@
   tasks:
     - name: Fetch zone list
       route53_facts:
-        profile: "{{ aws_profile[aws_status].subd }}"
+        profile: "{{ aws_profile_subd }}"
         query: hosted_zone
       register: r53_zones
 

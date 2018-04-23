@@ -9,7 +9,7 @@
     - name: Fetch existing {{ eip_class }} EIPs
       ec2_eip_facts:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         filters:
           "tag:Class": "{{ eip_class }}"
       register: result
@@ -17,7 +17,7 @@
     - name: Create new EIPs for {{ eip_class }}
       ec2_eip:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         state: present
       loop: "{{ range(aws_instance_counts[aws_status][eip_class] | default(1) - (result.addresses | length)) | list }}"
       register: result
@@ -25,7 +25,7 @@
     - name: Tag new EIPs
       ec2_tag:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         resource: "{{ item.allocation_id }}"
         tags:
           Class: "{{ eip_class }}"
@@ -35,14 +35,14 @@
     - name: Re-fetch {{ eip_class }} EIPs
       ec2_eip_facts:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         filters:
           "tag:Class": "{{ eip_class }}"
       register: result
 
     - name: Set {{ eip_class }}-host.{{ aws_region }}.{{ subd }}
       route53:
-        profile: "{{ aws_profile[aws_status].subd }}"
+        profile: "{{ aws_profile_subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"

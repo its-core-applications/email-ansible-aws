@@ -3,7 +3,7 @@
 - name: Find {{ image_type }} AMIs
   ec2_ami_facts:
     region: "{{ aws_region }}"
-    profile: "{{ aws_profile[aws_status][aws_region] }}"
+    profile: "{{ aws_profile }}"
     owners: self
     filters:
       "tag:image_type": "{{ image_type }}"
@@ -12,7 +12,7 @@
 - name: Delete excess {{ image_type }} AMIs
   ec2_ami:
     region: "{{ aws_region }}"
-    profile: "{{ aws_profile[aws_status][aws_region] }}"
+    profile: "{{ aws_profile }}"
     image_id: "{{ item }}"
     state: absent
     delete_snapshot: true

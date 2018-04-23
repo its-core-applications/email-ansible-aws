@@ -6,13 +6,13 @@
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_facts:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
       register: subnet_facts
 
     - name: Apply tags to subnets
       ec2_tag:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         resource: "{{ item.id }}"
         tags:
           Class: "{{ item.tags.Name | regex_replace('Subnet.*') | lower }}"
@@ -27,7 +27,7 @@
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_facts:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
       register: ec2_subnet_facts
 
 - name: Shuffle and sort subnets

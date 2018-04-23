@@ -9,7 +9,7 @@
       become: false
       ec2_instance:
         region: "{{ region }}"
-        profile: "{{ aws_profile[aws_status][region] }}"
+        profile: "{{ aws_profile_ec2 }}"
         instance_ids: "{{ instance_id }}"
         state: absent
         wait: false
@@ -27,20 +27,20 @@
       elb_network_lb:
         name: "{{ item }}"
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         state: absent
       loop: "{{ mx_names[aws_region] }}"
 
     - name: Find TGs
       elb_target_group_facts:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
       register: result
 
     - name: Delete TGs
       elb_target_group:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         name: "{{ item.target_group_name }}"
         state: absent
       loop: "{{ result.target_groups }}"
@@ -48,14 +48,14 @@
     - name: Find AMIs
       ec2_ami_facts:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         owners: self
       register: result
 
     - name: Delete AMIs
       ec2_ami:
         region: "{{ aws_region }}"
-        profile: "{{ aws_profile[aws_status][aws_region] }}"
+        profile: "{{ aws_profile }}"
         image_id: "{{ item.image_id }}"
         state: absent
         delete_snapshot: true

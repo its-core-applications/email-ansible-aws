@@ -15,7 +15,7 @@ if [[ ! -f ansible/${class}.yml ]]; then
 fi
 
 pushd ansible
-export AWS_PROFILE=$(ansible localhost -m debug -a 'var=aws_profile[aws_status][aws_region]' | awk '/aws_profile/{print $NF}' | tr -d '"')
+export AWS_PROFILE=$(ansible localhost -m debug -a 'var=aws_profile' | awk '/aws_profile/{print $NF}' | tr -d '"')
 popd
 
 if [[ $2 ]]; then

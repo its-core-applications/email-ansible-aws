@@ -9,7 +9,7 @@
       become: false
       run_once: true
       route53:
-        profile: "{{ aws_profile[aws_status].subd }}"
+        profile: "{{ aws_profile_subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"

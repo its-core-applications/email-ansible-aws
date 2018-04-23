@@ -10,19 +10,19 @@
       s3_bucket:
         name: "{{ s3_hostname }}"
         region: "{{ s3_region }}"
-        profile: "{{ aws_profile[aws_status].s3 }}"
+        profile: "{{ aws_profile_s3 }}"
         state: present
 
     - name: Configure the S3 bucket as a website
       s3_website:
         name: "{{ s3_hostname }}"
         region: "{{ s3_region }}"
-        profile: "{{ aws_profile[aws_status].s3 }}"
+        profile: "{{ aws_profile_s3 }}"
         state: present
 
     - name: "Set {{ s3_hostname }}"
       route53:
-        profile: "{{ aws_profile[aws_status].subd }}"
+        profile: "{{ aws_profile_subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"

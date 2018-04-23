@@ -5,13 +5,13 @@
   tasks:
     - name: Create {{ subd }}
       route53_zone:
-        profile: "{{ aws_profile[aws_status].subd }}"
+        profile: "{{ aws_profile_subd }}"
         zone: "{{ subd }}"
         state: present
 
     - name: Get SOA for {{ subd }}
       route53:
-        profile: "{{ aws_profile[aws_status].subd }}"
+        profile: "{{ aws_profile_subd }}"
         command: get
         zone: "{{ subd }}"
         record: "{{ subd }}"
@@ -20,7 +20,7 @@
 
     - name: Set SOA for {{ subd }}
       route53:
-        profile: "{{ aws_profile[aws_status].subd }}"
+        profile: "{{ aws_profile_subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"
@@ -31,13 +31,13 @@
 
     - name: Create {{ spfd }}
       route53_zone:
-        profile: "{{ aws_profile[aws_status].spfd }}"
+        profile: "{{ aws_profile_spfd }}"
         zone: "{{ spfd }}"
         state: present
 
     - name: Create rbldnsd-master.{{ subd }}
       route53:
-        profile: "{{ aws_profile[aws_status].subd }}"
+        profile: "{{ aws_profile_subd }}"
         command: create
         overwrite: true
         zone: "{{ subd }}"
