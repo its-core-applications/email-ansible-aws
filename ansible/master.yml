@@ -22,6 +22,7 @@
     - { role: google_gam, tags: google }
     - { role: google_gak, tags: google }
     - { role: google_gyb, tags: google }
+    - { role: google_report_logins, tags: google }
     - { role: box_bam, tags: box }
     - { role: box_examscan, tags: box }
     - { role: redis_master, tags: redis }

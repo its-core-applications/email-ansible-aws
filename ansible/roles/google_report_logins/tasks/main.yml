@@ -1,0 +1,6 @@
+- name: Schedule google-report-logins
+  cron:
+    name: google-report-logins
+    user: "{{ ansible_user }}"
+    minute: 23
+    job: google-report-logins
