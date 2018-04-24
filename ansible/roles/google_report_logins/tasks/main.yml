@@ -3,4 +3,4 @@
     name: google-report-logins
     user: "{{ ansible_user }}"
     minute: 23
-    job: google-report-logins
+    job: sudo -u collaborate google-report-logins
