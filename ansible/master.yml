@@ -93,3 +93,6 @@
 
         - import_role:
             name: clamav_master
+
+        - import_role:
+            name: s3repo_build

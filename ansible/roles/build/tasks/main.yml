@@ -54,6 +54,17 @@
           - openssl-devel
 
     - import_role:
+        name: build_rpm_archive
+      tags:
+        - etcd
+      vars:
+        build_name: etcd
+        build_version: 3.3.3
+        archive_url: https://github.com/coreos/etcd/releases/download/v3.3.3/etcd-v3.3.3-linux-amd64.tar.gz
+        archive_file: etcd-v3.3.3-linux-amd64.tar.gz
+        archive_checksum: sha512:f810b3e7e111219de8f4421f4acb2799b42e456139fa5b8015ef2c7780f9d102b473079840ead62ae87927dc21a0a9ae255fe6b6ada0e6fdc3dd2d51ddae2203
+
+    - import_role:
         name: build_rpm_spec
       tags:
         - jemalloc
@@ -98,6 +109,18 @@
           - sendmail-devel
 
     - import_role:
+        name: build_rpm_archive
+      tags:
+        - packer
+      vars:
+        build_name: packer
+        build_version: 1.2.2
+        build_bindir: /usr/sbin
+        archive_url: https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
+        archive_file: packer_1.2.2_linux_amd64.zip
+        archive_checksum: sha256:6575f8357a03ecad7997151234b1b9f09c7a5cf91c194b23a461ee279d68c6a8
+
+    - import_role:
         name: build_rpm_git
       tags:
         - urcl
@@ -108,6 +131,17 @@
         build_repo: https://github.com/simta/urcl.git
         build_deps:
           - hiredis-devel
+
+    - import_role:
+        name: build_rpm_archive
+      tags:
+        - vault
+      vars:
+        build_name: vault
+        build_version: 0.10.0
+        archive_url: https://releases.hashicorp.com/vault/0.10.0/vault_0.10.0_linux_amd64.zip
+        archive_file: vault_0.10.0_linux_amd64.zip
+        archive_checksum: sha256:a6b4b6db132f3bbe6fbb77f76228ffa45bd55a5a1ab83ff043c2c665c3f5a744
 
     - import_role:
         name: build_rpm_spec
@@ -326,6 +360,6 @@
           - zlib-devel
 
     - import_role:
-        name: s3repo_build
+        name: s3repo_upload
       tags: always
 

@@ -1,0 +1,27 @@
+---
+
+- tags:
+    - build
+    - s3repo
+  block:
+    - import_role:
+        name: s3_website
+      tags: s3_website
+      vars:
+        s3_hostname: "{{ yum_hostname }}"
+        s3_region: "{{ yum_aws_region }}"
+
+    - name: Upload files to S3
+      aws_s3_sync:
+        region: "{{ yum_aws_region }}"
+        direction: push
+        bucket: "{{ yum_hostname }}"
+        path: "{{ item }}"
+        prefix: "{{ yum_repo_path }}"
+        permission: public-read
+        overwrite: never
+      failed_when: false
+      loop:
+        - /var/tmp/sensugems/cache
+        - /home/{{ ansible_user }}/rpmbuild/RPMS/x86_64
+        - /home/{{ ansible_user }}/rpmbuild/RPMS/noarch

@@ -1,0 +1,38 @@
+- tags:
+    - build
+  become: false
+  block:
+    - name: Download {{ build_name }} archive
+      get_url:
+        url: "{{ archive_url }}"
+        dest: ~/{{ archive_file }}
+        checksum: "{{ archive_checksum }}"
+
+    - name: Create extraction dir
+      file:
+        dest: ~/{{ archive_file | splitext | first }}
+        state: directory
+
+    - name: Extract {{ build_name }}
+      unarchive:
+        remote_src: true
+        src: ~/{{ archive_file }}
+        dest: ~/{{ archive_file | splitext | first }}
+
+    - name: Find {{ build_name }} files
+      find:
+        paths: ~/{{ archive_file | splitext | first }}
+        recurse: true
+      register: result
+
+    - name: Create {{ build_name }} RPM using fpm
+      command: "fpm -t rpm -s dir -n {{ build_name }} -v {{ build_version }} {{ build_executables | map(attribute='path') | map('regex_replace', '$', '=/usr/bin/') | join(' ') }}"
+      args:
+        chdir: ~/rpmbuild/RPMS/x86_64
+      register: result
+      failed_when:
+        - result.rc != 0
+        - result.stdout is not search('File already exists, refusing to continue')
+      changed_when: result.rc == 0
+      vars:
+        build_executables: "{{ result.files | selectattr('mode', 'equalto', '0755') | list }}"

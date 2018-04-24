@@ -33,3 +33,8 @@
       args:
         creates: ~/rpmbuild/RPMS
 
+    - name: Also make sure we have a subdir to dump RPMs into
+      become: false
+      file:
+        dest: ~/rpmbuild/RPMS/x86_64/
+        state: directory

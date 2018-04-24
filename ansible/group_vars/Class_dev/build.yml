@@ -1,4 +1,1 @@
----
-
-yum_aws_region: us-west-2
 build_simta_version: next

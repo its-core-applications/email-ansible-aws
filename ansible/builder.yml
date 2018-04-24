@@ -12,3 +12,15 @@
         - import_role:
             name: build
 
+        - import_role:
+            name: s3repo_build
+          when: groups.Class_master | default([]) | intersect(aws_region_group) | length == 0
+
+- hosts: Class_master
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: s3repo_build
+          tags:
+            - always

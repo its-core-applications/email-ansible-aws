@@ -1,85 +1,42 @@
----
-
 - tags:
-    - build
     - s3repo
+  vars:
+    cache_root: /var/cache/{{ yum_hostname }}
   block:
-    - name: Find files to upload
-      find:
-        paths:
-          - /home/{{ ansible_user }}/rpmbuild/RPMS
-          - /var/tmp/sensugems/cache
-        patterns: "*.rpm"
-        recurse: true
-      register: find_rpm
-
-    - name: Upload files to S3
-      s3:
-        bucket: "{{ yum_hostname }}"
-        region: "{{ yum_aws_region }}"
-        mode: put
-        permission: public-read
-        object: "{{ yum_repo_path }}/{{ item.path | basename }}"
-        src: "{{ item.path }}"
-        overwrite: never
-      loop: "{{ find_rpm.files }}"
-      loop_control:
-        label: "{{ item.path | basename }}"
+    - name: Install createrepo
+      yum:
+        name: createrepo
+        state: present
 
     - name: Create repo cache directory
       file:
-        dest: /var/cache/{{ yum_hostname }}
+        dest: "{{ cache_root }}"
         state: directory
         owner: root
         group: root
         mode: "0755"
 
-    - name: Find files in S3
-      s3:
-        bucket: "{{ yum_hostname }}"
-        region: "{{ yum_aws_region }}"
-        mode: list
-        prefix: "{{ yum_repo_path }}/"
-      register: find_s3
-
     - name: Download files from S3
-      s3:
+      aws_s3_sync:
+        direction: pull
         bucket: "{{ yum_hostname }}"
         region: "{{ yum_aws_region }}"
-        mode: get
-        object: "{{ item }}"
-        dest: /var/cache/{{ yum_hostname }}/{{ item | basename }}
+        prefix: "{{ yum_repo_path }}"
+        path: "{{ cache_root }}"
         overwrite: different
-      loop: "{{ find_s3.s3_keys }}"
-      when: item is match(".*\\.rpm")
+        pattern: '*.rpm'
+        delete: true
 
     - name: Build repodata
-      command: createrepo --database --update /var/cache/{{ yum_hostname }}/
+      command: createrepo --database --update {{ cache_root }}
 
-    - name: Find repodata files
-      find:
-        paths: /var/cache/{{ yum_hostname }}/repodata/
-      register: find_repodata
-
-    - name: Delete old repodata
-      s3:
+    - name: Upload metadata to S3
+      aws_s3_sync:
         bucket: "{{ yum_hostname }}"
         region: "{{ yum_aws_region }}"
-        mode: delobj
-        object: "{{ item }}"
-      loop: "{{ find_s3.s3_keys }}"
-      when: item is search('/repodata/')
-
-    - name: Upload repodata
-      s3:
-        bucket: "{{ yum_hostname }}"
-        region: "{{ yum_aws_region }}"
-        mode: put
+        direction: push
+        overwrite: always
+        path: "{{ cache_root }}/repodata"
+        prefix: "{{ yum_repo_path }}/repodata"
+        delete: true
         permission: public-read
-        object: "{{ yum_repo_path }}/repodata/{{ item.path | basename }}"
-        src: "{{ item.path }}"
-        overwrite: different
-      loop: "{{ find_repodata.files }}"
-      loop_control:
-        label: "{{ item.path | basename }}"
-

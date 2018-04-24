@@ -1,19 +1,10 @@
----
-
 - tags:
     - vault
   block:
-    - name: Download vault
-      get_url:
-        url: https://releases.hashicorp.com/vault/0.9.1/vault_0.9.1_linux_amd64.zip
-        dest: /var/tmp/vault.zip
-        checksum: sha256:6308013ee0d6278e98cdfe8d6de0162102a8d25f3bcd1e3737bf7b022a9f6702
-
     - name: Install vault
-      unarchive:
-        src: /var/tmp/vault.zip
-        dest: /usr/bin
-        copy: false
+      yum:
+        name: vault
+        state: latest
       notify: Restart vault
 
     - name: Configure vault server

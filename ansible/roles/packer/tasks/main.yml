@@ -1,17 +1,13 @@
----
-
 - tags:
     - packer
   block:
-    - name: Download packer
-      get_url:
-        url: https://releases.hashicorp.com/packer/1.2.0/packer_1.2.0_linux_amd64.zip
-        dest: /var/tmp/packer.zip
-        checksum: sha256:d1b0fcc4e66dfe4919c25752d028a4e4466921bf0e3f75be3bbf1c85082e8040
-
     - name: Install packer
-      unarchive:
-        src: /var/tmp/packer.zip
-        # We want to overwrite an unrelated packer which is shipped in sbin
-        dest: /usr/sbin
-        copy: false
+      yum:
+        name: packer
+        state: latest
+
+    # Installed by a system package that we don't need but can't remove
+    - name: Make sure there's no packer in sbin
+      file:
+        path: /usr/sbin/packer
+        state: absent

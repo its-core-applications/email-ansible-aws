@@ -2,20 +2,11 @@
 
 - tags:
     - build
+  become: false
   block:
     - name: Download {{ build_name }} RPM
       get_url:
         url: "{{ rpm_url }}"
-        dest: /var/tmp/{{ rpm }}
+        dest: ~/rpmbuild/RPMS/x86_64/{{ rpm }}
         checksum: "{{ rpm_checksum }}"
-
-    - name: Upload {{ build_name }} RPM
-      s3:
-        bucket: "{{ yum_hostname }}"
-        region: "{{ yum_aws_region }}"
-        mode: put
-        permission: public-read
-        object: "{{ yum_repo_path }}/{{ rpm }}"
-        src: /var/tmp/{{ rpm }}
-        overwrite: never
 

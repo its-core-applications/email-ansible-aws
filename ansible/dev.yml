@@ -10,4 +10,7 @@
             name: base
         - import_role:
             name: build
-
+        - import_role:
+            name: s3repo_build
+          tags:
+            - always
