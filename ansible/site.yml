@@ -1,0 +1,4 @@
+- import_playbook: provision_syslog.yml
+- import_playbook: provision_dnsbl.yml
+- import_playbook: spinup_mx.yml
+- import_playbook: provision_egress.yml

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
+
+$hacking_dir/build-ami
+
+if [[ $? -eq 0 ]]; then
+    $hacking_dir/build-ami mx &
+    $hacking_dir/build-ami egress &
+    $hacking_dir/build-ami dnsbl &
+fi
+
+wait
