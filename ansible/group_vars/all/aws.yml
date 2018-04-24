@@ -58,18 +58,6 @@ aws_instance_counts:
     egress: 2
     mx: 3
 
-aws_iam_saml: 'arn:aws:iam::236262816615:saml-provider/UM_PROD_SHIB'
-aws_iam_groups:
-  - name: appdelivery-aws-admin
-    policies:
-      - 'arn:aws:iam::aws:policy/AdministratorAccess'
-      - 'arn:aws:iam::aws:policy/job-function/Billing'
-  - name: appdelivery-aws-readonly
-    policies:
-      - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess'
-      - 'arn:aws:iam::aws:policy/AmazonRoute53ReadOnlyAccess'
-      - 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess'
-
 yum_hostname: yum.{{ subd }}
 yum_repo_path: "{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distribution_major_version }}"
 
