@@ -25,12 +25,6 @@ sensu_proxy_clients:
   - name: "{{ aws_region }}.aws.amazon.com"
     subscriptions:
       - Status_production
-  - name: mx1.{{ subd }}
-    elb_name: mx1
-    subscriptions:
-      - Class_elb
-      - Status_production
-      - tls
   - name: egress.{{ aws_region }}.{{ subd }}
     subscriptions:
       - Status_production
@@ -51,7 +45,6 @@ sensu_environment:
 
 sensu_plugins:
   - sensu-plugin
-  - sensu-plugins-aws
   - sensu-plugins-cpu-checks
   - sensu-plugins-disk-checks
   - sensu-plugins-load-checks
