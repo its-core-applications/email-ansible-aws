@@ -5,6 +5,7 @@ simta_arc: true
 simta_arc_selector: arc-2017-08-04
 simta_dkim: true
 simta_ldap: true
+simta_vacation: true
 simta_ldap_red: RE
 simta_ldap_domains:
   - test.mail

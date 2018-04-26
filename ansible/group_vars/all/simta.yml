@@ -31,3 +31,52 @@ simta_important_domains:
   - go.itd.umich.edu
   - gmail.com
 
+simta_ldap_domains_mapped:
+  - domain: affmichlaw.org
+    prefix: affmichlaw
+  - domain: bmi2.org
+    prefix: bmi2
+  - domain: bmi2study.org
+    prefix: bmi2
+  - domain: chrt.org
+    prefix: chrt
+  - domain: connectedcancercare.org
+    prefix: connectedcancercare
+  - domain: elmuseodelnorte.org
+    prefix: elmuseodelnorte
+  - domain: environmentreport.org
+    prefix: environmentreport
+  - domain: glrc.org
+    prefix: glrc
+  - domain: icart-bukavu.org
+    prefix: icart-bukavu
+  - domain: isbis.org
+    prefix: isbis
+  - domain: michiganemagine.org
+    prefix: michiganemagine
+  - domain: michiganherc.org
+    prefix: michiganherc
+  - domain: michiganradio.org
+    prefix: michiganradio
+  - domain: michigantavr.org
+    prefix: michigantavr
+  - domain: miseagrant.com
+    prefix: miseagrant
+  - domain: openclimate.org
+    prefix: openclimate
+  - domain: outsmarthpv.org
+    prefix: outsmarthpv
+  - domain: smartgirl.org
+    prefix: smartgirl
+  - domain: ssdan.net
+    prefix: ssdan
+  - domain: stonesoup.org
+    prefix: stonesoup
+  - domain: teachingworks.org
+    prefix: teachingworks
+  - domain: ums.org
+    prefix: ums
+  - domain: wcbn.org
+    prefix: wcbn
+  - domain: youthcivilrights.org
+    prefix: youthcivilrights

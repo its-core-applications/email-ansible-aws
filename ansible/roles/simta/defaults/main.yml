@@ -9,6 +9,7 @@ simta_tcpwrappers: false
 simta_ldap: false
 simta_ldap_red: E
 simta_ldap_domains: []
+simta_vacation: false
 simta_srs: false
 simta_srs_domain: "{{ tld }}"
 simta_vacationhost: vacation.mail.umich.edu
