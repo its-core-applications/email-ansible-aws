@@ -35,6 +35,5 @@
         dest: "{{ comint_base }}/check-vault-seal"
         src: check-vault-seal
         owner: collaborate
-        group: nonpeople
+        group: collaborate
         mode: "0755"
-

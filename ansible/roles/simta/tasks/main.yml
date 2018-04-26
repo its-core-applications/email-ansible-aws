@@ -1,5 +1,3 @@
----
-
 - tags:
     - simta
   block:
@@ -194,7 +192,7 @@
         dest: "{{ comint_base }}/{{ item }}"
         src: "{{ item }}.j2"
         owner: collaborate
-        group: nonpeople
+        group: collaborate
         mode: "0755"
       loop:
         - check-dnsbl

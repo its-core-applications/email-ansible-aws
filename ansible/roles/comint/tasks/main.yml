@@ -1,5 +1,3 @@
----
-
 - tags:
     - comint
   block:
@@ -14,7 +12,7 @@
         dest: "{{ item }}"
         state: directory
         owner: collaborate
-        group: nonpeople
+        group: collaborate
         mode: "0775"
       loop:
         - "{{ comint_base }}"
@@ -30,11 +28,10 @@
         dest: "{{ comint_base }}/{{ item }}"
         src: "{{ item }}.j2"
         owner: collaborate
-        group: nonpeople
+        group: collaborate
         mode: "0664"
       loop:
         - comint.conf
         - dispatch/dispatch.conf
         - nag/nag.conf
         - report/report.conf
-

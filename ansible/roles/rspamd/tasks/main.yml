@@ -1,5 +1,3 @@
----
-
 - tags:
     - rspamd
   block:
@@ -45,6 +43,5 @@
         dest: "{{ comint_base }}/check-rspamd-gtube"
         src: check-rspamd-gtube
         owner: collaborate
-        group: nonpeople
+        group: collaborate
         mode: "0755"
-

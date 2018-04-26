@@ -38,7 +38,7 @@
         dest: "{{ comint_base }}/check-clamd-eicar"
         src: check-clamd-eicar
         owner: collaborate
-        group: nonpeople
+        group: collaborate
         mode: "0755"
 
     - name: Install clamav filter configuration files
