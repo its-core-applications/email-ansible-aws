@@ -1,0 +1,22 @@
+#!/bin/bash
+
+certdir=/etc/pki/collab/private
+
+if [[ ! -d $certdir ]]; then
+    mkdir $certdir
+    chmod 750 $certdir
+fi
+
+if [[ ! -s ${certdir}/letsencrypt_account.key ]]; then
+    openssl genrsa 4096 > ${certdir}/letsencrypt_account.key
+fi
+
+cert=$(hostname)
+
+if [[ ! -s ${certdir}/${cert}.key ]]; then
+   openssl ecparam -genkey -name prime256v1 -out ${certdir}/${cert}.key
+fi
+
+openssl req -new -sha256 -key ${certdir}/${cert}.key -out ${certdir}/${cert}.csr -subj /CN=${cert}/
+
+acme_tiny --account-key ${certdir}/letsencrypt_account.key --csr ${certdir}/${cert}.csr >| ${certdir}/${cert}.crt

@@ -1,0 +1,11 @@
+[Unit]
+Description=Create a certificate for this host
+After=dynhostname.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/hostcertificate
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
