@@ -1,0 +1,28 @@
+- block:
+    - name: Create config directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0750"
+      loop:
+        - ~/.aws
+        - ~/.aws/config.d
+
+    - name: Install snippet for {{ ec2_profile }}
+      template:
+        dest: ~/.aws/config.d/{{ ec2_profile }}
+        src: snippet.j2
+        owner: root
+        group: root
+        mode: "0640"
+
+    - name: Build ~/.aws/config
+      assemble:
+        src: ~/.aws/config.d
+        dest: ~/.aws/config
+        delimiter: "\n"
+        owner: root
+        group: root
+        mode: "0640"

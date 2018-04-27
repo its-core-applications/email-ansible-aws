@@ -1,38 +1,59 @@
 #!/bin/bash
 
+# No longer implemented; it was unreliable so we needed automated cleanup anyway
+if [[ $1 = 'clear' ]]; then
+    exit 0
+fi
+
 ttl=60
 region=$(curl -fs http://169.254.169.254/latest/meta-data/placement/availability-zone) 
 region=${region::-1} 
 instanceid=$(curl -fs http://169.254.169.254/latest/meta-data/instance-id)
+zoneid=$(aws --profile dynhostname route53 list-hosted-zones --query "HostedZones[?Name=='{{ subd }}.'].Id" --output text)
+publicname=$(curl -fs http://169.254.169.254/latest/meta-data/public-hostname)
 
 sethostname() {
     echo "Setting FQDN to $1"
     hostnamectl set-hostname $1
-    systemctl try-restart rsyslog.service simta.service sensu-client.service
+    systemctl daemon-reload
+    systemctl try-restart rsyslog.service simta.service sensu-client.service etcd.service
     aws ec2 create-tags --region=$region --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1
 }
 
-zoneid=$(route53 ls | awk '/ID:/{ id=$NF } /Name: {{ subd }}.$/{ print id }')
+route53update() {
+    change=$(aws --profile dynhostname \
+        route53 change-resource-record-sets \
+        --query ChangeInfo.Id \
+        --output text \
+        --cli-input-json \
+        $(jq -nc \
+            --arg zoneid $zoneid \
+            --arg ttl $ttl \
+            --arg fqdn $fqdn \
+            --arg publicname $publicname \
+            --arg action ${1:-UPSERT} \
+            '{ HostedZoneId: $zoneid, ChangeBatch: { Changes: [{ Action: $action, ResourceRecordSet: { Name: $fqdn, Type: "CNAME", TTL: $ttl | tonumber, ResourceRecords: [{ Value: $publicname }]}}]}}'
+        )
+    )
+    [[ $? -ne 0 ]] && return 1
+    echo -n Waiting for Route53...
+    while [[ $(aws --profile dynhostname route53 get-change --id $change --query ChangeInfo.Status --output text) != 'INSYNC' ]]; do
+        echo -n .
+        sleep 2
+    done
+    echo OK
+}
 
 if [[ -z $zoneid ]]; then
     echo "Failed to fetch zone ID, not setting hostname"
     exit 1
 fi
 
-publicname=$(curl -fs http://169.254.169.254/latest/meta-data/public-hostname)
-
 if [[ -s /etc/dynhostname.static ]]; then
-    if [[ $1 != 'clear' ]]; then
-        fqdn=$(cat /etc/dynhostname.static)
-        sethostname $fqdn
-        route53 change_record $zoneid $fqdn CNAME $publicname $ttl
-    fi
+    fqdn=$(cat /etc/dynhostname.static)
+    route53update
+    sethostname $fqdn
     exit 0
-fi
-
-if [[ $1 = 'clear' ]]; then
-    route53 del_record $zoneid $(hostname) CNAME $publicname $ttl
-    exit $?
 fi
 
 try=0
@@ -51,8 +72,8 @@ done
 fqdn=$(echo $tags | jq -r '.Tags[] | select(.Key == "CustomDNSName") | .Value')
 
 if [[ $fqdn ]]; then
+    route53update
     sethostname $fqdn
-    route53 change_record $zoneid $fqdn CNAME $publicname $ttl
     exit 0
 fi
 
@@ -71,10 +92,10 @@ try=0
 while [[ -z $name ]]; do
     name=$(shuf -n 1 $prefixes)-$(shuf -n 1 $suffixes)
     fqdn=${name}.$base
-    # Try to add it to DNS. This will fail if it already exists, which avoids
-    # any possibility of a race.
-    route53 add_record $zoneid $fqdn CNAME $publicname $ttl
-    if [[ $? -eq 1 ]]; then
+    # Try to add it to DNS. This will fail if it already exists, which should
+    # avoid any possibility of a race.
+    route53update CREATE
+    if [[ $? -ne 0 ]]; then
         if [[ $(( try++ )) -gt 10 ]]; then
             echo "dynhostname is giving up..."
             exit 1

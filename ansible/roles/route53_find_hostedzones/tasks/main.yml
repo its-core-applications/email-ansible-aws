@@ -1,0 +1,16 @@
+- tags:
+    - aws
+    - route53
+  delegate_to: localhost
+  become: false
+  when: aws_zone_subd is not defined
+  block:
+    - name: Fetch route53 zones
+      route53_facts:
+        profile: "{{ aws_profile_subd }}"
+        query: hosted_zone
+      register: result
+
+    - name: Set zoneid fact for {{ subd }}
+      set_fact:
+        aws_zone_subd: "{{ (result.HostedZones | selectattr('Name', 'equalto', subd ~ '.') | first).Id }}"

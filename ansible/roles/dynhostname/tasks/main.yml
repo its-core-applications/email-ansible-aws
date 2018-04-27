@@ -3,6 +3,15 @@
 - tags:
     - dynhostname
   block:
+    - import_role:
+        name: aws_get_accountinfo
+
+    - import_role:
+        name: ec2_instance_profile
+      vars:
+        ec2_profile: dynhostname
+        ec2_profile_role: arn:aws:iam::{{ aws_account_subd }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_{{ subd }}
+
     - name: Install hostname data files
       copy:
         dest: /usr/share/{{ item }}

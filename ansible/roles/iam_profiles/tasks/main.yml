@@ -1,30 +1,87 @@
----
-
 - tags:
     - aws
     - iam
   become: false
   block:
+    - import_role:
+        name: aws_get_accountinfo
+
+    - import_role:
+        name: route53_find_hostedzones
+
     - name: Create IAM policy for EC2 tagging
       iam_managed_policy:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         state: present
-        policy_name: UpdateEC2_tags
+        policy_name: "{{ aws_resource_prefix }}_EC2UpdateTags"
         policy_description: Read and update tags for EC2 resources
         policy:
-          Version: '2012-10-17'
+          Version: "2012-10-17"
           Statement:
-            - Action: 'ec2:CreateTags'
+            - Action: ec2:CreateTags
               Effect: Allow
               Resource: '*'
-            - Action: 'ec2:DescribeTags'
+            - Action: ec2:DescribeTags
               Effect: Allow
               Resource: '*'
-            - Action: 'ec2:DeleteTags'
+            - Action: ec2:DeleteTags
               Effect: Allow
               Resource: '*'
       register: tagpolicy
+
+    - name: Create IAM policy for {{ subd }}
+      iam_managed_policy:
+        profile: "{{ aws_profile_subd }}"
+        state: present
+        policy_name: "{{ aws_resource_prefix }}_Route53Update_{{ subd }}"
+        policy_description: Update {{ subd }}
+        policy:
+          Version: "2012-10-17"
+          Statement:
+            - Action:
+                - route53:ChangeResourceRecordSets
+                - route53:GetHostedZone
+                - route53:ListResourceRecordSets
+              Effect: Allow
+              Resource: arn:aws:route53:::{{ aws_zone_subd[1:] }}
+            - Action:
+                - route53:ListHostedZones
+                - route53:GetChange
+              Effect: Allow
+              Resource: '*'
+      register: result
+
+    - name: Create IAM role for {{ subd }}
+      iam_role:
+        profile: "{{ aws_profile_subd }}"
+        name: "{{ aws_resource_prefix }}_{{ aws_account }}_{{ subd }}"
+        description: Cross-account access to Route53 for {{ aws_profile }}
+        assume_role_policy_document:
+          Version : "2012-10-17"
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Principal:
+                AWS: arn:aws:iam::{{ aws_account }}:root
+        managed_policy:
+          - "{{ result.policy.arn }}"
+      register: result
+
+    - name: Create local IAM policy for {{ subd }}
+      iam_managed_policy:
+        profile: "{{ aws_profile }}"
+        state: present
+        policy_name: "{{ aws_resource_prefix }}_Route53Update_{{ subd }}_XAccount"
+        policy_description: Update {{ subd }}
+        policy:
+          Version: "2012-10-17"
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Resource:
+                - "{{ result.iam_role.arn }}"
+      register: subdpolicy
 
     - name: Create builder role
       iam_role:
@@ -33,16 +90,16 @@
         name: builder
         state: present
         assume_role_policy_document:
-          Version : '2012-10-17'
+          Version : "2012-10-17"
           Statement:
             - Effect: Allow
-              Action: 'sts:AssumeRole'
+              Action: sts:AssumeRole
               Principal:
                 Service: ec2.amazonaws.com
         managed_policy:
-          - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
-          - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
-          - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
+          - arn:aws:iam::aws:policy/AmazonS3FullAccess
+          - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+          - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
 
     - name: Create master role
@@ -52,17 +109,18 @@
         name: master
         state: present
         assume_role_policy_document:
-          Version : '2012-10-17'
+          Version : "2012-10-17"
           Statement:
             - Effect: Allow
-              Action: 'sts:AssumeRole'
+              Action: sts:AssumeRole
               Principal:
                 Service: ec2.amazonaws.com
         managed_policy:
-          - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
-          - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess'
-          - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
-          - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
+          - arn:aws:iam::aws:policy/AmazonS3FullAccess
+          - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+          - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+          - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+          - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
 
     - name: Create standard role
@@ -72,14 +130,14 @@
         name: standard
         state: present
         assume_role_policy_document:
-          Version : '2012-10-17'
+          Version : "2012-10-17"
           Statement:
             - Effect: Allow
-              Action: 'sts:AssumeRole'
+              Action: sts:AssumeRole
               Principal:
                 Service: ec2.amazonaws.com
         managed_policy:
-          - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess'
-          - 'arn:aws:iam::aws:policy/AmazonSNSFullAccess'
-          - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
+          - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+          - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+          - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
