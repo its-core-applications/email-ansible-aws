@@ -65,6 +65,7 @@
       vars:
         ec2_instances: "{{ ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | flatten | map(attribute='id') | list }}"
       when: ec2_instances | length
+      ignore_errors: true
       register: result
       until: (result.instances | map(attribute='tags.CustomDNSName') | select('defined') | list | length) == (ec2_instances | length)
       retries: 20
@@ -75,7 +76,8 @@
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         resource: "{{ item.instance_id }}"
-        Status: spundown
+        tags:
+          Status: spundown
       loop: "{{ result.instances | default([]) | rejectattr('tags.CustomDNSName', 'defined') | list }}"
       loop_control:
         label: "{{ item.instance_id }}"
