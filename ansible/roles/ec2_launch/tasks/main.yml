@@ -15,7 +15,7 @@
     - import_role:
         name: ec2_security_groups
       vars:
-        ec2sg_groups: "{{ launch_groups_default | union(launch_groups | default([])) }}"
+        ec2sg_groups: "{{ launch_groups_default | union(launch_groups) }}"
 
     - name: Get AMI data
       ec2_ami_facts:
@@ -38,18 +38,18 @@
       ec2:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        group: "{{ launch_groups_default | union(launch_groups | default([])) }}"
+        group: "{{ launch_groups_default | union(launch_groups) }}"
         key_name: "{{ aws_ssh_key[aws_status][aws_region] }}"
         instance_type: "{{ aws_instance_types[aws_status][launch_class] | default(aws_instance_types[aws_status]['default']) }}"
         vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[item % (ec2_subnets | length)])).id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: "{{ launch_profile | default('standard') }}"
-        instance_tags: "{{ launch_tags_default | combine(launch_tags | default({})) }}"
+        instance_tags: "{{ launch_tags_default | combine(launch_tags) }}"
         count: 1
       vars:
         ec2_subnets: "{{ hostvars[inventory_hostname]['ec2_subnets_' ~ (launch_subnet_type | default('public'))] }}"
-        launch_count_default: "{{ aws_instance_counts[aws_status][launch_class] | default(1) - (groups['Class_' ~ launch_class] | default([]) | intersect(aws_region_group) | intersect(groups.Status_production | default([]) | union(groups.Status_spinup | default([])) | union(groups.Status_development | default([]))) | length) }}"
+        launch_count_default: "{{ aws_instance_counts[aws_status][launch_class] | default(1) - (groups['Class_' ~ launch_class] | intersect(aws_region_group) | intersect(groups.Status_production | union(groups.Status_spinup) | union(groups.Status_development)) | length) }}"
         launch_tags_default:
           Class: "{{ launch_class }}"
           Status: spinup

@@ -25,5 +25,5 @@
         record: mx-test.{{ aws_region }}.{{ subd }}
         type: A
         ttl: 60
-        value: "{{ groups.Class_mx_test | default([]) | intersect(aws_region_group) | map('extract', hostvars, 'public_ip_address') | list }}"
+        value: "{{ groups.Class_mx_test | intersect(aws_region_group) | map('extract', hostvars, 'public_ip_address') | list }}"
 

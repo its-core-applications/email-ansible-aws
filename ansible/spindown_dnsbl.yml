@@ -17,10 +17,10 @@
               Status: spindown
           when:
             - launch_time == groups.Class_dnsbl | intersect(aws_region_group) | map('extract', hostvars, 'launch_time') | sort | first
-            - groups.Class_dnsbl | intersect(groups.Status_spindown | default([])) | length == 0
+            - groups.Class_dnsbl | intersect(groups.Status_spindown) | length == 0
 
         - meta: refresh_inventory
-          when: groups.Class_dnsbl | intersect(groups.Status_spindown | default([])) | length == 0
+          when: groups.Class_dnsbl | intersect(groups.Status_spindown) | length == 0
 
 - hosts: Class_dnsbl:&Status_spindown
   tasks:

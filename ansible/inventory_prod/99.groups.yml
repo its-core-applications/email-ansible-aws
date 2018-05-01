@@ -1,0 +1,14 @@
+# This stubs out the group structure so that we can avoid `| default([])`.
+all:
+  children:
+    Status_spindown:
+    Status_spinup:
+    Status_production:
+    Status_development:
+    Status_spundown:
+    Class_master:
+    Class_mx:
+    Class_egress:
+    Class_dnsbl:
+    Class_syslog:
+    redis:

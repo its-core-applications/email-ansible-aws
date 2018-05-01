@@ -19,4 +19,4 @@
         value: "{{ dns_inventory_hosts | map('extract', hostvars, 'private_ip_address') | list }}"
       when: dns_inventory_hosts | length > 0
       vars:
-        dns_inventory_hosts: "{{ groups[dns_group] | default([]) | intersect(groups.Status_production | default([])) | intersect(aws_region_group) }}"
+        dns_inventory_hosts: "{{ groups[dns_group] | intersect(groups.Status_production) | intersect(aws_region_group) }}"

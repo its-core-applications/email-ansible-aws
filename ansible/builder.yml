@@ -14,7 +14,7 @@
 
         - import_role:
             name: s3repo_build
-          when: groups.Class_master | default([]) | intersect(aws_region_group) | length == 0
+          when: groups.Class_master | intersect(aws_region_group) | length == 0
 
 - hosts: Class_master
   tasks:
