@@ -48,6 +48,8 @@
 - name: rsync custom signatures
   command: "rsync -t --timeout=60 {{ item.url }} {{ clamav_sigdir }}/{{ item.name }}"
   loop: "{{ clamav_custom_sigs.rsync }}"
+  register: result
+  until: result.rc == 0
 
 - name: Fetch custom signatures
   get_url:
