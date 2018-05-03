@@ -43,7 +43,7 @@ def main():
     for message in statusJSON['messages']:
         if message['resolved'] == False:
             print "[{service}] {message}".format(service=services[message['service']], message=message['message'])
-            retval = 1
+            retval = 2
 
     if retval == 0:
         print 'No problems reported on appstatus.google.com'
