@@ -8,7 +8,7 @@
       vars:
         eip_class: egress
 
-    - include_role:
+    - import_role:
         name: ec2_launch
       vars:
         launch_class: egress
