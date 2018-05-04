@@ -92,7 +92,7 @@ if [[ $count -gt $min_count && ${hour[1]} -eq 0 && $rscale -eq 0 ]]; then
     else
         scaledown
     fi
-elif [[ ${quint[1]} -gt 2 && $rup -eq 0 ]]; then
+elif [[ ${quint[1]} -gt 0 && $rup -eq 0 ]]; then
     if [[ $count -ge $max_count ]]; then
         outlog "$count is already at the $max_count ceiling"
     else
