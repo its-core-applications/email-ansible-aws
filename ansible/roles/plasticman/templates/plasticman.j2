@@ -79,9 +79,9 @@ if [[ $count -lt $min_count && $rup -eq 0 ]]; then
     exit 0
 fi
 
-# Check for any datapoints in the last hour and a bit where the five minute
+# Check for any datapoints in the last hour and a bit where the one minute
 # load average was over 1
-hour=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.five&from=-65minutes&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 1 { x++ } END{ print NR, x }'))
+hour=($(curl -s "http://${graphite_server}/render?target=${class}.all.load_avg.one&from=-75minutes&format=csv" | awk -F, 'BEGIN{ x=0 } $3 > 1 { x++ } END{ print NR, x }'))
 
 # Check for datapoints in the last six minutes where the one minute load
 # average was over 3
