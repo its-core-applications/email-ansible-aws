@@ -31,6 +31,7 @@
       tags:
         - sasl
         - libsnet
+        - nmh
         - simta
       vars:
         build_name: cyrus-sasl
@@ -204,7 +205,9 @@
       vars:
         build_name: nmh
         build_deps:
+          - cyrus-sasl-devel
           - flex
+          - gdbm-devel
           - ncurses-devel
 
     - import_role:
