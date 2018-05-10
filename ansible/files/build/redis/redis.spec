@@ -1,12 +1,11 @@
 %global _hardened_build 1
-%global with_perftools 0
 
 # Tests fail in mock, not in local build.
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 Name:              redis
-Version:           3.2.11
-Release:           17%{?dist}
+Version:           4.0.9
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 License:           BSD
 URL:               http://redis.io
@@ -20,12 +19,8 @@ Source6:           %{name}.init
 Source7:           %{name}-shutdown
 Source8:           %{name}-limit-systemd
 Source9:           %{name}-limit-init
-Patch0001:            redis-3.2.5-use-system-jemalloc.patch
-%if 0%{?with_perftools}
-BuildRequires:     gperftools-devel
-%else
+Patch0:            redis-3.2.5-use-system-jemalloc.patch
 BuildRequires:     jemalloc-devel
-%endif
 %if 0%{?with_tests}
 BuildRequires:     procps-ng
 BuildRequires:     tcl
@@ -67,7 +62,7 @@ You can use Redis from most programming languages also.
 %prep
 %setup -q
 rm -frv deps/jemalloc
-%patch0001 -p1
+%patch0 -p1
 
 # No hidden build.
 sed -i -e 's|\t@|\t|g' deps/lua/src/Makefile
@@ -86,11 +81,7 @@ make %{?_smp_mflags} \
     DEBUG="" \
     CFLAGS+="%{optflags}" \
     LUA_LDFLAGS+="%{?__global_ldflags}" \
-%if 0%{?with_perftools}
-    MALLOC=tcmalloc \
-%else
     MALLOC=jemalloc \
-%endif
     all
 
 %install
