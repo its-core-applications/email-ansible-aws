@@ -1,5 +1,5 @@
 Name:    hyperscan
-Version: 4.6.0
+Version: 4.7.0
 Release: 1%{?dist}
 Summary: High-performance regular expression matching library
 
