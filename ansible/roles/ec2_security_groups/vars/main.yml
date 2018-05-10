@@ -121,6 +121,9 @@ ec2_sg:
       - proto: udp
         ports: 53
         cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+      - proto: tcp
+        ports: 873
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
 
   redis:
     vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# https://hydrasky.com/network-security/linux-malware-detect-lmd/
+# The Linux Malware Detect sigs don't identify where they're from and
+# have ugly moustaches.
+sed -E 's/\{(.+)\}/maldet.\1./' $1

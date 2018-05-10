@@ -1,38 +1,48 @@
 ---
 
 clamav_custom_sigs:
-  local:
-    - name: umich_bad_sigs.ign2
-  rsync:
-    - name: sigwhitelist.ign2
-      url: rsync://rsync.sanesecurity.net/sanesecurity/sigwhitelist.ign2
-    - name: sanesecurity.ftm
-      url: rsync://rsync.sanesecurity.net/sanesecurity/sanesecurity.ftm
-    - name: phish.ndb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/phish.ndb
-    - name: rogue.hdb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/rogue.hdb
-    - name: blurl.ndb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/blurl.ndb
-    - name: badmacro.ndb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/badmacro.ndb
-    - name: malwarehash.hsb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/malwarehash.hsb
-    - name: winnow_malware.hdb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/winnow_malware.hdb
-    - name: winnow_extended_malware.hdb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/winnow_extended_malware.hdb
-    - name: winnow.attachments.hdb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/winnow.attachments.hdb
-    - name: winnow_bad_cw.hdb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/winnow_bad_cw.hdb
-    - name: malware.expert.hdb
-      url: rsync://rsync.sanesecurity.net/sanesecurity/malware.expert.hdb
-  http:
-    - name: phishing_reply_addresses.ndb
-      url: https://svn.code.sf.net/p/aper/code/phishing_reply_addresses
-      process: aper_addresses
-    - name: phishing_links.gdb
-      url: https://svn.code.sf.net/p/aper/code/phishing_links
-      process: aper_links
-
+  - name: umich_bad_sigs.ign2
+    url: local
+  - name: sigwhitelist.ign2
+    url: rsync://rsync.sanesecurity.net/sanesecurity/sigwhitelist.ign2
+  - name: sanesecurity.ftm
+    url: rsync://rsync.sanesecurity.net/sanesecurity/sanesecurity.ftm
+  - name: phish.ndb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/phish.ndb
+  - name: rogue.hdb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/rogue.hdb
+  - name: blurl.ndb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/blurl.ndb
+  - name: badmacro.ndb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/badmacro.ndb
+  - name: malwarehash.hsb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/malwarehash.hsb
+  - name: winnow_malware.hdb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/winnow_malware.hdb
+  - name: winnow_extended_malware.hdb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/winnow_extended_malware.hdb
+  - name: winnow.attachments.hdb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/winnow.attachments.hdb
+  - name: winnow_bad_cw.hdb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/winnow_bad_cw.hdb
+  - name: malware.expert.hdb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/malware.expert.hdb
+  - name: MiscreantPunch099-Low.ldb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/MiscreantPunch099-Low.ldb
+  - name: porcupine.hsb
+    url: rsync://rsync.sanesecurity.net/sanesecurity/porcupine.hsb
+  - name: phishing_reply_addresses.ndb
+    url: https://svn.code.sf.net/p/aper/code/phishing_reply_addresses
+    process: aper_addresses
+  - name: phishing_links.gdb
+    url: https://svn.code.sf.net/p/aper/code/phishing_links
+    process: aper_links
+  - name: rfxn.hdb
+    url: https://cdn.rfxn.com/downloads/rfxn.hdb
+    process: rfxn
+  - name: rfxn.ndb
+    url: https://cdn.rfxn.com/downloads/rfxn.ndb
+    process: rfxn
+  - name: iia-md5-hashes.hsb
+    url: rsync://rbldnsd.{{ aws_region }}.{{ subd }}/rbldnsd/iia/iia-md5-hashes
+    process: iia_hashes

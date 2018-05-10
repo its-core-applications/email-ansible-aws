@@ -1,11 +1,3 @@
----
-
-- name: Restart rbldnsd
-  systemd:
-    name: rbldnsd-single
-    daemon_reload: true
-    state: restarted
-
 - name: Reconfigure rbldnsd
   command: rbldnsctl create
   notify:
@@ -17,3 +9,15 @@
     name: rbldnsd-single
     enabled: true
   notify: Restart rbldnsd
+
+- name: Restart rbldnsd
+  systemd:
+    name: rbldnsd-single
+    daemon_reload: true
+    state: restarted
+
+- name: Restart rsyncd
+  systemd:
+    name: rsyncd
+    daemon_reload: true
+    state: restarted

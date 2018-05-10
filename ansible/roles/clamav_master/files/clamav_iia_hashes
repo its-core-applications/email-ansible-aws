@@ -1,0 +1,19 @@
+#!/bin/bash
+
+tmpdir=$(mktemp -d --tmpdir clamav_iia.XXXXXXXX)
+
+# Unpack packed sigs
+cd $tmpdir
+for x in  $(dirname $1)/*.c[lv]d; do
+    sigtool --unpack $x
+done
+
+sed -e 's/:.*//' $tmpdir/*.h[sd]b $(dirname $1)/*.h[sd]b > $tmpdir/hashes
+# Get rid of duplicates and reformat the CSV into a hash database
+cat $1 | while read hash; do
+    [[ $hash = 'observable' ]] && continue
+    fgrep -q $hash $tmpdir/hashes && continue
+    echo "$hash:*:UMICH.IIA.MalwareHash.$hash:73"
+done
+
+rm -rf $tmpdir

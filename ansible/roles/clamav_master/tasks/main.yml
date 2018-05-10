@@ -33,6 +33,8 @@
       loop:
         - clamav_aper_addresses
         - clamav_aper_links
+        - clamav_iia_hashes
+        - clamav_rfxn
 
     - name: Configure freshclam for official signatures
       copy:
@@ -52,24 +54,24 @@
       copy:
         src: "{{ item.name }}"
         dest: "{{ clamav_sigdir }}/{{ item.name }}"
-      loop: "{{ clamav_custom_sigs.local }}"
+      loop: "{{ clamav_custom_sigs | selectattr('url', 'equalto', 'local') | list }}"
 
     - name: rsync custom signatures
-      command: rsync -t --timeout=60 {{ item.url }} {{ clamav_sigdir }}/{{ item.name }}
-      loop: "{{ clamav_custom_sigs.rsync }}"
+      command: rsync -t --timeout=60 {{ item.url }} {{ clamav_sigdir }}/{{ item.name }}{{ ('process' in item) | ternary('.raw', '') }}
+      loop: "{{ clamav_custom_sigs | selectattr('url', 'match', '^rsync') | list }}"
       register: result
       until: result.rc == 0
 
-    - name: Fetch custom signatures
+    - name: HTTP custom signatures
       get_url:
         url: "{{ item.url }}"
-        dest: "{{ clamav_sigdir }}/{{ item.name }}.raw"
+        dest: "{{ clamav_sigdir }}/{{ item.name }}{{ ('process' in item) | ternary('.raw', '') }}"
         force: yes
-      loop: "{{ clamav_custom_sigs.http }}"
+      loop: "{{ clamav_custom_sigs | selectattr('url', 'match', '^http') | list }}"
 
-    - name: Process custom signatures
+    - name: Post-process signatures
       shell: /usr/local/sbin/clamav_{{ item.process }} {{ clamav_sigdir }}/{{ item.name }}.raw | sort -u >| {{ clamav_sigdir }}/{{ item.name }}
-      loop: "{{ clamav_custom_sigs.http }}"
+      loop: "{{ clamav_custom_sigs | selectattr('process', 'defined') | list }}"
 
     - name: Upload signature files to S3
       aws_s3_sync:
