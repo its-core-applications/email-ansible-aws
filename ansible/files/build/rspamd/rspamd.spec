@@ -2,12 +2,9 @@
 %define rspamd_group     %{rspamd_user}
 %define rspamd_home      %{_localstatedir}/lib/rspamd
 %define rspamd_confdir   %{_sysconfdir}/rspamd
-%define rspamd_pluginsdir   %{_datadir}/rspamd
-%define rspamd_rulesdir   %{_datadir}/rspamd/rules
-%define rspamd_wwwdir   %{_datadir}/rspamd/www
 
 Name:           rspamd
-Version:        1.6.6
+Version:        1.7.5
 Release:        1
 Summary:        Rapid spam filtering system
 License:        BSD2c
@@ -29,16 +26,9 @@ BuildRequires:  sqlite-devel
 Requires(pre):  shadow-utils
 BuildRequires:  luajit-devel
 Source0:        https://github.com/vstakhov/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
-# Not upstreamed to rspamd and libucl yet, but the first two are pretty solid
-# and the third seems conceptually right.
-Patch0:         rspamd-1.6.5-libucl-escapelen.patch
-Patch1:         rspamd-1.6.5-libucl-vtab.patch
-Patch2:         rspamd-1.6.5-libucl-doubleescape.patch
 
 %description
 Rspamd is a rapid, modular and lightweight spam filter. It is designed to work
-with large volumes of mail and can be easily extended with filters written in
-lua.
 
 %prep
 %autosetup -p 1 -n %{name}-%{version}
@@ -103,23 +93,18 @@ rm -rf %{buildroot}
 %{_bindir}/rspamc
 %{_bindir}/rspamadm
 %config(noreplace) %{rspamd_confdir}/modules.d/*
+%config(noreplace) %{rspamd_confdir}/scores.d/*
 %config(noreplace) %{rspamd_confdir}/*.inc
 %config(noreplace) %{rspamd_confdir}/*.conf
 %attr(-, _rspamd, _rspamd) %dir %{rspamd_home}
-%dir %{rspamd_rulesdir}/regexp
-%dir %{rspamd_rulesdir}
 %dir %{rspamd_confdir}
-%dir %{rspamd_confdir}/modules.d
 %dir %{rspamd_confdir}/local.d
+%dir %{rspamd_confdir}/modules.d
 %dir %{rspamd_confdir}/override.d
-%dir %{rspamd_pluginsdir}
-%dir %{rspamd_wwwdir}
+%dir %{rspamd_confdir}/scores.d
 %dir %{_libdir}/rspamd
-%{rspamd_pluginsdir}/*
-%{rspamd_rulesdir}/*
-%{rspamd_wwwdir}/*
+%{_datadir}/rspamd
 %{_libdir}/rspamd/*
-%{_datadir}/rspamd/effective_tld_names.dat
 
 %changelog
 * %(date "+%a %b %d %Y") (Automated RPM build) - %{version}-%{release}
