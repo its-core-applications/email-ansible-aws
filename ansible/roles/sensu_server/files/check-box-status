@@ -13,6 +13,7 @@ ok_strings = [
     '<strong>Complete</strong>',
     'Box has resolved',
     '<strong>Monitoring</strong>',
+    '<strong>Scheduled</strong>',
 ]
 
 retval = 0
