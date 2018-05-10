@@ -1,5 +1,5 @@
 Name:           dash
-Version:        0.5.9.1
+Version:        0.5.10
 Release:        1%{?dist}
 Summary:        Small and fast POSIX-compliant shell
 Group:          System Environment/Shells
