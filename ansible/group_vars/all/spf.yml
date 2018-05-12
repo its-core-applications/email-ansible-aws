@@ -4,7 +4,7 @@ spfd: "spf.mail.{{ tld }}"
 
 spf_main:
   - name: _umich
-    record: "a:egress-host.a.mail.umich.edu ip4:141.211.12.0/23 ip4:141.211.125.0/24 ip4:141.211.4.224 ip4:141.211.61.69 ip4:141.211.76.102 ip4:141.211.91.0/26 ip4:141.214.17.0/24 ip4:141.215.69.0/24"
+    record: "a:egress-host.a.mail.umich.edu a:egress-host.us-east-2.a.mail.umich.edu a:relay-egress-host.us-east-2.a.mail.umich.edu ip4:141.211.12.0/23 ip4:141.211.125.0/24 ip4:141.211.4.224 ip4:141.211.61.69 ip4:141.211.76.102 ip4:141.211.91.0/26 ip4:141.214.17.0/24 ip4:141.215.69.0/24"
 
 spf_thirdparty:
   - names:
