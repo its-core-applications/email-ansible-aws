@@ -1,4 +1,4 @@
-%global commit0 64eda6e50bfdd0428fab7c9317a758263f2fb2f1
+%global commit0 e41cfb986c1b1935770de554872247453fdbb079
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 %define username        saslauth
@@ -13,7 +13,7 @@
 Summary: The Cyrus SASL library
 Name: cyrus-sasl
 Version: 2.1.27
-Release: 0.1.20180201.%{shortcommit0}%{?dist}
+Release: 0.1.20180510.%{shortcommit0}%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
