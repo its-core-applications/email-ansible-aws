@@ -46,6 +46,18 @@
         - blacklist.conf
       notify: Restart carbon
 
+    - name: Configure carbon units
+      copy:
+        dest: /etc/systemd/system/{{ item }}.service
+        src: "{{ item }}.service"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart carbon
+      loop:
+        - carbon-cache
+        - carbon-aggregator
+
     - name: Enable carbon daemons
       systemd:
         name: "{{ item }}"
