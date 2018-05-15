@@ -13,6 +13,7 @@
           - amazon-ssm-agent
           - cronie-anacron
           - postfix
+          - update-motd
         state: absent
 
     # Only for the fake hostname that packer uses when building the base image
