@@ -55,6 +55,7 @@
   get_url:
     url: "{{ item.url }}"
     dest: "{{ clamav_sigdir }}/{{ item.name }}.raw"
+    force: yes
   loop: "{{ clamav_custom_sigs.http }}"
 
 - name: Process custom signatures
