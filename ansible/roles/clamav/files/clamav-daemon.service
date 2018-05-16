@@ -10,6 +10,7 @@ ExecStart=/usr/sbin/clamd --foreground=true
 # Reload the database
 ExecReload=/bin/kill -USR2 $MAINPID
 StandardOutput=syslog
+LimitCORE=infinity
 
 [Install]
 WantedBy=multi-user.target
