@@ -26,9 +26,6 @@
 Summary:	End-user tools for the Clam Antivirus scanner
 Name:		clamav
 Version:	0.100.0
-# Set epoch so that we're always considered a higher version
-# 17 is not special, I just like it.
-Epoch:		17
 Release:	1%{?dist}
 License:	proprietary
 Group:		Applications/File

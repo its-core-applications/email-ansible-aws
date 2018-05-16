@@ -2,6 +2,7 @@
 name = UMCollab repository
 baseurl = http://{{ yum_hostname }}/{{ yum_repo_path }}
 enabled = 1
+priority = 2
 {% if bootstrap %}
 skip_if_unavailable = 1
 {% endif %}

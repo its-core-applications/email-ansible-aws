@@ -1,6 +1,6 @@
 Name:		mosh
 Version:	1.3.2
-Release:	100%{?dist}
+Release:	1%{?dist}
 Summary:	Mobile shell that supports roaming and intelligent local echo
 
 License:	GPLv3+
