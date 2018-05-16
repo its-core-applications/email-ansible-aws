@@ -3,7 +3,3 @@
 dependencies:
   - role: clamav
     tags: clamav
-  - role: s3_website
-    tags: s3_website
-    s3_hostname: "clamav.{{ subd }}"
-

@@ -1,26 +1,27 @@
----
+- tags:
+    - clamav
+  block:
+    - name: Install freshclam
+      yum:
+        name: clamav-update
+        state: latest
 
-- name: Install freshclam
-  yum:
-    name: clamav-update
-    state: latest
+    - name: Configure freshclam
+      template:
+        dest: /etc/freshclam.conf
+        src: freshclam.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Configure freshclam
-  template:
-    dest: /etc/freshclam.conf
-    src: freshclam.conf.j2
-    owner: root
-    group: root
-    mode: 0644
+    - name: Run freshclam
+      command: freshclam
+      register: result
+      changed_when: result.rc == 0
+      failed_when: result.rc > 1
 
-- name: Run freshclam
-  command: freshclam
-  args:
-    creates: /var/lib/clamav/mirrors.dat
-
-- name: Schedule freshclam
-  cron:
-    name: freshclam
-    minute: '*/5'
-    job: freshclam --quiet
-
+    - name: Schedule freshclam
+      cron:
+        name: freshclam
+        minute: "*/5"
+        job: "freshclam --quiet && jq -n -r '{ name: \"clamav-freshclam\", ttl: 86400, output: \"successfully synced signatures\" }' | ncat localhost 3030"

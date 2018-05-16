@@ -1,6 +1,7 @@
 LogSyslog yes
 PrivateMirror clamav.{{ subd }}
 TestDatabases yes
+NotifyClamd /etc/clamd.conf
 
 # Custom databases
 {% for synctype in clamav_custom_sigs.keys() %}

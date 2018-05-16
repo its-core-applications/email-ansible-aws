@@ -1,81 +1,102 @@
----
+- tags:
+    - clamav
+  block:
+    - import_role:
+        name: s3_website
+      vars:
+        s3_hostname: clamav.{{ subd }}
 
-- name: Create signature cache directories
-  file:
-    dest: /var/cache/clamav
-    state: directory
-    owner: clamupdate
-    group: clamupdate
-    mode: 0755
+    - name: Create signature cache directories
+      file:
+        dest: /var/cache/clamav
+        state: directory
+        owner: clamupdate
+        group: clamupdate
+        mode: "0755"
 
-- name: Install prerequisites
-  yum:
-    name: "{{ item }}"
-    state: latest
-  loop:
-    - perl-Digest-SHA
-    - perl-Time-Piece
-    - clamav-update
+    - name: Install prerequisites
+      yum:
+        name: "{{ item }}"
+        state: latest
+      loop:
+        - perl-Digest-SHA
+        - perl-Time-Piece
+        - clamav-update
 
-- name: Install processing scripts
-  copy:
-    dest: "/usr/local/sbin/{{ item }}"
-    src: "{{ item }}"
-    owner: root
-    group: root
-    mode: 0755
-  loop:
-    - clamav_aper_addresses
-    - clamav_aper_links
+    - name: Install processing scripts
+      copy:
+        dest: /usr/local/sbin/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - clamav_aper_addresses
+        - clamav_aper_links
 
-- name: Configure freshclam for official signatures
-  copy:
-    dest: /etc/freshclam.official.conf
-    src: freshclam.conf
-    owner: root
-    group: root
-    mode: 0644
+    - name: Configure freshclam for official signatures
+      copy:
+        dest: /etc/freshclam.official.conf
+        src: freshclam.conf
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Sync official signatures
-  command: freshclam --config-file=/etc/freshclam.official.conf
+    - name: Sync official signatures
+      command: freshclam --config-file=/etc/freshclam.official.conf
+      register: result
+      changed_when: result.rc == 0
+      failed_when: result.rc > 1
 
-- name: Copy custom signatures
-  copy:
-    src: "{{ item.name }}"
-    dest: "{{ clamav_sigdir }}/{{ item.name }}"
-  loop: "{{ clamav_custom_sigs.local }}"
+    - name: Copy custom signatures
+      copy:
+        src: "{{ item.name }}"
+        dest: "{{ clamav_sigdir }}/{{ item.name }}"
+      loop: "{{ clamav_custom_sigs.local }}"
 
-- name: rsync custom signatures
-  command: "rsync -t --timeout=60 {{ item.url }} {{ clamav_sigdir }}/{{ item.name }}"
-  loop: "{{ clamav_custom_sigs.rsync }}"
-  register: result
-  until: result.rc == 0
+    - name: rsync custom signatures
+      command: rsync -t --timeout=60 {{ item.url }} {{ clamav_sigdir }}/{{ item.name }}
+      loop: "{{ clamav_custom_sigs.rsync }}"
+      register: result
+      until: result.rc == 0
 
-- name: Fetch custom signatures
-  get_url:
-    url: "{{ item.url }}"
-    dest: "{{ clamav_sigdir }}/{{ item.name }}.raw"
-    force: yes
-  loop: "{{ clamav_custom_sigs.http }}"
+    - name: Fetch custom signatures
+      get_url:
+        url: "{{ item.url }}"
+        dest: "{{ clamav_sigdir }}/{{ item.name }}.raw"
+        force: yes
+      loop: "{{ clamav_custom_sigs.http }}"
 
-- name: Process custom signatures
-  shell: "/usr/local/sbin/clamav_{{ item.process }} {{ clamav_sigdir }}/{{ item.name }}.raw | sort -u >| {{ clamav_sigdir }}/{{ item.name }}"
-  loop: "{{ clamav_custom_sigs.http }}"
+    - name: Process custom signatures
+      shell: /usr/local/sbin/clamav_{{ item.process }} {{ clamav_sigdir }}/{{ item.name }}.raw | sort -u >| {{ clamav_sigdir }}/{{ item.name }}
+      loop: "{{ clamav_custom_sigs.http }}"
 
-- name: Upload signature files to S3
-  s3_sync:
-    mode: push
-    bucket: "clamav.{{ subd }}"
-    region: "{{ aws_region }}"
-    permission: public-read
-    file_change_strategy: checksum
-    file_root: "{{ clamav_sigdir }}"
-    exclude: '*.raw,mirrors.dat'
+    - name: Upload signature files to S3
+      aws_s3_sync:
+        direction: push
+        bucket: clamav.{{ subd }}
+        region: "{{ aws_region }}"
+        path: "{{ clamav_sigdir }}"
+        permission: public-read
+        overwrite: different
+        exclude:
+          - "*.raw"
+          - mirrors.dat
+        delete: true
+      register: result
 
-- name: Schedule signature updates
-  cron:
-    name: ansible-clamav-sync
-    user: "{{ ansible_user }}"
-    minute: '10,25,40,55'
-    job: '. ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags clamav'
+    - name: Submit sensu event
+      shell: printf %s {{ sensu_payload | to_json | quote }} | ncat localhost 3030
+      vars:
+        sensu_payload:
+          name: clamav-sync
+          ttl: 2700
+          status: 0
+          output: "{{ result is changed | ternary('signatures updated', 'signatures unchanged') }}"
 
+    - name: Schedule signature updates
+      cron:
+        name: ansible-clamav-sync
+        user: "{{ ansible_user }}"
+        minute: 10,25,40,55
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags clamav
