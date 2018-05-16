@@ -231,6 +231,21 @@
     - import_role:
         name: build_rpm_spec
       tags:
+        - abrt
+        - satyr
+      vars:
+        build_name: satyr
+        build_deps:
+          - binutils-devel
+          - elfutils-devel
+          - elfutils-libelf-devel
+          - python2-devel
+          - python-sphinx
+          - rpm-devel
+
+    - import_role:
+        name: build_rpm_spec
+      tags:
         - hyperscan
         - rspamd
       vars:
@@ -240,6 +255,72 @@
           - pcre-devel
           - ragel-6.10
           - sqlite-devel
+
+    - import_role:
+        name: build_rpm_spec
+      tags:
+        - abrt
+        - libreport
+      vars:
+        build_name: libreport
+        build_deps:
+          - asciidoc
+          - augeas
+          - augeas-devel
+          - curl-devel
+          - dbus-devel
+          - desktop-file-utils
+          - doxygen
+          - gettext
+          - gtk3-devel
+          - intltool
+          - json-c-devel
+          - libproxy-devel
+          - libtar-devel
+          - libxml2-devel
+          - newt-devel
+          - nss-devel
+          - python2-devel
+          - satyr-devel
+          - systemd-devel
+          - texinfo
+          - xmlrpc-c-devel
+          - xmlto
+          - libgnome-keyring-devel
+
+    - import_role:
+        name: build_rpm_spec
+      tags:
+        - abrt
+      vars:
+        build_name: abrt
+        build_deps:
+          - asciidoc
+          - augeas
+          - dbus-devel
+          - dbus-glib-devel
+          - desktop-file-utils
+          - doxygen
+          - gettext
+          - gsettings-desktop-schemas-devel
+          - gtk3-devel
+          - intltool
+          - libICE-devel
+          - libSM-devel
+          - libcap-devel
+          - libnotify-devel
+          - libreport-devel
+          - libreport-gtk-devel
+          - libselinux-devel
+          - libxml2-devel
+          - nss-devel
+          - polkit-devel
+          - python-devel
+          - python-sphinx
+          - rpm-devel
+          - satyr-devel
+          - systemd-python
+          - xmlto
 
     - import_role:
         name: build_rpm_spec

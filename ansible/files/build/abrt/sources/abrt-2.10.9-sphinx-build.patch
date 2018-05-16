@@ -1,0 +1,30 @@
+From 69395016086d86f141d3ce302ddd95a2e98cfad5 Mon Sep 17 00:00:00 2001
+From: Paul Arthur <paul.arthur@flowerysong.com>
+Date: Wed, 16 May 2018 23:52:11 -0400
+Subject: [PATCH] Fix doc build
+
+---
+ src/python-problem/doc/Makefile.am | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/src/python-problem/doc/Makefile.am b/src/python-problem/doc/Makefile.am
+index b7bf0cab..aa611dca 100644
+--- a/src/python-problem/doc/Makefile.am
++++ b/src/python-problem/doc/Makefile.am
+@@ -3,13 +3,7 @@
+ 
+ # You can set these variables from the command line.
+ SPHINXOPTS    =
+-if BUILD_PYTHON2
+ SPHINXBUILD   = sphinx-build
+-endif
+-# prefer Python3 sphinx
+-if BUILD_PYTHON3
+-SPHINXBUILD   = sphinx-build-3
+-endif
+ PAPER         =
+ BUILDDIR      = _build
+ 
+-- 
+2.14.3
+

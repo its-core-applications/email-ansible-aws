@@ -1,0 +1,166 @@
+From 4b136a0b3463337a7009a60a8db39eb56324a2f7 Mon Sep 17 00:00:00 2001
+From: Paul Arthur <paul.arthur@flowerysong.com>
+Date: Thu, 17 May 2018 00:55:42 -0400
+Subject: [PATCH] Revert "switch all python scripts to python3"
+
+This reverts commit 5d08cc24ce6fa6e352ae3604c536c93aa1011ecd.
+---
+ src/daemon/abrt-handle-upload.in                   | 2 +-
+ src/hooks/abrt-harvest-pstoreoops.in               | 2 +-
+ src/hooks/abrt_harvest_vmcore.py.in                | 2 +-
+ src/plugins/abrt-action-analyze-core.in            | 2 +-
+ src/plugins/abrt-action-analyze-vmcore.in          | 2 +-
+ src/plugins/abrt-action-check-oops-for-hw-error.in | 2 +-
+ src/plugins/abrt-action-generate-machine-id        | 2 +-
+ src/plugins/abrt-action-install-debuginfo.in       | 2 +-
+ src/plugins/abrt-action-list-dsos                  | 2 +-
+ src/plugins/abrt-action-notify                     | 2 +-
+ src/plugins/abrt-action-perform-ccpp-analysis.in   | 2 +-
+ src/plugins/abrt-action-ureport                    | 2 +-
+ src/plugins/abrt-gdb-exploitable                   | 2 +-
+ tests/abrt_test.py                                 | 2 +-
+ 14 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/src/daemon/abrt-handle-upload.in b/src/daemon/abrt-handle-upload.in
+index 469c2aed..68a3fb6a 100755
+--- a/src/daemon/abrt-handle-upload.in
++++ b/src/daemon/abrt-handle-upload.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3 -u
++#!/usr/bin/python -u
+ # Called by abrtd when a new file is noticed in upload directory.
+ # The task of this script is to unpack the file and move
+ # problem data found in it to abrtd spool directory.
+diff --git a/src/hooks/abrt-harvest-pstoreoops.in b/src/hooks/abrt-harvest-pstoreoops.in
+index ce37c55c..9c731a6d 100644
+--- a/src/hooks/abrt-harvest-pstoreoops.in
++++ b/src/hooks/abrt-harvest-pstoreoops.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#! /usr/bin/python
+ #
+ # This script is meant to be run once at system startup
+ # It scans /sys/fs/pstore/*, reconstructs oops text(s)
+diff --git a/src/hooks/abrt_harvest_vmcore.py.in b/src/hooks/abrt_harvest_vmcore.py.in
+index 7d4bba52..ff8075a2 100644
+--- a/src/hooks/abrt_harvest_vmcore.py.in
++++ b/src/hooks/abrt_harvest_vmcore.py.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python
+ """
+  This script is meant to be run once at system startup after abrtd is up
+  and running. It moves all vmcore directories in kdump's dump directory
+diff --git a/src/plugins/abrt-action-analyze-core.in b/src/plugins/abrt-action-analyze-core.in
+index 9aca379c..c88f7aa6 100644
+--- a/src/plugins/abrt-action-analyze-core.in
++++ b/src/plugins/abrt-action-analyze-core.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3 -u
++#!/usr/bin/python -u
+ # -*- coding: utf-8 -*-
+ # WARNING: python -u means unbuffered I/O. Without it the messages are
+ # passed to the parent asynchronously which looks bad in clients.
+diff --git a/src/plugins/abrt-action-analyze-vmcore.in b/src/plugins/abrt-action-analyze-vmcore.in
+index c91737fd..57167b03 100644
+--- a/src/plugins/abrt-action-analyze-vmcore.in
++++ b/src/plugins/abrt-action-analyze-vmcore.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3 -u
++#! /usr/bin/python -u
+ # -*- coding: utf-8 -*-
+ # Generate backtrace from vmcore
+ #
+diff --git a/src/plugins/abrt-action-check-oops-for-hw-error.in b/src/plugins/abrt-action-check-oops-for-hw-error.in
+index f5e0afda..7efb2bbc 100644
+--- a/src/plugins/abrt-action-check-oops-for-hw-error.in
++++ b/src/plugins/abrt-action-check-oops-for-hw-error.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3 -u
++#!/usr/bin/python -u
+ 
+ import sys
+ import os
+diff --git a/src/plugins/abrt-action-generate-machine-id b/src/plugins/abrt-action-generate-machine-id
+index 3cb145a6..f375b017 100644
+--- a/src/plugins/abrt-action-generate-machine-id
++++ b/src/plugins/abrt-action-generate-machine-id
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python
+ 
+ ## Copyright (C) 2014 ABRT team <abrt-devel-list@redhat.com>
+ ## Copyright (C) 2014 Red Hat, Inc.
+diff --git a/src/plugins/abrt-action-install-debuginfo.in b/src/plugins/abrt-action-install-debuginfo.in
+index 6269c221..5b46ab2c 100644
+--- a/src/plugins/abrt-action-install-debuginfo.in
++++ b/src/plugins/abrt-action-install-debuginfo.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3 -u
++#! /usr/bin/python -u
+ # -*- coding: utf-8 -*-
+ # WARNING: python -u means unbuffered I/O without it the messages are
+ # passed to the parent asynchronously which looks bad in clients.
+diff --git a/src/plugins/abrt-action-list-dsos b/src/plugins/abrt-action-list-dsos
+index adb228a4..27c2c101 100644
+--- a/src/plugins/abrt-action-list-dsos
++++ b/src/plugins/abrt-action-list-dsos
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3 -u
++#!/usr/bin/python -u
+ # WARNING: python -u means unbuffered I/O. Without it the messages are
+ # passed to the parent asynchronously which looks bad in clients.
+ 
+diff --git a/src/plugins/abrt-action-notify b/src/plugins/abrt-action-notify
+index d83fea66..12996fa0 100644
+--- a/src/plugins/abrt-action-notify
++++ b/src/plugins/abrt-action-notify
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python
+ # This program is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+diff --git a/src/plugins/abrt-action-perform-ccpp-analysis.in b/src/plugins/abrt-action-perform-ccpp-analysis.in
+index d54baa5d..b74acb6b 100644
+--- a/src/plugins/abrt-action-perform-ccpp-analysis.in
++++ b/src/plugins/abrt-action-perform-ccpp-analysis.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3 -u
++#!/usr/bin/python -u
+ """This module provides a function for executing of disjunction of analyze
+ events.
+ """
+diff --git a/src/plugins/abrt-action-ureport b/src/plugins/abrt-action-ureport
+index fb1acbbe..1cf578fe 100755
+--- a/src/plugins/abrt-action-ureport
++++ b/src/plugins/abrt-action-ureport
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3 -u
++#!/usr/bin/python -u
+ # WARNING: python -u means unbuffered I/O. Without it the messages are
+ # passed to the parent asynchronously which looks bad in clients.
+ #
+diff --git a/src/plugins/abrt-gdb-exploitable b/src/plugins/abrt-gdb-exploitable
+index ac196687..bb87724a 100755
+--- a/src/plugins/abrt-gdb-exploitable
++++ b/src/plugins/abrt-gdb-exploitable
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python
+ # This is a GDB plugin.
+ # Usage:
+ # gdb --batch -ex 'python exec(open("THIS_FILE").read())' -ex run -ex abrt-exploitable PROG
+diff --git a/tests/abrt_test.py b/tests/abrt_test.py
+index cc2186d0..eb53defa 100755
+--- a/tests/abrt_test.py
++++ b/tests/abrt_test.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#! /usr/bin/python
+ # -*- coding: utf-8 -*-
+ import unittest
+ import sys
+-- 
+2.14.3
+
