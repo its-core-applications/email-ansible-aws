@@ -1,0 +1,3 @@
+---
+
+googled: "{{ ( aws_status == 'prod' ) | ternary('umich.edu', 'collab.its.umich.edu') }}"

@@ -10,10 +10,10 @@
         dest: ~/GAM
         version: 40bfde96
 
-    - name: Install gam wrapper
-      copy:
+    - name: Configure google-admin-kit
+      template:
         dest: /usr/bin/gam
-        src: gam.sh
+        src: gam.sh.j2
         owner: root
         group: root
         mode: "0755"
