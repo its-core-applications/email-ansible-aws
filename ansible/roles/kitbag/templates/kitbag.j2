@@ -12,8 +12,9 @@ export TMPDIR=/var/tmp
 . /usr/libexec/comint/setup
 
 ts=$(date +%F)
-
-(
+retval=0
+startts=$(date +%s)
+msg=$(
 for dir in ${directories[*]} ; do
     free=$(df -k --output=avail $tmpdir | tail -1)
     size=$(du -ks $dir | cut -f1)
@@ -27,7 +28,7 @@ for dir in ${directories[*]} ; do
     tar -cJf $tarball $dir 2>/dev/null
     tries=0
     while [[ $(( tries++ )) -lt 5 ]]; do
-        curl -s -T $tarball -u $ftp_user:$ftp_passwd --ftp-ssl --ftp-create-dirs "ftp://$ftp_base/$host/$ts/"
+        curl -s -T $tarball -u $ftp_user:$ftp_passwd --ftp-ssl --ftp-create-dirs "ftp://$ftp_base/$host/$ts/" 2>&1
         curlexit=$?
         [[ $curlexit -eq 0 ]] && break
     done
@@ -35,8 +36,25 @@ for dir in ${directories[*]} ; do
         echo "Failed to upload tarball for $dir"
         echo
     fi
-    rm -f $tarball
+    rm -f $tarball 2>&1
 done
-) 2>&1 | eval $notifycmd_warn $notifywho_warn
+)
+
+if [[ ! -z "$msg" ]] ; then
+    retval=2
+fi
+
+if [[ -z "$msg" ]] ; then
+    msg="All backups were created and uploaded successfully"
+fi
+
+duration=$(( $(date +%s) - startts ))
+
+jq -n -r \
+    --arg source $(hostname) \
+    --arg status $retval \
+    --arg duration $duration \
+    --arg msg "$msg" \
+    '{ name: "kitbag", source: $source, ttl: 216000, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
 
 cleanup
