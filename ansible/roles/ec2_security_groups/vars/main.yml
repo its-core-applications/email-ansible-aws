@@ -51,6 +51,14 @@ ec2_sg:
       - proto: all
         cidr_ip: 0.0.0.0/0
 
+  mx:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: mx hosts
+    rules:
+      - proto: tcp
+        ports: 25
+        group_id: sg-12854969
+
   egress:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
     description: egress hosts
