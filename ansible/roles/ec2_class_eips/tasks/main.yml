@@ -51,10 +51,3 @@
         ttl: 60
         value: "{{ result.addresses | map(attribute='public_ip') | list }}"
 
-    - name: Check reverse DNS
-      assert:
-        that: lookup('dig', item.public_ip + '/PTR') == ([eip_class + '-host', aws_region, subd, ''] | join('.'))
-        msg: Reverse DNS is not configured for {{ item }}! Request it at https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request
-      loop: "{{ result.addresses }}"
-      when: aws_status == 'prod'
-
