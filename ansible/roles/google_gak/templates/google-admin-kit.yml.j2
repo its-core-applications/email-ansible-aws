@@ -8,15 +8,15 @@ discussions:
 
 google:
 
-  {% if aws_status == 'prod' %}
+{% if aws_status == 'prod' %}
   google-report-logins:
-    credentials_file: '/home/collaborate/gam-config/umich.edu/loginreportercredentials.json'
-  {% endif %}
+    credentials_file: /home/collaborate/gam-config/umich.edu/loginreportercredentials.json
+{% endif %}
 
   default:
     gyb_command: /usr/bin/gyb
     gam_command: /usr/bin/gam
-    credentials_file: /home/collaborate/gam-config/{{ googled }}/oauth2service.json'
+    credentials_file: /home/collaborate/gam-config/{{ googled }}/oauth2service.json
     log_facility: local5
     domain: {{ googled }}
     admin_account: admin-mgoogle@{{ googled }}
