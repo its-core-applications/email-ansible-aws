@@ -1,0 +1,18 @@
+plugin: constructed
+strict: no
+
+compose:
+  region: placement.availability_zone[:-1]
+
+groups:
+  redis: tags.redis == 'yes'
+
+keyed_groups:
+  - prefix: Class
+    key: tags.Class
+  - prefix: Status
+    key: tags.Status
+  - prefix: az
+    key: placement.availability_zone
+  - prefix: region
+    key: region
