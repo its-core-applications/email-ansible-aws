@@ -49,7 +49,7 @@
         count: 1
       vars:
         ec2_subnets: "{{ hostvars[inventory_hostname]['ec2_subnets_' ~ (launch_subnet_type | default('public'))] }}"
-        launch_count_default: "{{ aws_instance_counts[aws_status][launch_class] | default(1) - (groups['Class_' ~ launch_class] | intersect(aws_region_group) | intersect(groups.Status_production | union(groups.Status_spinup) | union(groups.Status_development)) | length) }}"
+        launch_count_default: "{{ aws_instance_counts[aws_status][launch_class] | default(1) - (groups['Class_' ~ launch_class | replace('-', '_')] | intersect(aws_region_group) | intersect(groups.Status_production | union(groups.Status_spinup) | union(groups.Status_development)) | length) }}"
         launch_tags_default:
           Class: "{{ launch_class }}"
           Status: spinup
