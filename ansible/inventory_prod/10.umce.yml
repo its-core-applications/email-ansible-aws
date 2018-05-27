@@ -12,7 +12,7 @@ all:
             snowcake.mr.itd.umich.edu:
         Class_jail:
           hosts:
-            petsemetary.mr.itd.umich.edu:
+            petsematary.mr.itd.umich.edu:
         Class_massmail:
           hosts:
             mimic.mr.itd.umich.edu:
@@ -20,7 +20,6 @@ all:
         Class_mailrelay:
           hosts:
             bonecollector.mr.itd.umich.edu:
-            girlinterrupted.mr.itd.umich.edu:
             foxfire.mr.itd.umich.edu:
         Class_puntrelay:
           hosts:
