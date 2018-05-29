@@ -11,7 +11,6 @@ simta_ldap_red: E
 simta_ldap_domains: []
 simta_srs: false
 simta_srs_domain: "{{ tld }}"
-simta_vacation: false
 simta_vacationhost: vacation.mail.umich.edu
 simta_dkim: false
 simta_dkim_level: LOCAL
