@@ -1,0 +1,4 @@
+UMICH.Foxhole.Zip_doc_js:CL_TYPE_ZIP:*:[.]([Dd][Oo][Cc])(([.]){1,})([Jj][Ss])$:*:*:*:*:*:*
+UMICH.Foxhole.Zip_docx_js:CL_TYPE_ZIP:*:[.]([Dd][Oo][Cc][Xx])(([.]){1,})([Jj][Ss])$:*:*:*:*:*:*
+UMICH.Foxhole.Zip_xls_js:CL_TYPE_ZIP:*:[.]([Xx][Ll][Ss])(([.]){1,})([Jj][Ss])$:*:*:*:*:*:*
+UMICH.Foxhole.Zip_xlsx_js:CL_TYPE_ZIP:*:[.]([Xx][Ll][Ss][Xx])(([.]){1,})([Jj][Ss])$:*:*:*:*:*:*

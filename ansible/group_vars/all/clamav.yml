@@ -3,6 +3,8 @@
 clamav_custom_sigs:
   - name: umich_bad_sigs.ign2
     url: local
+  - name: umich_foxhole_js.cdb
+    url: local
   - name: sigwhitelist.ign2
     url: rsync://rsync.sanesecurity.net/sanesecurity/sigwhitelist.ign2
   - name: sanesecurity.ftm
