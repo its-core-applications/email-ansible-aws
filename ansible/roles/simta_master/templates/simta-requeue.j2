@@ -5,18 +5,27 @@ confdir={{ comint_base }}/dispatch
 workdir=/home/{{ ansible_user }}/simqtmp
 lockfile=$workdir/${name}
 log="logger -p cron.info -t ${name}[$$]"
+startts=$(date +%s)
+retval=0
 
 . /usr/libexec/comint/setup
 
 {# bash array syntax conflicts with Jinja2 comments #}{% raw %}
 
 notify() {
-    cat $tmpfile | $log
-    cat $tmpfile | eval ${notifycmd_info} ${notifywho_info}
+    duration=$(( $(date +%s) - startts ))
+    msg=$(cat $tmpfile)
+    jq -n -r \
+        --arg source $(hostname) \
+        --arg status $retval \
+        --arg duration $duration \
+        --arg msg "$msg" \
+        '{ name: "simta-requeue", source: $source, ttl: 900, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
 }
 
 if [[ -f $lockfile ]]; then
     echo "Lockfile $lockfile already exists, exiting" >> $tmpfile
+    retval=1
     notify
     cleanup
     exit 1
@@ -33,6 +42,7 @@ done
 
 if [[ -s $tmpfile ]]; then
     echo "Exiting due to errors" >> $tmpfile
+    retval=1
     notify
     cleanup
     rm -f $lockfile
@@ -55,7 +65,6 @@ done
 
 find ${workdir}/outbound -empty -delete
 
-err=0
 for qhost in ${qhosts[@]}; do
     if [[ -d ${workdir}/outbound/${qhost} ]]; then
         tar -C ${workdir}/outbound/${qhost} --owner=simta --group=mail --mode=0644 -cf ${workdir}/outbound/${qhost}.tar . &>>$tmpfile
@@ -65,15 +74,15 @@ for qhost in ${qhosts[@]}; do
             if [[ $? -eq 0 ]]; then
                 rm -f ${workdir}/outbound/${qhost}.tar
             else
-                (( err++ ))
+                retval=1
             fi
         else
-            (( err++ ))
+            retval=1
         fi
     fi
 done
 
-[[ $err -gt 0 ]] && notify
+notify
 cleanup
 rm -f $lockfile
 {% endraw %}
