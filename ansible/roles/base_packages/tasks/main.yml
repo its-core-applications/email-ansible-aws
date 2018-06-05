@@ -12,6 +12,7 @@
         name:
           - amazon-ssm-agent
           - cronie-anacron
+          - cyrus-sasl-plain
           - postfix
           - update-motd
         state: absent
