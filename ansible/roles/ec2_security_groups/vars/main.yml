@@ -126,7 +126,7 @@ ec2_sg:
         cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
 
   redis:
-    vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
     description: redis hosts
     rules:
       - proto: tcp
