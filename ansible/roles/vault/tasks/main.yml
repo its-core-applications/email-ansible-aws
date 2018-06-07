@@ -1,6 +1,11 @@
 - tags:
     - vault
   block:
+    - import_role:
+        name: letsencrypt
+      vars:
+        certificate: vault.{{ subd }}
+
     - name: Install vault
       yum:
         name: vault
@@ -8,9 +13,9 @@
       notify: Restart vault
 
     - name: Configure vault server
-      copy:
+      template:
         dest: /etc/vault.hcl
-        src: vault.hcl
+        src: vault.hcl.j2
         owner: root
         group: root
         mode: "0644"

@@ -1,5 +1,3 @@
----
-
 - tags:
     - certificate
     - letsencrypt
@@ -31,10 +29,11 @@
       letsencrypt:
         account_email: letsencrypt@devnull.mail.umich.edu
         account_key: /etc/pki/collab/private/letsencrypt_account.key
-        acme_directory: https://acme-v01.api.letsencrypt.org/directory
+        acme_directory: https://acme-v02.api.letsencrypt.org/directory
+        acme_version: 2
         challenge: dns-01
         csr: /etc/pki/collab/{{ certificate }}.csr
-        dest: /etc/pki/collab/private/{{ certificate }}.crt
+        fullchain_dest: /etc/pki/collab/private/{{ certificate }}.crt
       register: acme_data
 
     - name: You challenge me, sirrah?
@@ -55,9 +54,9 @@
     - name: Get certificate
       letsencrypt:
         account_key: /etc/pki/collab/private/letsencrypt_account.key
-        acme_directory: https://acme-v01.api.letsencrypt.org/directory
+        acme_directory: https://acme-v02.api.letsencrypt.org/directory
+        acme_version: 2
         challenge: dns-01
         csr: /etc/pki/collab/{{ certificate }}.csr
-        dest: /etc/pki/collab/private/{{ certificate }}.crt
+        fullchain_dest: /etc/pki/collab/private/{{ certificate }}.crt
         data: "{{ acme_data }}"
-

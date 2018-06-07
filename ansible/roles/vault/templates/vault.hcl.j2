@@ -1,0 +1,9 @@
+backend "file" {
+    path = "/home/vault"
+}
+
+listener "tcp" {
+    address = "0.0.0.0:8200"
+    tls_cert_file = "/etc/pki/collab/private/vault.{{ subd }}.crt"
+    tls_key_file = "/etc/pki/collab/private/vault.{{ subd }}.key"
+}

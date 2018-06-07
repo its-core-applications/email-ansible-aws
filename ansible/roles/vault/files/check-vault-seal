@@ -1,6 +1,6 @@
 #!/bin/bash
 
-seal=$(curl -s http://127.0.0.1:8200/v1/sys/seal-status 2>&1)
+seal=$(curl -k -s https://127.0.0.1:8200/v1/sys/seal-status 2>&1)
 
 if [[ $? -ne 0 ]]; then
     echo "curl error:"

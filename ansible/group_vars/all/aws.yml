@@ -7,6 +7,10 @@ aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
 aws_region_group: "{{ groups['region_' ~ aws_region | replace('-', '_')] | default([]) }}"
 aws_status: "{{ lookup('env', 'AWS_STATUS') }}"
 aws_resource_prefix: blackops
+aws_primary_regions:
+  prod: us-west-2
+  nonprod: us-east-2
+aws_primary_region: "{{ aws_primary_regions[aws_status] }}"
 
 aws_profiles:
   prod:

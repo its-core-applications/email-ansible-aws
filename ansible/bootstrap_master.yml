@@ -14,6 +14,7 @@
 
         - import_role:
             name: vault
+          when: aws_region == aws_primary_region
 
         - name: Set status to production
           delegate_to: localhost

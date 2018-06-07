@@ -15,4 +15,3 @@ trendmicro_key: "{{ lookup('hashi_vault', 'secret=secret/simta/trendmicro:value'
 
 simta_alias_domains:
   - issues.hathitrust.org
-

@@ -13,6 +13,8 @@
         launch_ami_class: base
         launch_profile: master
         launch_subnet: "{{ ec2_subnets_public_sorted.0 }}"
+        launch_groups:
+          - vault
         launch_tags:
           CustomDNSName: "{{ master_hostname }}"
         launch_count: "{{ (master_hostname in hostvars) | ternary(0, 1) }}"
@@ -31,6 +33,8 @@
       loop:
         - dashboard
         - graphs
+        - vault
+      when: aws_region == aws_primary_region
 
     - name: Wait for instance to be available
       pause:

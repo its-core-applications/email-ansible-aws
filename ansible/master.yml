@@ -35,6 +35,7 @@
 
         - import_role:
             name: vault
+          when: aws_region == aws_primary_region
 
         - import_role:
             name: packer
@@ -65,7 +66,7 @@
 
         - import_role:
             name: google_report_logins
-          when: aws_region == 'us-west-2'
+          when: aws_region == aws_primary_region
 
         - import_role:
             name: box_bam
@@ -87,12 +88,15 @@
 
         - import_role:
             name: dashboard
+          when: aws_region == aws_primary_region
 
         - import_role:
             name: grafana
+          when: aws_region == aws_primary_region
 
         - import_role:
             name: clamav_master
+          when: aws_region == aws_primary_region
 
         - import_role:
             name: s3repo_build

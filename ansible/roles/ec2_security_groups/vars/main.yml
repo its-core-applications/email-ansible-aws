@@ -135,3 +135,10 @@ ec2_sg:
           - 16379
         cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
 
+  vault:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: vault hosts
+    rules:
+      - proto: tcp
+        ports: 8200
+        cidr_ip: 0.0.0.0/0
