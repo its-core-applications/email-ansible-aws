@@ -115,11 +115,11 @@
         - packer
       vars:
         build_name: packer
-        build_version: 1.2.2
+        build_version: 1.2.4
         build_bindir: /usr/sbin
-        archive_url: https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
-        archive_file: packer_1.2.2_linux_amd64.zip
-        archive_checksum: sha256:6575f8357a03ecad7997151234b1b9f09c7a5cf91c194b23a461ee279d68c6a8
+        archive_url: https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip
+        archive_file: packer_1.2.4_linux_amd64.zip
+        archive_checksum: sha256:258d1baa23498932baede9b40f2eca4ac363b86b32487b36f48f5102630e9fbb
 
     - import_role:
         name: build_rpm_git
@@ -139,10 +139,10 @@
         - vault
       vars:
         build_name: vault
-        build_version: 0.10.0
-        archive_url: https://releases.hashicorp.com/vault/0.10.0/vault_0.10.0_linux_amd64.zip
-        archive_file: vault_0.10.0_linux_amd64.zip
-        archive_checksum: sha256:a6b4b6db132f3bbe6fbb77f76228ffa45bd55a5a1ab83ff043c2c665c3f5a744
+        build_version: 0.10.2
+        archive_url: https://releases.hashicorp.com/vault/0.10.2/vault_0.10.2_linux_amd64.zip
+        archive_file: vault_0.10.2_linux_amd64.zip
+        archive_checksum: sha256:f725be68316d10ef2e7779fdedd8eb5d4ed9975303c828466bb9a729e01392dd
 
     - import_role:
         name: build_rpm_spec

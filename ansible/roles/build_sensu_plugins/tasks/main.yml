@@ -26,6 +26,14 @@
         group: sensu
         mode: "0755"
 
+    - name: Fix permissions on /opt/sensu
+      file:
+        name: /opt/sensu
+        state: directory
+        owner: sensu
+        group: sensu
+        mode: "0755"
+
     - name: Build plugins and their dependencies in tmpdir
       become_user: sensu
       environment: "{{ sensu_environment }}"
