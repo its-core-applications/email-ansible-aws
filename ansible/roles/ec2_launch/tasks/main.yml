@@ -89,7 +89,7 @@
       become: true
       when:
         - result is not skipped
-        - lookup('env', 'USER') == ansible_user
+        - lookup('env', 'USER') == 'ec2-user'
 
     - name: Wait for launched instances to be available
       delegate_to: "{{ item.tags.CustomDNSName }}"
