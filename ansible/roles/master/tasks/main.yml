@@ -42,7 +42,7 @@
           when: result is changed
 
         - name: Copy the skeleton over
-          command: cp -rv /home/* /var/tmp/home
+          shell: rsync -av /home/ /var/tmp/home/
 
         - name: Undo temporary mount
           mount:
