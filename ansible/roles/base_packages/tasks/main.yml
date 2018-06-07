@@ -50,6 +50,7 @@
           - sysstat
           - telnet
           - tmux
+          - vault
           - vim
           - wget
           - whois
