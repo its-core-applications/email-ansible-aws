@@ -6,8 +6,8 @@
   block:
     - name: Install uchiwa dashboard
       yum:
-        name: uchiwa
-        state: latest
+        name: uchiwa-1.2.0
+        state: present
       notify: Restart uchiwa
 
     - name: Install systemd unit
