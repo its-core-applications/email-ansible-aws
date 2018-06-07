@@ -4,7 +4,7 @@
     - route53
     - dns
   block:
-    - name: Set {{ dns_host }}.{{ aws_region }}.{{ subd }}
+    - name: Set {{ dns_regional | ternary([dns_host, aws_region, subd], [dns_host, subd]) | join('.') }}
       delegate_to: localhost
       become: false
       run_once: true
@@ -13,10 +13,10 @@
         command: create
         overwrite: true
         zone: "{{ subd }}"
-        record: "{{ dns_host }}.{{ aws_region }}.{{ subd }}"
+        record: "{{ dns_regional | ternary([dns_host, aws_region, subd], [dns_host, subd]) | join('.') }}"
         type: A
         ttl: 60
-        value: "{{ dns_inventory_hosts | map('extract', hostvars, 'private_ip_address') | list }}"
+        value: "{{ dns_inventory_hosts | map('extract', hostvars, dns_private_ip | ternary('private_ip_address', 'public_ip_address')) | list }}"
       when: dns_inventory_hosts | length > 0
       vars:
-        dns_inventory_hosts: "{{ groups[dns_group] | intersect(groups.Status_production) | intersect(aws_region_group) }}"
+        dns_inventory_hosts: "{{ groups[dns_group] | intersect(groups.Status_production) | intersect(dns_regional | ternary(aws_region_group, groups[dns_group])) }}"
