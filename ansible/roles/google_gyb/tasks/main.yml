@@ -20,7 +20,7 @@
         dest: /home/collaborate/GYB/{{ item }}
         state: touch
         owner: collaborate
-        group: nonpeople
+        group: collaborate
       loop:
         - noupdatecheck.txt
         - nobrowser.txt
