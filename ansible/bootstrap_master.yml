@@ -14,3 +14,13 @@
 
         - import_role:
             name: vault
+
+        - name: Set status to production
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: production
