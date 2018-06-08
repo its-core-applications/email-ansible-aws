@@ -8,6 +8,8 @@
     - name: Register sensu proxy clients
       uri:
         url: http://{{ sensu_server }}:4567/clients
+        user: sensu
+        password: "{{ lookup('hashi_vault', 'secret=secret/sensu/api:value') }}"
         method: POST
         body_format: json
         body: "{{ {'address': ''} | combine(item) }}"

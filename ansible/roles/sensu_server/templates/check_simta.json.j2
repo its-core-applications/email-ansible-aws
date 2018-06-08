@@ -25,7 +25,7 @@
       "handle": false
     },
     "simta-expansion-aggregate": {
-      "command": "check-aggregate.rb --age 180 --check simta-expansion --critical_count 1 --message 'simta expansion failed'",
+      "command": "check-aggregate.rb -u sensu -p {{ lookup('hashi_vault', 'secret=secret/sensu/api:value') }} --age 180 --check simta-expansion --critical_count 1 --message 'simta expansion failed'",
       "subscribers": [
         "roundrobin:Class_syslog"
       ],

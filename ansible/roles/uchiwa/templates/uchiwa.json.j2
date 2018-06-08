@@ -2,7 +2,9 @@
   "sensu": [
     {
       "host": "{{ sensu_server }}",
-      "name": "{{ aws_region }}"
+      "name": "{{ aws_region }}",
+      "user": "sensu",
+      "pass": "{{ lookup('hashi_vault', 'secret=secret/sensu/api:value') }}"
     }
   ],
   "uchiwa": {

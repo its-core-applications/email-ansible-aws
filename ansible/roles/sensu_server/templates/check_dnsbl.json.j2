@@ -24,7 +24,7 @@
       "handle": false
     },
     "dnsl-aggregate": {
-      "command": "check-aggregate.rb --age 900 --check dnsl --warning 100 --critical_count 1 --message 'malfunctioning DNS lists'",
+      "command": "check-aggregate.rb -u sensu -p {{ lookup('hashi_vault', 'secret=secret/sensu/api:value') }} --age 900 --check dnsl --warning 100 --critical_count 1 --message 'malfunctioning DNS lists'",
       "subscribers": [
         "roundrobin:Class_syslog"
       ],

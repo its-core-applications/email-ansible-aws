@@ -2,6 +2,8 @@
   "api": {
     "host": "localhost",
     "bind": "0.0.0.0",
-    "port": 4567
+    "port": 4567,
+    "user": "sensu",
+    "password": "{{ lookup('hashi_vault', 'secret=secret/sensu/api:value') }}"
   }
 }
