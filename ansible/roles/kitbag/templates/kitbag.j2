@@ -14,14 +14,12 @@ export TMPDIR=/var/tmp
 ts=$(date +%F)
 retval=0
 startts=$(date +%s)
-msg=$(
 for dir in ${directories[*]} ; do
     free=$(df -k --output=avail $tmpdir | tail -1)
     size=$(du -ks $dir | cut -f1)
     if [[ $size -gt $(( free / 2 )) ]]; then
-        echo "$dir is ${size}K, and I'm uncomfortable creating a tarball on a filesystem with only ${free}K free"
-        echo "Skipping backup of $dir"
-        echo
+        retval=1
+        printf -v msg '%s\nSkipping backup of %s (%sK is more than half of %sK)' "$msg" "$dir" "$size" "$free"
         continue
     fi
     tarball=$tmpdir/${dir//\//_}.tar.xz
@@ -33,16 +31,11 @@ for dir in ${directories[*]} ; do
         [[ $curlexit -eq 0 ]] && break
     done
     if [[ $curlexit -ne 0 ]]; then
-        echo "Failed to upload tarball for $dir"
-        echo
+        retval=1
+        printf -v msg '%s\nFailed to upload tarball for %s' "$msg" "$dir"
     fi
     rm -f $tarball 2>&1
 done
-)
-
-if [[ ! -z "$msg" ]] ; then
-    retval=2
-fi
 
 if [[ -z "$msg" ]] ; then
     msg="All backups were created and uploaded successfully"
