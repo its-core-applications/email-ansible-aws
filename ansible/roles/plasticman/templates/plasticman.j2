@@ -12,12 +12,26 @@ region=${2:-{{ aws_region | replace('-', '_') }}}
 min_count=6
 max_count=24
 
+startts=$(date +%s)
+retval=0
+
 sendmetric() {
     echo "plasticman.${region}.${class}.$1 $2 $(date +%s)" | ncat $carbon_server $carbon_port
 }
 
+sendresult() {
+    duration=$(( $(date +%s) - startts))
+    jq -n -r \
+    --arg source $(hostname) \
+    --arg status $retval \
+    --arg duration $duration \
+    --arg msg "$1" \
+    '{ name: "plasticman", source: $source, ttl: 300, ttl_status: 2, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030 
+}
+
 outlog() {
     logger -p user.info -t "$name[$$]" "$class: $1"
+    sendresult "$1"
 }
 
 getcount() {
@@ -57,6 +71,7 @@ rup=($(curl -s "http://${graphite_server}/render?target=${name}.${region}.${clas
 rscale=($(curl -s "http://${graphite_server}/render?target=${name}.${region}.${class}.scale.*.*&from=-60minutes&format=csv" | awk -F, 'BEGIN{ x=0 } { x += $3 } END{ print NR, x}'))
 
 if [[ ${rup[0]} -eq 0 && ${rscale[0]} -eq 0 ]]; then
+    retval=1
     outlog "no event data"
     # try to fake an event so this won't happen on future runs
     sendmetric scale.down.fake 1
@@ -92,5 +107,6 @@ elif [[ ${quint[1]} -gt 0 && $rup -eq 0 ]]; then
     else
         scaleup
     fi
+else
+    sendresult "no action necessary"
 fi
-
