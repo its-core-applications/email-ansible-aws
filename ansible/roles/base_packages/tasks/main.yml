@@ -50,10 +50,15 @@
           - sysstat
           - telnet
           - tmux
-          - vault
           - vim
           - wget
           - whois
           - zstd
         state: present
 
+    - name: Install less-basic QoL packages
+      yum:
+        name:
+          - vault
+        state: present
+      when: bootstrap == false
