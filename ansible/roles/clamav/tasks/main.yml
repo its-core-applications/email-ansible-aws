@@ -5,7 +5,6 @@
       yum:
         name:
           - clamav
-          - clamav-data-empty
           - clamav-server
         state: latest
 
