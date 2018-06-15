@@ -1,6 +1,6 @@
 #!/bin/bash
 
-spamout=$(rspamc --json --ip='127.0.0.1' --from='<gtube@example.com>' --helo='example.com' --hostname='example.com' <<EOF
+spamout=$(rspamc --json --timeout=20 --ip='127.0.0.1' --from='<gtube@example.com>' --helo='example.com' --hostname='example.com' <<EOF
 Subject: Test GTUBE
 Message-ID: <GTUBE.10110111@example.com>
 Date: Thu, 05 Apr 2018 20:00:00 +0000
