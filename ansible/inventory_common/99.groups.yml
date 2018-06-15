@@ -2,6 +2,7 @@
 all:
   children:
     Class_builder: {}
+    Class_dev: {}
     Class_dnsbl: {}
     Class_egress: {}
     Class_master: {}
