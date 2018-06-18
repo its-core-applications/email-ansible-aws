@@ -3,7 +3,8 @@
     "dnsbl": {
       "command": "check-dnsbl",
       "subscribers": [
-        "Class_egress"
+        "Class_egress",
+        "Class_relay_egress"
       ],
       "interval": 300,
       "timeout": 240
@@ -13,7 +14,8 @@
       "subscribers": [
         "Class_mx_test",
         "Class_mx",
-        "Class_egress"
+        "Class_egress",
+        "Class_relay_egress"
       ],
       "interval": 300,
       "timeout": 240,

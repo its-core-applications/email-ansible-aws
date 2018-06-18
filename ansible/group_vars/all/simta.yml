@@ -13,6 +13,7 @@ simta_dkim_selector: mx-2017-01-03
 simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
 simta_ldap_host: 'ldap-mail.itd.umich.edu'
 simta_redis_host: "pink.{{ aws_region }}.{{ subd }}"
+simta_queue_type: egress
 
 simta_ldap_domains:
   - alumni.engin

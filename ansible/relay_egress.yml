@@ -1,6 +1,6 @@
 ---
 
-- hosts: Class_egress
+- hosts: Class_relay_egress
   tasks:
     - when: region == aws_region
       block:

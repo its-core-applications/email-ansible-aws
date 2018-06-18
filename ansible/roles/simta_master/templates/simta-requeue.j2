@@ -1,18 +1,17 @@
 #!/bin/bash
 
 name=simta-requeue
-confdir={{ comint_base }}/dispatch
 workdir=/home/{{ ansible_user }}/simqtmp
 lockfile=$workdir/${name}
-log="logger -p cron.info -t ${name}[$$]"
 startts=$(date +%s)
 retval=0
 
-. /usr/libexec/comint/setup
+tmpdir=$(mktemp -d --tmpdir ${name}.XXXXXXXX)
+tmpfile=${tmpdir}/output
 
 {# bash array syntax conflicts with Jinja2 comments #}{% raw %}
 
-notify() {
+cleanup() {
     duration=$(( $(date +%s) - startts ))
     msg=$(cat $tmpfile)
     jq -n -r \
@@ -21,51 +20,61 @@ notify() {
         --arg duration $duration \
         --arg msg "$msg" \
         '{ name: "simta-requeue", source: $source, ttl: 900, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+    rm -rf $tmpdir
+    rm -f $lockfile
+    exit $retval
 }
 
 if [[ -f $lockfile ]]; then
     echo "Lockfile $lockfile already exists, exiting" >> $tmpfile
     retval=1
-    notify
     cleanup
-    exit 1
 fi
 touch $lockfile
 trap 'rm -f $lockfile ; exit 1' 1 2 3 15
 
-readarray -t qhosts < <(ansible --list-hosts 'Class_egress:&Status_production' 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
-[[ ${#qhosts[@]} -eq 0 ]] && echo "List of egress hosts is empty" >> $tmpfile
+readarray -t egress_hosts < <(ansible --list-hosts 'Class_egress:&Status_production' 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
+readarray -t regress_hosts < <(ansible --list-hosts 'Class_relay_egress:&Status_production' 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
 
-for qhost in ${qhosts[@]}; do
+for qhost in ${egress_hosts[@]} ${regress_hosts[@]}; do
     [[ -s ${workdir}/{$qhost}.tar ]] && echo "Stale ${workdir}/{$qhost}.tar" >> $tmpfile
 done
 
 if [[ -s $tmpfile ]]; then
     echo "Exiting due to errors" >> $tmpfile
     retval=1
-    notify
     cleanup
-    rm -f $lockfile
-    exit 1
 fi
 
-for queue in ${workdir}/inbound/* ; do
-    [[ -d $queue ]] || continue
-    [[ -e ${queue}.lock ]] && continue
-    find $queue -type f -name D\* >| ${tmpdir}/msglist
-    if [[ -s ${tmpdir}/msglist ]]; then
-        split -a1 -d -n l/${#qhosts[@]} ${tmpdir}/msglist ${tmpdir}/msglist-
-        for i in "${!qhosts[@]}"; do
-            mkdir -p ${workdir}/outbound/${qhosts[$i]}
-            sed -e 'p; s/D/E/;' "${tmpdir}/msglist-$i" | xargs -r -I msg mv msg "${workdir}/outbound/${qhosts[$i]}/"
-        done
+for curdir in egress relay-egress; do
+    if [[ $curdir = 'relay-egress' ]]; then
+        qhosts=${regress_hosts[@]}
+    else
+        qhosts=${egress_hosts[@]}
     fi
-    rmdir $queue
+    for queue in ${workdir}/inbound/${curdir}/* ; do
+        [[ -d $queue ]] || continue
+        [[ -e ${queue}.lock ]] && continue
+        find $queue -type f -name D\* >| ${tmpdir}/msglist
+        if [[ -s ${tmpdir}/msglist ]]; then
+            if [[ ${#qhosts[@]} -eq 0 ]]; then
+                echo "$curdir has messages to requeue but there are no target servers" >> $tmpfile
+                retval=1
+                cleanup
+            fi
+            split -a1 -d -n l/${#qhosts[@]} ${tmpdir}/msglist ${tmpdir}/msglist-
+            for i in "${!qhosts[@]}"; do
+                mkdir -p ${workdir}/outbound/${qhosts[$i]}
+                sed -e 'p; s/D/E/;' "${tmpdir}/msglist-$i" | xargs -r -I msg mv msg "${workdir}/outbound/${qhosts[$i]}/"
+            done
+        fi
+        rmdir $queue
+    done
 done
 
 find ${workdir}/outbound -empty -delete
 
-for qhost in ${qhosts[@]}; do
+for qhost in ${egress_hosts[@]} ${regress_hosts[@]}; do
     if [[ -d ${workdir}/outbound/${qhost} ]]; then
         tar -C ${workdir}/outbound/${qhost} --owner=simta --group=mail --mode=0644 -cf ${workdir}/outbound/${qhost}.tar . &>>$tmpfile
         if [[ $? -eq 0 ]]; then
@@ -82,7 +91,5 @@ for qhost in ${qhosts[@]}; do
     fi
 done
 
-notify
 cleanup
-rm -f $lockfile
 {% endraw %}

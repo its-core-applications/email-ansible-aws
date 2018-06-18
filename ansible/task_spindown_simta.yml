@@ -1,5 +1,3 @@
----
-
 - name: Stop simta
   systemd:
     name: simta
@@ -10,18 +8,15 @@
 
 - name: Lock and load
   vars:
-    simqtmp_base: /home/{{ lookup('env', 'USER') }}/simqtmp
-    simqtmp: "{{ simqtmp_base }}/inbound/{{ inventory_hostname }}-{{ ansible_facts.date_time.epoch | to_uuid }}"
+    simqtmp_base: /home/{{ lookup('env', 'USER') }}/simqtmp/inbound/{{ simta_queue_type }}
+    simqtmp: "{{ simqtmp_base }}/{{ inventory_hostname }}-{{ ansible_facts.date_time.epoch | to_uuid }}"
   block:
     - name: Create local queue storage directory
       delegate_to: localhost
       file:
-        dest: "{{ item }}"
+        dest: "{{ simqtmp_base }}"
         state: directory
         owner: "{{ ansible_user }}"
-      loop:
-        - "{{ simqtmp_base }}"
-        - "{{ simqtmp_base }}/inbound"
 
     - name: Touch lockfile
       delegate_to: localhost
@@ -41,4 +36,3 @@
       file:
         dest: "{{ simqtmp }}.lock"
         state: absent
-

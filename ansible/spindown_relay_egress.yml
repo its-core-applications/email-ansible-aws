@@ -1,0 +1,78 @@
+---
+
+- hosts: Class_relay_egress:&Status_production
+  serial: 1
+  gather_facts: false
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Set status on oldest host to spindown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spindown
+          when:
+            - launch_time == groups.Class_relay_egress | intersect(aws_region_group) | map('extract', hostvars, 'launch_time') | sort | first
+            - groups.Class_relay_egress | intersect(groups.Status_spindown) | length == 0
+          register: result
+
+        - meta: refresh_inventory
+          when: result is changed
+
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: route53_dns_from_inventory
+      vars:
+        dns_host: relay-egress
+
+- hosts: Class_relay_egress:&Status_spindown
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Stop sensu
+          systemd:
+            name: sensu-client
+            state: stopped
+          ignore_errors: true
+
+        - name: Wait for active connections to finish
+          wait_for:
+            host: 0.0.0.0
+            port: 25
+            state: drained
+
+        - import_tasks: task_spindown_redis.yml
+
+        - name: Give the queue a chance to quiesce
+          pause:
+            seconds: 60
+
+        - import_tasks: task_spindown_simta.yml
+
+        - name: Disassociate EIP
+          delegate_to: localhost
+          become: false
+          ec2_eip:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            device_id: "{{ instance_id }}"
+            public_ip: "{{ public_ip_address }}"
+            state: absent
+            release_on_disassociation: false
+
+        - name: Set status to spundown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spundown
+
