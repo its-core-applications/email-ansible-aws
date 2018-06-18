@@ -24,7 +24,8 @@
           - mx-deny
           - mx-trust
           - penaltybox-skip
-          - smtp-deny
+          - relay-accept
+          - relay-deny
           - spamassassin-reject
           - ual
           - ubl
