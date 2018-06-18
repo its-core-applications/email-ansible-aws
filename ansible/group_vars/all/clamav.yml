@@ -42,9 +42,6 @@ clamav_custom_sigs:
   - name: rfxn.hdb
     url: https://cdn.rfxn.com/downloads/rfxn.hdb
     process: rfxn
-  - name: rfxn.ndb
-    url: https://cdn.rfxn.com/downloads/rfxn.ndb
-    process: rfxn
   - name: iia-md5-hashes.hsb
     url: rsync://rbldnsd.{{ aws_region }}.{{ subd }}/rbldnsd/iia/iia-md5-hashes
     process: iia_hashes
