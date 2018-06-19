@@ -1,0 +1,22 @@
+From bd4d20c549d59efb11efd6166963fcd19dadb495 Mon Sep 17 00:00:00 2001
+From: Kane Dou <douqilong@gmail.com>
+Date: Sat, 31 Mar 2018 16:32:48 +0800
+Subject: [PATCH] fix EXPIRE cmd access
+
+---
+ src/command.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/command.h b/src/command.h
+index 069ebe0..6217085 100644
+--- a/src/command.h
++++ b/src/command.h
+@@ -15,7 +15,7 @@
+     HANDLER(DEL,               COMPLEX,  WRITE)   \
+     HANDLER(DUMP,              BASIC,    READ)    \
+     HANDLER(EXISTS,            COMPLEX,  READ)    \
+-    HANDLER(EXPIRE,            BASIC,    READ)    \
++    HANDLER(EXPIRE,            BASIC,    WRITE)   \
+     HANDLER(EXPIREAT,          BASIC,    WRITE)   \
+     HANDLER(KEYS,              UNIMPL,   UNKNOWN) \
+     HANDLER(MIGRATE,           UNIMPL,   UNKNOWN) \

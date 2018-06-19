@@ -72,10 +72,19 @@
         - redis
         - rspamd
         - simta
+        - corvus
       vars:
         build_name: jemalloc
         build_deps:
           - libxslt
+
+    - import_role:
+        name: build_rpm_spec
+      tags:
+        - corvus
+      vars:
+        build_name: corvus
+        build_deps: jemalloc-devel
 
     - import_role:
         name: build_rpm_git

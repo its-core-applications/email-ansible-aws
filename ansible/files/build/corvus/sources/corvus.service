@@ -1,0 +1,10 @@
+[Unit]
+Description=Redis cluster proxy
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/corvus /etc/corvus.conf
+LimitNOFILE=10240
+
+[Install]
+WantedBy=multi-user.target
