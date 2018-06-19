@@ -79,14 +79,15 @@ fi
 
 # Otherwise generate one automatically
 class=$(echo $tags | jq -r '.Tags[] | select(.Key == "Class") | .Value')
-base={{ subd }}
+if [[ -z $class ]]; then
+    echo "Failed to fetch class, not setting hostname"
+    exit 1
+fi
+base=${class}.{{ subd }}
 prefixes=/usr/share/hostname-prefixes
 suffixes=/usr/share/hostname-suffixes
-if [[ $class ]]; then
-    base=${class}.$base
-    [[ -s ${prefixes}-$class ]] && prefixes=${prefixes}-$class
-    [[ -s ${suffixes}-$class ]] && suffixes=${suffixes}-$class
-fi
+[[ -s ${prefixes}-$class ]] && prefixes=${prefixes}-$class
+[[ -s ${suffixes}-$class ]] && suffixes=${suffixes}-$class
 
 try=0
 while [[ -z $name ]]; do
