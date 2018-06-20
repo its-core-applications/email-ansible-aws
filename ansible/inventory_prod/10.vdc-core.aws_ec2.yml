@@ -3,7 +3,7 @@ boto_profile: vdc-core
 filters:
   instance-state-name:
     - running
-  "tag:BusinessOwner": its application delivery
+  'tag:BusinessOwner': its iso cs cs
 regions:
   - us-east-2
 hostnames:

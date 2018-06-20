@@ -6,7 +6,8 @@ subd: "{{ [( aws_status == 'prod' ) | ternary('a', 'x'), 'mail', tld ] | join('.
 aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
 aws_region_group: "{{ groups['region_' ~ aws_region | replace('-', '_')] | default([]) }}"
 aws_status: "{{ lookup('env', 'AWS_STATUS') }}"
-aws_resource_prefix: blackops
+aws_resource_prefix: umcollab
+aws_resource_owner: its iso cs cs
 aws_primary_regions:
   prod: us-west-2
   nonprod: us-east-2
