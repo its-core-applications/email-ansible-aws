@@ -10,7 +10,7 @@ for bl in \
     penaltybox-skip.dnsal \
     umnetworks.dnsal \
     mx-deny.dnsbl \
-    relay-accept.dnsbl \
+    relay-accept.dnsal \
     relay-deny.dnsbl
 do
     if simrbl -q -l $bl 127.0.0.2 ; then
@@ -38,7 +38,7 @@ for bl in \
     penaltybox-skip.dnsal \
     umnetworks.dnsal \
     mx-deny.dnsbl \
-    relay-accept.dnsbl \
+    relay-accept.dnsal \
     relay-deny.dnsbl
 do
 {# bash array syntax conflicts with Jinja2 comments #}{% raw %}
