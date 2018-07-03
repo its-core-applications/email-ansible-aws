@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/usr/bin/python /home/collaborate/GYB/gyb.py --service-account 716408719246@developer.gserviceaccount.com "$@"
+/usr/bin/python3 /home/collaborate/GYB/gyb.py --service-account "$@"

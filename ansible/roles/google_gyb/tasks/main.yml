@@ -3,15 +3,20 @@
 - tags:
     - google
   block:
+    - name: Remove Python 3.4 since it conflicts with 3.7
+      yum:
+        name: python34
+        state: absent
+
     - name: Install extra dependencies
       yum:
-        name: pyOpenSSL
+        name: python3
         state: latest
 
     - name: Install GYB
       become_user: collaborate
       git:
-        repo: https://bitbucket.org/its-application-delivery/got-your-back/
+        repo: https://github.com/jay0lee/got-your-back.git
         dest: ~/GYB
         force: true
 
