@@ -59,7 +59,7 @@
         name: "{{ aws_resource_prefix }}_{{ aws_account }}_{{ subd }}"
         description: Cross-account access to Route53 for {{ aws_profile }}
         assume_role_policy_document:
-          Version : "2012-10-17"
+          Version: "2012-10-17"
           Statement:
             - Action: sts:AssumeRole
               Effect: Allow
@@ -91,7 +91,7 @@
         name: builder
         state: present
         assume_role_policy_document:
-          Version : "2012-10-17"
+          Version: "2012-10-17"
           Statement:
             - Effect: Allow
               Action: sts:AssumeRole
@@ -110,7 +110,7 @@
         name: master
         state: present
         assume_role_policy_document:
-          Version : "2012-10-17"
+          Version: "2012-10-17"
           Statement:
             - Effect: Allow
               Action: sts:AssumeRole
@@ -131,7 +131,7 @@
         name: standard
         state: present
         assume_role_policy_document:
-          Version : "2012-10-17"
+          Version: "2012-10-17"
           Statement:
             - Effect: Allow
               Action: sts:AssumeRole
