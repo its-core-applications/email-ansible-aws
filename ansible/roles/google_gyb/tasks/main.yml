@@ -1,5 +1,3 @@
----
-
 - tags:
     - google
   block:
@@ -30,14 +28,6 @@
         - noupdatecheck.txt
         - nobrowser.txt
 
-    - name: Install gyb wrapper
-      copy:
-        dest: /usr/bin/gyb
-        src: gyb.sh
-        owner: root
-        group: root
-        mode: "0755"
-
     - name: Set up gyb alias
       copy:
         dest: /etc/profile.d/99_gyb.sh
@@ -45,4 +35,3 @@
         owner: root
         group: root
         mode: "0644"
-
