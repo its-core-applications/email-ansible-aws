@@ -79,8 +79,8 @@
       copy:
         dest: /etc/{{ item }}
         src: "{{ lookup('first_found', item ~ '-' ~ simta_config, item) }}"
-        owner: collaborate
-        group: collaboration
+        owner: root
+        group: root
         mode: "0664"
       loop:
         - hosts.allow
