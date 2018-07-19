@@ -88,7 +88,7 @@
       iam_role:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        name: builder
+        name: "{{ aws_resource_prefix }}_builder"
         state: present
         assume_role_policy_document:
           Version: "2012-10-17"
@@ -107,7 +107,7 @@
       iam_role:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        name: master
+        name: "{{ aws_resource_prefix }}_master"
         state: present
         assume_role_policy_document:
           Version: "2012-10-17"
@@ -128,7 +128,7 @@
       iam_role:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        name: standard
+        name: "{{ aws_resource_prefix }}_standard"
         state: present
         assume_role_policy_document:
           Version: "2012-10-17"

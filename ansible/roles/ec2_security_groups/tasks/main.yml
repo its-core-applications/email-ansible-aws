@@ -11,7 +11,7 @@
       ec2_group:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        name: "{{ item }}"
+        name: "{{ aws_resource_prefix }} {{ item }}"
         vpc_id: "{{ ec2_sg[item].vpc_id }}"
         description: "{{ ec2_sg[item].description }}"
         rules: "{{ ec2_sg[item].rules }}"

@@ -38,13 +38,13 @@
       ec2:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        group: "{{ launch_groups_default | union(launch_groups) }}"
+        group: "{{ launch_groups_default | union(launch_groups) | map('regex_replace', '^', aws_resource_prefix ~ ' ') | list }}"
         key_name: "{{ aws_ssh_key[aws_status][aws_region] }}"
         instance_type: "{{ aws_instance_types[aws_status][launch_class] | default(aws_instance_types[aws_status]['default']) }}"
         vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[item % (ec2_subnets | length)])).id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"
-        instance_profile_name: "{{ launch_profile | default('standard') }}"
+        instance_profile_name: "{{ aws_resource_prefix }}_{{ launch_profile | default('standard') }}"
         instance_tags: "{{ launch_tags_default | combine(launch_tags) }}"
         count: 1
       vars:
@@ -53,6 +53,7 @@
         launch_tags_default:
           Class: "{{ launch_class }}"
           Status: spinup
+          BusinessOwner: "{{ aws_resource_owner }}"
       loop: "{{ range(launch_count | default(launch_count_default) | int) | list }}"
       ignore_errors: true
       register: ec2
