@@ -36,6 +36,19 @@
         - vault
       when: aws_region == aws_primary_region
 
+    - name: Set CNAMEs for regional vhosts
+      route53:
+        profile: "{{ aws_profile_subd }}"
+        command: create
+        overwrite: true
+        zone: "{{ subd }}"
+        record: "{{ item }}.{{ aws_region }}.{{ subd }}"
+        type: CNAME
+        ttl: 60
+        value: "{{ master_hostname }}"
+      loop:
+        - ara
+
     - name: Wait for instance to be available
       pause:
         seconds: 120

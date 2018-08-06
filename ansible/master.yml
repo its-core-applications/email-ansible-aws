@@ -99,4 +99,7 @@
           when: aws_region == aws_primary_region
 
         - import_role:
+            name: ara
+
+        - import_role:
             name: s3repo_build

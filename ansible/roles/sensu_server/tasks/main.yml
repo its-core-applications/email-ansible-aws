@@ -26,6 +26,7 @@
       loop:
         - check-box-status
         - check-google-status
+        - handler-slack
         - handler-sns
 
     - name: Install extra dependencies

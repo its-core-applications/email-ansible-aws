@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+import argparse
+import json
+import socket
+import sys
+
+import requests
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--datacenter', help='datacenter that this alert is from')
+parser.add_argument('-w', '--webhook_url', help='Slack webhook URL', required=True)
+args = parser.parse_args()
+
+dc = args.datacenter or 'prod/us-west-2'
+
+event = json.load(sys.stdin)
+
+color = 'warning'
+if event['check']['status'] == 0:
+    status = 'OK'
+    color = 'good'
+elif event['check']['status'] == 1:
+    status = 'WARNING'
+elif event['check']['status'] == 2:
+    status = 'CRITICAL'
+    color = 'danger'
+else:
+    status = 'UNKNOWN'
+
+subject = '*{} | {}/{} {}*'.format(dc, event['client']['name'], event['check']['name'], status)
+msg = {
+    'parse': 'none',
+    'username': 'sensu@{}'.format(socket.gethostname()),
+    'icon_url': 'https://cdn-images-1.medium.com/1*qC5lFfMvQd_zci2MBXZZpg.png',
+    'attachments': [
+        {
+            'fallback': subject,
+            'text': '{}\n{}'.format(subject, event['check']['output']),
+            'color': color,
+            'mrkdwn_in': ['text', 'fallback', 'fields'],
+        }
+    ],
+}
+
+response = requests.post(args.webhook_url, json = msg)

@@ -15,9 +15,20 @@ export AWS_DEFAULT_REGION=us-west-2
 
 export VAULT_ADDR="https://vault.a.mail.umich.edu:8200"
 
+if which ara &>/dev/null; then
+    eval $(python -m ara.setup.env)
+    if [[ -d /home/ara ]]; then
+        export ARA_DIR=/home/ara
+    fi
+    export ARA_BASE_URL="https://ara.${AWS_DEFAULT_REGION}.a.mail.umich.edu"
+fi
+
 if [[ -s $hacking_dir/localenv ]]; then
     . $hacking_dir/localenv
 fi
+
+export SLACK_WEBHOOK_URL=$(vault read -field=value secret/slack)
+export SLACK_USERNAME=ansible@$(hostname)
 
 export ANSIBLE_INVENTORY=$hacking_dir/ansible/inventory_${AWS_STATUS}
 
