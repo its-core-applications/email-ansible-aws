@@ -20,28 +20,30 @@
         group: root
         mode: "0755"
 
-    - name: Create main SPF records
-      route53:
-        profile: "{{ aws_profile_spfd }}"
-        command: create
-        overwrite: true
-        zone: "{{ spfd }}"
-        record: "{{ item.name }}.{{ spfd }}"
-        type: TXT
-        ttl: 600
-        value: "{{ lookup('pipe', '/usr/local/sbin/spf-flatten --strict -t -r ' ~ (item.record | quote )) }}"
-      loop: "{{ spf_main }}"
+    - become: false
+      block:
+        - name: Create main SPF records
+          route53:
+            profile: "{{ aws_profile_spfd }}"
+            command: create
+            overwrite: true
+            zone: "{{ spfd }}"
+            record: "{{ item.name }}.{{ spfd }}"
+            type: TXT
+            ttl: 600
+            value: "{{ lookup('pipe', '/usr/local/sbin/spf-flatten --strict -t -r ' ~ (item.record | quote )) }}"
+          loop: "{{ spf_main }}"
 
-    - name: Create third-party SPF records
-      route53:
-        profile: "{{ aws_profile_spfd }}"
-        command: create
-        overwrite: true
-        zone: "{{ spfd }}"
-        record: "{{ item.1 }}._ext.{{ spfd }}"
-        type: TXT
-        ttl: 600
-        value: "{{ lookup('pipe', '/usr/local/sbin/spf-flatten -t ' ~ ((item.1 == '*') | ternary('-r ', '-u -r ')) ~ (item.0.record | quote)) }}"
-      loop: "{{ query('subelements', spf_thirdparty, 'names') }}"
-      loop_control:
-        label: "{{ item.1 }}"
+        - name: Create third-party SPF records
+          route53:
+            profile: "{{ aws_profile_spfd }}"
+            command: create
+            overwrite: true
+            zone: "{{ spfd }}"
+            record: "{{ item.1 }}._ext.{{ spfd }}"
+            type: TXT
+            ttl: 600
+            value: "{{ lookup('pipe', '/usr/local/sbin/spf-flatten -t ' ~ ((item.1 == '*') | ternary('-r ', '-u -r ')) ~ (item.0.record | quote)) }}"
+          loop: "{{ query('subelements', spf_thirdparty, 'names') }}"
+          loop_control:
+            label: "{{ item.1 }}"
