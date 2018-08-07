@@ -26,7 +26,7 @@
       when: result is changed
 
     - name: Get ACME challenge
-      letsencrypt:
+      acme_certificate:
         account_email: letsencrypt@devnull.mail.umich.edu
         account_key: /etc/pki/collab/private/letsencrypt_account.key
         acme_directory: https://acme-v02.api.letsencrypt.org/directory
@@ -52,7 +52,7 @@
       when: acme_data is changed
 
     - name: Get certificate
-      letsencrypt:
+      acme_certificate:
         account_key: /etc/pki/collab/private/letsencrypt_account.key
         acme_directory: https://acme-v02.api.letsencrypt.org/directory
         acme_version: 2
