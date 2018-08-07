@@ -61,6 +61,7 @@
       loop: "{{ clamav_custom_sigs | selectattr('url', 'match', '^rsync') | list }}"
       register: result
       until: result.rc == 0
+      changed_when: false
 
     - name: HTTP custom signatures
       get_url:
@@ -72,6 +73,7 @@
     - name: Post-process signatures
       shell: /usr/local/sbin/clamav_{{ item.process }} {{ clamav_sigdir }}/{{ item.name }}.raw | sort -u >| {{ clamav_sigdir }}/{{ item.name }}
       loop: "{{ clamav_custom_sigs | selectattr('process', 'defined') | list }}"
+      changed_when: false
 
     - name: Upload signature files to S3
       aws_s3_sync:
@@ -95,6 +97,7 @@
           ttl: 2700
           status: 0
           output: "{{ result is changed | ternary('signatures updated', 'signatures unchanged') }}"
+      changed_when: false
 
     - name: Schedule signature updates
       cron:
