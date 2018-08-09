@@ -4,7 +4,7 @@
 %define rspamd_confdir   %{_sysconfdir}/rspamd
 
 Name:           rspamd
-Version:        1.7.5
+Version:        1.7.9
 Release:        1
 Summary:        Rapid spam filtering system
 License:        BSD2c
@@ -56,7 +56,8 @@ cmake \
     -DRSPAMD_GROUP=%{rspamd_group} \
     -DRSPAMD_USER=%{rspamd_user} \
     -DENABLE_FANN=ON \
-    -DENABLE_HYPERSCAN=ON
+    -DENABLE_HYPERSCAN=ON \
+    -DSTATIC_HYPERSCAN=ON
 
 make %{?_smp_mflags}
 
