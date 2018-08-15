@@ -35,3 +35,10 @@
         group: root
         mode: "0644"
 
+    - name: Schedule daily runs of google-archive-data
+      copy:
+        dest: /etc/cron.daily/google-archive-data
+        src: google-archive-data
+        owner: root
+        group: root
+        mode: "0755"
