@@ -1,0 +1,6 @@
+- hosts: Class_vdc_relay
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: vdc_relay

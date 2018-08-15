@@ -1,0 +1,56 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: ec2_launch
+      vars:
+        vdc_core: true
+        aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
+        launch_class: vdc-relay
+        launch_tags:
+          Status: production
+        launch_groups:
+          - vdc-relay
+
+    - import_role:
+        name: ec2_targetgroup
+      vars:
+        aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
+        tg_name: vdc-relay
+        tg_group: Class_vdc_relay
+
+    - name: Create vdc-relay loadbalancer
+      elb_network_lb:
+        name: "{{ aws_resource_prefix }}-lb-vdc-relay"
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
+        tags:
+          BusinessOwner: "{{ aws_resource_owner }}"
+        state: present
+        scheme: internal
+        cross_zone_load_balancing: true
+        subnets: "{{ ec2_subnets_public | map(attribute='id') | list }}"
+        listeners:
+          - Protocol: TCP
+            Port: 25
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "{{ aws_resource_prefix }}-target-vdc-relay"
+          - Protocol: TCP
+            Port: 587
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "{{ aws_resource_prefix }}-target-vdc-relay"
+      register: result
+
+    - name: Set pretty DNS name for vdc-relay loadbalancer
+      route53:
+        profile: "{{ aws_profile_subd }}"
+        command: create
+        overwrite: true
+        zone: "{{ subd }}"
+        record: vdc-relay.{{ aws_region }}.{{ subd }}
+        type: A
+        alias: true
+        alias_hosted_zone_id: "{{ result.canonical_hosted_zone_id }}"
+        value: "{{ result.dns_name }}"

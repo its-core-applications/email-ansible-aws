@@ -116,7 +116,7 @@ CONTENT_FILTER      /usr/sbin/simta-mscan
 {% if simta_egress == false %}
 DELIVER_TLS             REQUIRED
 RECEIVE_QUEUE_STRATEGY  PUNT
-PUNT                    egress.{{ aws_region }}.{{ subd }}
+PUNT                    {% if simta_relay %}relay-{% endif %}egress.{{ aws_region }}.{{ subd }}
 
 SUBADDRESS_SEPARATOR    +
 {% endif %}

@@ -1,5 +1,3 @@
----
-
 - delegate_to: localhost
   become: false
   when: ec2_subnets_public is not defined
@@ -31,9 +29,16 @@
         profile: "{{ aws_profile }}"
       register: ec2_subnet_facts
 
+    - name: Gather VDC core VPC subnet facts
+      ec2_vpc_subnet_facts:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
+      register: ec2_subnet_facts_vdc
+
     - name: Shuffle and sort subnets
       set_fact:
         ec2_subnets_public: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | shuffle(seed=ansible_facts.date_time.epoch) }}"
         ec2_subnets_public_sorted: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }}"
         ec2_subnets_vpn: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'vpn') | shuffle(seed=ansible_facts.date_time.epoch) }}"
         ec2_subnets_vpn_sorted: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'vpn') | sort(attribute='availability_zone') }}"
+        ec2_subnets_vdc_core: "{{ ec2_subnet_facts_vdc.subnets | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }}"

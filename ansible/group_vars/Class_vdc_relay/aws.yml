@@ -1,0 +1,2 @@
+aws_profile_ec2: "{{ aws_profiles[aws_status]['vdc-core'] }}"
+vdc_core: true

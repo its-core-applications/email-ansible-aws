@@ -8,6 +8,7 @@ all:
     Class_master: {}
     Class_mx: {}
     Class_mx_test: {}
+    Class_vdc_relay: {}
     Class_relay_egress: {}
     Class_syslog: {}
     Status_development: {}

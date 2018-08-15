@@ -11,10 +11,12 @@
 
     - name: Create {{ tg_name }} targetgroup
       elb_target_group:
-        name: target-{{ tg_name }}
+        name: "{{ aws_resource_prefix }}-target-{{ tg_name }}"
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+        tags:
+          BusinessOwner: "{{ aws_resource_owner }}"
         state: present
         port: 25
         protocol: tcp

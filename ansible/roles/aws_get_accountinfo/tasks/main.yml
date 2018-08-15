@@ -3,21 +3,22 @@
     - iam
   delegate_to: localhost
   become: false
-  when: aws_account is not defined
   block:
-    - name: Get account info for each profile
-      aws_caller_facts:
-        profile: "{{ aws_profiles[aws_status][item] }}"
-      loop: "{{ (aws_account is defined) | ternary([], aws_profiles[aws_status] | list) }}"
-      register: result
+    - when: aws_account is not defined
+      block:
+        - name: Get account info for each profile
+          aws_caller_facts:
+            profile: "{{ aws_profiles[aws_status][item] }}"
+          loop: "{{ (aws_account is defined) | ternary([], aws_profiles[aws_status] | list) }}"
+          register: result
 
-    - name: Set account facts
-      set_fact:
-        "aws_account_{{ item.item | replace('-', '_') }}": "{{ item.account }}"
-      loop: "{{ result.results }}"
-      loop_control:
-        label: "{{ item.item }}"
+        - name: Set account facts
+          set_fact:
+            "aws_account_{{ item.item | replace('-', '_') }}": "{{ item.account }}"
+          loop: "{{ result.results }}"
+          loop_control:
+            label: "{{ item.item }}"
 
     - name: Set main account
       set_fact:
-        aws_account: "{{ hostvars[inventory_hostname]['aws_account_' ~ aws_region | replace('-', '_')] }}"
+        aws_account: "{{ hostvars[inventory_hostname]['aws_account_' ~ (vdc_core | bool | ternary('vdc_core', aws_region | replace('-', '_')))] }}"

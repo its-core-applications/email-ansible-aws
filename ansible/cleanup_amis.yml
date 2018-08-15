@@ -18,3 +18,8 @@
       loop_control:
         loop_var: image_type
 
+    - import_tasks: task_cleanup_amis.yml
+      vars:
+        aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
+        image_type: vdc_relay
+        image_retain: 2

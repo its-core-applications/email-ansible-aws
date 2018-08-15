@@ -1,5 +1,3 @@
----
-
 ec2_sg:
   public-default:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
@@ -65,7 +63,7 @@ ec2_sg:
     rules:
       - proto: tcp
         ports: 25
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
 
   relay:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
@@ -76,12 +74,16 @@ ec2_sg:
           - 25
           - 587
         cidr_ip: 0.0.0.0/0
-      - proto: icmp
-        ports: -1
-        cidr_ip: 0.0.0.0/0
-    rules_egress:
-      - proto: all
-        cidr_ip: 0.0.0.0/0
+
+  vdc-relay:
+    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    description: vdc relay hosts
+    rules:
+      - proto: tcp
+        ports:
+          - 25
+          - 587
+        cidr_ip: 10.0.0.0/8
 
   smtp:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
@@ -92,12 +94,6 @@ ec2_sg:
           - 25
           - 465
           - 587
-        cidr_ip: 0.0.0.0/0
-      - proto: icmp
-        ports: -1
-        cidr_ip: 0.0.0.0/0
-    rules_egress:
-      - proto: all
         cidr_ip: 0.0.0.0/0
 
   rsyslog:
@@ -112,7 +108,7 @@ ec2_sg:
           - 4567 # sensu API
           - 5672 # RabbitMQ for sensu pub/sub
           - 8888 # graphite-api
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
 
   rbldnsd:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
@@ -120,10 +116,10 @@ ec2_sg:
     rules:
       - proto: udp
         ports: 53
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
       - proto: tcp
         ports: 873
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
 
   redis:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
@@ -133,7 +129,7 @@ ec2_sg:
         ports:
           - 6379
           - 16379
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
 
   vault:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"

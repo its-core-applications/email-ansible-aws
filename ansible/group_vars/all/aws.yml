@@ -21,12 +21,14 @@ aws_profiles:
     subd: umcollab
     us-east-2: vdc-prod
     us-west-2: umcollab
+    vdc-core: vdc-core
   nonprod:
     s3: vdc-nonprod
     sns: vdc-nonprod
     spfd: vdc-nonprod
     subd: vdc-nonprod
     us-east-2: vdc-nonprod
+    vdc-core: vdc-core-nonprod
 
 aws_profile: "{{ aws_profiles[aws_status][aws_region] }}"
 aws_profile_ec2: "{{ aws_profiles[aws_status][region] }}"
@@ -34,6 +36,8 @@ aws_profile_s3: "{{ aws_profiles[aws_status].s3 }}"
 aws_profile_subd: "{{ aws_profiles[aws_status].subd }}"
 aws_profile_spfd: "{{ aws_profiles[aws_status].spfd }}"
 aws_profile_sns: "{{ aws_profiles[aws_status].sns }}"
+
+vdc_core: false
 
 sns_region: us-west-2
 yum_aws_region: us-west-2
@@ -45,6 +49,7 @@ aws_instance_types:
     egress: m5.2xlarge
     mx-test: t2.small
     smtp-test: t2.small
+    vdc-relay: t2.small
   nonprod:
     default: t2.small
     master: m5.large
@@ -56,6 +61,7 @@ aws_instance_counts:
     relay-egress: 3
     dnsbl: 2
     mx: 6
+    vdc-relay: 2
   nonprod:
     egress: 2
     mx: 3

@@ -1,0 +1,63 @@
+- hosts: Class_vdc_relay:&Status_production
+  serial: 1
+  gather_facts: false
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Set status on oldest host to spindown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spindown
+          when:
+            - launch_time == groups.Class_vdc_relay | intersect(aws_region_group) | map('extract', hostvars, 'launch_time') | sort | first
+            - groups.Class_vdc_relay | intersect(groups.Status_spindown) | length == 0
+          register: result
+
+        - meta: refresh_inventory
+
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: ec2_targetgroup
+      vars:
+        aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
+        tg_name: vdc-relay
+        tg_group: Class_vdc_relay
+
+- hosts: Class_vdc_relay:&Status_spindown
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Stop sensu
+          systemd:
+            name: sensu-client
+            state: stopped
+          ignore_errors: true
+
+        - name: Wait for active connections to finish
+          wait_for:
+            host: 0.0.0.0
+            port: 25
+            state: drained
+
+        - name: Give the queue a chance to quiesce
+          pause:
+            seconds: 60
+
+        - import_tasks: task_spindown_simta.yml
+
+        - name: Set status to spundown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spundown

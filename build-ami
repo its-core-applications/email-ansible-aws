@@ -14,7 +14,11 @@ if [[ ! -f ansible/${class}.yml ]]; then
     exit 1
 fi
 
-export AWS_PROFILE=$(ansible --playbook-dir ansible localhost -m debug -a 'var=aws_profile' | awk '/aws_profile/{print $NF}' | tr -d '"')
+if [[ $class = 'vdc_relay' ]]; then
+    export AWS_PROFILE=$(ansible --playbook-dir ansible localhost -m debug -a 'var=aws_profiles[aws_status]["vdc-core"]' | awk '/aws_profile/{print $NF}' | tr -d '"')
+else
+    export AWS_PROFILE=$(ansible localhost --playbook-dir ansible -m debug -a 'var=aws_profile' | awk '/aws_profile/{print $NF}' | tr -d '"')
+fi
 
 if [[ $2 ]]; then
     os=$2
@@ -42,7 +46,7 @@ case $os in
     ;;
 esac
 
-if [[ $class = 'base' ]]; then
+if [[ $class = 'base' ]] || [[ $class = 'vdc_relay' ]]; then
     base=$(aws ec2 describe-images --filters "Name=owner-id,Values=$owner" 'Name=state,Values=available' "$filter")
 else
     base=$(aws ec2 describe-images --owners self --filters 'Name=state,Values=available' 'Name=tag:image_type,Values=base' "Name=tag:os,Values=$os")
@@ -57,7 +61,7 @@ with open(sys.argv[1]) as f:
 ' packer/template.yml >| packer/template.json
 
 # Quick and dirty elision of unnecessary encryption step
-if [[ $class != 'base' ]]; then
+if [[ $class != 'base' ]] && [[ $class != 'vdc_relay' ]]; then
     jq 'del(.builders[0].encrypt_boot)' <packer/template.json >packer/munged
     mv -f packer/munged packer/template.json
 fi
