@@ -26,10 +26,9 @@
 Summary:	End-user tools for the Clam Antivirus scanner
 Name:		clamav
 Version:	0.100.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:          0
 License:	proprietary
-Group:		Applications/File
 URL:		http://www.clamav.net
 Source0:	http://www.clamav.net/downloads/production/%name-%version%{?prerelease}.tar.gz
 Source999:	http://www.clamav.net/downloads/production/%name-%version%{?prerelease}.tar.gz.sig
@@ -42,7 +41,6 @@ BuildRequires:	%_includedir/tcpd.h
 
 %package filesystem
 Summary:	Filesystem structure for clamav
-Group:		Applications/File
 Provides:	user(%username)  = 4
 Provides:	group(%username) = 4
 # Prevent version mix
@@ -53,18 +51,14 @@ Requires(pre):  shadow-utils
 
 %package lib
 Summary:	Dynamic libraries for the Clam Antivirus scanner
-Group:		System Environment/Libraries
 
 %package devel
 Summary:	Header files and libraries for the Clam Antivirus scanner
-Group:		Development/Libraries
-Source100:	clamd-gen
 Requires:	clamav-lib        = %epoch:%version-%release
 Requires:	clamav-filesystem = %epoch:%version-%release
 
 %package update
 Summary:	Auto-updater for the Clam Antivirus scanner data-files
-Group:		Applications/File
 Source201:	freshclam.sysconfig
 Source203:	clamav-update.logrotate
 Requires:	clamav-filesystem = %epoch:%version-%release
@@ -74,28 +68,18 @@ Requires(postun):	/etc/cron.d
 Requires(post):		%__chown %__chmod
 Requires(post):		group(%username)
 
-%package server
-Summary:	Clam Antivirus scanner server
-Group:		System Environment/Daemons
+%package -n clamd
+Summary:	Clam Antivirus Daemon
 Source2:	clamd.sysconfig
 Source3:	clamd.logrotate
 Source8:	clamav-notify-servers
 Requires:	clamav-filesystem = %epoch:%version-%release
 Requires:	clamav-lib        = %epoch:%version-%release
 Requires:	nc coreutils
-Source520:      clamd-wrapper
 %{?systemd_reqs}
 
 %description
-Clam AntiVirus is an anti-virus toolkit for UNIX. The main purpose of this
-software is the integration with mail servers (attachment scanning). The
-package provides a flexible and scalable multi-threaded daemon, a command
-line scanner, and a tool for automatic updating via Internet. The programs
-are based on a shared library distributed with the Clam AntiVirus package,
-which you can use with your own software. The virus database is based on
-the virus database from OpenAntiVirus, but contains additional signatures
-(including signatures for popular polymorphic viruses, too) and is KEPT UP
-TO DATE.
+Clam AntiVirus is an anti-virus toolkit for UNIX.
 
 %description filesystem
 This package provides the filesystem structure and contains the
@@ -103,26 +87,19 @@ user-creation scripts required by clamav.
 
 %description lib
 This package contains dynamic libraries shared between applications
-using the Clam Antivirus scanner.
+using the ClamAV scanner.
 
 %description devel
 This package contains headerfiles and libraries which are needed to
-build applications using clamav.
+build applications using ClamAV.
 
 %description update
-This package contains programs which can be used to update the clamav
+This package contains programs which can be used to update the ClamAV
 anti-virus database automatically. It uses the freshclam(1) utility for
 this task. To activate it, uncomment the entry in /etc/cron.d/clamav-update.
 
-%description server
-ATTENTION: most users do not need this package; the main package has
-everything (or depends on it) which is needed to scan for viruses on
-workstations.
-
-This package contains files which are needed to execute the clamd-daemon.
-This daemon does not provide a system-wide service. Instead of, an instance
-of this daemon should be started for each service requiring it.
-
+%description -n clamd
+This package contains files which are needed to execute the clamd daemon.
 
 %prep
 %autosetup -p 1 -n %{name}-%{version}%{?prerelease}
@@ -142,9 +119,6 @@ sed -ri \
     -e 's!^#?(UpdateLogFile )!#\1!g;' \
     -e 's!^#?(LogSyslog).*!\1 yes!g' \
     -e 's!(DatabaseOwner *)clamav$!\1%username!g' etc/freshclam.conf.sample
-
-
-## ------------------------------------------------------------
 
 %build
 CFLAGS="$RPM_OPT_FLAGS -Wall -W -Wmissing-prototypes -Wmissing-declarations -std=gnu99"
@@ -175,8 +149,6 @@ sed -i \
 
 make %{?_smp_mflags}
 
-
-## ------------------------------------------------------------
 
 %install
 rm -rf "$RPM_BUILD_ROOT" _doc*
@@ -215,12 +187,7 @@ install -D -m 0644 -p %SOURCE2		_doc_server/clamd.sysconfig
 install -D -m 0644 -p %SOURCE3		_doc_server/clamd.logrotate
 install -D -m 0644 -p etc/clamd.conf.sample	_doc_server/clamd.conf
 
-install -m 0644 -p %SOURCE520		$RPM_BUILD_ROOT%pkgdatadir/
-install -m 0755 -p %SOURCE100		$RPM_BUILD_ROOT%pkgdatadir/
 cp -pa _doc_server/*			$RPM_BUILD_ROOT%pkgdatadir/template
-
-smartsubst 's!/usr/share/clamav!%pkgdatadir!g' $RPM_BUILD_ROOT%pkgdatadir/clamd-wrapper
-
 
 ## prepare the update-files
 install -D -m 0644 -p %SOURCE203	$RPM_BUILD_ROOT%_sysconfdir/logrotate.d/clamav-update
@@ -235,21 +202,11 @@ rm -f  $RPM_BUILD_ROOT%_initrddir/*
 rm -rf $RPM_BUILD_ROOT%_var/run/*/*.pid
 %{!?with_tmpfiles: rm -rf $RPM_BUILD_ROOT%_sysconfdir/tmpfiles.d}
 
-# keep clamd-wrapper in every case because it might be needed by other
-# packages
-ln -s %pkgdatadir/clamd-wrapper		$RPM_BUILD_ROOT%_initrddir/clamd-wrapper
-
-## ------------------------------------------------------------
-
 %check
 make check
 
-## ------------------------------------------------------------
-
 %clean
 rm -rf "$RPM_BUILD_ROOT"
-
-## ------------------------------------------------------------
 
 %pre filesystem
 getent group %{username} >/dev/null || groupadd -r %{username}
@@ -259,10 +216,10 @@ getent passwd %{username} >/dev/null || \
 exit 0
 
 
-%post server
+%post -n clamd
 test "$1" != "1" || /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 
-%postun server
+%postun -n clamd
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 
 
@@ -293,29 +250,21 @@ test -e %freshclamlog || {
 %exclude %_bindir/freshclam
 %exclude %_mandir/*/freshclam*
 
-## -----------------------
-
 %files lib
 %defattr(-,root,root,-)
 %_libdir/*.so.*
-
-## -----------------------
 
 %files devel
 %defattr(-,root,root,-)
 %_includedir/*
 %_libdir/*.so
 %pkgdatadir/template
-%pkgdatadir/clamd-gen
 %_libdir/pkgconfig/*
 %_bindir/clamav-config
-
-## -----------------------
 
 %files filesystem
 %attr(-,%username,%username) %dir %homedir
 %attr(-,root,root)           %dir %pkgdatadir
-
 
 %files update
 %defattr(-,root,root,-)
@@ -329,10 +278,7 @@ test -e %freshclamlog || {
 %ghost %attr(0664,root,%username) %verify(not size md5 mtime) %freshclamlog
 %ghost %attr(0664,%username,%username) %homedir/*.cld
 
-
-## -----------------------
-
-%files server
+%files -n clamd
 %defattr(-,root,root,-)
 %doc _doc_server/*
 %_mandir/man[58]/clamd*
@@ -340,8 +286,6 @@ test -e %freshclamlog || {
 %dir %_sysconfdir/clamd.d
 
 %defattr(-,root,root,-)
-%_initrddir/clamd-wrapper
-%pkgdatadir/clamd-wrapper
 %_unitdir/clamav-daemon.service
 %_unitdir/clamav-daemon.socket
 
