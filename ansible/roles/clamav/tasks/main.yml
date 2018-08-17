@@ -26,6 +26,12 @@
         mode: "0644"
       notify: Restart clamd
 
+    - name: Add clamd alias for clamav-daemon service
+      file:
+        dest: /etc/systemd/system/clamd.service
+        state: link
+        src: /etc/systemd/system/clamav-daemon.service
+
     - name: Enable clamd
       service:
         name: clamav-daemon
