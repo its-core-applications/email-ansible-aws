@@ -55,17 +55,6 @@
           - openssl-devel
 
     - import_role:
-        name: build_rpm_archive
-      tags:
-        - etcd
-      vars:
-        build_name: etcd
-        build_version: 3.3.3
-        archive_url: https://github.com/coreos/etcd/releases/download/v3.3.3/etcd-v3.3.3-linux-amd64.tar.gz
-        archive_file: etcd-v3.3.3-linux-amd64.tar.gz
-        archive_checksum: sha512:f810b3e7e111219de8f4421f4acb2799b42e456139fa5b8015ef2c7780f9d102b473079840ead62ae87927dc21a0a9ae255fe6b6ada0e6fdc3dd2d51ddae2203
-
-    - import_role:
         name: build_rpm_spec
       tags:
         - jemalloc
