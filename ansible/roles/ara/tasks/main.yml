@@ -6,6 +6,11 @@
     - import_role:
         name: httpd
 
+    - name: Install GCC for ARA dependencies
+      yum:
+        name: gcc
+        state: latest
+
     - name: Install ARA
       pip:
         name: git+https://github.com/UMCollab/ara.git
