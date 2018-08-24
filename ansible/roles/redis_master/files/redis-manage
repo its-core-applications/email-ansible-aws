@@ -35,19 +35,6 @@ for rhost in "${rhosts[@]}"; do
                 goodhosts+=( $rhost )
             fi
         fi
-        redis-cli -h $rhost CLUSTER NODES | while read nid nip flags junk; do
-            nip=${nip%:*}
-            if [[ $nip ]]; then
-                echo "${rhosts[@]}" | fgrep -wq $nip
-                if [[ $? -eq 1 ]]; then
-                    outlog "forgetting $nip on $rhost"
-                    redis-cli -h $rhost CLUSTER FORGET $nid
-                fi
-            else
-                outlog "forgetting noaddr $nid on $rhost"
-                redis-cli -h $rhost CLUSTER FORGET $nid
-            fi
-        done
     fi
 done
 
@@ -87,6 +74,22 @@ for rhost in ${badhosts[@]}; do
     done
     ghost=$rhost
     retval=$EX_OK
+done
+
+for rhost in "${goodhosts[@]}"; do
+    redis-cli -h $rhost CLUSTER NODES | while read nid nip flags junk; do
+        nip=${nip%:*}
+        if [[ $nip ]]; then
+            echo "${rhosts[@]}" | fgrep -wq $nip
+            if [[ $? -eq 1 ]]; then
+                outlog "forgetting $nip on $rhost"
+                redis-cli -h $rhost CLUSTER FORGET $nid
+            fi
+        else
+            outlog "forgetting noaddr $nid on $rhost"
+            redis-cli -h $rhost CLUSTER FORGET $nid
+        fi
+    done
 done
 
 exit $retval
