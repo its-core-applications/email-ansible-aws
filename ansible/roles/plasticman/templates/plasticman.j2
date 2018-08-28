@@ -9,7 +9,7 @@ class=${1:-mx}
 region=${2:-{{ aws_region | replace('-', '_') }}}
 
 # FIXME: This should probably go in a config file or a command line flag
-min_count=6
+min_count={{ aws_instance_counts[aws_status]['mx'] }}
 max_count=24
 
 startts=$(date +%s)
