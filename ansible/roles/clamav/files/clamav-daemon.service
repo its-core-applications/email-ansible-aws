@@ -14,3 +14,4 @@ LimitCORE=infinity
 
 [Install]
 WantedBy=multi-user.target
+Alias=clamd.service
