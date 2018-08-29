@@ -38,13 +38,6 @@ aws_profile_sns: "{{ aws_profiles[aws_status].sns }}"
 sns_region: us-west-2
 yum_aws_region: us-west-2
 
-aws_ssh_key:
-  prod:
-    us-west-2: '2015-10-16'
-    us-east-2: '2015-10-16'
-  nonprod:
-    us-east-2: blackops-nonproduction
-
 aws_instance_types:
   prod:
     default: m5.large
