@@ -39,7 +39,7 @@
         owners: self
         filters:
           "tag:os": amzn2
-          "tag:image_type": "{{ launch_ami_class | default(launch_class) }}"
+          "tag:image_type": "{{ launch_ami_class | default(launch_class) | replace('-', '_') }}"
       register: find_ami_facts
 
     - name: Find latest AMI
