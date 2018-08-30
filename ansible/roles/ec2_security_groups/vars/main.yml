@@ -109,6 +109,10 @@ ec2_sg:
           - 5672 # RabbitMQ for sensu pub/sub
           - 8888 # graphite-api
         cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+      - proto: tcp
+        ports:
+          - 4567 # sensu API
+        cidr_ip: 0.0.0.0/0
 
   rbldnsd:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
