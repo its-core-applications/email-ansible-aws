@@ -83,6 +83,10 @@ DNS_LIST    {{ simta_ldap | ternary('user   ', 'connect') }} BLOCK   {{ dnsbl }}
 BANNER_DELAY            1
 BANNER_PUNISH_WRITES    ON
 
+{% elif simta_egress == false %}
+DNS_LIST    connect ACCEPT  relay-accept.dnsal
+DNS_LIST    connect BLOCK   relay-deny.dnsbl
+
 {% endif %}
 CONNECTION_LIMIT                    {{ simta_connlimit }}
 {% if simta_loadbalanced == false %}
