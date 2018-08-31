@@ -16,6 +16,19 @@
     SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
     SSLHonorCipherOrder on
 
+    OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration
+    OIDCClientID {{ lookup('hashi_vault', 'secret=secret/google/' ~ ara_hostname ~ ':id') }}
+    OIDCClientSecret {{ lookup('hashi_vault', 'secret=secret/google/' ~ ara_hostname ~ ':secret') }}
+    OIDCCryptoPassphrase {{ lookup('hashi_vault', 'secret=secret/google/' ~ ara_hostname ~ ':passphrase') }}
+    OIDCRedirectURI https://{{ ara_hostname }}/login/google
+    OIDCScope "openid email"
+    OIDCRemoteUserClaim email
+
+    <Location />
+        AuthType openid-connect
+        Require claim hd:{{ tld }}
+    </Location>
+
     WSGIDaemonProcess ara user=apache group=apache processes=4 threads=1
 
     SetEnv ARA_WSGI_LOG_ROOT /home/ara
