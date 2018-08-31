@@ -19,8 +19,9 @@ if which ara &>/dev/null; then
     eval $(python -m ara.setup.env)
     if [[ -d /home/ara ]]; then
         export ARA_DIR=/home/ara
+        export ARA_BASE_URL=https://ara.${AWS_DEFAULT_REGION}.a.mail.umich.edu/
+        alias ansible-playbook="env ARA_DATABASE=sqlite:////home/ara/$(date +%F).sqlite ansible-playbook"
     fi
-    export ARA_BASE_URL="https://ara.${AWS_DEFAULT_REGION}.a.mail.umich.edu"
 fi
 
 if [[ -s $hacking_dir/localenv ]]; then

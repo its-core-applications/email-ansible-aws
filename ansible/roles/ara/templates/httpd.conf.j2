@@ -4,6 +4,7 @@
 </VirtualHost>
 
 <VirtualHost *:443>
+    DocumentRoot /home/ara
     ServerAdmin {{ ops_email }}
     ServerName {{ ara_hostname }}
     ErrorLog /var/log/httpd/ara-error.log
@@ -16,13 +17,14 @@
     SSLHonorCipherOrder on
 
     WSGIDaemonProcess ara user=apache group=apache processes=4 threads=1
-    WSGIScriptAlias / /srv/www/{{ ara_hostname }}/ara-wsgi
 
-    SetEnv ANSIBLE_CONFIG /srv/www/{{ ara_hostname }}/ara.cfg
+    SetEnv ARA_WSGI_LOG_ROOT /home/ara
 
-    <Directory /srv/www/{{ ara_hostname }}>
-        WSGIProcessGroup ara
-        WSGIApplicationGroup %{GLOBAL}
-        Require all granted
+    <Directory "/usr/bin">
+        <Files "ara-wsgi-sqlite-custom">
+            Require all granted
+        </Files>
     </Directory>
+
+    WSGIScriptAliasMatch ^.*/ara-report /usr/bin/ara-wsgi-sqlite-custom
 </VirtualHost>

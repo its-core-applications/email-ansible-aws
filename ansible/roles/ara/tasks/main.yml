@@ -26,30 +26,13 @@
       vars:
         certificate: "{{ ara_hostname }}"
 
-    - name: Create document root
-      file:
-        dest: /srv/www/{{ ara_hostname }}
-        state: directory
-        owner: apache
-        group: apache
-        mode: 0755
-
     - name: Install WSGI app
       copy:
-        dest: /srv/www/{{ ara_hostname }}/ara-wsgi
-        src: /usr/bin/ara-wsgi
-        remote_src: true
+        dest: /usr/bin/ara-wsgi-sqlite-custom
+        src: ara-wsgi-sqlite-custom
         owner: root
         group: root
         mode: 0755
-
-    - name: Configure WSGI app
-      template:
-        src: ara.cfg.j2
-        dest: /srv/www/{{ ara_hostname }}/ara.cfg
-        owner: root
-        group: root
-        mode: 0644
 
     - name: Create data storage area
       file:
@@ -58,14 +41,6 @@
         owner: ec2-user
         group: ec2-user
         mode: 0755
-
-#    - name: Add ansible user to the apache group
-#      user:
-#        name: "{{ ansible_user }}"
-#        state: present
-#        append: true
-#        groups:
-#          - apache
 
     - name: Configure ARA vhost
       template:

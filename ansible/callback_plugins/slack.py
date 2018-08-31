@@ -175,7 +175,9 @@ class CallbackModule(CallbackBase):
                 context = app.app_context()
                 context.push()
             playbook_id = current_app._cache['playbook']
-            msg_items.append('<{}/reports/{}.html|Detailed report>'.format(self.ara_base, playbook_id))
+            db_file = os.path.basename(current_app.config.get('ARA_DATABASE'))
+            db_file = db_file.replace('.sqlite', '')
+            msg_items.append('<{}/{}/ara-report/reports/{}.html|Detailed report>'.format(self.ara_base, db_file, playbook_id))
 
         msg = '\n'.join(msg_items)
 
