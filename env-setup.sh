@@ -20,6 +20,9 @@ if which ara &>/dev/null; then
     if [[ -d /home/ara ]]; then
         export ARA_DIR=/home/ara
         export ARA_BASE_URL=https://ara.${AWS_DEFAULT_REGION}.a.mail.umich.edu/
+        # We set this as an env variable and an alias so that it works for
+        # both people and cron jobs.
+        export ARA_DATABASE=sqlite:////home/ara/$(date +%F).sqlite
         alias ansible-playbook="env ARA_DATABASE=sqlite:////home/ara/$(date +%F).sqlite ansible-playbook"
     fi
 fi
