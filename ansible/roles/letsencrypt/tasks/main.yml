@@ -30,6 +30,7 @@
         account_email: letsencrypt@devnull.mail.umich.edu
         account_key: /etc/pki/collab/private/letsencrypt_account.key
         acme_directory: https://acme-v02.api.letsencrypt.org/directory
+        terms_agreed: true
         acme_version: 2
         challenge: dns-01
         csr: /etc/pki/collab/{{ certificate }}.csr
@@ -55,6 +56,7 @@
       acme_certificate:
         account_key: /etc/pki/collab/private/letsencrypt_account.key
         acme_directory: https://acme-v02.api.letsencrypt.org/directory
+        terms_agreed: true
         acme_version: 2
         challenge: dns-01
         csr: /etc/pki/collab/{{ certificate }}.csr
