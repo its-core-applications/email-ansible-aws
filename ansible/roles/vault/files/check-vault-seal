@@ -8,7 +8,7 @@ if [[ $? -ne 0 ]]; then
     retval=2
 elif [[ $(echo "$seal" | jq .sealed) != 'false' ]]; then
     echo "Vault is sealed"
-    echo "$seal" | jq
+    echo "$seal" | jq .
     retval=2
 else
     echo "Vault is unsealed"
