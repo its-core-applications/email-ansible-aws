@@ -1,0 +1,17 @@
+simta_config: ctools-mx.a.mail
+simta_egress: true
+simta_punt: egress.{{ aws_region }}.{{ subd }}
+simta_arc: true
+simta_arc_selector: arc-2017-08-04
+simta_dkim: true
+
+simta_ctools_domains:
+  - ctools.umich.edu
+  - ctqa.dsc.umich.edu
+
+simta_accept_domains:
+  - ctdev.dsc.umich.edu
+
+simta_secondary_mx:
+  - ctools-mx.{{ subd }}
+  - ctools-mx.itd.umich.edu

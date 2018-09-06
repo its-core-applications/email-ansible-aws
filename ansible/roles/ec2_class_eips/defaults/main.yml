@@ -1,0 +1,1 @@
+eip_host: "{{ eip_class }}-host.{{ aws_region }}.{{ subd }}"

@@ -158,7 +158,7 @@
         group: root
         mode: "0644"
       notify: Restart simta
-      loop: "{{ simta_alias_domains | default([]) }}"
+      loop: "{{ simta_alias_domains | default([]) | union(simta_ctools_domains | default([])) }}"
 
     - name: Configure simvacation
       template:

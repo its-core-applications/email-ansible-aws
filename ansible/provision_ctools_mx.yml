@@ -1,0 +1,45 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - when: aws_region == 'us-east-2'
+      block:
+        - import_role:
+            name: ec2_class_eips
+          vars:
+            eip_class: ctools-mx
+            eip_host: ctools-mx.{{ subd }}
+
+        - import_role:
+            name: ec2_launch
+          vars:
+            launch_class: ctools-mx
+            launch_groups:
+              - mx-elb
+
+- hosts: Class_ctools_mx:&Status_spinup
+  tasks:
+    - delegate_to: localhost
+      become: false
+      block:
+        - name: Fetch ctools-mx EIP
+          ec2_eip_facts:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            filters:
+              "tag:Class": ctools-mx
+          register: result
+
+        - name: Assign EIP
+          ec2_eip:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            device_id: "{{ instance_id }}"
+            public_ip: "{{ result.addresses.0.public_ip }}"
+
+        - name: Set status to production
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: production

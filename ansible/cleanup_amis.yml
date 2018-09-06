@@ -1,5 +1,3 @@
----
-
 - hosts: localhost
   gather_facts: false
   become: false
@@ -14,6 +12,7 @@
         - egress
         - dnsbl
         - rbl
+        - ctools_mx
         - junk
       loop_control:
         loop_var: image_type

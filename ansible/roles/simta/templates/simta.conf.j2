@@ -116,7 +116,11 @@ DELIVER_DATA_SESSION_TIMEOUT        1800
 CHECKSUM_ALGORITHM  sha1
 CONTENT_FILTER      /usr/sbin/simta-mscan
 
-{% if simta_egress == false %}
+{% if simta_egress %}
+{% if simta_punt is defined %}
+PUNT                    {{ simta_punt }}
+{% endif %}
+{% else %}
 DELIVER_TLS             REQUIRED
 RECEIVE_QUEUE_STRATEGY  PUNT
 PUNT                    {% if simta_relay %}relay-{% endif %}egress.{{ aws_region }}.{{ subd }}
@@ -160,10 +164,29 @@ DEFAULT_LOCAL_MAILER /usr/libexec/simta/simda $R /usr/bin/procmail -f $S
 {% endfor %}
 
 {% endif %}
+{% if simta_accept_domains is defined %}
+{% for domain in simta_accept_domains %}
+@{{ domain.ljust( 30 ) }} R  ACCEPT
+{% endfor %}
+
+{% endif %}
+{% if simta_ctools_domains is defined %}
+{% for domain in simta_ctools_domains %}
+@{{ domain.ljust( 30 ) }} R  NOT_FOUND  CTools sites have become read-only and are no longer accepting email. Please visit the CTools project website <http://its.umich.edu/projects/ctools-project-sites/> for more information.
+@{{ domain.ljust( 30 ) }} R  ALIAS /etc/mail/aliases-{{ domain }}.db
+{% endfor %}
+
+{% endif %}
 {% if simta_egress %}
 DELIVER_QUEUE_STRATEGY              SHUFFLE
 DELIVER_MESSAGES_PER_CONNECTION     50
 
+{% if simta_secondary_mx is defined %}
+{% for domain in simta_secondary_mx %}
+@{{ domain.ljust( 30 ) }} D  SECONDARY_MX
+{% endfor %}
+
+{% endif %}
 {% if simta_important_domains is defined %}
 # Peg important domains at five minutes
 {% for domain in simta_important_domains %}

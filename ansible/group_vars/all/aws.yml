@@ -57,10 +57,10 @@ aws_instance_types:
 
 aws_instance_counts:
   prod:
-    egress: 3
-    relay-egress: 3
     dnsbl: 2
+    egress: 3
     mx: 6
+    relay-egress: 3
     vdc-relay: 2
   nonprod:
     egress: 2
