@@ -23,7 +23,7 @@ if which ara &>/dev/null; then
         # We set this as an env variable and an alias so that it works for
         # both people and cron jobs.
         export ARA_DATABASE=sqlite:////home/ara/$(date +%F).sqlite
-        alias ansible-playbook="env ARA_DATABASE=sqlite:////home/ara/$(date +%F).sqlite ansible-playbook"
+        alias ansible-playbook='env ARA_DATABASE=sqlite:////home/ara/$(date +%F).sqlite ansible-playbook'
     fi
 fi
 
