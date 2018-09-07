@@ -16,6 +16,16 @@
         subscriptions: "{{ item.subscriptions[aws_status] }}"
       loop: "{{ sensu_sns }}"
 
+    - import_role:
+        name: aws_get_accountinfo
+
+    - import_role:
+        name: ec2_instance_profile
+      vars:
+        ec2_profile_user: sensu
+        ec2_profile: snspublish
+        ec2_profile_role: arn:aws:iam::{{ aws_account_sns }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_SNS
+
     - name: Install custom plugins
       copy:
         dest: /etc/sensu/plugins/{{ item }}

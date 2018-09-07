@@ -84,6 +84,53 @@
                 - "{{ result.iam_role.arn }}"
       register: subdpolicy
 
+    - name: Create IAM policy for SNS
+      iam_managed_policy:
+        profile: "{{ aws_profile_sns }}"
+        state: present
+        policy_name: "{{ aws_resource_prefix }}_SNSPublish"
+        policy_description: Publish to SNS
+        policy:
+          Version: "2012-10-17"
+          Statement:
+            - Action:
+                - sns:ListTopics
+                - sns:Publish
+              Effect: Allow
+              Resource: '*'
+      register: result
+
+    - name: Create IAM role for SNS
+      iam_role:
+        profile: "{{ aws_profile_sns }}"
+        name: "{{ aws_resource_prefix }}_{{ aws_account }}_SNS"
+        description: Cross-account access to SNS for {{ aws_profile }}
+        assume_role_policy_document:
+          Version: "2012-10-17"
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Principal:
+                AWS: arn:aws:iam::{{ aws_account }}:root
+        managed_policy:
+          - "{{ result.policy.arn }}"
+      register: result
+
+    - name: Create local IAM policy for SNS
+      iam_managed_policy:
+        profile: "{{ aws_profile }}"
+        state: present
+        policy_name: "{{ aws_resource_prefix }}_SNSPublish_XAccount"
+        policy_description: Publish to SNS
+        policy:
+          Version: "2012-10-17"
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Resource:
+                - "{{ result.iam_role.arn }}"
+      register: snspolicy
+
     - name: Create builder role
       iam_role:
         region: "{{ aws_region }}"
@@ -99,7 +146,6 @@
                 Service: ec2.amazonaws.com
         managed_policy:
           - arn:aws:iam::aws:policy/AmazonS3FullAccess
-          - arn:aws:iam::aws:policy/AmazonSNSFullAccess
           - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
 
@@ -119,10 +165,10 @@
         managed_policy:
           - arn:aws:iam::aws:policy/AmazonS3FullAccess
           - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
-          - arn:aws:iam::aws:policy/AmazonSNSFullAccess
           - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
           - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
+          - "{{ snspolicy.policy.arn }}"
 
     - name: Create standard role
       iam_role:
@@ -139,6 +185,6 @@
                 Service: ec2.amazonaws.com
         managed_policy:
           - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
-          - arn:aws:iam::aws:policy/AmazonSNSFullAccess
           - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
+          - "{{ snspolicy.policy.arn }}"

@@ -15,6 +15,7 @@ args = parser.parse_args()
 region = args.region or 'us-west-2'
 dc = args.datacenter or 'prod/' + region
 
+boto3.setup_default_session(profile_name='snspublish')
 client = boto3.client('sns', region_name=region)
 
 if args.arn:
