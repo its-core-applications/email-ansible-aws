@@ -43,6 +43,10 @@ spf_thirdparty:
     record: 'ip4:198.100.45.34'
 
   - names:
+      - davidson-hr
+    record: 'ip4:216.12.149.100 ip4:216.12.129.78'
+
+  - names:
       - dpss-emergency-alert
     record: 'include:spf.blackboardconnect.com'
 
