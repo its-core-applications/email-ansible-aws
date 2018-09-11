@@ -62,6 +62,16 @@
         mode: "0644"
       notify: Restart httpd
 
+    - import_role:
+        name: httpd
+
+    - import_role:
+        name: letsencrypt
+      vars:
+        certificate: graphs.{{ subd }}
+        le_services:
+          - httpd
+
     - name: Schedule backups of grafana.db
       cron:
         name: backup grafana.db

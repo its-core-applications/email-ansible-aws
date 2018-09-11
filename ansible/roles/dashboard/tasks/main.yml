@@ -3,6 +3,9 @@
 - tags:
     - dashboard
   block:
+    - import_role:
+        name: httpd
+
     - name: Install extra Apache modules
       yum:
         name:
@@ -19,3 +22,9 @@
         mode: "0644"
       notify: Restart httpd
 
+    - import_role:
+        name: letsencrypt
+      vars:
+        certificate: dashboard.{{ subd }}
+        le_services:
+          - httpd

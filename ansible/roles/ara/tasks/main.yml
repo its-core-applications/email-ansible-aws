@@ -25,6 +25,8 @@
         name: letsencrypt
       vars:
         certificate: "{{ ara_hostname }}"
+        le_services:
+          - httpd
 
     - name: Install WSGI app
       copy:

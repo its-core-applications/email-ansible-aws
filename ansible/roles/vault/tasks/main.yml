@@ -5,6 +5,8 @@
         name: letsencrypt
       vars:
         certificate: vault.{{ subd }}
+        le_services:
+          - vault
 
     - name: Install vault
       yum:

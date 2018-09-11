@@ -33,6 +33,7 @@
         terms_agreed: true
         acme_version: 2
         challenge: dns-01
+        remaining_days: 12
         csr: /etc/pki/collab/{{ certificate }}.csr
         fullchain_dest: /etc/pki/collab/private/{{ certificate }}.crt
       register: acme_data
@@ -59,6 +60,15 @@
         terms_agreed: true
         acme_version: 2
         challenge: dns-01
+        remaining_days: 12
         csr: /etc/pki/collab/{{ certificate }}.csr
         fullchain_dest: /etc/pki/collab/private/{{ certificate }}.crt
         data: "{{ acme_data }}"
+      register: result
+
+    - name: Restart dependent services
+      systemd:
+        name: "{{ item }}"
+        state: restarted
+      when: result is changed
+      loop: "{{ le_services | default([]) }}"

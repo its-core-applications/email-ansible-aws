@@ -21,3 +21,11 @@
         minute: 13,28,43,58
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/deprovision_spundown.yml &>/dev/null
 
+    - name: Schedule renewal of certificates with LetsEncrypt
+      cron:
+        name: ansible-letsencrypt
+        user: "{{ ansible_user }}"
+        minute: 10
+        hour: 10
+        weekday: 1-5
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags certificate &>/dev/null
