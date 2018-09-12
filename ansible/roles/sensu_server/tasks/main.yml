@@ -3,6 +3,12 @@
 - tags:
     - sensu
   block:
+    - import_role:
+        name: aws_get_accountinfo
+
+    - import_role:
+        name: sns2slack
+
     - name: Create SNS topics
       delegate_to: localhost
       become: false
@@ -15,9 +21,6 @@
         purge_subscriptions: false
         subscriptions: "{{ item.subscriptions[aws_status] }}"
       loop: "{{ sensu_sns }}"
-
-    - import_role:
-        name: aws_get_accountinfo
 
     - import_role:
         name: ec2_instance_profile
@@ -36,7 +39,6 @@
       loop:
         - check-box-status
         - check-google-status
-        - handler-slack
         - handler-sns
 
     - name: Install extra dependencies

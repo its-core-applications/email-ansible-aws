@@ -60,13 +60,6 @@
         "good_hostname"
       ]
     },
-    "slack": {
-      "type": "pipe",
-      "command": "handler-slack -d {{ aws_status }}/{{ aws_region }} -w {{ lookup('hashi_vault', 'secret=secret/slack:value') }}",
-      "filters": [
-        "state_change_only"
-      ]
-    },
     "fyi": {
       "type": "pipe",
       "command": "handler-sns -r {{ sns_region }} -t rootmail -d {{ aws_status }}/{{ aws_region }}",
@@ -96,7 +89,6 @@
       "handlers": [
         "page",
         "email",
-        "slack",
         "kill_bad_clients"
       ]
     }

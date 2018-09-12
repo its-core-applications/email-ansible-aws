@@ -2,7 +2,6 @@
 # (C) 2017 Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-# Make coding more python3-ish
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
@@ -12,39 +11,39 @@ DOCUMENTATION = '''
     requirements:
       - whitelist in configuration
       - prettytable (python library)
-    short_description: Sends play events to a Slack channel
-    version_added: "2.1"
+    short_description: Sends play events to SNS
     description:
-        - This is an ansible callback plugin that sends status updates to a Slack channel during playbook execution.
-        - Before 2.4 only environment variables were available for configuring this plugin
+        - This is an ansible callback plugin that sends status updates to SNS
     options:
-      webhook_url:
-        description: Slack Webhook URL
+      sns_topic:
+        description: SNS topic name or ARN
         env:
-          - name: SLACK_WEBHOOK_URL
+          - name: SNS_TOPIC
         ini:
-          - section: callback_slack
-            key: webhook_url
-      username:
-        description: Username to post as.
+          - section: callback_sns
+            key: topic
+      sns_region:
+        description: Region for SNS
         env:
-          - name: SLACK_USERNAME
-        default: ansible
+          - name: SNS_REGION
         ini:
-          - section: callback_slack
-            key: username
+          - section: callback_sns
+            key: region
       ara_base_url:
         description: Base URL for ARA reports
         env:
           - name: ARA_BASE_URL
         ini:
-          - section: callback_slack
+          - section: callback_sns
             key: ara_base_url
 '''
 
 import json
 import os
+import socket
 import uuid
+
+import boto3
 
 try:
     from __main__ import cli
@@ -75,7 +74,7 @@ class CallbackModule(CallbackBase):
     """
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'notification'
-    CALLBACK_NAME = 'slack'
+    CALLBACK_NAME = 'sns'
 
     def __init__(self, display=None):
         self.disabled = False
@@ -85,7 +84,7 @@ class CallbackModule(CallbackBase):
         if not HAS_PRETTYTABLE:
             self.disabled = True
             self._display.warning('The `prettytable` python module is not '
-                                  'installed. Disabling the Slack callback '
+                                  'installed. Disabling the SNS callback '
                                   'plugin.')
 
         if cli:
@@ -98,34 +97,13 @@ class CallbackModule(CallbackBase):
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
-        self.webhook_url = self.get_option('webhook_url')
-        self.username = self.get_option('username')
         self.ara_base = self.get_option('ara_base_url')
 
-        if self.webhook_url is None:
+        self.sns_topic = self.get_option('sns_topic')
+        if self.sns_topic is None:
             self.disabled = True
-            self._display.warning('Slack Webhook URL was not provided. The '
-                                  'Slack Webhook URL can be provided using '
-                                  'the `SLACK_WEBHOOK_URL` environment '
-                                  'variable.')
-
-    def send_msg(self, attachments):
-        payload = {
-            'username': self.username,
-            'attachments': attachments,
-            'parse': 'none',
-            'icon_url': 'https://www.ansible.com/favicon.ico',
-        }
-
-        data = json.dumps(payload)
-        self._display.debug(data)
-        self._display.debug(self.webhook_url)
-        try:
-            response = open_url(self.webhook_url, data=data, method='POST')
-            return response.read()
-        except Exception as e:
-            self._display.warning('Could not submit message to Slack: %s' %
-                                  str(e))
+            self._display.warning('No SNS topic set.')
+        self.sns_region = self.get_option('sns_region')
 
     def v2_playbook_on_start(self, playbook):
         self.playbook_name = os.path.basename(playbook._file_name)
@@ -157,17 +135,14 @@ class CallbackModule(CallbackBase):
         if not unreachable and not failures:
             return
 
-        attachments = []
-        msg_items = []
+        subject = '{}/{} - ALERT - {} CRITICAL'.format(
+            os.environ.get('AWS_STATUS', 'prod'),
+            os.environ.get('AWS_DEFAULT_REGION', 'unknown'),
+            self.playbook_name,
+        )
 
-        if failures or unreachable:
-            color = 'danger'
-            msg_items.append('*PLAYBOOK FAILED* | %s' % (self.playbook_name))
-        else:
-            color = 'good'
-            msg_items.append('*PLAYBOOK SUCCEEDED* | %s' % (self.playbook_name))
-
-        msg_items.append('```\n%s\n```' % t)
+        msg_default = str(t)
+        msg_lambda = '```\n{}\n```'.format(msg_default)
 
         if HAS_ARA and self.ara_base:
             app = create_app()
@@ -177,19 +152,36 @@ class CallbackModule(CallbackBase):
             playbook_id = current_app._cache['playbook']
             db_file = os.path.basename(current_app.config.get('ARA_DATABASE'))
             db_file = db_file.replace('.sqlite', '')
-            msg_items.append('<{}/{}/ara-report/reports/{}.html|Detailed report>'.format(self.ara_base, db_file, playbook_id))
+            ara_url = '{}/{}/ara-report/reports/{}.html'.format(
+                self.ara_base,
+                db_file,
+                playbook_id,
+            )
+            msg_default += '\n{}'.format(ara_url)
+            msg_lambda += '\n<{}|Detailed report>'.format(ara_url)
 
-        msg = '\n'.join(msg_items)
+        msg = {
+            'default': msg_default,
+            'sms': subject,
+            'lambda': json.dumps({
+              'sourcetype': 'ansible',
+              'source': socket.gethostname(),
+              'message': msg_lambda,
+            })
+        }
 
-        attachments.append({
-            'fallback': msg,
-            'fields': [
-                {
-                    'value': msg
-                }
-            ],
-            'color': color,
-            'mrkdwn_in': ['text', 'fallback', 'fields']
-        })
+        client = boto3.client('sns', region_name=self.sns_region)
+        if ':' in self.sns_topic:
+            arn = self.sns_topic
+        else:
+            topics = client.list_topics()
+            for t in topics['Topics']:
+                if t['TopicArn'].endswith(':' + self.sns_topic):
+                    arn = t['TopicArn']
 
-        self.send_msg(attachments=attachments)
+        response = client.publish(
+            TopicArn = arn,
+            Message = json.dumps(msg),
+            MessageStructure = 'json',
+            Subject = subject,
+        )

@@ -1,8 +1,11 @@
 #!/usr/bin/env python
-import json
-import boto3
-import sys
+
 import argparse
+import json
+import socket
+import sys
+
+import boto3
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-r', '--region', help='AWS region')
@@ -37,11 +40,30 @@ elif event['check']['status'] == 2:
 else:
     status = 'UNKNOWN'
 
-subject = '{0} - {1} - {2}/{3} {4}'.format(dc, 'ALERT' if event['action'] == 'create' else 'RESOLVED', event['client']['name'], event['check']['name'], status)
-msg = {
-    'default': event['check']['output'],
-    'sms': '{0} - {1}'.format(subject, event['check']['output'].split("\n")[0]),
+subject = '{} - {} - {}/{} {}'.format(
+    dc,
+    'ALERT' if event['action'] == 'create' else 'RESOLVED',
+    event['client']['name'],
+    event['check']['name'],
+    status,
+)
+
+lambda_msg = {
+    'sourcetype': 'sensu',
+    'source': socket.gethostname(),
+    'message': event['check']['output'],
+    'event': event,
 }
 
-response = client.publish(TopicArn = arn, Message = json.dumps(msg), MessageStructure = 'json', Subject = subject)
+msg = {
+    'default': event['check']['output'],
+    'sms': '{} - {}'.format(subject, event['check']['output'].split("\n")[0]),
+    'lambda': json.dumps(lambda_msg),
+}
 
+response = client.publish(
+    TopicArn = arn,
+    Message = json.dumps(msg),
+    MessageStructure = 'json',
+    Subject = subject,
+)

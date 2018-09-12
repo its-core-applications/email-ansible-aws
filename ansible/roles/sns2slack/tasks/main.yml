@@ -1,0 +1,79 @@
+- tags:
+    - sns
+    - slack
+  delegate_to: localhost
+  vars:
+    cache_dir: /var/cache/sns2slack
+  block:
+    - import_role:
+        name: aws_get_accountinfo
+
+    - name: Create cache dir
+      file:
+        dest: "{{ cache_dir }}/pkg"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Install sns2slack.py
+      copy:
+        src: sns2slack.py
+        dest: "{{ cache_dir }}/pkg/sns2slack.py"
+        owner: root
+        group: root
+        mode: "0644"
+      register: result
+
+    - name: Install sns2slack dependencies
+      pip:
+        name: requests
+        state: latest
+        extra_args: -t {{ cache_dir }}/pkg
+      when: result is changed
+
+    - name: Create sns2slack.zip
+      archive:
+        dest: "{{ cache_dir }}/sns2slack.zip"
+        path: "{{ cache_dir }}/pkg/"
+        format: zip
+
+    - become: false
+      block:
+        - name: Create IAM role for Lambda
+          iam_role:
+            profile: "{{ aws_profile_sns }}"
+            name: "{{ aws_resource_prefix }}_lambda_basic"
+            description: Basic execution role for Lambda
+            assume_role_policy_document:
+              Version: "2012-10-17"
+              Statement:
+                - Action: sts:AssumeRole
+                  Effect: Allow
+                  Principal:
+                    Service: lambda.amazonaws.com
+            managed_policy:
+              - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+        - name: Create Lambda function
+          lambda:
+            region: "{{ sns_region }}"
+            profile: "{{ aws_profile_sns }}"
+            name: sns2slack
+            description: Forward SNS messages to Slack
+            role: "{{ aws_resource_prefix }}_lambda_basic"
+            src: "{{ cache_dir }}/sns2slack.zip"
+            runtime: python3.6
+            handler: sns2slack.handler
+            environment_variables:
+              WEBHOOK_URL: "{{ lookup('hashi_vault', 'secret=secret/slack:value') }}"
+
+        - name: Create Lambda policy for SNS
+          lambda_policy:
+            region: "{{ sns_region }}"
+            profile: "{{ aws_profile_sns }}"
+            function_name: sns2slack
+            statement_id: sns2slack-invoke-from-SNS
+            action: lambda:InvokeFunction
+            principal: sns.amazonaws.com
+            source_arn: arn:aws:sns:us-west-2:{{ aws_account_sns }}:rootmail

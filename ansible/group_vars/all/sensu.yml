@@ -17,9 +17,13 @@ sensu_sns:
       nonprod:
         - endpoint: "{{ ops_rootmail }}"
           protocol: email
+        - endpoint: arn:aws:lambda:{{ sns_region }}:{{ aws_account_sns }}:function:sns2slack
+          protocol: lambda
       prod:
         - endpoint: "{{ ops_rootmail }}"
           protocol: email
+        - endpoint: arn:aws:lambda:{{ sns_region }}:{{ aws_account_sns }}:function:sns2slack
+          protocol: lambda
 
 sensu_proxy_clients:
   - name: "{{ aws_region }}.aws.amazon.com"
