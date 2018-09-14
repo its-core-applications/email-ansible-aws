@@ -1,0 +1,27 @@
+---
+
+- tags:
+    - ec2
+    - ec2_targetgroup
+  become: false
+  delegate_to: localhost
+  block:
+    - import_role:
+        name: ec2_find_subnets
+
+    - name: Create {{ tg_name }} targetgroup
+      elb_target_group:
+        name: target-{{ tg_name }}
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+        state: present
+        port: 25
+        protocol: tcp
+        target_type: instance
+        targets: "{{ groups[tg_group] | intersect(groups.Status_production) | map('extract', hostvars, 'instance_id') | map('json_query', '{Id: @}') | map('combine', { 'Port': 25 }) | list }}"
+        health_check_interval: 30
+        health_check_protocol: tcp
+        health_check_port: 25
+        healthy_threshold_count: 3
+        unhealthy_threshold_count: 3
