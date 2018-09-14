@@ -25,4 +25,7 @@ RBLDNSD="- -q -a -t 30::300 -b 0.0.0.0 \
         sbl.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/sbl \
         pbl.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/pbl \
         xbl.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/xbl \
+        zen.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/sbl \
+        zen.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/pbl \
+        zen.dnsbl:ip4set:/var/lib/rbldnsd/spamhaus/xbl \
 "
