@@ -35,7 +35,6 @@
       register: result
 
     - meta: refresh_inventory
-      when: result is changed
 
 - hosts: Class_mx:&Status_spindown
   tasks:
