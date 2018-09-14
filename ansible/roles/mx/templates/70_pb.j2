@@ -28,9 +28,7 @@ else
         -l b.barracudacentral.org \
         -l bl.spamcop.net \
         -l sip.dnsbl \
-        -l xbl.dnsbl \
-        -l sbl.dnsbl \
-        -l pbl.dnsbl \
+        -l zen.dnsbl \
         "$SIMTA_REMOTE_IP")
     if [ $? -eq 1 ]; then
         DNSBL=${DNSBL#*found in }
