@@ -46,7 +46,6 @@
       loop:
         - 19_dropfrom
         - 20_auth
-        - 20_from
         - 21_domain
         - 21_to
         - 21_ubl

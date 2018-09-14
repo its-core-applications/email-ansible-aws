@@ -76,6 +76,9 @@ DNS_LIST    connect TRUST   mx-trust.dnsal
 DNS_LIST    connect ACCEPT  mx-accept.dnsal
 DNS_LIST    connect BLOCK   mx-deny.dnsbl {{ simta_spambusters }}
 
+DNS_LIST    email/sha1          BLOCK   deny-from.dnsbl
+DNS_LIST    email/sha1/domain   BLOCK   deny-from.dnsbl
+
 {% for dnsbl in simta_dnsbls %}
 DNS_LIST    {{ simta_ldap | ternary('user   ', 'connect') }} BLOCK   {{ dnsbl }} {{ simta_spambusters }}
 {% endfor %}
