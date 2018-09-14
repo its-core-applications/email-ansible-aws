@@ -54,7 +54,6 @@ aws_instance_types:
   nonprod:
     default: t2.small
     master: m5.large
-    relay: m5.large
     builder: m5.large
 
 aws_instance_counts:
