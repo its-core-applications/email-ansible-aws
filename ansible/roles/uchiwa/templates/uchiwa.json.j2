@@ -1,11 +1,14 @@
 {
   "sensu": [
+{% for region in groups.Class_syslog | map('extract', hostvars, 'region') | unique %}
     {
-      "host": "{{ sensu_server }}",
-      "name": "{{ aws_region }}",
+      "host": "sensu.{{ region }}.{{ subd }}",
+      "name": "{{ region }}",
       "user": "sensu",
       "pass": "{{ lookup('hashi_vault', 'secret=secret/sensu/api:value') }}"
-    }
+    }{% if not loop.last %},{% endif %}
+{% endfor %}
+
   ],
   "uchiwa": {
     "port": 3000,
