@@ -9,7 +9,7 @@
         launch_class: mx
         launch_count: 3
         launch_groups:
-          - mx
+          - mx-elb
           - redis
         launch_tags:
           redis: 'yes'

@@ -4,42 +4,32 @@
     - import_role:
         name: ec2_find_subnets
 
+    - include_role:
+        name: ec2_targetgroup
+      vars:
+        tg_group: Class_mx
+      loop: "{{ mx_names[aws_region] }}"
+      loop_control:
+        loop_var: tg_name
+
     - name: Create MX loadbalancer(s)
-      ec2_elb_lb:
+      elb_network_lb:
         name: "{{ item }}"
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         state: present
-        idle_timeout: 3600
-        connection_draining_timeout: 120
-        cross_az_load_balancing: true
-        security_group_names: mx-elb
+        cross_zone_load_balancing: true
+        tags:
+          BusinessOwner: "{{ aws_resource_owner }}"
         subnets: "{{ ec2_subnets_public | map(attribute='id') | list }}"
         listeners:
-          - protocol: tcp
-            load_balancer_port: 25
-            instance_port: 25
-            proxy_protocol: true
-        health_check:
-          ping_protocol: tcp
-          ping_port: 25
-          response_timeout: 10
-          interval: 30
-          unhealthy_threshold: 2
-          healthy_threshold: 5
+          - Protocol: TCP
+            Port: 25
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "{{ aws_resource_prefix }}-target-{{ item }}"
       loop: "{{ mx_names[aws_region] }}"
       register: result
-
-    - name: Add hosts to MX loadbalancer(s)
-      ec2_elb:
-        ec2_elbs: "{{ item[0] }}"
-        region: "{{ aws_region }}"
-        instance_id: "{{ item[1] }}"
-        state: present
-        wait: false
-      vars:
-        mx_instances: "{{ groups.Class_mx | default([]) | intersect(groups.Status_production | default([])) | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | list }}"
-      loop: "{{ query('nested', mx_names[aws_region], mx_instances) }}"
 
     - name: Set pretty DNS names for MX loadbalancer(s)
       route53:
@@ -47,14 +37,14 @@
         command: create
         overwrite: true
         zone: "{{ subd }}"
-        record: "{{ item.elb.name }}.{{ subd }}"
+        record: "{{ item.load_balancer_name }}.{{ subd }}"
         type: A
         alias: true
-        alias_hosted_zone_id: "{{ item.elb.hosted_zone_id }}"
-        value: "{{ item.elb.dns_name }}"
+        alias_hosted_zone_id: "{{ item.canonical_hosted_zone_id }}"
+        value: "{{ item.dns_name }}"
       loop: "{{ result.results }}"
       loop_control:
-        label: "{{ item.elb.name }}.{{ subd }} -> {{ item.elb.dns_name }}"
+        label: "{{ item.load_balancer_name }}.{{ subd }} -> {{ item.dns_name }}"
 
     - import_role:
         name: sensu_proxyclients

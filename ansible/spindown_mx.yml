@@ -36,18 +36,20 @@
 
     - meta: refresh_inventory
 
+- hosts: localhost
+  tasks:
+    - include_role:
+        name: ec2_targetgroup
+      vars:
+        tg_group: Class_mx
+      loop: "{{ mx_names[aws_region] }}"
+      loop_control:
+        loop_var: tg_name
+
 - hosts: Class_mx:&Status_spindown
   tasks:
     - when: region == aws_region
       block:
-        - name: Remove from loadbalancer
-          delegate_to: localhost
-          become: false
-          ec2_elb:
-            region: "{{ region }}"
-            instance_id: "{{ instance_id }}"
-            state: absent
-
         - name: Stop sensu
           systemd:
             name: sensu-client
