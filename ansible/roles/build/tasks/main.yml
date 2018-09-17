@@ -137,10 +137,10 @@
         - vault
       vars:
         build_name: vault
-        build_version: 0.10.2
-        archive_url: https://releases.hashicorp.com/vault/0.10.2/vault_0.10.2_linux_amd64.zip
-        archive_file: vault_0.10.2_linux_amd64.zip
-        archive_checksum: sha256:f725be68316d10ef2e7779fdedd8eb5d4ed9975303c828466bb9a729e01392dd
+        build_version: 0.11.1
+        archive_url: https://releases.hashicorp.com/vault/{{ build_version }}/vault_{{ build_version }}_linux_amd64.zip
+        archive_file: vault_{{build_version }}_linux_amd64.zip
+        archive_checksum: sha256:eb8d2461d0ca249c1f91005f878795998bdeafccfde0b9bae82343541ce65996
 
     - import_role:
         name: build_rpm_spec
