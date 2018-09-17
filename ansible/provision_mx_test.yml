@@ -10,6 +10,8 @@
         launch_ami_class: base
         launch_groups:
           - mx-elb
+        launch_tags:
+          Status: development
 
 - import_playbook: mx_test.yml
 
