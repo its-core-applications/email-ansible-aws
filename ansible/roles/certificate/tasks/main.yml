@@ -14,7 +14,7 @@
   - name: "{{ certificate }} : Install private key"
     copy:
       dest: /etc/pki/collab/private/{{ certificate }}.key
-      content: "{{ lookup('hashi_vault', 'secret=secret/cert/' ~ certificate ~ ':value') }}"
+      content: "{{ lookup('hashi_vault', 'secret=secret/certificate/' ~ certificate ~ ':key') }}"
       owner: root
       group: mail
       mode: "0640"
@@ -22,7 +22,7 @@
   - name: "{{ certificate }} : Install certificate"
     copy:
       dest: /etc/pki/collab/private/{{ certificate }}.crt
-      content: "{{ lookup('hashi_vault', 'secret=secret/cert/' ~ certificate ~ '/certificate:value') }}"
+      content: "{{ lookup('hashi_vault', 'secret=secret/certificate/' ~ certificate ~ ':value') }}"
       owner: root
       group: mail
       mode: "0644"
