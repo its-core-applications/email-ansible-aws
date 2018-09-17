@@ -82,6 +82,10 @@ for rhost in "${goodhosts[@]}"; do
         if [[ $nip ]]; then
             echo "${rhosts[@]}" | fgrep -wq $nip
             if [[ $? -eq 1 ]]; then
+                if [[ $flags = 'master' ]]; then
+                    outlog "found unknown master $nip, no more forgetting"
+                    exit $retval
+                fi
                 outlog "forgetting $nip on $rhost"
                 redis-cli -h $rhost CLUSTER FORGET $nid
             fi
