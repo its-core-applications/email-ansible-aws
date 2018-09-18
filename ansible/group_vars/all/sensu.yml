@@ -37,7 +37,7 @@ sensu_proxy_clients:
       - Status_production
   - name: google.com
     subscriptions:
-      - Status_productions
+      - Status_production
 
 sensu_environment:
   PATH: /opt/sensu/embedded/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
