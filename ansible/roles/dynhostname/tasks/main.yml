@@ -11,6 +11,7 @@
       vars:
         ec2_profile: dynhostname
         ec2_profile_role: arn:aws:iam::{{ aws_account_subd }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_{{ subd }}
+        ec2_profile_user: root
 
     - name: Install hostname data files
       copy:
