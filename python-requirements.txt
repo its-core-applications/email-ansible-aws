@@ -8,4 +8,5 @@ hvac
 jinja2
 netaddr
 paramiko
+prettytable
 setuptools
