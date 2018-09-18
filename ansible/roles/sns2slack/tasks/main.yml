@@ -54,6 +54,12 @@
                     Service: lambda.amazonaws.com
             managed_policy:
               - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+          register: result
+
+        - name: Wait for the role to be usable
+          pause:
+            seconds: 60
+          when: result is changed
 
         - name: Create Lambda function
           lambda:
