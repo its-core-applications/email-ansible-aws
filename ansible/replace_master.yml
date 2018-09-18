@@ -1,7 +1,3 @@
----
-
-- import_playbook: setup_securitygroups.yml
-
 - import_playbook: spindown_master.yml
 
 - hosts: localhost
