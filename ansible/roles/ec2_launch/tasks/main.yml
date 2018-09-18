@@ -17,20 +17,22 @@
       vars:
         ec2sg_groups: "{{ launch_groups_default | union(launch_groups) }}"
 
-    - name: Set keypair facts
-      set_fact:
-        aws_ssh_key: "{{ aws_resource_prefix }} {{ (public_key | hash('sha1'))[:6] }}"
-        aws_ssh_key_material: "{{ public_key }}"
-      vars:
-        public_key: "{{ lookup('hashi_vault', 'secret=secret/ssh/' ~ ansible_user ~ ':public') }}"
+    - when: bootstrap == false
+      block:
+        - name: Set keypair facts
+          set_fact:
+            aws_ssh_key: "{{ aws_resource_prefix }} {{ (public_key | hash('sha1'))[:6] }}"
+            aws_ssh_key_material: "{{ public_key }}"
+          vars:
+            public_key: "{{ lookup('hashi_vault', 'secret=secret/ssh/' ~ ansible_user ~ ':public') }}"
 
-    - name: Create keypair
-      ec2_key:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
-        name: "{{ aws_ssh_key }}"
-        key_material: "{{ aws_ssh_key_material }}"
-        force: true
+        - name: Create keypair
+          ec2_key:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile }}"
+            name: "{{ aws_ssh_key }}"
+            key_material: "{{ aws_ssh_key_material }}"
+            force: true
 
     - name: Get AMI data
       ec2_ami_facts:

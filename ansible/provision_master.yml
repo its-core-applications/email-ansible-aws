@@ -19,6 +19,8 @@
           CustomDNSName: "{{ master_hostname }}"
         launch_count: "{{ (master_hostname in hostvars) | ternary(0, 1) }}"
         launch_wait: false
+        aws_ssh_key: umcollab 31d2b0
+        bootstrap: true
 
     - name: Set CNAMEs for vhosts
       route53:
