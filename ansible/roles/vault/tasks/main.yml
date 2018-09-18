@@ -5,8 +5,7 @@
         name: letsencrypt
       vars:
         certificate: vault.{{ subd }}
-        le_services:
-          - vault
+        le_services: "{{ bootstrap | ternary([], ['vault']) }}"
 
     - name: Install vault
       yum:
