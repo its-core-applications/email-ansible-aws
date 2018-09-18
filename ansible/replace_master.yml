@@ -6,5 +6,9 @@
 
 - import_playbook: deprovision_spundown.yml
 
+- hosts: localhost
+  tasks:
+    - meta: refresh_inventory
+
 - import_playbook: provision_master.yml
 
