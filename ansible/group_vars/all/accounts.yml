@@ -14,10 +14,6 @@ nonperson_accounts:
   - name: splunk
     comment: Splunk
     uid: 1005
-  - name: sensu
-    comment: Sensu
-    uid: 1006
-    home: /opt/sensu
 
 user_accounts:
   - name: ezekielh
