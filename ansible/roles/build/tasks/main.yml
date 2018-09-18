@@ -1,5 +1,3 @@
----
-
 - tags:
     - build
   block:
@@ -445,4 +443,3 @@
     - import_role:
         name: s3repo_upload
       tags: always
-
