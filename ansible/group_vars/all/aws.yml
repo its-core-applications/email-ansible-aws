@@ -12,6 +12,7 @@ aws_primary_regions:
   prod: us-west-2
   nonprod: us-east-2
 aws_primary_region: "{{ aws_primary_regions[aws_status] }}"
+aws_region_vdc_core: us-east-2
 
 aws_profiles:
   prod:

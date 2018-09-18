@@ -31,7 +31,7 @@
 
     - name: Gather VDC core VPC subnet facts
       ec2_vpc_subnet_facts:
-        region: "{{ aws_region }}"
+        region: "{{ aws_region_vdc_core }}"
         profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
       register: ec2_subnet_facts_vdc
 
