@@ -1,5 +1,3 @@
----
-
 simta_config: egress.a.mail
 simta_relay: true
 simta_egress: true
@@ -10,3 +8,5 @@ simta_ldap: true
 simta_ldap_password: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value') }}"
 simta_bitbucket: "{{ aws_status == 'nonprod' }}"
 trendmicro_key: "{{ lookup('hashi_vault', 'secret=secret/simta/trendmicro:value') }}"
+simta_srs: true
+simta_srs_secret: "{{ lookup('hashi_vault', 'secret=secret/simta/srs_secret:value') }}"
