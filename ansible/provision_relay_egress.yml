@@ -44,7 +44,7 @@
             region: "{{ region }}"
             profile: "{{ aws_profile_ec2 }}"
             device_id: "{{ instance_id }}"
-            public_ip: "{{ (result.addresses | rejectattr('association_id', 'defined') | first).public_ip }}"
+            public_ip: "{{ (result.addresses | rejectattr('association_id', 'defined') | shuffle | first).public_ip }}"
           register: result
 
 - hosts: Class_relay_egress:&Status_spinup
