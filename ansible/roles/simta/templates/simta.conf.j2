@@ -199,7 +199,7 @@ DELIVER_MESSAGES_PER_CONNECTION     50
 SRS_SECRET                      {{ simta_srs_secret }}
 SRS_DOMAIN                      {{ simta_srs_domain }}
 SRS                             FOREIGN
-@{{ simta_srs_domain.ljust(30) }} RE SRS
+@{{ simta_srs_domain.ljust(30) }} {{ simta_ldap_red }} SRS
 
 {% endif %}
 {% if simta_devnull_domains is defined %}
