@@ -15,6 +15,7 @@
         group: root
         mode: "0644"
       loop:
+        - local.d/actions.conf
         - local.d/arc.conf
         - local.d/dkim.conf
         - local.d/dmarc.conf
@@ -27,7 +28,6 @@
         - local.d/spf.conf
         - local.d/surbl.conf
         - local.d/worker-proxy.inc
-        - override.d/metrics.conf
         - umich_bad_tld.inc
       notify: Restart rspamd
 
