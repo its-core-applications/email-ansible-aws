@@ -48,9 +48,9 @@ fi
 
 for curdir in egress relay-egress; do
     if [[ $curdir = 'relay-egress' ]]; then
-        qhosts=${regress_hosts[@]}
+        qhosts=(${regress_hosts[@]})
     else
-        qhosts=${egress_hosts[@]}
+        qhosts=(${egress_hosts[@]})
     fi
     for queue in ${workdir}/inbound/${curdir}/* ; do
         [[ -d $queue ]] || continue
