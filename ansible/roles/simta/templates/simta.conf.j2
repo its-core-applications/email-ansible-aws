@@ -97,6 +97,7 @@ CONNECTION_LIMIT_PER_HOST           {{ simta_connlimit // 10 }}
 {% endif %}
 MAX_MESSAGE_SIZE                    104857600
 {% if simta_relay == false %}
+MAX_FAILED_SENDERS                  3
 MAX_FAILED_RCPTS                    3
 {% endif %}
 MAX_Q_RUNNERS_RECEIVE               5
