@@ -1,5 +1,2 @@
----
-
-dns_group: Class_{{ dns_host | replace('-', '_') }}
 dns_regional: true
 dns_private_ip: true
