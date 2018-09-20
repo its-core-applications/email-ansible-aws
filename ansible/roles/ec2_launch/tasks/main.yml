@@ -40,7 +40,7 @@
         profile: "{{ aws_profile }}"
         owners: self
         filters:
-          "tag:os": amzn2
+          "tag:os": "{{ launch_os | default('amzn2') }}"
           "tag:image_type": "{{ launch_ami_class | default(launch_class) | replace('-', '_') }}"
       register: find_ami_facts
 
