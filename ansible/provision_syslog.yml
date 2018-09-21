@@ -63,6 +63,7 @@
         name: route53_dns_from_inventory
       vars:
         dns_host: syslog
+        dns_host: Class_syslog
 
     - name: Set aliases
       route53:
