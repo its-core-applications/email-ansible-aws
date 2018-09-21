@@ -6,6 +6,7 @@ all:
     Class_dev: {}
     Class_dnsbl: {}
     Class_egress: {}
+    Class_jail: {}
     Class_master: {}
     Class_mx: {}
     Class_mx_test: {}

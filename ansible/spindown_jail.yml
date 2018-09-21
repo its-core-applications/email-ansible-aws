@@ -1,0 +1,61 @@
+- hosts: Class_jail:&Status_production
+  gather_facts: false
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Set status on oldest host to spindown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spindown
+        - meta: refresh_inventory
+
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: route53_dns_from_inventory
+      vars:
+        dns_host: jail
+        dns_group: Class_jail
+
+- hosts: Class_jail:&Status_spindown
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Stop sensu
+          systemd:
+            name: sensu-client
+            state: stopped
+          ignore_errors: true
+
+        - name: Wait for active connections to finish
+          wait_for:
+            host: 0.0.0.0
+            port: 25
+            state: drained
+
+        - name: Give the queue a chance to quiesce
+          pause:
+            seconds: 60
+
+        - import_tasks: task_spindown_simta.yml
+
+        - name: Unmount ammit
+          mount:
+            state: unmounted
+            path: /ammit
+
+        - name: Set status to spundown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spundown

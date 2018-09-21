@@ -123,11 +123,14 @@ PUNT                    {{ simta_punt }}
 {% endif %}
 {% else %}
 DELIVER_TLS             REQUIRED
-RECEIVE_QUEUE_STRATEGY  PUNT
+PUNT_STRATEGY           ALL
+{% if simta_jail %}
+RECEIVE_QUEUE_STRATEGY  JAIL
+{% endif %}
 PUNT                    {% if simta_relay %}relay-{% endif %}egress.{{ aws_region }}.{{ subd }}
 
-SUBADDRESS_SEPARATOR    +
 {% endif %}
+SUBADDRESS_SEPARATOR    +
 
 {% if simta_ldap %}
 @{{ tld.ljust( 30 ) }} {{ simta_ldap_red }} LDAP    /etc/mail/ldap/{{ tld }}
@@ -176,6 +179,12 @@ DEFAULT_LOCAL_MAILER /usr/libexec/simta/simda $R /usr/bin/procmail -f $S
 @{{ domain.ljust( 30 ) }} R  NOT_FOUND  CTools sites have become read-only and are no longer accepting email. Please visit the CTools project website <http://its.umich.edu/projects/ctools-project-sites/> for more information.
 @{{ domain.ljust( 30 ) }} R  ALIAS /etc/mail/aliases-{{ domain }}.db
 {% endfor %}
+
+{% endif %}
+{% if simta_jail %}
+JAIL_CLEANUP_INTERVAL       600
+MID_LIST                    ON
+SENDER_LIST                 ON
 
 {% endif %}
 {% if simta_egress %}

@@ -1,0 +1,21 @@
+---
+
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: ec2_launch
+      vars:
+        launch_class: jail
+        launch_ami_class: jail
+        launch_groups:
+          - efs
+          - egress
+        launch_tags:
+          Status: production
+
+    - import_role:
+        name: route53_dns_from_inventory
+      vars:
+        dns_host: jail
+        dns_group: Class_jail

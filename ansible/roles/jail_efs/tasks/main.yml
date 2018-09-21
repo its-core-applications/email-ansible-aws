@@ -1,0 +1,37 @@
+- tags:
+    - jail_efs
+  block:
+    - import_role:
+        name: ec2_find_subnets
+    - become: false
+      delegate_to: localhost
+      block: 
+        - name: Fetch EFS security group info
+          ec2_group_facts:
+            region: "{{ aws_region }}"
+            filters:
+              vpc-id: "{{ ec2_subnets_public.0.vpc_id }}"
+              group-name: "{{ aws_resource_prefix }} efs"
+          register: efs_sg
+
+        - name: Create EFS volume for jail
+          efs:
+            profile: "{{ aws_profile }}"
+            region: "{{ aws_region }}"
+            state: present
+            name: ammit
+            tags:
+              Name: ammit
+            targets: "{{ ec2_subnets_public | json_query(target_query) }}"
+            wait: yes
+          vars:
+            target_query: "[*].{subnet_id: id, security_groups: ['{{ efs_sg.security_groups.0.group_id }}']}"
+          register: result
+
+    - name: Mount ammit
+      mount:
+        src: "{{ result.efs.file_system_id }}.efs.{{ aws_region }}.amazonaws.com:/"
+        fstype: nfs4
+        opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noatime
+        state: mounted
+        path: /ammit

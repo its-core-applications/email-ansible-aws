@@ -125,6 +125,15 @@
       ],
       "handler": "graphite",
       "interval": 60
+    },
+    "simta-queue-slow-jailed": {
+      "command": "/usr/libexec/simta-admin/check-simta-queue-jailed -q slow -c 0",
+      "subscribers": [
+        "Class_jail"
+      ],
+      "interval": 60,
+      "occurrences": 2,
+      "refresh": 360
     }
   }
 }

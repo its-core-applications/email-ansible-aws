@@ -1,6 +1,6 @@
 # Run the daily, weekly, and monthly jobs
 SHELL=/bin/bash
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
+PATH=/sbin:/bin:/usr/local/sbin:/usr/local/bin
 MAILTO=root
 
 # run-parts

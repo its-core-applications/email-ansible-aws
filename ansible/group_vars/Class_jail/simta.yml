@@ -1,0 +1,4 @@
+simta_config: jail.a.mail
+simta_jail: true
+simta_relay: true
+simta_filters: false

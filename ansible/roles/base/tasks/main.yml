@@ -1,5 +1,3 @@
----
-
 - tags:
     - base
   block:
@@ -124,6 +122,13 @@
         group: root
         mode: "0644"
 
+    - name: Configure cron search path
+      cron:
+        name: PATH
+        value: /sbin:/bin:/usr/local/sbin:/usr/local/bin
+        env: true
+        state: present
+
     - name: Configure OpenSSL certificate generation
       copy:
         dest: /etc/pki/tls/{{ item }}
@@ -134,4 +139,3 @@
       loop:
         - openssl.cnf
         - openssl-san.cnf
-

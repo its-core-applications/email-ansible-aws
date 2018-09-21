@@ -1,0 +1,19 @@
+- tags:
+    - jail
+  block:
+    - import_role:
+        name: jail_efs
+
+    - name: Install osiris
+      copy:
+        dest: /usr/local/sbin/osiris
+        src: osiris
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Schedule osiris to run
+      cron:
+        name: run osiris
+        minute: "*"
+        job: /usr/local/sbin/osiris

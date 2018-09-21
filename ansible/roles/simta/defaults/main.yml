@@ -18,6 +18,7 @@ simta_arc: false
 simta_loadbalanced: false
 simta_authn: false
 simta_relay: false
+simta_jail: false
 simta_msa: false
 simta_connlimit: 1500
 simta_egress: false

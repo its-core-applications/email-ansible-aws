@@ -1,0 +1,39 @@
+#!/bin/bash
+
+declare -A lstatus
+
+ammitdir='/ammit'
+
+find /var/spool/simta/slow/ -ignore_readdir_race -name 'E*' -type f 2>/dev/null | while read efile; do
+    # The file might have disappeared
+    [[ -s $efile ]] || continue
+
+    # Only check prisoners
+    grep -q '^J2$' $efile || continue
+
+    dfile=${efile/E/D}
+    mid=$(basename $efile)
+    mid=${mid#E}
+
+    uniqname=$(sed -n '/^$/q; /smtp.auth/{ s/.\+smtp.auth=//; p; q;}'  $dfile 2>/dev/null )
+    [[ $uniqname ]] || continue
+
+    if [[ -z ${lstatus[$uniqname]} ]]; then
+        if ! simrbl -q -t -l ual.dnsal $uniqname; then
+            lstatus[$uniqname]=allow
+        elif ! simrbl -q -t -l ubl.dnsbl $uniqname; then
+            lstatus[$uniqname]=block
+        else
+            lstatus[$uniqname]=absent
+        fi
+    fi
+
+    if [[ ${lstatus[$uniqname]} = 'allow' ]]; then
+        logger -p mail.info -t "osiris[$$]" "$mid from $uniqname is released to continue on its journey"
+        simc -m $mid &>/dev/null
+    elif [[ ${lstatus[$uniqname]} = 'block' ]]; then
+        logger -p mail.info -t "osiris[$$]" "$mid from $uniqname fed to Ammit"
+        mkdir -p $ammitdir/$uniqname
+        mv $efile $dfile $ammitdir/$uniqname
+    fi
+done
