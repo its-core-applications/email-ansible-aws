@@ -135,7 +135,7 @@ class CallbackModule(CallbackBase):
         if not unreachable and not failures:
             return
 
-        subject = '{}/{} - ALERT - {} CRITICAL'.format(
+        subject = '{}/{} - ALERT - {} FAILED'.format(
             os.environ.get('AWS_STATUS', 'prod'),
             os.environ.get('AWS_DEFAULT_REGION', 'unknown'),
             self.playbook_name,
