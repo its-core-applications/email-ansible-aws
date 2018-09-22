@@ -1,12 +1,8 @@
----
-
 - tags:
     - mx
   block:
-    - name: Install extra packages
-      yum:
+    - import_role:
         name: penaltybox
-        state: latest
 
     - name: Install filter data files
       copy:
@@ -40,5 +36,3 @@
         mode: "0755"
       loop:
         - 16_spf
-        - 70_pb
-

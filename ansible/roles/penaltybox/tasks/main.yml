@@ -1,0 +1,15 @@
+- tags:
+    - penaltybox
+  block:
+    - name: Install penaltybox
+      yum:
+        name: penaltybox
+        state: latest
+
+    - name: Install penaltybox filter
+      template:
+        dest: /etc/mail/filters/70_pb
+        src: 70_pb.j2
+        owner: root
+        group: root
+        mode: "0755"

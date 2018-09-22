@@ -7,6 +7,10 @@
 - import_role:
     name: simta
 - import_role:
+    name: penaltybox
+- import_role:
     name: clamav_filter
+- import_role:
+    name: rspamd_filter
 - import_role:
     name: sensu

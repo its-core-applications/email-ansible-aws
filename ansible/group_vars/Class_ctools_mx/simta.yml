@@ -4,6 +4,7 @@ simta_punt: egress.{{ aws_region }}.{{ subd }}
 simta_arc: true
 simta_arc_selector: arc-2017-08-04
 simta_dkim: true
+trendmicro_key: "{{ lookup('hashi_vault', 'secret=secret/simta/trendmicro:value') }}"
 
 simta_ctools_domains:
   - ctools.umich.edu
