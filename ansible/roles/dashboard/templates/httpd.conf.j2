@@ -25,7 +25,7 @@
 
     <Location />
         AuthType openid-connect
-        AuthLDAPURL "ldaps://{{ ldap_host }}/{{ ldap_base }}?mail"
+        AuthLDAPURL "ldap://{{ ldap_host }}/{{ ldap_base }}?mail"
         <Limit GET>
             Require valid-user
         </Limit>
