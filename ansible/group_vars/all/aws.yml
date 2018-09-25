@@ -46,8 +46,9 @@ yum_aws_region: us-west-2
 aws_instance_types:
   prod:
     default: m5.large
-    mx: m5.xlarge
+    ctools-mx: t2.small
     egress: m5.2xlarge
+    mx: m5.xlarge
     mx-test: t2.small
     smtp-test: t2.small
     vdc-relay: t2.small
