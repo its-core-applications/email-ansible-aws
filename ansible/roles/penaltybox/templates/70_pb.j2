@@ -7,6 +7,8 @@ penaltybox_args='-h {{ simta_redis_host }}'
 
 if check_tfile && grep -iq '^Rpenaltybox@' $SIMTA_TFILE ; then
     reason='testing'
+elif [ "x$SIMTA_DMARC_RESULT" = 'xpass' -o "x$SIMTA_DMARC_RESULT" = 'xbestguesspass' ] && ! simrbl -q -l penaltybox-skip-domains.dnsal -t "$SIMTA_DMARC_DOMAIN" ; then
+    PENALTYBOX_PASS=0
 elif ! simrbl -q -l penaltybox-skip.dnsal "$SIMTA_REMOTE_IP" ; then
     PENALTYBOX_PASS=0
 elif [ "x$SIMTA_DMARC_RESULT" = 'xquarantine' -o "x$SIMTA_DMARC_RESULT" = 'xreject' ]; then

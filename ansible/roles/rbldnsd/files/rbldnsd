@@ -3,6 +3,7 @@ RBLDNSD="- -q -a -t 30::300 -b 0.0.0.0 \
         mx-trust.dnsal:ip4set:/var/lib/rbldnsd/umich/mx-trust \
         relay-accept.dnsal:ip4set:/var/lib/rbldnsd/umich/relay-accept \
         penaltybox-skip.dnsal:ip4set:/var/lib/rbldnsd/umich/penaltybox-skip,/var/lib/rbldnsd/umich/umnets,/var/lib/rbldnsd/umich/mx-accept \
+        penaltybox-skip-domains.dnsal:dnset:/var/lib/rbldnsd/umich/penaltybox-skip-domains \
         umnetworks.dnsal:ip4trie:/var/lib/rbldnsd/umich/umnets \
         umnetworks.dnsal:ip6trie:/var/lib/rbldnsd/umich/umnets-ipv6 \
         deny-urls.dnsbl:dnset:/var/lib/rbldnsd/umich/deny-urls \

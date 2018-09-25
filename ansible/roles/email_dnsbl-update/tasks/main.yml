@@ -1,5 +1,3 @@
----
-
 - tags:
     - email
   block:
@@ -24,6 +22,7 @@
           - mx-deny
           - mx-trust
           - penaltybox-skip
+          - penaltybox-skip-domains
           - relay-accept
           - relay-deny
           - spamassassin-reject
@@ -34,4 +33,3 @@
         actions:
           - add
           - remove
-
