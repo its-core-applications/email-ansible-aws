@@ -9,40 +9,46 @@ destdir=/var/lib/rbldnsd
 sshkey=/root/.ssh/id_rsa.rbldnsd
 
 . /usr/libexec/comint/setup
+(
+    flock -n 9 || exit 1
 
-retval=0
-startts=$(date +%s%N)
-# Excludes version control and sync artifacts
-/usr/bin/rsync -ri \
-    -e "ssh -i $sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-    --copy-dest=$destdir \
-    --exclude '.git' \
-    --exclude '*.*' \
-    ${updatehost}:$srcdir/ ${tmpdir}/sync/ \
-    > ${tmpdir}/rsyncout 2>>$tmpfile
-if [[ $? -eq 0 ]]; then
-    diff -qr ${tmpdir}/sync $destdir &>/dev/null
-    if [[ $? -eq 1 ]]; then
-        msg="DNSBL data updated"
-        rsync -a --delete ${tmpdir}/sync/ $destdir/ &>/dev/null
-        /usr/sbin/rbldnsctl reload
+    retval=0
+    startts=$(date +%s%N)
+    # Excludes version control and sync artifacts
+    /usr/bin/rsync -ri \
+        -e "ssh -i $sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+        --copy-dest=$destdir \
+        --exclude '.git' \
+        --exclude '*.*' \
+        ${updatehost}:$srcdir/ ${tmpdir}/sync/ \
+        > ${tmpdir}/rsyncout 2>>$tmpfile
+    if [[ $? -eq 0 ]]; then
+        diff -qr ${tmpdir}/sync $destdir &>/dev/null
+        if [[ $? -eq 1 ]]; then
+            msg="DNSBL data updated"
+            rsync -a --delete ${tmpdir}/sync/ $destdir/ &>/dev/null
+            /usr/sbin/rbldnsctl reload
+        else
+            msg="DNSBL data unchanged"
+        fi
     else
-        msg="DNSBL data unchanged"
+        retval=2
+        msg="rsync failed
+    $(cat $tmpfile)"
     fi
-else
-    retval=2
-    msg="rsync failed
-$(cat $tmpfile)"
-fi
 
-duration=$(( $(date +%s%N) - startts ))
+    duration=$(( $(date +%s%N) - startts ))
 
-jq -n -r \
-    --arg source $(hostname) \
-    --arg status $retval \
-    --arg duration $(( duration / 1000000000 )).$(( duration % 1000000000 / 1000000 )) \
-    --arg msg "$msg" \
-    '{ name: "dnsbl-sync", source: $source, ttl: 300, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+    jq -n -r \
+        --arg source $(hostname) \
+        --arg status $retval \
+        --arg duration $(( duration / 1000000000 )).$(( duration % 1000000000 / 1000000 )) \
+        --arg msg "$msg" \
+        '{ name: "dnsbl-sync", source: $source, ttl: 300, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+
+    exit $retval
+) 9>>/var/run/dnsbl-sync.lock
+retval=$?
 
 cleanup
 
