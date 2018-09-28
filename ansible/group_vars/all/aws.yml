@@ -53,7 +53,7 @@ aws_instance_types:
     smtp-test: t2.small
     vdc-relay: t2.small
   nonprod:
-    default: t2.small
+    default: t3.small
     master: m5.large
     builder: m5.large
 
