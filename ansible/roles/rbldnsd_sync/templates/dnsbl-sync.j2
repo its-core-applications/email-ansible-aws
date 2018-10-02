@@ -44,7 +44,7 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
         --arg status $retval \
         --arg duration $(( duration / 1000000000 )).$(( duration % 1000000000 / 1000000 )) \
         --arg msg "$msg" \
-        '{ name: "dnsbl-sync", source: $source, ttl: 300, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+        '{ name: "dnsbl-sync", source: $source, ttl: 300, occurrences: 3, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
 
     exit $retval
 ) 9>>/var/run/dnsbl-sync.lock
