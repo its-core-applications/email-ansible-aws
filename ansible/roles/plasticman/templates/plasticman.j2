@@ -21,12 +21,23 @@ sendmetric() {
 
 sendresult() {
     duration=$(( $(date +%s) - startts))
+
+    # Send heartbeat
     jq -n -r \
     --arg source $(hostname) \
     --arg status $retval \
     --arg duration $duration \
-    --arg msg "$1" \
-    '{ name: "plasticman", source: $source, ttl: 300, ttl_status: 2, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030 
+    '{ name: "plasticman-heartbeat", source: $source, ttl: 300, ttl_status: 2, duration: $duration | tonumber, status: 0, output: "plasticman ran to completion" }' | ncat localhost 3030
+
+    # Send actual result if something happened
+    if [[ $1 != 'no action necessary' ]]; then
+        jq -n -r \
+        --arg source $(hostname) \
+        --arg status $retval \
+        --arg duration $duration \
+        --arg msg "$1" \
+        '{ name: "plasticman", source: $source, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+    fi
 }
 
 outlog() {
