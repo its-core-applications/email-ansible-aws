@@ -25,7 +25,6 @@ sendresult() {
     # Send heartbeat
     jq -n -r \
     --arg source $(hostname) \
-    --arg status $retval \
     --arg duration $duration \
     '{ name: "plasticman-heartbeat", source: $source, ttl: 300, ttl_status: 2, duration: $duration | tonumber, status: 0, output: "plasticman ran to completion" }' | ncat localhost 3030
 
