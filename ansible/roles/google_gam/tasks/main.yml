@@ -3,12 +3,17 @@
 - tags:
     - google
   block:
+    - name: Install extra python packages
+      pip:
+        name:
+          - google-auth
+
     - name: Install GAM
       become_user: collaborate
       git:
         repo: https://github.com/jay0lee/GAM.git
         dest: ~/GAM
-        version: 40bfde96
+        version: 7112a42
 
     - name: Configure google-admin-kit
       template:
