@@ -11,7 +11,6 @@
     - import_role:
         name: ec2_launch
       vars:
-        launch_ami_class: egress
         launch_class: relay-egress
         launch_groups:
           - egress
