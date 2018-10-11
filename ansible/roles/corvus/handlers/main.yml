@@ -1,0 +1,5 @@
+- name: Restart corvus
+  systemd:
+    name: corvus
+    daemon_reload: true
+    state: restarted

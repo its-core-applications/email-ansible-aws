@@ -131,9 +131,13 @@ ec2_sg:
     rules:
       - proto: tcp
         ports:
-          - 6379
-          - 16379
+          - 6379  # Redis
+          - 16379 # Redis cluster
         cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+      - proto: tcp
+        ports:
+          - 6380  # Corvus
+        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | list | union(['141.211.12.0/24', '141.211.125.0/24']) | cidr_merge }}"
 
   vault:
     vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"

@@ -8,6 +8,14 @@
       "occurrences": 3,
       "interval": 60
     },
+    "corvus": {
+      "command": "check-redis-ping.rb -p 6380",
+      "subscribers": [
+        "Class_egress"
+      ],
+      "occurrences": 3,
+      "interval": 60
+    },
     "redis-cluster": {
       "command": "check-redis-cluster -c :::name:::",
       "subscribers": [
