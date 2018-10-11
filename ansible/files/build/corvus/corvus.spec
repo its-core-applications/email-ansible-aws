@@ -2,7 +2,7 @@
 
 Name:               corvus
 Version:            0.2.7
-Release:            1%{?dist}
+Release:            2%{?dist}
 Summary:            A lightweight proxy for redis clusters
 License:            MIT
 URL:                https://github.com/eleme/corvus
