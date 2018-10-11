@@ -1,10 +1,9 @@
----
-
 - name: Restart simta
   systemd:
     name: simta
     daemon_reload: true
     state: restarted
+  cancel: Rebuild aliases
 
 - name: Rebuild aliases
   command: /usr/bin/newaliases

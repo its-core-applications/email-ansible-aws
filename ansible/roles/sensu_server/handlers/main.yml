@@ -1,12 +1,13 @@
----
-
-- name: Restart sensu server
+- name: Restart sensu-server
   systemd:
-    name: "{{ item }}"
+    name: sensu-server
     daemon_reload: true
     state: restarted
-  loop:
-    - sensu-server
-    - sensu-api
   listen: Restart sensu
 
+- name: Restart sensu-api
+  systemd:
+    name: sensu-api
+    daemon_reload: true
+    state: restarted
+  listen: Restart sensu

@@ -1,5 +1,3 @@
----
-
 - tags:
     - rabbitmq
   block:
@@ -23,8 +21,12 @@
     - name: Enable RabbitMQ
       systemd:
         name: rabbitmq-server
+        daemon_reload: true
         enabled: true
       notify: Restart RabbitMQ
 
-    - meta: flush_handlers
-
+    - name: Start RabbitMQ
+      systemd:
+        name: rabbitmq-server
+        state: started
+      cancel: Restart RabbitMQ

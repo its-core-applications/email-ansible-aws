@@ -184,7 +184,14 @@
         name: simta
         daemon_reload: true
         enabled: true
-      notify: Restart simta
+
+    - name: Start simta
+      systemd:
+        name: simta
+        state: started
+      cancel:
+        - Restart simta
+        - Rebuild aliases
 
     - name: Install custom monitoring scripts
       template:
@@ -197,4 +204,3 @@
         - check-dnsbl
         - check-dnsl
       when: trendmicro_key is defined
-

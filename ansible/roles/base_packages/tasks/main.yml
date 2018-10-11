@@ -16,6 +16,7 @@
           - postfix
           - update-motd
         state: absent
+        lock_timeout: 30
 
     # Only for the fake hostname that packer uses when building the base image
     - name: Upgrade all packages

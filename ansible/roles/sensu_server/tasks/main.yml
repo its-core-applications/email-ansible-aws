@@ -90,9 +90,20 @@
     - name: Enable sensu server
       systemd:
         name: "{{ item }}"
+        daemon_reload: true
         enabled: true
       loop:
         - sensu-server
         - sensu-api
-      notify: Restart sensu server
 
+    - name: Start sensu-server
+      systemd:
+        name: sensu-server
+        state: started
+      cancel: Restart sensu-server
+
+    - name: Start sensu-api
+      systemd:
+        name: sensu-api
+        state: started
+      cancel: Restart sensu-api

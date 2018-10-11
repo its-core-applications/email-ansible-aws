@@ -1,5 +1,3 @@
----
-
 - tags:
     - localnameserver
   block:
@@ -19,11 +17,16 @@
       notify: Restart unbound
 
     - name: Enable unbound
-      service:
+      systemd:
         name: unbound
+        daemon_reload: true
         enabled: true
 
-    - meta: flush_handlers
+    - name: Start unbound
+      systemd:
+        name: unbound
+        state: started
+      cancel: Restart unbound
 
     - name: Set 127.0.0.1 as the active nameserver
       copy:
@@ -49,4 +52,3 @@
         owner: root
         group: root
         mode: "0644"
-

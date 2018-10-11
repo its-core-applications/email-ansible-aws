@@ -1,10 +1,6 @@
----
-
 - tags:
     - sensu
   block:
-    - meta: flush_handlers
-
     - name: Register sensu proxy clients
       uri:
         url: http://{{ sensu_server }}:4567/clients
