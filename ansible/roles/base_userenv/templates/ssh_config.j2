@@ -5,6 +5,10 @@ Host *.{{ subd }}
     UserKnownHostsFile /dev/null
     LogLevel error
 
+Host *.dsc.umich.edu
+    IdentityFile ~/.ssh/id_rsa.{{ tld }}
+    User collaborate
+
 Host *.{{ tld }}
     IdentityFile ~/.ssh/id_rsa.{{ tld }}
     User root

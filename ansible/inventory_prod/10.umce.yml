@@ -1,5 +1,18 @@
 all:
   children:
+    miserver:
+      vars:
+        ansible_user: collaborate
+        ansible_become: false
+      children:
+        Class_rbldnsd:
+          hosts:
+            bluebeetle.dsc.umich.edu:
+            boostergold.dsc.umich.edu:
+        Class_mailstore:
+          hosts:
+            hawkgirl.dsc.umich.edu:
+
     umce:
       vars:
         ansible_user: root
