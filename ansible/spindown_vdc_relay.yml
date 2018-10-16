@@ -24,11 +24,10 @@
   become: false
   tasks:
     - import_role:
-        name: ec2_targetgroup
+        name: route53_dns_from_inventory
       vars:
-        aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
-        tg_name: vdc-relay
-        tg_group: Class_vdc_relay
+        dns_host: vdc-relay
+        dns_group: Class_vdc_relay
 
 - hosts: Class_vdc_relay:&Status_spindown
   tasks:
