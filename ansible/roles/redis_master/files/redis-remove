@@ -12,10 +12,21 @@ outlog() {
     echo "$1"
 }
 
-if [[ $(redis-cli -h $1 PING) != 'PONG' ]]; then
-    outlog "No PONG from $1, assuming it's already removed."
-    exit 0
-fi
+try=0
+pong=0
+while [[ $pong -eq 0 ]]; do
+    (( try++ ))
+    if [[ $(redis-cli -h $1 PING) = 'PONG' ]]; then
+        pong=1
+    else
+        if [[ $try -gt 2 ]]; then
+            outlog "No PONG from $1, assuming it's already removed."
+            exit 0
+        fi
+        outlog "PING failed, retrying..."
+        sleep 1
+    fi
+done
 
 tmpfile=$(mktemp /tmp/${name}.XXXXXXXX)
 redis-cli -h $1 CLUSTER NODES > $tmpfile
