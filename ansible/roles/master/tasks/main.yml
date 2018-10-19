@@ -1,5 +1,3 @@
----
-
 - tags:
     - master
   block:
@@ -39,7 +37,6 @@
             src: /dev/xvdd
             fstype: xfs
             state: mounted
-          when: result is changed
 
         - name: Copy the skeleton over
           shell: rsync -av /home/ /var/tmp/home/
@@ -60,4 +57,3 @@
         src: /dev/xvdd
         fstype: xfs
         state: mounted
-
