@@ -1,3 +1,4 @@
+{% if aws_region == aws_primary_region %}
 {
   "checks": {
     "box-status": {
@@ -18,3 +19,4 @@
     }
   }
 }
+{% endif %}

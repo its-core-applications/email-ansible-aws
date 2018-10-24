@@ -1,3 +1,4 @@
+{% if aws_region == aws_primary_region %}
 {
   "checks": {
     "vault-seal": {
@@ -9,3 +10,4 @@
     }
   }
 }
+{% endif %}
