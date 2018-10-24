@@ -8,6 +8,18 @@
       ],
       "interval": 60
     },
+    "rspamd-greylist": {
+      "command": "check-rspamd-greylist",
+      "subscribers": [
+        "Class_mx",
+        "Class_mx_test"
+      ],
+      "interval": 60,
+      "occurrences": 2,
+      "dependencies": [
+        "rspamd"
+      ]
+    },
     "rspamd-gtube": {
       "command": "check-rspamd-gtube",
       "subscribers": [

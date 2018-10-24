@@ -38,10 +38,13 @@
         daemon_reload: true
       notify: Restart rspamd
 
-    - name: Install custom monitoring script
+    - name: Install custom monitoring scripts
       copy:
-        dest: "{{ comint_base }}/check-rspamd-gtube"
-        src: check-rspamd-gtube
+        dest: "{{ comint_base }}/{{ item }}"
+        src: "{{ item }}"
         owner: collaborate
         group: collaborate
         mode: "0755"
+      loop:
+        - check-rspamd-gtube
+        - check-rspamd-greylist
