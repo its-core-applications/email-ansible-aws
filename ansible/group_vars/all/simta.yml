@@ -49,6 +49,8 @@ simta_ldap_domains_mapped:
     prefix: glrc
   - domain: icart-bukavu.org
     prefix: icart-bukavu
+  - domain: iracda2019.com
+    prefix: iracda2019
   - domain: isbis.org
     prefix: isbis
   - domain: michiganemagine.org
