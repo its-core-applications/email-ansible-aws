@@ -28,6 +28,7 @@
         - local.d/spf.conf
         - local.d/surbl.conf
         - local.d/worker-proxy.inc
+        - rspamd.local.lua
         - umich_bad_tld.inc
       notify: Restart rspamd
 
