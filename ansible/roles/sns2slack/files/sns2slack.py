@@ -21,7 +21,7 @@ def handler(event, context):
 
     if 'WARNING' in sns['Subject']:
         color = 'warning'
-    elif any(x in sns['Subject'] for x in ['CRITICAL', 'FAILED'])
+    elif any(x in sns['Subject'] for x in ['CRITICAL', 'FAILED']):
         color = 'danger'
     else:
         color = 'good'
