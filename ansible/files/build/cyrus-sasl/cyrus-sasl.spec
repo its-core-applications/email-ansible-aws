@@ -1,6 +1,3 @@
-%global commit0 e41cfb986c1b1935770de554872247453fdbb079
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-
 %define username        saslauth
 %define hint            Saslauthd user
 %define homedir         /run/saslauthd
@@ -13,11 +10,11 @@
 Summary: The Cyrus SASL library
 Name: cyrus-sasl
 Version: 2.1.27
-Release: 0.1.20180510.%{shortcommit0}%{?dist}
+Release: 1%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
-Source0: https://github.com/cyrusimap/%{name}/archive/%{commit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
+Source0: https://github.com/cyrusimap/%{name}/archive/%{name}-%{version}.tar.gz
 Source5: saslauthd.service
 Source9: saslauthd.sysconfig
 Requires: %{name}-lib%{?_isa} = %{version}-%{release}
@@ -64,7 +61,7 @@ compiling applications which use the Cyrus SASL library.
 
 
 %prep
-%autosetup -p 1 -n %{name}-%{commit0}
+%autosetup -p 1 -n %{name}-%{name}-%{version}
 chmod -x include/*.h
 
 %build
@@ -160,11 +157,6 @@ getent passwd %{username} >/dev/null || useradd -r -g %{username} -d %{homedir} 
 
 %postun
 %systemd_postun_with_restart saslauthd.service
-
-%triggerun -n cyrus-sasl -- cyrus-sasl < 2.1.23-32
-/usr/bin/systemd-sysv-convert --save saslauthd >/dev/null 2>&1 || :
-/sbin/chkconfig --del saslauthd >/dev/null 2>&1 || :
-/bin/systemctl try-restart saslauthd.service >/dev/null 2>&1 || :
 
 %post lib -p /sbin/ldconfig
 %postun lib -p /sbin/ldconfig
