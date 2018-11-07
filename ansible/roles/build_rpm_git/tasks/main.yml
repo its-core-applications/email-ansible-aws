@@ -16,7 +16,7 @@
           git:
             repo: "{{ build_repo }}"
             dest: ~/{{ build_name }}
-            version: "{{ build_version | default(omit) }}"
+            version: "{{ build_version | default(omit, true) }}"
             update: true
             force: true
 
