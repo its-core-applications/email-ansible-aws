@@ -1,7 +1,6 @@
 #!/bin/dash
 
-simrbl -q -l mx-trust.dnsal "$SIMTA_REMOTE_IP"
-if [ $? -ne 0 ]; then
+if [ "x$SIMTA_DNSL_RESULT" = 'xTrust' ]; then
     log "15_trust: trusted host, skipping further tests"
     filter_exit ${MESSAGE_ACCEPT}
 fi
