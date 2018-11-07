@@ -1,17 +1,12 @@
----
-
 - hosts: localhost
   become: false
   tasks:
     - import_role:
         name: ec2_launch
       vars:
-        launch_class: relay
+        launch_class: authz-relay
         launch_ami_class: base
         launch_groups:
           - relay
         launch_tags:
           Status: production
-
-- import_playbook: relay.yml
-

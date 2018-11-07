@@ -1,0 +1,3 @@
+nlb_subnets: "{{ ec2_subnets_public | map(attribute='id') | list }}"
+nlb_scheme: internet-facing
+nlb_target: "{{ aws_resource_prefix }}-target-{{ nlb_name }}"

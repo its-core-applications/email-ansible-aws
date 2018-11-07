@@ -1,2 +1,2 @@
-mech_list: PLAIN LOGIN GSSAPI
+mech_list: PLAIN LOGIN
 pwcheck_method: saslauthd

@@ -1,0 +1,40 @@
+- tags:
+    - ec2
+    - nlb
+  become: false
+  block:
+    - name: Create {{ nlb_name }} loadbalancer
+      elb_network_lb:
+        name: "{{ aws_resource_prefix }}-lb-{{ nlb_name }}"
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        tags:
+          BusinessOwner: "{{ aws_resource_owner }}"
+        state: present
+        scheme: "{{ nlb_scheme }}"
+        cross_zone_load_balancing: true
+        subnets: "{{ nlb_subnets }}"
+        listeners:
+          - Protocol: TCP
+            Port: 25
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "{{ nlb_target }}"
+          - Protocol: TCP
+            Port: 587
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "{{ nlb_target }}"
+      register: result
+
+    - name: Set pretty DNS name for {{ nlb_name }} loadbalancer
+      route53:
+        profile: "{{ aws_profile_subd }}"
+        command: create
+        overwrite: true
+        zone: "{{ subd }}"
+        record: "{{ nlb_name }}.{{ aws_region }}.{{ subd }}"
+        type: A
+        alias: true
+        alias_hosted_zone_id: "{{ result.canonical_hosted_zone_id }}"
+        value: "{{ result.dns_name }}"

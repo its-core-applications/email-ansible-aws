@@ -1,0 +1,35 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: ec2_launch
+      vars:
+        launch_class: authn-relay
+        launch_groups:
+          - relay
+        launch_tags:
+          Status: production
+
+    - import_role:
+        name: ec2_targetgroup
+      vars:
+        tg_group: Class_authn_relay
+        tg_name: authn-relay
+
+    - import_role:
+        name: ec2_nlb
+      vars:
+        nlb_name: authn-relay
+
+    - import_role:
+        name: ec2_targetgroup
+      vars:
+        tg_group: Class_authn_relay
+        tg_name: authn-relay-vpn
+
+    - import_role:
+        name: ec2_nlb
+      vars:
+        nlb_name: authn-relay-vpn
+        nlb_subnets: "{{ ec2_subnets_vpn[aws_region] | map(attribute='id') | list }}"
+        nlb_scheme: internal

@@ -1,0 +1,47 @@
+- hosts: Class_authn_relay
+  serial: 1
+  gather_facts: false
+  tasks:
+    - import_role:
+        name: ec2_mark_oldest
+
+- hosts: localhost
+  become: false
+  tasks:
+    - include_role:
+        name: ec2_targetgroup
+      vars:
+        tg_group: Class_authn_relay
+        tg_name: authn-relay
+
+- hosts: Class_authn_relay:&Status_spindown
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Stop sensu
+          systemd:
+            name: sensu-client
+            state: stopped
+          ignore_errors: true
+
+        - name: Wait for active connections to finish
+          wait_for:
+            host: 0.0.0.0
+            port: 25
+            state: drained
+
+        - name: Give the queue a chance to quiesce
+          pause:
+            seconds: 60
+
+        - import_tasks: task_spindown_simta.yml
+
+        - name: Set status to spundown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spundown

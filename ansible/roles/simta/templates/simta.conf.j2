@@ -25,7 +25,6 @@ TLS_CA_FILE /etc/pki/tls/certs/ca-bundle.crt
 {% if simta_authn %}
 AUTHN       SASL
 DNS_LIST    authz   BLOCK   ubl.dnsbl
-SASL_DOMAIN {{ simta_config }}.{{ tld }}
 
 {% endif %}
 {% if simta_relay %}
@@ -34,7 +33,9 @@ SENDER_CHECKING     OFF
 SPF                 OFF
 DKIM_VERIFY         OFF
 DMARC               OFF
+{% if simta_egress or simta_jail %}
 AUTHN_RESULTS       OFF
+{% endif %}
 {% else %}
 RDNS_CHECK          RELAXED
 PUBLICSUFFIX_FILE   /etc/mail/public_suffix_list.dat

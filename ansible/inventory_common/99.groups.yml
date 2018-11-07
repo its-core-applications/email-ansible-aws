@@ -1,6 +1,8 @@
 # This stubs out the group structure so that we can avoid `| default([])`.
 all:
   children:
+    Class_authn_relay: {}
+    Class_authz_relay: {}
     Class_builder: {}
     Class_ctools_mx: {}
     Class_dev: {}

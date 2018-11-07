@@ -1,6 +1,6 @@
----
-
 simta_config: relay.mail
 simta_bitbucket: true
+simta_queue_type: relay-egress
 simta_relay: true
 simta_msa: true
+simta_tcpwrappers: true
