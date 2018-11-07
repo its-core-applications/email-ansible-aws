@@ -1,0 +1,20 @@
+- tags:
+    - ec2
+    - spindown
+  block:
+    - name: Set status on oldest host to spindown
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: spindown
+      when:
+        - region == aws_region
+        - "'Status_production' in group_names"
+        - ansible_play_hosts_all | intersect(aws_region_group) | intersect(groups.Status_spindown) | length == 0
+        - launch_time == ansible_play_hosts_all | intersect(aws_region_group) | intersect(groups.Status_production) | map('extract', hostvars, 'launch_time') | sort | first
+
+    - meta: refresh_inventory

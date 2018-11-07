@@ -1,26 +1,9 @@
----
-
 - hosts: Class_dnsbl
   gather_facts: false
   serial: 1
   tasks:
-    - when: region == aws_region
-      block:
-        - name: Set status on oldest host to spindown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spindown
-          when:
-            - launch_time == groups.Class_dnsbl | intersect(aws_region_group) | map('extract', hostvars, 'launch_time') | sort | first
-            - groups.Class_dnsbl | intersect(groups.Status_spindown) | length == 0
-
-        - meta: refresh_inventory
-          when: groups.Class_dnsbl | intersect(groups.Status_spindown) | length == 0
+    - import_role:
+        name: ec2_mark_oldest
 
 - hosts: Class_dnsbl:&Status_spindown
   tasks:

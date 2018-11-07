@@ -1,24 +1,9 @@
-- hosts: Class_relay_egress:&Status_production
+- hosts: Class_relay_egress
   serial: 1
   gather_facts: false
   tasks:
-    - when: region == aws_region
-      block:
-        - name: Set status on oldest host to spindown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spindown
-          when:
-            - launch_time == groups.Class_relay_egress | intersect(aws_region_group) | map('extract', hostvars, 'launch_time') | sort | first
-            - groups.Class_relay_egress | intersect(groups.Status_spindown) | length == 0
-          register: result
-
-        - meta: refresh_inventory
+    - import_role:
+        name: ec2_mark_oldest
 
 - hosts: localhost
   become: false
