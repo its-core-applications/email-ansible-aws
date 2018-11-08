@@ -15,7 +15,7 @@
     - name: Create non-person accounts
       user:
         name: "{{ item.name }}"
-        group: "{{ item.name }}"
+        group: "{{ item.group is defined | ternary(item.group, item.name) }}"
         home: "{{ item.home is defined | ternary(item.home, '/home/' ~ item.name) }}"
         shell: /bin/sh
         uid: "{{ item.uid }}"
@@ -32,7 +32,7 @@
         owner: "{{ item.name }}"
         group: "{{ item.name }}"
         mode: "0755"
-      loop: "{{ nonperson_accounts }}"
+      loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
       tags: mutable
 
     - name: Install authorized_keys for non-person accounts

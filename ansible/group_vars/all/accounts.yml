@@ -1,5 +1,3 @@
----
-
 nonperson_accounts:
   - name: collaborate
     comment: Collaboration
@@ -14,6 +12,11 @@ nonperson_accounts:
   - name: splunk
     comment: Splunk
     uid: 1005
+  - name: simta
+    comment: simta
+    uid: 1006
+    home: /var/spool/simta
+    group: mail
 
 user_accounts:
   - name: ezekielh
