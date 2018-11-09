@@ -6,6 +6,7 @@ After=unbound.service
 [Service]
 ExecStart=/usr/bin/corvus /etc/corvus.conf
 LimitNOFILE=10240
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
