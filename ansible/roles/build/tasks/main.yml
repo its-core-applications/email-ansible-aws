@@ -357,6 +357,7 @@
           - denser-devel
           - jemalloc-devel
           - libidn-devel
+          - libidn2-devel
           - libopenarc-devel
           - libopendkim-devel
           - libsnet-devel
