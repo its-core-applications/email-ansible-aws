@@ -34,7 +34,7 @@
 
     - name: Install custom monitoring script
       copy:
-        dest: "{{ comint_base }}/check-clamd-eicar"
+        dest: /usr/local/bin/check-clamd-eicar
         src: check-clamd-eicar
         owner: collaborate
         group: collaborate

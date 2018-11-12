@@ -1,0 +1,16 @@
+- tags:
+    - sensu
+  block:
+    - name: Stop sensu
+      systemd:
+        name: sensu-agent
+        state: stopped
+      ignore_errors: true
+
+    - name: Remove entity from sensu
+      flowerysong.sensu_go.sensu_go_entity:
+        name: "{{ inventory_hostname }}"
+        state: absent
+        url: http://{{ sensu_server }}:4567/
+        password: "{{ sensu_password }}"
+      delegate_to: localhost

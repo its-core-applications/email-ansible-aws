@@ -1,0 +1,31 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import argparse
+import os
+import smtplib
+import sys
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-u', '--username', required=True)
+parser.add_argument('-H', '--host', default='127.0.0.1')
+parser.add_argument('-P', '--port', default=25)
+args = parser.parse_args()
+
+try:
+    server = smtplib.SMTP('{}:{}'.format(args.host, args.port))
+    server.starttls()
+    server.login(args.username, os.environ.get('SMTP_PASSWORD'))
+    server.quit()
+    print('Authentication Successful')
+    sys.exit(0)
+except smtplib.SMTPAuthenticationError as e:
+    print('Authentication Failed')
+    print(e)
+    sys.exit(2)
+except (smtplib.socket.error, smtplib.socket.gaierror) as e:
+    print(e)
+    sys.exit(1)
+except Exception as e:
+    print(e)
+    sys.exit(3)

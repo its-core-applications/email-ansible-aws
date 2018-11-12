@@ -1,5 +1,3 @@
----
-
 tld: "{{ lookup( 'env', 'TLD' ) }}"
 subd: "{{ [( aws_status == 'prod' ) | ternary('a', 'x'), 'mail', tld ] | join('.') }}"
 
@@ -81,7 +79,6 @@ aws_region_layout:
         autocycle: false
       mx:
         count: 6
-        cycle_method: spinup
         size: m5.xlarge
       relay-egress:
         count: 3
@@ -107,7 +104,6 @@ aws_region_layout:
         autocycle: false
       mx:
         count: 6
-        cycle_method: spinup
         size: m5.xlarge
       mx-test:
         size: t3.small
@@ -136,7 +132,6 @@ aws_region_layout:
         size: t3.large
       mx:
         count: 3
-        cycle_method: spinup
       relay-egress: {}
       syslog: {}
       vdc-relay: {}

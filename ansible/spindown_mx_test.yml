@@ -1,8 +1,9 @@
----
-
 - hosts: Class_mx_test:!Status_spundown
   gather_facts: false
   tasks:
+    - import_role:
+        name: sensu_spindown
+
     - name: Set status to spundown
       delegate_to: localhost
       become: false
@@ -12,10 +13,3 @@
         resource: "{{ instance_id }}"
         tags:
           Status: spundown
-
-    - name: Stop sensu
-      systemd:
-        name: sensu-client
-        state: stopped
-      ignore_errors: true
-

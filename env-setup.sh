@@ -9,6 +9,7 @@ VIRTUAL_ENV_DISABLE_PROMPT=1
 . $hacking_dir/.venv/bin/activate
 export ANSIBLE_DEVEL_WARNING=False
 export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
+export ANSIBLE_COLLECTIONS_PATHS=$hacking_dir/ansible/collections
 export ANSIBLE_PRIVATE_KEY_FILE=$hacking_dir/id_rsa
 export AWS_STATUS=prod
 export AWS_DEFAULT_REGION=us-west-2

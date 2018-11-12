@@ -1,0 +1,66 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import json
+import sys
+
+from datetime import datetime
+
+import dateutil.parser
+import requests
+
+
+def main():
+    res = None
+    attempt = 0
+    while res is None:
+        attempt += 1
+        res = requests.get('http://www.google.com/appsstatus/json/en')
+        if not res.ok:
+            res = None
+            if attempt > 3:
+                print('Failed to fetch app status')
+                sys.exit(3)
+
+    jsonp = res.text
+    jsonr = jsonp[jsonp.index('(') + 1:jsonp.rindex(')')]
+    statusJSON = json.loads(jsonr)
+
+    # Create a dictionary of available service names
+    services = {}
+    for service in statusJSON['services']:
+        services[service['id']] = service['name']
+
+    retval = 0
+    for message in statusJSON['messages']:
+        if not message['resolved']:
+            print('[{}] {}'.format(services[message['service']], message['message']))
+            retval = 2
+
+    res = None
+    attempt = 0
+    while res is None:
+        attempt += 1
+        res = requests.get('https://status.cloud.google.com/incidents.json')
+        if not res.ok:
+            res = None
+            if attempt > 3:
+                print('Failed to fetch cloud status')
+                sys.exit(3)
+
+    incidents = res.json()
+
+    for inc in incidents:
+        timedelta = datetime.utcnow() - dateutil.parser.parse(inc['created'], ignoretz=True)
+        if timedelta.total_seconds() < 1800:
+            print('[{}] {}'.format(inc['service_name'], inc['most-recent-update']['text'][:256]))
+            if retval < 1:
+                retval = 1
+
+    if retval == 0:
+        print('No problems reported on appstatus.google.com or status.cloud.google.com')
+
+    sys.exit(retval)
+
+
+if __name__ == '__main__':
+    main()

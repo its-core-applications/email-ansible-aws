@@ -1,5 +1,3 @@
----
-
 - tags:
     - grafana
   block:
@@ -17,6 +15,12 @@
         state: latest
       notify: Restart grafana
 
+    - name: Install extra packages
+      yum:
+        name:
+          - jsonnet
+        state: latest
+
     - name: Configure grafana
       template:
         dest: /etc/grafana/grafana.ini
@@ -25,6 +29,51 @@
         group: root
         mode: "0644"
       notify: Restart grafana
+
+    - name: Configure grafana provisioning
+      template:
+        dest: /etc/grafana/provisioning/{{ item }}/all.yml
+        src: "{{ item }}.yml.j2"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - datasources
+        - dashboards
+      notify: Restart grafana
+
+    - tags:
+        - grafonnet
+      block:
+        - name: Create dashboard storage directory
+          file:
+            dest: /var/lib/grafana/dashboards
+            state: directory
+            owner: root
+            group: root
+            mode: "0755"
+
+        - name: Clone grafonnet
+          git:
+            repo: https://github.com/grafana/grafonnet-lib.git
+            dest: /var/cache/grafonnet
+            force: true
+
+        - name: Install dashboard templates
+          copy:
+            src: "{{ item }}"
+            dest: /var/lib/grafana/dashboards/{{ item | basename }}
+            owner: root
+            group: root
+            mode: "0644"
+          loop: "{{ query('fileglob', 'dashboards/*.jsonnet') }}"
+          register: result
+
+        - name: Build dashboards
+          command: jsonnet -J /var/cache/grafonnet --ext-code regions -o {{ item.dest[:-3] }} {{ item.dest }}
+          environment:
+            regions: "{{ aws_region_layout[aws_status] | list | to_json }}"
+          loop: "{{ result.results }}"
 
     - name: See if we have a database backup
       stat:

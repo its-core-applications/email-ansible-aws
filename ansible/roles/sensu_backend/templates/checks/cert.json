@@ -1,0 +1,26 @@
+{
+  "api_version": "core/v2",
+  "type": "Check",
+  "metadata": {
+    "namespace": "default",
+    "name": "cert",
+    "labels": {},
+    "annotations": {}
+  },
+  "spec": {
+    "command": "check-ssl-host.rb -h :::name::: -p 25 --starttls smtp -w 30 -c 7",
+    "subscriptions": [
+      "Class_egress"
+    ],
+    "round_robin": true,
+    "entity_attributes": [
+      "'tls' in entity.metadata.labels"
+    ],
+    "publish": true,
+    "interval": 300,
+    "handlers": [
+      "default",
+      "fyi"
+    ]
+  }
+}

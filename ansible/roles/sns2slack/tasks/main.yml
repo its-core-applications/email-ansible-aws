@@ -20,7 +20,7 @@
       lambda_policy:
         region: "{{ sns_region }}"
         profile: "{{ aws_profile_sns }}"
-        function_name: sns2slack
+        function_name: "{{ aws_resource_prefix }}_sns2slack"
         statement_id: sns2slack-invoke-from-SNS
         action: lambda:InvokeFunction
         principal: sns.amazonaws.com

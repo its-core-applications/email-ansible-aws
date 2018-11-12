@@ -15,11 +15,8 @@
             dns_host: rbldnsd
             dns_group: Class_dnsbl
 
-        - name: Stop sensu
-          systemd:
-            name: sensu-client
-            state: stopped
-          ignore_errors: true
+        - import_role:
+            name: sensu_spindown
 
         - name: Set status to spundown
           delegate_to: localhost
@@ -30,4 +27,3 @@
             resource: "{{ instance_id }}"
             tags:
               Status: spundown
-

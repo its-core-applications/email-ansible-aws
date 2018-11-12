@@ -1,0 +1,23 @@
+{
+  "api_version": "core/v2",
+  "type": "Check",
+  "metadata": {
+    "namespace": "default",
+    "name": "memory",
+    "labels": {},
+    "annotations": {
+      "sensu.io.json_attributes": "{\"occurrences\":4}"
+    }
+  },
+  "spec": {
+    "command": "check-memory-percent.rb",
+    "subscriptions": [
+      "Status_production"
+    ],
+    "publish": true,
+    "interval": 60,
+    "handlers": [
+      "default"
+    ]
+  }
+}

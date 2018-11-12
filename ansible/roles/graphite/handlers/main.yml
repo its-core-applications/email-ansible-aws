@@ -1,7 +1,0 @@
----
-
-- name: Restart graphite
-  systemd:
-    name: graphite-api
-    daemon_reload: true
-    state: restarted

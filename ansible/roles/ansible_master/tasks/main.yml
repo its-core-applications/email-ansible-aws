@@ -19,7 +19,7 @@
         minute: "{{ 12 + ansible_loop.index0 }}"
         hour: "{{ ansible_loop.index0 % 3 }}"
         weekday: "{{ (item.value.count | default(1) | int == 1) | ternary(0, '*') }}"
-        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item.value.cycle_method | default('replace') }}_{{ item.key | replace('-', '_') }}.yml &>/dev/null
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/replace_{{ item.key | replace('-', '_') }}.yml &>/dev/null
       loop: "{{ aws_region_layout[aws_status][aws_region] | dict2items }}"
       loop_control:
         extended: true

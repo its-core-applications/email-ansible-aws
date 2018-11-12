@@ -17,6 +17,10 @@ nonperson_accounts:
     uid: 1006
     home: /var/spool/simta
     group: mail
+  - name: sensu
+    comment: sensu
+    uid: 1007
+    home: /var/lib/sensu
 
 user_accounts:
   - name: aafletch

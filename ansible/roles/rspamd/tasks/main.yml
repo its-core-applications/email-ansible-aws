@@ -42,7 +42,7 @@
 
     - name: Install custom monitoring scripts
       copy:
-        dest: "{{ comint_base }}/{{ item }}"
+        dest: "/usr/local/bin/{{ item }}"
         src: "{{ item }}"
         owner: collaborate
         group: collaborate

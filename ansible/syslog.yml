@@ -1,5 +1,3 @@
----
-
 - hosts: Class_syslog
   tasks:
     - when: region == aws_region
@@ -20,13 +18,7 @@
             name: splunk_forwarder
 
         - import_role:
-            name: carbon
+            name: sensu_backend
 
         - import_role:
-            name: graphite
-
-        - import_role:
-            name: sensu_server
-
-        - import_role:
-            name: uchiwa
+            name: sensu

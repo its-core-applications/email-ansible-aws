@@ -1,5 +1,3 @@
----
-
 - hosts: Class_syslog
   gather_facts: false
   tasks:
@@ -14,4 +12,3 @@
             resource: "{{ instance_id }}"
             tags:
               Status: spundown
-

@@ -1,0 +1,28 @@
+- tags:
+    - build
+  block:
+    - import_role:
+        name: go
+
+    - become: false
+      block:
+        - name: Clone repo
+          git:
+            repo: "{{ build_repo }}"
+            dest: ~/go/src/{{ build_path }}
+            version: "{{ build_version }}"
+            force: true
+
+        - name: Build {{ build_name }} binary
+          command: "{{ go_cmd }} build ./cmd/{{ build_name }}"
+          args:
+            chdir: ~/go/src/{{ build_path }}
+
+        - name: Build {{ build_name }} RPM
+          command: fpm -t rpm -s dir -n {{ build_name }} -v {{ build_version | replace('v', '') }} --prefix /usr/bin ~/go/src/{{ build_path }}/{{ build_name }}={{ build_name }}
+          args:
+            chdir: ~/rpmbuild/RPMS/x86_64
+          register: result
+          failed_when:
+            - result.rc != 0
+            - result.stdout is not search('File already exists, refusing to continue')

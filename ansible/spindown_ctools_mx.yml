@@ -18,11 +18,8 @@
   tasks:
     - when: region == aws_region
       block:
-        - name: Stop sensu
-          systemd:
-            name: sensu-client
-            state: stopped
-          ignore_errors: true
+        - import_role:
+            name: sensu_spindown
 
         - name: Block new inbound connections
           iptables:

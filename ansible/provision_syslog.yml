@@ -42,9 +42,9 @@
         encrypted: true
         delete_on_termination: false
 
-    - name: Attach carbon volume
+    - name: Attach influxdb volume
       ec2_vol:
-        name: carbon
+        name: influxdb
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         instance: "{{ groups.Class_syslog | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | join }}"
@@ -76,12 +76,5 @@
         ttl: 60
         value: "{{ syslog_server }}"
       loop:
-        - graphite
+        - influxdb
         - sensu
-
-- hosts: Class_syslog
-  tasks:
-    - when: region == aws_region
-      block:
-        - import_role:
-            name: sensu_proxyclients

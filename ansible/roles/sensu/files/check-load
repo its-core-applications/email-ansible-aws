@@ -1,0 +1,47 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import argparse
+import sys
+import time
+
+
+ts = int(time.time())
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-w', '--warning')
+parser.add_argument('-c', '--critical')
+args = parser.parse_args()
+
+cthresh = None
+wthresh = None
+if args.critical:
+    cthresh = args.critical.split(',')
+if args.warning:
+    wthresh = args.warning.split(',')
+
+ncpus = 0
+with open('/proc/cpuinfo', 'r') as f:
+    for line in f.read().split('\n'):
+        if line.startswith('processor'):
+            ncpus += 1
+
+with open('/proc/loadavg', 'r') as f:
+    raw = f.read().split()
+    loads = {
+        'one': float(raw[0]) / ncpus,
+        'five': float(raw[1]) / ncpus,
+        'fifteen': float(raw[2]) / ncpus,
+    }
+
+    for key in loads:
+        print('load_avg.{} {} {}'.format(key, round(loads[key], 2), ts))
+
+    if cthresh:
+        for i in range(0, 3):
+            if float(raw[i]) > float(cthresh[i]):
+                sys.exit(2)
+
+    if wthresh:
+        for i in range(0, 3):
+            if float(raw[i]) > float(wthresh[i]):
+                sys.exit(1)

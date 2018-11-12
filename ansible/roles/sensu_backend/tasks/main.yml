@@ -1,0 +1,547 @@
+- tags:
+    - sensu
+    - sensu_backend
+  collections:
+    - flowerysong.sensu_go
+  module_defaults:
+    group/sensu_go:
+      url: http://localhost:4567/
+      password: "{{ sensu_password }}"
+  block:
+    - import_role:
+        name: influxdb
+
+    - import_role:
+        name: sensu_common
+
+    - name: Install sensu-go backend
+      yum:
+        name:
+          - sensu-backend
+          - sensu-influxdb-handler
+          - sensu-prometheus-collector
+        state: latest
+      notify: Restart sensu-backend
+
+    - name: Install sensu-backend unit
+      copy:
+        src: sensu-backend.service
+        dest: /etc/systemd/system/sensu-backend.service
+        owner: root
+        group: root
+        mode: "0644"
+
+    - import_role:
+        name: aws_get_accountinfo
+
+    - import_role:
+        name: sns2slack
+
+    - name: Create SNS topics
+      delegate_to: localhost
+      become: false
+      sns_topic:
+        region: "{{ sns_region }}"
+        profile: "{{ aws_profile_sns }}"
+        name: "{{ item.name }}"
+        display_name: "{{ item.display_name }}"
+        state: present
+        purge_subscriptions: false
+        subscriptions: "{{ item.subscriptions[aws_status] }}"
+      loop: "{{ sensu_sns }}"
+
+    - import_role:
+        name: ec2_instance_profile
+      vars:
+        ec2_profile_user: sensu
+        ec2_profile: snspublish
+        ec2_profile_role: arn:aws:iam::{{ aws_account_sns }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_SNS
+
+    - name: Install custom plugins
+      copy:
+        dest: /usr/local/bin/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - handler-sns
+        - mutator-metric-check
+        - mutator-metric-labels
+
+    - name: Install templated plugins
+      template:
+        dest: /usr/local/bin/{{ item }}
+        src: "{{ item }}.j2"
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - handler-deregister
+
+    - name: Configure sensu backend
+      template:
+        dest: /etc/sensu/backend.yml
+        src: backend.yml.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart sensu-backend
+
+    - name: Enable sensu backend
+      systemd:
+        name: sensu-backend
+        daemon_reload: true
+        enabled: true
+      notify: Restart sensu-backend
+
+    - name: Start sensu backend
+      systemd:
+        name: sensu-backend
+        state: started
+
+    - name: Wait for Sensu to be responsive
+      wait_for:
+        port: 4567
+        state: started
+
+    - name: Initialize the backend
+      command: sensu-backend init
+      environment:
+        SENSU_BACKEND_CLUSTER_ADMIN_USERNAME: admin
+        SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD: "{{ sensu_password }}"
+      register: result
+      changed_when: result.rc == 0
+      failed_when:
+        - result.rc != 0
+        - "'store already initialized' not in result.stderr"
+
+    - name: Disable Tessen
+      sensu_go_tessen:
+        enabled: false
+
+    - name: Bind admin role
+      sensu_go_rolebinding:
+        name: blackops-admin
+        cluster: true
+        role: cluster-admin
+        groups:
+          - blackops
+
+    - name: Bind read-only role for default namespace
+      sensu_go_rolebinding:
+        name: readonly-list
+        role: view
+        cluster_role: true
+        groups:
+          - readonly
+
+    - name: Install fatigue filter
+      sensu_go_asset:
+        name: fatigue_check_filter
+        download_url: https://github.com/nixwiz/sensu-go-fatigue-check-filter/releases/download/0.5.0/sensu-go-fatigue-check-filter_0.5.0.tar.gz
+        sha512: 6b0097d2414c10e5ccf644a21575b1cf7f495016ff3b61c2ced7ee0371da88d6a428f556e24f63255f4d3e1a45a73e6ac62805ec493f8286d8b6d0c5a6a7488b
+
+    - name: Create the filters
+      sensu_go_filter:
+        name: "{{ item.name }}"
+        action: "{{ item.action | default('allow') }}"
+        expressions: "{{ item.expressions }}"
+        runtime_assets: "{{ item.runtime_assets | default(omit) }}"
+      loop:
+        - name: bad_hostname
+          expressions:
+            - event.entity.name.match('compute.internal$')
+        - name: good_hostname
+          action: deny
+          expressions:
+            - event.entity.name.match('compute.internal$')
+        - name: has_check
+          expressions:
+            - typeof event.check !== undefined
+        - name: critical
+          expressions:
+            - "event.history.filter(function(hist) { return hist.status == 2 }).length > 0"
+        - name: production
+          expressions:
+            - "event.entity.subscriptions.filter(function(s) { return s == 'Status_production' }).length > 0"
+        - name: state_change_only
+          expressions:
+            - event.check.history.length > 1
+            - event.check.occurrences == 1
+        - name: occurrences
+          expressions:
+            - fatigue_check(event)
+          runtime_assets:
+            - fatigue_check_filter
+
+    - name: Create the SNS handlers
+      sensu_go_handler:
+        name: "{{ item.name }}"
+        type: pipe
+        command: handler-sns -r {{ sns_region }} -t {{ item.topic }} -d {{ aws_status }}/{{ aws_region }} -u https://dashboard.{{ aws_region }}.{{ subd }}
+        filters: "{{ item.filters | union(default_filters) }}"
+      vars:
+        default_filters:
+          - not_silenced
+          - good_hostname
+      loop:
+        - name: email
+          topic: rootmail
+          filters:
+            - is_incident
+            - occurrences
+        - name: fyi
+          topic: rootmail
+          filters:
+            - state_change_only
+        - name: page
+          topic: oncall
+          filters:
+            - is_incident
+            - occurrences
+            - production
+            - critical
+
+    - name: Create the mutators
+      sensu_go_mutator:
+        name: "{{ item }}"
+        command: mutator-{{ item }}
+      loop:
+        - metric-check
+        - metric-labels
+
+    - name: Create the InfluxDB handlers
+      sensu_go_handler:
+        name: "{{ item.name }}"
+        type: pipe
+        command: sensu-influxdb-handler -d sensu
+        mutator: "{{ item.mutator }}"
+        filters: "{{ item.filters }}"
+      loop:
+        - name: influxdb
+          mutator: metric-labels
+          filters:
+            - has_metrics
+            - good_hostname
+        - name: influxdb_event
+          mutator: metric-check
+          filters:
+            - has_check
+            - good_hostname
+
+    - name: Create the InfluxDB database
+      influxdb_database:
+        database_name: sensu
+        state: present
+
+    - name: Set the default InfluxDB retention policy
+      influxdb_retention_policy:
+        database_name: sensu
+        policy_name: three_weeks
+        duration: 21d
+        replication: 1
+        default: true
+
+    - name: Create Agent 47
+      sensu_go_handler:
+        name: kill_bad_clients
+        command: handler-deregister
+        filters:
+          - bad_hostname
+
+    - name: Create the default handler set
+      sensu_go_handler:
+        name: default
+        type: set
+        handlers:
+          - page
+          - email
+          - influxdb
+          - influxdb_event
+          - kill_bad_clients
+
+    # Sensu Go hardcodes the handler name for keepalive events
+    - name: Handle keepalive timeouts
+      sensu_go_handler:
+        name: keepalive
+        type: set
+        handlers:
+          - default
+
+    - name: Register Sensu proxy entities
+      sensu_go_entity:
+        name: "{{ item.name }}"
+        entity_class: proxy
+        subscriptions: "{{ item.subscriptions }}"
+      loop:
+        - name: "{{ aws_region }}.{{ subd }}"
+          subscriptions:
+            - Status_production
+        - name: "{{ aws_region }}.aws.amazon.com"
+          subscriptions:
+            - Status_production
+        - name: egress.{{ aws_region }}.{{ subd }}
+          subscriptions:
+            - Status_production
+        - name: "{{ simta_redis_host }}"
+          subscriptions:
+            - Class_redis_cluster
+            - Status_production
+        - name: box.com
+          subscriptions:
+            - Status_production
+        - name: google.com
+          subscriptions:
+            - Status_production
+
+    - name: Monitor Sensu metrics
+      sensu_go_check:
+        name: sensu-metrics
+        command: sensu-prometheus-collector -exporter-url http://localhost:4567/metrics -metric-prefix sensu_
+        subscriptions:
+          - Class_syslog
+        handlers:
+          - default
+        output_metric_format: influxdb_line
+
+    - name: Monitor cloud services
+      sensu_go_check:
+        name: "{{ item.name }}-status"
+        command: check-{{ item.name }}-status
+        subscriptions:
+          - Class_syslog
+        handlers:
+          - default
+        interval: 300
+        proxy_entity_name: "{{ item.domain }}"
+      loop:
+        - name: box
+          domain: box.com
+        - name: google
+          domain: google.com
+      loop_control:
+        label: "{{ item.domain }}"
+
+    - name: Monitor EC2 instance counts
+      sensu_go_check:
+        name: ec2-instances
+        command: metrics-ec2
+        subscriptions:
+          - Class_syslog
+        handlers:
+          - default
+        proxy_entity_name: "{{ aws_region }}.aws.amazon.com"
+        output_metric_format: influxdb_line
+        annotations:
+          fatigue_check/occurrences: 3
+
+    - name: Monitor system metrics
+      sensu_go_check:
+        name: system-profile
+        command: system-profile-linux
+        subscriptions:
+          - Status_production
+        handlers:
+          - default
+        output_metric_format: graphite_plaintext
+
+    - name: Monitor Vault
+      sensu_go_check:
+        name: vault-seal
+        command: check-vault-seal
+        subscriptions:
+          - Class_master
+        handlers:
+          - default
+      when: aws_region == aws_primary_region
+
+    - name: Monitor redis
+      sensu_go_check:
+        name: redis
+        command: check-redis
+        subscriptions:
+          - redis
+        handlers:
+          - default
+        annotations:
+          fatigue_check/occurrences: 3
+
+    - name: Monitor redis clusters
+      sensu_go_check:
+        name: redis-cluster
+        command: !unsafe check-redis-cluster -c {{ .name }}
+        subscriptions:
+          - Class_syslog
+        handlers:
+          - default
+        annotations:
+          fatigue_check/occurrences: 3
+        proxy_entity_attributes:
+          - "entity.subscriptions.filter(function(s) { return s == 'Class_redis_cluster' }).length > 0"
+
+    - name: Monitor simta
+      sensu_go_check:
+        name: "{{ item.name }}"
+        command: "{{ item.command }}"
+        subscriptions:
+          - Class_authn_relay
+          - Class_authz_relay
+          - Class_authz_static
+          - Class_egress
+          - Class_jail
+          - Class_mx
+          - Class_mx_test
+          - Class_relay_egress
+          - Class_vdc_relay
+        handlers:
+          - default
+        output_metric_format: "{{ ('metrics' in item.name) | ternary('influxdb_line', omit) }}"
+      loop:
+        - name: simta
+          command: check-process -p simta
+        - name: simta-queue-dead
+          command: /usr/libexec/simta-admin/check-simta-queue -q dead -c 0
+        - name: simta-queue-fast
+          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q fast -w {{ .labels.simta_fastqwarn | default "1000" }}  -c {{ .labels.simta_fastqmax | default "2000" }}
+        - name: simta-queue-local
+          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q local -w {{ .labels.simta_localqwarn | default "10" }}  -c {{ .labels.simta_fastqmax | default "20" }}
+        - name: simta-queue-slow
+          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q slow -w {{ .labels.simta_slowqwarn | default "100" }}  -c {{ .labels.simta_fastqmax | default "200" }}
+        - name: simta-queue-fast-age
+          command: /usr/libexec/simta-admin/check-simta-queue-age -q fast -a 120 -c 0
+        - name: simta-queue-ownership
+          command: /usr/libexec/simta-admin/check-simta-queue-ownership
+        - name: simta-queue-slow-jailed
+          command: /usr/libexec/simta-admin/check-simta-queue-jailed -q slow -c 0
+        - name: simta-metrics
+          command: /usr/libexec/simta-admin/metrics-simta
+
+    - name: Monitor simta expansion
+      sensu_go_check:
+        name: simta-expansion
+        command: /usr/libexec/simta-admin/check-simta-expansion -g simta.expansion.test@umich.edu -t success@devnull.mail.umich.edu
+        subscriptions:
+          - Class_authn_relay
+          - Class_authz_relay
+          - Class_authz_static
+          - Class_egress
+          - Class_mx
+          - Class_relay_egress
+          - Class_vdc_relay
+        handlers:
+          - influxdb_event
+
+    - name: Monitor simta authentication
+      sensu_go_check:
+        name: simta-smtp-auth
+        command: check-smtp-auth -u simta
+        env_vars:
+          SMTP_PASSWORD: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value') }}"
+        subscriptions:
+          - Class_authn_relay
+        handlers:
+          - influxdb_event
+
+    - name: Monitor IP reputation
+      sensu_go_check:
+        name: dnsbl
+        command: check-dnsbl
+        interval: 300
+        timeout: 240
+        subscriptions:
+          - Class_egress
+          - Class_relay_egress
+        handlers:
+          - default
+
+    - name: Extra monitoring for inbound hosts
+      vars:
+        inbound_hosts:
+          - Class_authn_relay
+          - Class_authz_relay
+          - Class_authz_static
+          - Class_mx
+          - Class_mx_test
+          - Class_vdc_relay
+      block:
+        - name: Extra simta queue monitoring for inbound hosts
+          sensu_go_check:
+            name: simta-queue-slow-age
+            command: /usr/libexec/simta-admin/check-simta-queue-age -q slow -a 60 -c 0
+            subscriptions: "{{ inbound_hosts }}"
+            handlers:
+              - default
+
+        - name: Monitor DNSLs
+          sensu_go_check:
+            name: dnsl
+            command: check-dnsl
+            subscriptions: "{{ inbound_hosts }}"
+            interval: 300
+            timeout: 240
+            handlers:
+              - influxdb_event
+
+    - name: Monitor simta aggregates
+      sensu_go_check:
+        name: "{{ item }}-aggregate"
+        command: check-aggregate -H {{ influxdb_server }} --check {{ item }}
+        stdin: true
+        subscriptions:
+          - Class_syslog
+        handlers:
+          - default
+        proxy_entity_name: "{{ aws_region }}.{{ subd }}"
+        annotations:
+          dashboard_host: dashboard.{{ aws_region }}.{{ subd }}
+          fatigue_check/occurrences: 2
+      loop:
+        - dnsl
+        - simta-expansion
+        - simta-smtp-auth
+
+    - name: Monitor rbldnsd
+      sensu_go_check:
+        name: rbldnsd
+        command: check-process -p rbldnsd
+        subscriptions:
+          - Class_dnsbl
+        handlers:
+          - default
+
+    - name: Monitor rspamd
+      sensu_go_check:
+        name: "{{ item.name }}"
+        command: "{{ item.command }}"
+        subscriptions:
+          - Class_mx_test
+          - Class_mx
+        handlers:
+          - default
+      loop:
+        - name: rspamd
+          command: check-process -p rspamd
+        - name: rspamd-greylist
+          command: check-rspamd-greylist
+        - name: rspamd-gtube
+          command: check-rspamd-gtube
+
+    - name: Monitor clamd
+      sensu_go_check:
+        name: "{{ item.name }}"
+        command: "{{ item.command }}"
+        subscriptions:
+          - Class_authn_relay
+          - Class_authz_relay
+          - Class_authz_static
+          - Class_mx
+          - Class_mx_test
+          - Class_vdc_relay
+        handlers:
+          - default
+      loop:
+        - name: clamd
+          command: check-process -p clamd
+        - name: clamd-eicar
+          command: check-clamd-eicar

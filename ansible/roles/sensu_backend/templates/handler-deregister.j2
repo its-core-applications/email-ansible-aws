@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+import json
+import sys
+
+import requests
+
+token = requests.get('http://localhost:4567/auth', auth=('admin', '{{ sensu_password }}'))
+
+headers = {
+    'Authorization': 'Bearer {}'.format(token.json()['access_token'])
+}
+
+event = json.load(sys.stdin)
+
+requests.delete('http://localhost:4567/api/core/v2/namespaces/{}/entities/{}'.format(event['entity']['metadata']['namespace'], event['entity']['metadata']['name']), headers=headers)

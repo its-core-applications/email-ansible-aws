@@ -1,0 +1,25 @@
+{
+  "api_version": "core/v2",
+  "type": "Check",
+  "metadata": {
+    "namespace": "default",
+    "name": "disk-metrics",
+    "labels": {},
+    "annotations": {
+      "sensu.io.json_attributes": "{\"type\":\"metric\"}"
+    }
+  },
+  "spec": {
+    "command": "metrics-disk-usage.rb -i ^/dev",
+    "subscriptions": [
+      "Status_production",
+      "Status_development"
+    ],
+    "publish": true,
+    "interval": 30,
+    "handlers": [
+      "default",
+      "graphite"
+    ]
+  }
+}

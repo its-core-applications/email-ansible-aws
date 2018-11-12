@@ -1,21 +1,12 @@
----
-
 - tags:
     - dashboard
   block:
     - import_role:
         name: httpd
 
-    - name: Install extra Apache modules
-      yum:
-        name:
-          - mod_auth_openidc
-          - mod_ldap
-        state: present
-
-    - name: Configure a vhost for dashboard.{{ subd }}
+    - name: Configure a vhost for dashboard.{{ region }}.{{ subd }}
       template:
-        dest: /etc/httpd/conf.d/dashboard.{{ subd }}.conf
+        dest: /etc/httpd/conf.d/dashboard.{{ region }}.{{ subd }}.conf
         src: httpd.conf.j2
         owner: root
         group: root
@@ -25,6 +16,6 @@
     - import_role:
         name: letsencrypt
       vars:
-        certificate: dashboard.{{ subd }}
+        certificate: dashboard.{{ region }}.{{ subd }}
         le_services:
           - httpd

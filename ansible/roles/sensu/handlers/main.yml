@@ -1,9 +1,5 @@
----
-
-- name: Restart sensu-client
+- name: Restart sensu-agent
   systemd:
-    name: sensu-client
+    name: sensu-agent
     daemon_reload: true
     state: restarted
-  listen: Restart sensu
-

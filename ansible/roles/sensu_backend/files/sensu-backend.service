@@ -1,0 +1,18 @@
+[Unit]
+Description=The Sensu Backend service.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sensu
+Group=sensu
+EnvironmentFile=-/etc/default/sensu-backend
+EnvironmentFile=-/etc/sysconfig/sensu-backend
+LimitNOFILE=65535
+ExecStart=/usr/bin/sensu-backend start -c /etc/sensu/backend.yml
+Restart=always
+WorkingDirectory=/
+
+[Install]
+WantedBy=multi-user.target

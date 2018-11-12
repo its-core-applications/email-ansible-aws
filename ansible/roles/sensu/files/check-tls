@@ -1,0 +1,101 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import argparse
+import json
+import smtplib
+import socket
+import ssl
+import sys
+
+from datetime import datetime
+
+
+def get_cert_smtp(host, port, context):
+    with smtplib.SMTP(host, port) as smtp:
+        smtp.starttls(context=context)
+        return smtp.sock.getpeercert()
+
+
+def get_cert(host, port, context):
+    with socket.create_connection((host, port)) as sock:
+        with context.wrap_socket(sock, server_hostname=host) as ssock:
+            return ssock.getpeercert()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-H', '--host',
+        default='localhost',
+    )
+    parser.add_argument(
+        '-P', '--port',
+        default=25,
+    )
+    parser.add_argument(
+        '-p', '--protocol',
+        default='smtp',
+        choices=('none', 'smtp'),
+    )
+    parser.add_argument(
+        '--check-hostname',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-w', '--warning',
+        type=int,
+        default=30,
+    )
+    parser.add_argument(
+        '-c', '--critical',
+        type=int,
+        default=7,
+    )
+
+    args = parser.parse_args()
+
+    socket.setdefaulttimeout(5)
+
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.verify_mode = ssl.CERT_REQUIRED
+    if args.check_hostname:
+        context.check_hostname = True
+    context.load_default_certs()
+
+    cert = None
+    retval = 0
+    try:
+        if args.protocol.lower() == 'smtp':
+            cert = get_cert_smtp(args.host, args.port, context)
+        else:
+            cert = get_cert(args.host, args.port, context)
+
+    except ssl.CertificateError as e:
+        print('TLS certificate error: {}'.format(str(e)))
+        retval = 2
+
+    except ssl.SSLError as e:
+        print('TLS connection error: {}'.format(str(e)))
+        retval = 1
+
+    except Exception as e:
+        print('Error: {}'.format(str(e)))
+        retval = 3
+
+    if cert:
+        expires = datetime.utcfromtimestamp(ssl.cert_time_to_seconds(cert['notAfter']))
+        delta = expires - datetime.utcnow()
+        if delta.days < args.critical:
+            print('Cert expires in less than {} days: {}\n'.format(args.critical, expires))
+            retval = 2
+        elif delta.days < args.warning:
+            print('Cert expires in less than {} days: {}\n'.format(args.warning, expires))
+            retval = 1
+
+        print(json.dumps(cert, indent=2))
+
+    sys.exit(retval)
+
+
+if __name__ == '__main__':
+    main()

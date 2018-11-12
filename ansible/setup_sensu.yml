@@ -1,0 +1,4 @@
+- hosts: Class_syslog
+  tasks:
+    - import_role:
+        name: sensu_monitor_health

@@ -1,0 +1,26 @@
+- tags:
+    - sensu
+  block:
+    - name: Install sensuctl
+      yum:
+        name: sensuctl
+        state: latest
+
+    - name: Create /etc/sensu
+      file:
+        dest: /etc/sensu
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Create Sensu storage directories
+      file:
+        dest: "{{ item }}"
+        state: directory
+        owner: sensu
+        group: sensu
+        mode: "0750"
+      loop:
+        - /var/cache/sensu
+        - /var/lib/sensu

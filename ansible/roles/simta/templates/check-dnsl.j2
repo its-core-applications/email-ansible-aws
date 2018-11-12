@@ -1,7 +1,5 @@
 #!/bin/bash
 
-warn=0
-crit=0
 retval=0
 
 for bl in \
@@ -31,8 +29,10 @@ for bl in \
     sip24.dnsbl \
     xbl.dnsbl \
     zen.dsnbl \
+{% if trendmicro_key is defined %}
     {{ trendmicro_key }}.q.mail-abuse.com \
     {{ trendmicro_key }}.r.mail-abuse.com \
+{% endif %}
     bl.spameatingmonkey.net \
     mx-accept.dnsal \
     mx-trust.dnsal \
@@ -42,7 +42,6 @@ for bl in \
     relay-accept.dnsal \
     relay-deny.dnsbl
 do
-{# bash array syntax conflicts with Jinja2 comments #}{% raw %}
     if ! simrbl -q -l $bl 127.0.0.1 ; then
         echo "$bl lists 127.0.0.1"
         retval=2
@@ -52,4 +51,3 @@ done
 [[ $retval -eq 0 ]] && echo "All lists are working properly"
 
 exit $retval
-{% endraw %}

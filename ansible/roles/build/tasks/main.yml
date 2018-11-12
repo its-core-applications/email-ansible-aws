@@ -123,6 +123,61 @@
         archive_file: packer_{{ build_version }}_linux_amd64.zip
         archive_checksum: sha256:c7277f64d217c7d9ccfd936373fe352ea935454837363293f8668f9e42d8d99d
 
+    - tags:
+        - sensu
+      block:
+        - import_role:
+            name: build_rpm_go
+          vars:
+            build_name: sensu-agent
+
+        - import_role:
+            name: build_rpm_go
+          vars:
+            build_name: sensu-backend
+
+        - import_role:
+            name: build_rpm_go
+          vars:
+            build_name: sensuctl
+      vars:
+        build_repo: https://gitlab.umich.edu/flowerysong/sensu-go.git
+        build_path: github.com/sensu/sensu-go
+        build_version: 5.16.1.1
+
+    - import_role:
+        name: build_rpm_archive
+      tags:
+        - sensu
+      vars:
+        build_name: sensu-influxdb-handler
+        build_version: 3.1.2
+        archive_url: https://github.com/sensu/sensu-influxdb-handler/releases/download/{{ build_version }}/sensu-influxdb-handler_{{ build_version }}_linux_amd64.tar.gz
+        archive_file: sensu-influxdb-handler_{{ build_version }}_linux_amd64.tar.gz
+        archive_checksum: sha256:62efbaa74649c3b49d2692acefe6ec505f2d8599d4cb981bd3766ef78fa31f3b
+
+    - import_role:
+        name: build_rpm_archive
+      tags:
+        - sensu
+      vars:
+        build_name: sensu-prometheus-collector
+        build_version: 1.3.1
+        archive_url: https://github.com/sensu/sensu-prometheus-collector/releases/download/{{ build_version }}/sensu-prometheus-collector_{{ build_version }}_linux_amd64.tar.gz
+        archive_file: sensu-prometheus-collector_{{ build_version }}_linux_amd64.tar.gz
+        archive_checksum: sha512:100e2dd2f08eb1f2779e34eb45c9a5a8a9ca79c2ceddc29a2989d8d6d55a12f0e38446316f3a5f281b78c42892ecafc3a42b4fb4b43212e5c64007f7e119b12d
+
+    - import_role:
+        name: build_rpm_archive
+      tags:
+        - sensu
+      vars:
+        build_name: sensu-system-profile-linux
+        build_version: 0.9
+        archive_url: https://github.com/sensu/system-profile-linux/releases/download/{{ build_version }}/system-profile-linux_{{ build_version }}_linux_amd64.tar.gz
+        archive_file: system-profile-linux_{{ build_version }}_linux_amd64.tar.gz
+        archive_checksum: sha512:f88c72bb1af36a75b9adea7eb00a7ad55f2c51a13596e92d3f1dcbb61aae9b60250fa1fb92cc7721a602f949d011a2ab81d15464013382aa80f1471d39dfe1e8
+
     - import_role:
         name: build_rpm_git
       tags:
@@ -306,6 +361,24 @@
           - satyr-devel
           - systemd-python
           - xmlto
+
+    - import_role:
+        name: build_rpm_prebuilt
+      tags: influxdb
+      vars:
+        build_name: influxdb
+        rpm: influxdb-1.7.10.x86_64.rpm
+        rpm_url: https://repos.influxdata.com/rhel/7/x86_64/stable/{{ rpm }}
+        rpm_checksum: sha512:b31ca7e375d5bf28d4b6b76ce2c2bc5a69c3365b35533437e068c98bd40e0883311ddeded7a67fd6e06799d665ab98a039dc64d9efd67aca2bad868f45da5118
+
+    - import_role:
+        name: build_rpm_go
+      tags:
+        - jsonnet
+      vars:
+        build_name: jsonnet
+        build_repo: https://github.com/google/go-jsonnet
+        build_version: v0.15.0
 
     - import_role:
         name: build_rpm_spec

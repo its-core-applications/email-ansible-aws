@@ -2,15 +2,18 @@
 import boto3
 import dbus
 import hashlib
-import json
+import yaml
 import re
 import sys
 import urllib2
 
-subfile = '/etc/sensu/conf.d/subscriptions.json'
+conf_file = '/etc/sensu/agent.yml'
 
 # Which tags should not be made into automatic subscriptions?
-reject_tags = [ 'Name', 'CustomDNSName' ]
+reject_tags = [
+    'Name',
+    'CustomDNSName',
+]
 
 # Fetch the region and ID from the AWS metadata service
 region =  urllib2.urlopen('http://169.254.169.254/latest/meta-data/placement/availability-zone').read()[:-1]
@@ -19,40 +22,50 @@ iid = urllib2.urlopen('http://169.254.169.254/latest/meta-data/instance-id').rea
 client = boto3.resource('ec2', region_name=region)
 instance = client.Instance(iid)
 
-config = { 'client': { 'subscriptions': [] }}
+with open(conf_file, 'r') as f:
+    config = yaml.safe_load(f)
+
+config['labels'] = {
+    'region': region,
+}
+
+config['subscriptions'] = []
+stop_agent = False
 
 for tag in instance.tags:
-    if tag['Key'] not in reject_tags and tag['Value'] != 'no':
-        # Mutate it like the dynamic inventory script does (more or less)
-        if tag['Value'] == 'yes':
-            subscription = re.sub('[^A-Za-z0-9\_]', '_', tag['Key']);
-        else:
-            subscription = re.sub('[^A-Za-z0-9\_]', '_', tag['Key'] + '_' + tag['Value'])
+    if tag['Key'] == 'Status' and tag['Value'] in ['spindown', 'spundown']:
+        stop_agent = True
 
-        # Add the base subscription and a round-robin one
-        config['client']['subscriptions'].append(subscription)
-        config['client']['subscriptions'].append('roundrobin:' + subscription)
+    if tag['Key'] not in reject_tags:
+        config['labels'][tag['Key']] = tag['Value']
+        if tag['Value'] != 'no':
+            # Mutate it like the dynamic inventory script does (more or less)
+            if tag['Value'] == 'yes':
+                subscription = re.sub('[^A-Za-z0-9\_]', '_', tag['Key']);
+            else:
+                subscription = re.sub('[^A-Za-z0-9\_]', '_', tag['Key'] + '_' + tag['Value'])
+
+            config['subscriptions'].append(subscription)
 
 hash1 = hashlib.sha512()
-try:
-    with open(subfile, 'rb') as cfile:
-        hash1.update(cfile.read())
-except IOError:
-    pass
+with open(conf_file, 'rb') as f:
+    hash1.update(f.read())
 
-newconf = json.dumps(config, sort_keys=True, indent=2)
+newconf = yaml.dump(config, indent=2, default_flow_style=False)
 
 hash2 = hashlib.sha512()
 hash2.update(newconf)
 
 if hash1.digest() != hash2.digest():
     try:
-      with open(subfile, 'w') as cfile:
-        cfile.write(newconf)
+      with open(conf_file, 'w') as f:
+        f.write(newconf)
     except IOError:
         print 'Failed to write subscription file'
         sys.exit(1)
 
     systemd = dbus.Interface(dbus.SystemBus().get_object('org.freedesktop.systemd1', '/org/freedesktop/systemd1'), 'org.freedesktop.systemd1.Manager')
-    systemd.TryRestartUnit('sensu-client.service', 'fail')
-
+    if stop_agent:
+        systemd.StopUnit('sensu-agent.service')
+    else:
+        systemd.TryRestartUnit('sensu-agent.service', 'fail')

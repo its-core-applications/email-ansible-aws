@@ -1,7 +1,5 @@
----
-
 comint_base: /usr/local/collaboration
 
 syslog_server: syslog.{{ aws_region }}.{{ subd }}
-graphite_server: graphite.{{ aws_region }}.{{ subd }}
+influxdb_server: influxdb.{{ aws_region }}.{{ subd }}
 sensu_server: sensu.{{ aws_region }}.{{ subd }}

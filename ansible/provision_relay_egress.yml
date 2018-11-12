@@ -64,7 +64,3 @@
       vars:
         dns_host: pink
         dns_group: redis
-
-    - import_role:
-        name: sensu_proxyclients
-      tags: sensu

@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+import json
+import sys
+
+event = json.load(sys.stdin)
+
+if 'metrics' in event:
+    tags = []
+
+    for label in event['entity']['metadata'].get('labels', {}).items():
+        tags.append({
+            'name': label[0],
+            'value': label[1],
+        })
+
+    for point in event['metrics']['points']:
+        if not point['tags']:
+            point['tags'] = []
+        point['tags'].extend(tags)
+
+print(json.dumps(event))

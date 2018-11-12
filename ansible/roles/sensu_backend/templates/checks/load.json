@@ -1,0 +1,23 @@
+{
+  "api_version": "core/v2",
+  "type": "Check",
+  "metadata": {
+    "namespace": "default",
+    "name": "load",
+    "labels": {},
+    "annotations": {
+      "sensu.io.json_attributes": "{\"occurrences\":30}"
+    }
+  },
+  "spec": {
+    "command": "check-load.rb -w 30,25,20 -c 35,30,25",
+    "subscriptions": [
+      "Status_production"
+    ],
+    "publish": true,
+    "interval": 60,
+    "handlers": [
+      "default"
+    ]
+  }
+}

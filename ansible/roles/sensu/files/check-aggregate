@@ -1,0 +1,112 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import argparse
+import csv
+import json
+import sys
+
+import requests
+
+
+def check_threshold(threshold, value, total, threshold_name, check_name):
+    if value == 0:
+        return False
+    elif value == 1:
+        template = '{} check result for {} is {}'
+    else:
+        template = '{} check results for {} are {}'
+    print(template.format(value, check_name, threshold_name))
+
+    if threshold.endswith('%'):
+        threshold = int(threshold[:-1])
+        value = round(value / total * 100, 2)
+        return value >= threshold
+
+    threshold = int(threshold)
+    return value > threshold
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--check', required=True)
+parser.add_argument('-H', '--host', default='localhost')
+parser.add_argument('-P', '--port', default='8086')
+parser.add_argument('-w', '--warning', default='0')
+parser.add_argument('-c', '--critical', default='0')
+parser.add_argument('-u', '--unknown', default='0')
+parser.add_argument('--no-stdin', action='store_true')
+args = parser.parse_args()
+
+meta = None
+if not args.no_stdin:
+    meta = json.load(sys.stdin)['check']['metadata']
+
+query = '''
+from(bucket: "sensu/three_weeks")
+    |> range(start: -5m)
+    |> filter(fn: (r) =>
+        r._measurement == "sensu_event"
+        and r._field == "status"
+        and r.status == "production"
+        and r.sensu_check == "{}")
+    |> duplicate(column: "_value", as: "agg_status")
+    |> last()
+    |> group(columns: ["agg_status"])
+    |> count()
+'''.format(args.check)
+
+try:
+    res = requests.post(
+        'http://{}:{}/api/v2/query'.format(args.host, args.port),
+        timeout=10,
+        headers={
+            'accept': 'application/csv',  # Ick, but the only output format
+            'content-type': 'application/vnd.flux',
+        },
+        data=query,
+    )
+except requests.exceptions.Timeout:
+    print('InfluxDB query timed out')
+    sys.exit(3)
+
+if not res.ok:
+    print('InfluxDB query failed: HTTP {}'.format(res.status_code))
+    sys.exit(3)
+
+total = 0
+ok = 0
+warning = 0
+critical = 0
+unknown = 0
+
+for row in csv.DictReader(res.text.splitlines()[3:-1]):
+    total += int(row['_value'])
+    if row['agg_status'] == '0':
+        ok = int(row['_value'])
+    elif row['agg_status'] == '1':
+        warning = int(row['_value'])
+    elif row['agg_status'] == '2':
+        critical = int(row['_value'])
+    else:
+        unknown += int(row['_value'])
+
+if total == 0:
+    print('No check results for {}'.format(args.check))
+    sys.exit(3)
+
+retval = 0
+if check_threshold(args.critical, critical, total, 'critical', args.check):
+    retval = 2
+if check_threshold(args.warning, warning, total, 'warning', args.check) and retval == 0:
+    retval = 1
+if check_threshold(args.unknown, unknown, total, 'unknown', args.check) and retvl == 0:
+    retval = 3
+print('{:g}% of check results for {} are OK'.format(round(ok / total * 100, 1), args.check))
+
+if meta:
+    print('\n<https://{}/n/{}/events?filters=check%3A{}>'.format(
+        meta['annotations']['dashboard_host'],
+        meta['namespace'],
+        args.check,
+    ))
+
+sys.exit(retval)

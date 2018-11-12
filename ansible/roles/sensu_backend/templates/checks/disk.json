@@ -1,0 +1,24 @@
+{
+  "api_version": "core/v2",
+  "type": "Check",
+  "metadata": {
+    "namespace": "default",
+    "name": "disk",
+    "labels": {},
+    "annotations": {
+      "sensu.io.json_attributes": "{\"occurrences\":2}"
+    }
+  },
+  "spec": {
+    "command": "check-disk-usage.rb -x tmpfs,tracefs -w 90 -c 95",
+    "subscriptions": [
+      "Status_production",
+      "Status_development"
+    ],
+    "publish": true,
+    "interval": 60,
+    "handlers": [
+      "default"
+    ]
+  }
+}

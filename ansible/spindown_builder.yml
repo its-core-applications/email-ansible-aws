@@ -1,5 +1,3 @@
----
-
 - hosts: Class_builder:!Status_spundown
   gather_facts: false
   tasks:

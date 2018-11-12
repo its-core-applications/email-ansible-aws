@@ -1,8 +1,11 @@
----
-
 - tags:
     - plasticman
   block:
+    - name: Install InfluxDB
+      yum:
+        name: influxdb
+        state: latest
+
     - name: Install plasticman
       template:
         dest: /usr/local/sbin/plasticman

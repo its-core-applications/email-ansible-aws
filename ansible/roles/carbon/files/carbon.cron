@@ -1,4 +1,0 @@
-#!/bin/bash
-
-find /var/lib/carbon/whisper/ -type f -mtime +14 -delete
-find /var/lib/carbon/whisper/ -empty -delete

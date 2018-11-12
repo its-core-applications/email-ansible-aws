@@ -10,9 +10,6 @@
   become: false
   tasks:
     - import_role:
-        name: sensu_proxyclients
-
-    - import_role:
         name: redis_master
 
     - import_role:

@@ -1,0 +1,3 @@
+[submodule "ansible/collections/flowerysong/sensu_go"]
+	path = ansible/collections/ansible_collections/flowerysong/sensu_go
+	url = https://github.com/flowerysong/ansible-sensu-go.git

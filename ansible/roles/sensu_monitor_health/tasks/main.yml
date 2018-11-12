@@ -1,0 +1,64 @@
+- tags:
+    - sensu
+    - sensu_monitor_health
+  delegate_to: localhost
+  block:
+    - import_role:
+        name: aws_get_accountinfo
+
+    - import_role:
+        name: ec2_find_subnets
+
+    - name: Fetch security group ID
+      ec2_group_info:
+        profile: "{{ aws_profile }}"
+        region: "{{ aws_region }}"
+        filters:
+          group_name: "{{ aws_resource_prefix }} vpn-default"
+      become: false
+      register: result_sg_group
+
+    - import_role:
+        name: lambda_function
+      vars:
+        lambda_name: sensu_monitor_health
+        lambda_description: Monitor Sensu /health endpoint
+        lambda_region: "{{ aws_region }}"
+        lambda_subnets:
+          - "{{ ec2_subnets_vpn_sorted[aws_region].0.id }}"
+        lambda_sg: "{{ result_sg_group.security_groups.0.group_id }}"
+        lambda_reqs:
+          - boto3
+          - requests
+        lambda_handler: sensu_monitor_health.handler
+        lambda_timeout: 45
+        lambda_env:
+          SENSU_BACKEND: http://{{ sensu_server}}:4567/
+          SENSU_REGION: "{{ aws_region }}"
+          SENSU_STATUS: "{{ aws_status }}"
+          SNS_ARN: arn:aws:sns:{{ sns_region }}:{{ aws_account_sns }}:oncall
+          SNS_REGION: "{{ sns_region }}"
+          SNS_ROLE: arn:aws:iam::{{ aws_account_sns }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_SNS
+
+    - name: Create Lambda policy for CloudWatch
+      lambda_policy:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        function_name: "{{ aws_resource_prefix }}_sensu_monitor_health"
+        statement_id: sensu_monitor_health-invoke-from-CloudWatch
+        action: lambda:InvokeFunction
+        principal: events.amazonaws.com
+        source_arn: arn:aws:events:{{ aws_region }}:{{ aws_account }}:rule/{{ aws_resource_prefix }}_sensu_health_cron
+      become: false
+
+    - name: Set up CloudWatch trigger for sensu_monitor_health
+      cloudwatchevent_rule:
+        name: "{{ aws_resource_prefix }}_sensu_health_cron"
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        schedule_expression: rate(5 minutes)
+        description: Monitor Sensu health
+        targets:
+          - id: sensu_health_target
+            arn: arn:aws:lambda:{{ aws_region }}:{{ aws_account }}:function:{{ aws_resource_prefix }}_sensu_monitor_health
+      become: false

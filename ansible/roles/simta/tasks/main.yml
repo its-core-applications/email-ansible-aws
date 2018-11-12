@@ -11,7 +11,7 @@
       yum:
         name:
           - denser-utils
-          - simta-admin-1.4.9
+          - simta-admin
           - simta-mscan
           - simvacation
         state: latest
@@ -190,7 +190,7 @@
 
     - name: Install custom monitoring scripts
       template:
-        dest: "{{ comint_base }}/{{ item }}"
+        dest: /usr/local/bin/{{ item }}
         src: "{{ item }}.j2"
         owner: collaborate
         group: collaborate
@@ -198,4 +198,3 @@
       loop:
         - check-dnsbl
         - check-dnsl
-      when: trendmicro_key is defined

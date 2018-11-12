@@ -48,6 +48,9 @@
         path: "{{ lambda_cache_dir }}/pkg/"
         format: zip
 
+    - import_role:
+        name: iam_profiles
+
     - become: false
       block:
         - name: Create IAM role for Lambda
@@ -66,6 +69,7 @@
               - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
               - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
               - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+              - "{{ snspolicy.policy.arn }}"
             purge_policies: true
           register: result
 

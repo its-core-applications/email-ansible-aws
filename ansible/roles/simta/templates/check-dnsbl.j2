@@ -13,7 +13,7 @@ if [[ -z $ip ]]; then
     exit 3
 fi
 
-lists=()
+retval=0
 
 for bl in \
     all.s5h.net \
@@ -26,20 +26,17 @@ for bl in \
     sip.dnsbl \
     sip24.dnsbl \
     xbl.dnsbl \
+{% if trendmicro_key is defined %}
     {{ trendmicro_key }}.q.mail-abuse.com \
     {{ trendmicro_key }}.r.mail-abuse.com
+{% endif %}
+
 do
-{# bash array syntax conflicts with Jinja2 comments #}{% raw %}
     if ! simrbl -q -l $bl $ip ; then
-        lists[${#lists[@]}]=$bl
+        echo "$ip is listed on $bl"
+        retval=2
     fi
 done
 
-if [[ ${#lists[@]} -gt 0 ]]; then
-    echo "$ip is listed on ${lists[@]}"
-    exit 2
-fi
-
-echo "$ip is clean"
-exit 0
-{% endraw %}
+[[ $retval -eq 0 ]] && echo "$ip is clean"
+exit $retval

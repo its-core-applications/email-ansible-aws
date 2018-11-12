@@ -1,0 +1,5 @@
+- name: Restart sensu-backend
+  systemd:
+    name: sensu-backend
+    daemon_reload: true
+    state: restarted

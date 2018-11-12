@@ -1,0 +1,19 @@
+- tags:
+    - go
+  when: go_version not in (go_installed | default([]))
+  block:
+    - name: Install system Go
+      yum:
+        name: golang
+        state: present
+
+    - become: false
+      block:
+        - name: Get real Go
+          command: go get golang.org/dl/go{{ go_version }}
+
+        - name: Download real Go
+          command: "{{ go_cmd }} download"
+
+    - set_fact:
+        go_installed: "{{ go_installed | default([]) | union([go_version]) }}"

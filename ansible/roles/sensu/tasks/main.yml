@@ -1,41 +1,74 @@
 - tags:
     - sensu
+    - sensu_agent
   block:
+    - import_role:
+        name: sensu_common
+
     - name: Install sensu and dependencies
       yum:
         name:
-          - sensu
           - dbus-python
+          - redis
+          - sensu-agent
+          - sensu-system-profile-linux
         state: latest
-      notify: Restart sensu
+      notify: Restart sensu-agent
+
+    - import_role:
+        name: python_venv
+      vars:
+        venv_name: sensu
+        venv_py3: true
+        venv_packages:
+          - boto3
+          - feedparser
+          - html2text
+          - python-dateutil
+          - requests
+
+    - name: Install sensu unit
+      copy:
+        src: sensu-agent.service
+        dest: /etc/systemd/system/sensu-agent.service
+        owner: root
+        group: root
+        mode: "0644"
 
     - name: Add sensu to extra groups
       user:
         name: sensu
         append: true
         groups: mail
-      notify: Restart sensu
+      notify: Restart sensu-agent
 
     - name: Configure sensu startup
       template:
-        dest: /etc/default/sensu
-        src: sensu.default.j2
+        dest: /etc/sensu/agent.yml
+        src: agent.yml.j2
         owner: root
         group: root
         mode: "0644"
-      notify: Restart sensu
+      notify: Restart sensu-agent
 
-    - name: Configure sensu
-      template:
-        dest: /etc/sensu/conf.d/{{ item }}
-        src: "{{ item }}.j2"
+    - name: Install custom checks
+      copy:
+        dest: /usr/local/bin/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0755"
       loop:
-        - client.json
-        - rabbitmq.json
-        - transport.json
-      when: bootstrap == false
-      notify: Restart sensu
-      tags: mutable
+        - check-aggregate
+        - check-box-status
+        - check-google-status
+        - check-load
+        - check-process
+        - check-redis
+        - check-redis-cluster
+        - check-smtp-auth
+        - check-tls
+        - metrics-ec2
 
     - name: Install sensu-dynsubs
       copy:
@@ -50,20 +83,14 @@
         name: update sensu subscriptions
         job: /usr/local/sbin/sensu-dynsubs
 
-    - name: Install sensu plugins
-      yum:
-        name: "{{ sensu_plugins | map('regex_replace', '^', 'sensugems-') | list }}"
-        state: latest
-      when: bootstrap == false
-
-    - name: Enable sensu-client
+    - name: Enable sensu-agent
       systemd:
-        name: sensu-client
+        name: sensu-agent
         enabled: true
-      notify: Restart sensu-client
+      notify: Restart sensu-agent
 
-    - name: Start sensu-client
+    - name: Start sensu-agent
       systemd:
-        name: sensu-client
+        name: sensu-agent
         state: started
         daemon_reload: true

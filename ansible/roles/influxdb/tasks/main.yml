@@ -1,0 +1,66 @@
+- tags:
+    - influxdb
+  block:
+    - name: Create influxdb filesystem
+      filesystem:
+        dev: /dev/xvdf
+        fstype: xfs
+        force: false
+
+    - name: Mount influxdb filesystem
+      mount:
+        name: /var/lib/influxdb
+        src: /dev/xvdf
+        fstype: xfs
+        state: mounted
+      notify: Restart influxd
+
+    - name: Install InfluxDB
+      yum:
+        name: influxdb
+        state: latest
+      notify: Restart influxd
+
+    - name: Install InfluxDB Python library
+      pip:
+        name: influxdb
+        state: latest
+
+    - name: Fix file permissions
+      file:
+        dest: /var/lib/carbon
+        state: directory
+        owner: influxdb
+        group: influxdb
+        recurse: true
+
+    - name: Configure influxd
+      copy:
+        dest: /etc/influxdb/influxdb.conf
+        src: influxdb.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart influxd
+
+    # The InfluxDB RPM installs an init script? Furrfu.
+    - name: Create influxd service
+      copy:
+        dest: /etc/systemd/system/influxd.service
+        src: influxd.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart influxd
+
+    - name: Enable influxd
+      systemd:
+        name: influxd
+        daemon_reload: true
+        enabled: true
+      notify: Restart influxd
+
+    - name: Start influxd
+      systemd:
+        name: influxd
+        state: started

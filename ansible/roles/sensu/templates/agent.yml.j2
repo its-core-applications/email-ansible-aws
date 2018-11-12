@@ -1,0 +1,7 @@
+log-level: debug
+backend-url:
+  - "ws://syslog.{{ aws_region }}.{{ subd }}:8081"
+keepalive-warning-timeout: 120
+keepalive-critical-timeout: 300
+statsd-event-handlers:
+  - influxdb

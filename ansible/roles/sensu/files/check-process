@@ -1,0 +1,20 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import argparse
+import subprocess
+import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--process', required=True)
+args = parser.parse_args()
+
+try:
+    pids = subprocess.check_output(['pgrep', '-x', args.process]).decode('utf-8')
+except subprocess.CalledProcessError:
+    count = 0
+else:
+    count = len(pids.split('\n')) - 1
+
+print('{} {} processes found'.format(count, args.process))
+if count == 0:
+    sys.exit(2)

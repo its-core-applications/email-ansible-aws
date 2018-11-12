@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+
+import argparse
+import json
+import socket
+import sys
+
+import boto3
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-r', '--region', help='AWS region')
+target_parser = parser.add_mutually_exclusive_group(required=True)
+target_parser.add_argument('-a', '--arn', help='SNS ARN')
+target_parser.add_argument('-t', '--topic', help='SNS topic name')
+parser.add_argument('-d', '--datacenter', help='datacenter that this alert is from')
+parser.add_argument('-u', '--url', help='Sensu web UI url')
+args = parser.parse_args()
+
+region = args.region or 'us-west-2'
+dc = args.datacenter or 'prod/' + region
+
+boto3.setup_default_session(profile_name='snspublish')
+client = boto3.client('sns', region_name=region)
+
+if args.arn:
+    arn = args.arn
+else:
+    topics = client.list_topics()
+    for t in topics['Topics']:
+        if t['TopicArn'].endswith(':' + args.topic):
+            arn = t['TopicArn']
+
+event = json.load(sys.stdin)
+
+if event['check']['status'] == 0:
+    status = 'OK'
+elif event['check']['status'] == 1:
+    status = 'WARNING'
+elif event['check']['status'] == 2:
+    status = 'CRITICAL'
+else:
+    status = 'UNKNOWN'
+
+subject = '{} - {} - {}/{} {}'.format(
+    dc,
+    'RESOLVED' if status == 'OK' else 'ALERT',
+    event['entity']['metadata']['name'],
+    event['check']['metadata']['name'],
+    status,
+)
+
+url = '{}/n/{}/events/{}/{}'.format(
+    args.url,
+    event['entity']['metadata']['namespace'],
+    event['entity']['metadata']['name'],
+    event['check']['metadata']['name'],
+)
+
+pretty_url = '<{}|Check details>'.format(url)
+
+lambda_msg = {
+    'sourcetype': 'sensu',
+    'source': socket.gethostname(),
+    'message': '\n'.join([event['check']['output'], pretty_url]),
+    'event': event,
+}
+
+msg = {
+    'default': '\n'.join([event['check']['output'], url]),
+    'sms': '{} - {}'.format(
+        subject,
+        event['check']['output'].split("\n")[0],
+    ),
+    'lambda': json.dumps(lambda_msg),
+}
+
+response = client.publish(
+    TopicArn = arn,
+    Message = json.dumps(msg),
+    MessageStructure = 'json',
+    Subject = subject,
+)
