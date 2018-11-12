@@ -11,6 +11,11 @@ google:
 {% if aws_status == 'prod' %}
   google-report-logins:
     credentials_file: /home/collaborate/gam-config/umich.edu/loginreportercredentials.json
+
+  google-archive-data:
+    oauth_ignore_clientids:
+      # Google Chrome
+      - '77185425430.apps.googleusercontent.com'
 {% endif %}
 
   default:
