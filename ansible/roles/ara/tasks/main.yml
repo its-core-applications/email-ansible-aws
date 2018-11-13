@@ -40,9 +40,17 @@
       file:
         dest: /home/ara/
         state: directory
-        owner: ec2-user
-        group: ec2-user
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: 0755
+
+    - name: Schedule data storage cleanup
+      cron:
+        name: ara-cleanup
+        user: "{{ ansible_user }}"
+        hour: 0
+        minute: 15
+        job: find /home/ara -type f -mtime +30 -delete
 
     - name: Configure ARA vhost
       template:
