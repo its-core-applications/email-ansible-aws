@@ -40,7 +40,7 @@ aws_profile_sns: "{{ aws_profiles[aws_status].sns }}"
 
 vdc_core: false
 
-sns_region: us-west-2
+sns_region: "{{ lookup('env', 'SNS_REGION') }}"
 yum_aws_region: us-west-2
 
 aws_instance_types:

@@ -12,6 +12,7 @@ export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
 export ANSIBLE_PRIVATE_KEY_FILE=$hacking_dir/id_rsa
 export AWS_STATUS=prod
 export AWS_DEFAULT_REGION=us-west-2
+export SNS_REGION=us-west-2
 export SNS_TOPIC=rootmail
 
 export VAULT_ADDR="https://vault.a.mail.umich.edu:8200"
@@ -32,7 +33,6 @@ if [[ -s $hacking_dir/localenv ]]; then
     . $hacking_dir/localenv
 fi
 
-export SNS_REGION=$AWS_DEFAULT_REGION
 export ANSIBLE_INVENTORY=$hacking_dir/ansible/inventory_${AWS_STATUS}
 
 vault read secret/ping
