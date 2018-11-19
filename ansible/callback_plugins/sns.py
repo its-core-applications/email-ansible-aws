@@ -6,7 +6,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = '''
-    callback: slack
+    callback: sns
     callback_type: notification
     requirements:
       - whitelist in configuration
