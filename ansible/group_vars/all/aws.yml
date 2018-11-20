@@ -46,6 +46,7 @@ yum_aws_region: us-west-2
 aws_instance_types:
   prod:
     default: m5.large
+    dnsbl: m5.xlarge
     ctools-mx: t3.small
     egress: m5.2xlarge
     mx: m5.xlarge
@@ -59,7 +60,7 @@ aws_instance_types:
 
 aws_instance_counts:
   prod:
-    dnsbl: 4
+    dnsbl: 3
     egress: 3
     mx: 6
     relay-egress: 3
