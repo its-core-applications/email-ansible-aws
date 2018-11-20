@@ -16,9 +16,11 @@
         name: git+https://github.com/UMCollab/ara.git
         state: latest
 
-    - name: Install mod_wsgi
+    - name: Install extra packages
       yum:
-        name: mod_wsgi
+        name:
+          - mod_wsgi
+          - mod_auth_openidc
         state: latest
 
     - import_role:
