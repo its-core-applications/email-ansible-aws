@@ -3,11 +3,17 @@
   block:
     - import_role:
         name: ec2_find_subnets
+    - import_role:
+        name: ec2_security_groups
+      vars:
+        ec2sg_groups:
+          - efs
     - become: false
       delegate_to: localhost
-      block: 
+      block:
         - name: Fetch EFS security group info
           ec2_group_facts:
+            profile: "{{ aws_profile }}"
             region: "{{ aws_region }}"
             filters:
               vpc-id: "{{ ec2_subnets_public.0.vpc_id }}"
@@ -35,3 +41,7 @@
         opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noatime
         state: mounted
         path: /ammit
+      register: result
+      retries: 20
+      delay: 15
+      until: result is success
