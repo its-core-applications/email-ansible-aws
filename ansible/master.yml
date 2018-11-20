@@ -106,3 +106,4 @@
 
         - import_role:
             name: s3repo_build
+          when: aws_region == aws_primary_region
