@@ -1,4 +1,5 @@
 PyYAML
+awscli
 boto
 boto3
 botocore

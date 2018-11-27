@@ -41,7 +41,7 @@ case $os in
     ;;
     *)
         owner='137112412989'
-        filter='Name=name,Values=amzn2-ami-hvm-*-gp2'
+        filter='Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2'
         root='/dev/xvda'
     ;;
 esac
