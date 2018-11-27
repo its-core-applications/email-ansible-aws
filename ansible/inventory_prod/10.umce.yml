@@ -23,7 +23,7 @@ all:
         Class_ctools:
           hosts:
             snowcake.mr.itd.umich.edu:
-        Class_jail:
+        Class_jail_umce:
           hosts:
             petsematary.mr.itd.umich.edu:
         Class_massmail:
