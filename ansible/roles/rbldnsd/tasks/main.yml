@@ -1,5 +1,3 @@
----
-
 - tags:
     - rbldnsd
   block:
@@ -9,6 +7,14 @@
         state: latest
       notify: Reconfigure rbldnsd
 
+    - name: Create log dir for rbldnsd
+      file:
+        dest: /var/log/rbldnsd
+        state: directory
+        owner: rbldns
+        group: root
+        mode: "0755"
+
     - name: Configure rbldnsd
       copy:
         dest: /etc/sysconfig/rbldnsd
@@ -17,6 +23,18 @@
         group: root
         mode: "0644"
       notify: Reconfigure rbldnsd
+
+    - name: Retune network buffers
+      sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        reload: true
+        ignoreerrors: true
+      loop:
+        - name: net.core.rmem_max
+          value: 26214400
+        - name: net.core.rmem_default
+          value: 26214400
 
     - name: Configure rsyncd
       copy:
