@@ -114,9 +114,11 @@ DELIVER_MESSAGES_PER_CONNECTION     25
 DELIVER_DATA_SESSION_TIMEOUT        1800
 {% endif %}
 
+{% if simta_filters %}
 CHECKSUM_ALGORITHM  sha1
 CONTENT_FILTER      /usr/sbin/simta-mscan
 
+{% endif %}
 {% if simta_egress %}
 {% if simta_punt is defined %}
 PUNT                    {{ simta_punt }}
