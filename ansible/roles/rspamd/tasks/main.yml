@@ -27,6 +27,7 @@
         - local.d/rbl.conf
         - local.d/spf.conf
         - local.d/surbl.conf
+        - local.d/whitelist.conf
         - local.d/worker-proxy.inc
         - rspamd.local.lua
         - umich_bad_tld.inc
