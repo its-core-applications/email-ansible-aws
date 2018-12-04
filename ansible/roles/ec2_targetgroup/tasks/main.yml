@@ -27,3 +27,4 @@
         health_check_port: 25
         healthy_threshold_count: 3
         unhealthy_threshold_count: 3
+        deregistration_delay_timeout: 90
