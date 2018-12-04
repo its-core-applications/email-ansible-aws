@@ -12,6 +12,35 @@
         - mx
         - egress
 
+    - name: Schedule cycling of hosts
+      cron:
+        name: ansible-cycle-{{ item }}
+        user: "{{ ansible_user }}"
+        minute: "{{ 12 + item_index }}"
+        hour: "{{ item_index % 3 }}"
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/replace_{{ item }}.yml &>/dev/null
+      loop: "{{ aws_region_group | map('extract', hostvars, 'group_names') | flatten | unique | select('match', 'Class_.+') | difference(singletons) | map('replace', 'Class_', '') | sort }}"
+      loop_control:
+        index_var: item_index
+      vars:
+        singletons:
+          - Class_ctools_mx
+          - Class_jail
+          - Class_master
+          - Class_syslog
+
+    - name: Schedule spindown of ephemeral tool hosts
+      cron:
+        name: ansible-shutdown-{{ item }}
+        user: "{{ ansible_user }}"
+        minute: 0
+        hour: 12
+        weekday: 6
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/spindown_{{ item }}.yml &>/dev/null
+      loop:
+        - builder
+        - dev
+
     - name: Schedule deprovisioning of spundown hosts
       cron:
         name: ansible-deprovision
