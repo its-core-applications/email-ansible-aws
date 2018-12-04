@@ -3,18 +3,20 @@
   block:
     - import_role:
         name: ec2_find_subnets
+
     - import_role:
         name: ec2_security_groups
       vars:
         ec2sg_groups:
           - efs
+
     - become: false
       delegate_to: localhost
       block:
         - name: Fetch EFS security group info
           ec2_group_facts:
-            profile: "{{ aws_profile }}"
-            region: "{{ aws_region }}"
+            profile: "{{ aws_profile_efs }}"
+            region: "{{ efs_region }}"
             filters:
               vpc-id: "{{ ec2_subnets_public.0.vpc_id }}"
               group-name: "{{ aws_resource_prefix }} efs"
@@ -22,8 +24,8 @@
 
         - name: Create EFS volume for jail
           efs:
-            profile: "{{ aws_profile }}"
-            region: "{{ aws_region }}"
+            profile: "{{ aws_profile_efs }}"
+            region: "{{ efs_region }}"
             state: present
             name: ammit
             tags:
@@ -34,14 +36,26 @@
             target_query: "[*].{subnet_id: id, security_groups: ['{{ efs_sg.security_groups.0.group_id }}']}"
           register: result
 
+        - name: Create DNS entry for ammit
+          route53:
+            profile: "{{ aws_profile_subd }}"
+            command: create
+            overwrite: true
+            wait: true
+            zone: "{{ subd }}"
+            record: ammit.{{ subd }}
+            type: A
+            value: "{{ result.efs.mount_targets.0.ip_address }}"
+            ttl: 30
+
     - name: Mount ammit
       mount:
-        src: "{{ result.efs.file_system_id }}.efs.{{ aws_region }}.amazonaws.com:/"
+        src: "{{ (aws_region == efs_region) | ternary(result.efs.filesystem_address, 'ammit.' ~ subd ~ ':/') }}"
         fstype: nfs4
         opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noatime
         state: mounted
         path: /ammit
       register: result
-      retries: 20
+      retries: 10
       delay: 15
       until: result is success
