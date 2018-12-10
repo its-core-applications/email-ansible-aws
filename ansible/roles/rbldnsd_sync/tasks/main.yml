@@ -24,6 +24,10 @@
       command: /usr/local/sbin/dnsbl-sync
       environment:
         RETURN_RC: 1
+      register: result
+      until: result is success
+      retries: 20
+      delay: 5
       tags: mutable
 
     - name: Schedule syncing
