@@ -1,6 +1,6 @@
 ec2_sg:
   public-default:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: default VPC security group
     rules:
       - proto: icmp
@@ -19,7 +19,7 @@ ec2_sg:
       - proto: all
         cidr_ip: 0.0.0.0/0
   vpn-default:
-    vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_vpn[aws_region].0.vpc_id }}"
     description: default VPC security group
     rules:
       - proto: icmp
@@ -36,7 +36,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   mx-elb:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: mx ELB
     rules:
       - proto: tcp
@@ -50,7 +50,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   mx:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: mx hosts
     rules:
       - proto: tcp
@@ -58,15 +58,15 @@ ec2_sg:
         group_id: sg-12854969
 
   egress:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: egress hosts
     rules:
       - proto: tcp
         ports: 25
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public[aws_region] + ec2_subnets_vpn[aws_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
 
   relay:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: relay hosts
     rules:
       - proto: tcp
@@ -76,7 +76,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   vdc-relay:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: vdc relay hosts
     rules:
       - proto: tcp
@@ -86,7 +86,7 @@ ec2_sg:
         cidr_ip: 10.0.0.0/8
 
   smtp:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: auth SMTP
     rules:
       - proto: tcp
@@ -97,7 +97,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   rsyslog:
-    vpc_id: "{{ ec2_subnets_vpn.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_vpn[aws_region].0.vpc_id }}"
     description: rsyslog hosts
     rules:
       - proto: tcp
@@ -107,7 +107,7 @@ ec2_sg:
           - 3000 # uchiwa
           - 4567 # sensu API
           - 5672 # RabbitMQ for sensu pub/sub
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public[aws_region] + ec2_subnets_vpn[aws_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
       - proto: tcp
         ports:
           - 4567 # sensu API
@@ -115,32 +115,32 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   rbldnsd:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: rbldnsd hosts
     rules:
       - proto: udp
         ports: 53
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public[aws_region] + ec2_subnets_vpn[aws_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
       - proto: tcp
         ports: 873
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public[aws_region] + ec2_subnets_vpn[aws_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
 
   redis:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: redis hosts
     rules:
       - proto: tcp
         ports:
           - 6379  # Redis
           - 16379 # Redis cluster
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public[aws_region] + ec2_subnets_vpn[aws_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
       - proto: tcp
         ports:
           - 6380  # Corvus
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | list | union(['141.211.12.0/24', '141.211.125.0/24']) | cidr_merge }}"
+        cidr_ip: "{{ (ec2_subnets_public[aws_region] + ec2_subnets_vpn[aws_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | list | union(['141.211.12.0/24', '141.211.125.0/24']) | cidr_merge }}"
 
   vault:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: vault hosts
     rules:
       - proto: tcp
@@ -148,15 +148,15 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   efs:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: allow NFS
     rules:
       - proto: tcp
         ports: 2049
-        cidr_ip: "{{ (ec2_subnets_public + ec2_subnets_vpn + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ aws_region_classes[aws_status] | map('extract', ec2_subnets_public) | flatten | map(attribute='cidr_block') | cidr_merge }}"
 
   campus-smtp:
-    vpc_id: "{{ ec2_subnets_public.0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
     description: allow SMTP from campus
     rules:
       - proto: tcp 

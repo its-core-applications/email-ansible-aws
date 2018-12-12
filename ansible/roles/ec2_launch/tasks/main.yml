@@ -63,7 +63,7 @@
         group: "{{ launch_groups_default | union(launch_groups) | map('regex_replace', '^', aws_resource_prefix ~ ' ') | list }}"
         key_name: "{{ aws_ssh_key }}"
         instance_type: "{{ aws_instance_types[aws_status][launch_class] | default(aws_instance_types[aws_status]['default']) }}"
-        vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[item % (ec2_subnets | length)])).id }}"
+        vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[aws_region][item % (ec2_subnets | length)])).id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: "{{ aws_resource_prefix }}_{{ launch_profile | default('standard') }}"

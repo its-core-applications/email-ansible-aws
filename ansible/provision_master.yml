@@ -1,5 +1,3 @@
----
-
 - hosts: localhost
   become: false
   tasks:
@@ -12,7 +10,7 @@
         launch_class: master
         launch_ami_class: base
         launch_profile: master
-        launch_subnet: "{{ ec2_subnets_public_sorted.0 }}"
+        launch_subnet: "{{ ec2_subnets_public_sorted[aws_region].0 }}"
         launch_groups:
           - vault
         launch_tags:

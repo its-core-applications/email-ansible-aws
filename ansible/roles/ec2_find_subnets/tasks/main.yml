@@ -1,17 +1,17 @@
 - delegate_to: localhost
   become: false
-  when: ec2_subnets_public is not defined
+  when: (ec2_subnets_public is not defined) or (subnet_region not in ec2_subnets_public)
   block:
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_facts:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
+        region: "{{ subnet_region }}"
+        profile: "{{ subnet_profile }}"
       register: subnet_facts
 
     - name: Apply tags to subnets
       ec2_tag:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
+        region: "{{ subnet_region }}"
+        profile: "{{ subnet_profile }}"
         resource: "{{ item.id }}"
         tags:
           Class: "{{ item.tags.Name | regex_replace('Subnet.*') | lower }}"
@@ -25,8 +25,8 @@
 
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_facts:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
+        region: "{{ subnet_region }}"
+        profile: "{{ subnet_profile }}"
       register: ec2_subnet_facts
 
     - name: Gather VDC core VPC subnet facts
@@ -37,8 +37,8 @@
 
     - name: Shuffle and sort subnets
       set_fact:
-        ec2_subnets_public: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | shuffle(seed=ansible_facts.date_time.epoch) }}"
-        ec2_subnets_public_sorted: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }}"
-        ec2_subnets_vpn: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'vpn') | shuffle(seed=ansible_facts.date_time.epoch) }}"
-        ec2_subnets_vpn_sorted: "{{ ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'vpn') | sort(attribute='availability_zone') }}"
+        ec2_subnets_public: "{{ ec2_subnets_public | default({}) | combine({ subnet_region: ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | shuffle(seed=ansible_facts.date_time.epoch)}) }}"
+        ec2_subnets_public_sorted: "{{ ec2_subnets_public_sorted | default({}) | combine({ subnet_region: ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }) }}"
+        ec2_subnets_vpn: "{{ ec2_subnets_vpn | default({}) | combine({ subnet_region: ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'vpn') | shuffle(seed=ansible_facts.date_time.epoch) }) }}"
+        ec2_subnets_vpn_sorted: "{{ ec2_subnets_vpn_sorted | default({}) | combine({ subnet_region: ec2_subnet_facts.subnets | selectattr('tags.Class', 'equalto', 'vpn') | sort(attribute='availability_zone') }) }}"
         ec2_subnets_vdc_core: "{{ ec2_subnet_facts_vdc.subnets | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }}"

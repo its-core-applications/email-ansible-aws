@@ -21,7 +21,7 @@
         cross_zone_load_balancing: true
         tags:
           BusinessOwner: "{{ aws_resource_owner }}"
-        subnets: "{{ ec2_subnets_public | map(attribute='id') | list }}"
+        subnets: "{{ ec2_subnets_public[aws_region] | map(attribute='id') | list }}"
         listeners:
           - Protocol: TCP
             Port: 25

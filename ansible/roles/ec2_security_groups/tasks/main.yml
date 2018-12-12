@@ -7,6 +7,15 @@
     - import_role:
         name: ec2_find_subnets
 
+    - include_role:
+        name: ec2_find_subnets
+      vars:
+        subnet_region: "{{ master_region }}"
+      loop: "{{ aws_region_classes[aws_status] | list }}"
+      loop_control:
+        loop_var: master_region
+      when: "'efs' in ec2sg_groups"
+
     - name: Create security groups
       ec2_group:
         region: "{{ aws_region }}"
