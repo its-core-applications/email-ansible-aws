@@ -6,11 +6,11 @@
       cron:
         name: ansible-mutable-{{ item }}
         user: "{{ ansible_user }}"
-        minute: "*/15"
-        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item }}.yml --tags mutable &>/dev/null
-      loop:
-        - mx
-        - egress
+        minute: "{{ 0 + item_index % 10 }},{{ 15 + item_index % 10 }},{{ 30 + item_index % 10 }},{{ 45 + item_index % 10 }}"
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item | replace('-', '_') }}.yml --tags mutable &>/dev/null
+      loop: "{{ aws_region_classes.common | union(aws_region_classes[aws_status][aws_region]) }}"
+      loop_control:
+        index_var: item_index
 
     - name: Schedule cycling of hosts
       cron:
