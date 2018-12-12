@@ -23,6 +23,11 @@
         dns_host: jail
         dns_group: Class_jail
 
+    - name: Check to see if messages are currently being requeued.
+      wait_for:
+        path: /home/{{ ansible_user }}/simqtmp/simta-requeue-jail
+        state: absent
+
 - hosts: Class_jail:&Status_spindown
   tasks:
     - when: region == aws_region

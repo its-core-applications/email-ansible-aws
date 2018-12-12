@@ -10,12 +10,26 @@
         group: root
         mode: "0755"
 
-    - name: Schedule requeuing
+    - name: Schedule requeuing for egress
       cron:
-        name: simta-requeue
+        name: simta-requeue-egress
         user: "{{ ansible_user }}"
         minute: "*/5"
-        job: . ~/ansible-aws/env-setup.sh && /usr/local/sbin/simta-requeue
+        job: . ~/ansible-aws/env-setup.sh && /usr/local/sbin/simta-requeue egress
+    
+    - name: Schedule requeuing for relay-egress
+      cron:
+        name: simta-requeue-relay-egress
+        user: "{{ ansible_user }}"
+        minute: "*/5"
+        job: . ~/ansible-aws/env-setup.sh && /usr/local/sbin/simta-requeue relay-egress
+
+    - name: Schedule requeuing for jail
+      cron:
+        name: simta-requeue-jail
+        user: "{{ ansible_user }}"
+        minute: "*/5"
+        job: . ~/ansible-aws/env-setup.sh && /usr/local/sbin/simta-requeue jail
 
     - name: Schedule SPF updates
       cron:

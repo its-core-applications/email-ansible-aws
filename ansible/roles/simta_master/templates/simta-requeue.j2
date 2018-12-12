@@ -1,6 +1,26 @@
 #!/bin/bash
 
-name=simta-requeue
+case $1 in
+
+    egress)
+        class='egress'
+    ;;
+    
+    relay-egress)
+        class='relay-egress'
+    ;;
+
+    jail)
+        class='jail'
+    ;;
+
+    *)
+        echo 'Invalid machine class provided.'
+        exit 1
+
+esac
+
+name=simta-requeue-$class
 workdir=/home/{{ ansible_user }}/simqtmp
 lockfile=$workdir/${name}
 startts=$(date +%s)
@@ -19,7 +39,8 @@ cleanup() {
         --arg status $retval \
         --arg duration $duration \
         --arg msg "$msg" \
-        '{ name: "simta-requeue", source: $source, ttl: 900, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+        --arg name $name
+        '{ name: $name, source: $source, ttl: 900, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
     rm -rf $tmpdir
     rm -f $lockfile
     exit $retval
@@ -33,10 +54,9 @@ fi
 touch $lockfile
 trap 'rm -f $lockfile ; exit 1' 1 2 3 15
 
-readarray -t egress_hosts < <(ansible --list-hosts 'Class_egress:&Status_production' 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
-readarray -t regress_hosts < <(ansible --list-hosts 'Class_relay_egress:&Status_production' 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
+readarray -t hosts < <(ansible --list-hosts "Class_${class/-/_}:&Status_production" 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
 
-for qhost in ${egress_hosts[@]} ${regress_hosts[@]}; do
+for qhost in ${hosts[@]}; do
     [[ -s ${workdir}/{$qhost}.tar ]] && echo "Stale ${workdir}/{$qhost}.tar" >> $tmpfile
 done
 
@@ -46,35 +66,33 @@ if [[ -s $tmpfile ]]; then
     cleanup
 fi
 
-for curdir in egress relay-egress; do
-    if [[ $curdir = 'relay-egress' ]]; then
-        qhosts=(${regress_hosts[@]})
-    else
-        qhosts=(${egress_hosts[@]})
-    fi
-    for queue in ${workdir}/inbound/${curdir}/* ; do
-        [[ -d $queue ]] || continue
-        [[ -e ${queue}.lock ]] && continue
-        find $queue -type f -name D\* >| ${tmpdir}/msglist
-        if [[ -s ${tmpdir}/msglist ]]; then
-            if [[ ${#qhosts[@]} -eq 0 ]]; then
-                echo "$curdir has messages to requeue but there are no target servers" >> $tmpfile
-                retval=1
-                cleanup
-            fi
-            split -a1 -d -n l/${#qhosts[@]} ${tmpdir}/msglist ${tmpdir}/msglist-
-            for i in "${!qhosts[@]}"; do
-                mkdir -p ${workdir}/outbound/${qhosts[$i]}
-                sed -e 'p; s/D/E/;' "${tmpdir}/msglist-$i" | xargs -r -I msg mv msg "${workdir}/outbound/${qhosts[$i]}/"
-            done
+qhosts=(${hosts[@]})
+for queue in ${workdir}/inbound/${class}/* ; do
+    [[ -d $queue ]] || continue
+    [[ -e ${queue}.lock ]] && continue
+    find $queue -type f -name D\* >| ${tmpdir}/msglist
+    if [[ -s ${tmpdir}/msglist ]]; then
+        if [[ ${#qhosts[@]} -eq 0 ]]; then
+            echo "$class has messages to requeue but there are no target servers" >> $tmpfile
+            retval=1
+            cleanup
         fi
-        rmdir $queue
-    done
+        echo "Requeuing $(wc -l ${tmpdir}/msglist | awk '{print $1}') messages from $(basename $queue)" >> $tmpfile
+        split -a1 -d -n l/${#qhosts[@]} ${tmpdir}/msglist ${tmpdir}/msglist-
+        for i in "${!qhosts[@]}"; do
+            mkdir -p ${workdir}/outbound/${qhosts[$i]}
+            sed -e 'p; s/D/E/;' "${tmpdir}/msglist-$i" | xargs -r -I msg mv msg "${workdir}/outbound/${qhosts[$i]}/"
+        done
+    else
+        echo "Nothing to requeue in $(basename $queue)" >> $tmpfile
+    fi
+    rmdir $queue
 done
+echo "Finished checking $class" >> $tmpfile
 
 find ${workdir}/outbound -empty -delete
 
-for qhost in ${egress_hosts[@]} ${regress_hosts[@]}; do
+for qhost in ${hosts[@]}; do
     if [[ -d ${workdir}/outbound/${qhost} ]]; then
         tar -C ${workdir}/outbound/${qhost} --owner=simta --group=mail --mode=0644 -cf ${workdir}/outbound/${qhost}.tar . &>>$tmpfile
         if [[ $? -eq 0 ]]; then
