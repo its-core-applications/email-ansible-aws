@@ -9,6 +9,11 @@
     launch_groups_default:
        - "{{ launch_subnet_type | default('public') }}-default"
   block:
+    - name: Check region guardrail
+      assert:
+        that: (launch_class in aws_region_classes.common) or (launch_class in aws_region_classes[aws_status][aws_region])
+        fail_msg: If you're really sure you want to launch this instance, modify aws_region_classes to allow it.
+
     - import_role:
         name: iam_profiles
 
