@@ -47,58 +47,84 @@ sns_region: "{{ lookup('env', 'SNS_REGION') }}"
 efs_region: us-east-2
 yum_aws_region: us-west-2
 
-aws_instance_types:
-  prod:
-    default: m5.large
-    dnsbl: c5n.large
-    ctools-mx: t3.small
-    egress: m5.2xlarge
-    mx: m5.xlarge
-    mx-test: t3.small
-    smtp-test: t3.small
-    vdc-relay: t3.small
-  nonprod:
-    default: t3.small
-    master: m5.large
-    builder: m5.large
+aws_instance_default:
+  prod: m5.large
+  nonprod: t3.small
 
-aws_instance_counts:
-  prod:
-    dnsbl: 3
-    egress: 3
-    mx: 6
-    relay-egress: 3
-    vdc-relay: 2
-  nonprod:
-    egress: 2
-    mx: 3
-
-aws_region_classes:
-  common:
-    - dnsbl
-    - egress
-    - master
-    - mx
-    - syslog
+aws_region_layout:
   prod:
     us-east-2:
-      - ctools-mx
-      - jail
-      - relay-egress
-      - vdc-relay
+      ctools-mx:
+        size: t3.small
+      dnsbl:
+        count: 3
+        size: c5n.large
+      egress:
+        count: 3
+        size: m5.2xlarge
+      jail:
+        size: t3.small
+      master:
+        autocycle: false
+      mx:
+        count: 6
+        cycle_method: spinup
+        size: m5.xlarge
+      relay-egress:
+        count: 3
+      syslog:
+        autocycle: false
+      vdc-relay:
+        count: 2
+        size: t3.small
     us-west-2:
-      - builder
-      - dev
+      builder:
+        autokill: true
+        autocycle: false
+      dev:
+        autokill: true
+        autocycle: false
+      dnsbl:
+        count: 3
+        size: c5n.large
+      egress:
+        count: 3
+        size: m5.2xlarge
+      master:
+        autocycle: false
+      mx:
+        count: 6
+        cycle_method: spinup
+        size: m5.xlarge
+      mx-test:
+        size: t3.small
+      syslog:
+        autocycle: false
   nonprod:
     us-east-2:
-      - authn-relay
-      - authz-relay
-      - builder
-      - ctools-mx
-      - dev
-      - jail
-      - relay-egress
-      - vdc-relay
+      authn-relay: {}
+      authz-relay: {}
+      builder:
+        autokill: true
+        autocycle: false
+        size: t3.large
+      ctools-mx: {}
+      dev:
+        autokill: true
+        autocycle: false
+      dnsbl: {}
+      egress:
+        count: 2
+      jail: {}
+      master:
+        autocycle: false
+        size: t3.large
+      mx:
+        count: 3
+        cycle_method: spinup
+      relay-egress: {}
+      syslog: {}
+      vdc-relay: {}
 
 yum_hostname: yum.{{ subd }}
 yum_repo_path: "{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distribution_major_version }}"

@@ -8,7 +8,7 @@
         name: ec2_find_subnets
       vars:
         subnet_region: "{{ master_region }}"
-      loop: "{{ aws_region_classes[aws_status] | list }}"
+      loop: "{{ aws_region_layout[aws_status] | list }}"
       loop_control:
         loop_var: master_region
 

@@ -17,7 +17,7 @@
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         state: present
-      loop: "{{ range(aws_instance_counts[aws_status][eip_class] | default(1) - (result.addresses | length)) | list }}"
+      loop: "{{ range(aws_region_layout[aws_status][aws_region][eip_class].count | default(1) - (result.addresses | length)) | list }}"
       register: result
 
     - name: Tag new EIPs

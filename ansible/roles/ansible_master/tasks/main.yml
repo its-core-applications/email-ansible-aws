@@ -6,40 +6,34 @@
       cron:
         name: ansible-mutable-{{ item }}
         user: "{{ ansible_user }}"
-        minute: "{{ 0 + item_index % 10 }},{{ 15 + item_index % 10 }},{{ 30 + item_index % 10 }},{{ 45 + item_index % 10 }}"
+        minute: "{{ 0 + ansible_loop.index % 10 }},{{ 15 + ansible_loop.index % 10 }},{{ 30 + ansible_loop.index % 10 }},{{ 45 + ansible_loop.index % 10 }}"
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item | replace('-', '_') }}.yml --tags mutable &>/dev/null
-      loop: "{{ aws_region_classes.common | union(aws_region_classes[aws_status][aws_region]) }}"
+      loop: "{{ aws_region_layout[aws_status][aws_region] | list }}"
       loop_control:
-        index_var: item_index
+        extended: true
 
     - name: Schedule cycling of hosts
       cron:
-        name: ansible-cycle-{{ item }}
+        name: ansible-cycle-{{ item.key }}
         user: "{{ ansible_user }}"
-        minute: "{{ 12 + item_index }}"
-        hour: "{{ item_index % 3 }}"
-        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/replace_{{ item }}.yml &>/dev/null
-      loop: "{{ aws_region_group | map('extract', hostvars, 'group_names') | flatten | unique | select('match', 'Class_.+') | difference(singletons) | map('replace', 'Class_', '') | sort }}"
+        minute: "{{ 12 + ansible_loop.index0 }}"
+        hour: "{{ ansible_loop.index0 % 3 }}"
+        weekday: "{{ (item.value.count | default(1) | int == 1) | ternary(0, '*') }}"
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item.value.cycle_method | default('replace') }}_{{ item.key | replace('-', '_') }}.yml &>/dev/null
+      loop: "{{ aws_region_layout[aws_status][aws_region] | dict2items }}"
       loop_control:
-        index_var: item_index
-      vars:
-        singletons:
-          - Class_ctools_mx
-          - Class_jail
-          - Class_master
-          - Class_syslog
+        extended: true
+      when: item.value.autocycle | default(true)
 
     - name: Schedule spindown of ephemeral tool hosts
       cron:
-        name: ansible-shutdown-{{ item }}
+        name: ansible-shutdown-{{ item.key }}
         user: "{{ ansible_user }}"
         minute: 0
         hour: 12
         weekday: 6
-        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/spindown_{{ item }}.yml &>/dev/null
-      loop:
-        - builder
-        - dev
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/spindown_{{ item.key }}.yml &>/dev/null
+      loop: "{{ aws_region_layout[aws_status][aws_region] | dict2items | selectattr('value.autokill', 'defined') | selectattr('value.autokill') | list }}"
 
     - name: Schedule deprovisioning of spundown hosts
       cron:
@@ -65,6 +59,4 @@
         hour: 17
         weekday: 3
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/cleanup_{{ item }}.yml &>/dev/null
-      loop:
-        - amis
-        - dns
+      loop: "{{ (aws_region == aws_primary_region) | ternary(['amis', 'dns'], ['amis']) }}"

@@ -11,8 +11,8 @@
   block:
     - name: Check region guardrail
       assert:
-        that: (launch_class in aws_region_classes.common) or (launch_class in aws_region_classes[aws_status][aws_region])
-        fail_msg: If you're really sure you want to launch this instance, modify aws_region_classes to allow it.
+        that: launch_class in aws_region_layout[aws_status][aws_region]
+        fail_msg: If you're really sure you want to launch this instance, modify aws_region_layout to allow it.
 
     - import_role:
         name: iam_profiles
@@ -62,8 +62,8 @@
         profile: "{{ aws_profile }}"
         group: "{{ launch_groups_default | union(launch_groups) | map('regex_replace', '^', aws_resource_prefix ~ ' ') | list }}"
         key_name: "{{ aws_ssh_key }}"
-        instance_type: "{{ aws_instance_types[aws_status][launch_class] | default(aws_instance_types[aws_status]['default']) }}"
-        vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[aws_region][item % (ec2_subnets | length)])).id }}"
+        instance_type: "{{ aws_region_layout[aws_status][aws_region][launch_class].size | default(aws_instance_default[aws_status]) }}"
+        vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[aws_region][item % (ec2_subnets[aws_region] | length)])).id }}"
         assign_public_ip: true
         image: "{{ find_ami.image_id }}"
         instance_profile_name: "{{ aws_resource_prefix }}_{{ launch_profile | default('standard') }}"
@@ -71,7 +71,7 @@
         count: 1
       vars:
         ec2_subnets: "{{ hostvars[inventory_hostname]['ec2_subnets_' ~ (launch_subnet_type | default('public'))] }}"
-        launch_count_default: "{{ aws_instance_counts[aws_status][launch_class] | default(1) - (groups['Class_' ~ launch_class | replace('-', '_')] | intersect(aws_region_group) | intersect(groups.Status_production | union(groups.Status_spinup) | union(groups.Status_development)) | length) }}"
+        launch_count_default: "{{ aws_region_layout[aws_status][aws_region][launch_class].count | default(1) - (groups['Class_' ~ launch_class | replace('-', '_')] | intersect(aws_region_group) | intersect(groups.Status_production | union(groups.Status_spinup) | union(groups.Status_development)) | length) }}"
         launch_tags_default:
           Class: "{{ launch_class }}"
           Status: spinup

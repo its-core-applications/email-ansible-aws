@@ -153,7 +153,7 @@ ec2_sg:
     rules:
       - proto: tcp
         ports: 2049
-        cidr_ip: "{{ aws_region_classes[aws_status] | map('extract', ec2_subnets_public) | flatten | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | map(attribute='cidr_block') | cidr_merge }}"
 
   campus-smtp:
     vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
