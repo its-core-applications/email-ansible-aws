@@ -4,9 +4,6 @@
   delegate_to: localhost
   become: false
   block:
-    - import_role:
-        name: ec2_find_subnets
-
     - include_role:
         name: ec2_find_subnets
       vars:
@@ -14,7 +11,6 @@
       loop: "{{ aws_region_classes[aws_status] | list }}"
       loop_control:
         loop_var: master_region
-      when: "'efs' in ec2sg_groups"
 
     - name: Create security groups
       ec2_group:
