@@ -9,7 +9,6 @@
         launch_class: jail
         launch_ami_class: jail
         launch_groups:
-          - campus-smtp
           - efs
           - egress
         launch_tags:
