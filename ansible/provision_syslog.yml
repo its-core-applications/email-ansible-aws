@@ -63,13 +63,6 @@
         dns_host: syslog
         dns_group: Class_syslog
 
-    - import_role:
-        name: route53_dns_from_inventory
-      vars:
-        dns_host: graphite
-        dns_group: Class_syslog
-        dns_private_ip: false
-
     - name: Set aliases
       route53:
         profile: "{{ aws_profile_subd }}"
@@ -81,6 +74,7 @@
         ttl: 60
         value: "{{ syslog_server }}"
       loop:
+        - graphite
         - sensu
 
 - hosts: Class_syslog
