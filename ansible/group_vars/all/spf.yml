@@ -13,8 +13,14 @@ spf_thirdparty:
 
   - names:
       - 4help
+      - accounts.payable
+      - epay
+      - expensereports
+      - lsait-service-desk
       - nonprod.sc
       - qa.sc
+      - sharedservices
+      - supplier.maintenance
     record: 'include:service-now.com'
 
   - names:
