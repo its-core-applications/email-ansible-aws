@@ -1,0 +1,35 @@
+---
+
+- tags:
+    - gitlab
+  block:
+    - name: Set up Gitlab script virtualenv
+      pip:
+        name:
+          - python-gitlab
+        state: latest
+        virtualenv: /usr/local/lib/gitlab
+
+    - name: Put gitlab-cli config file in place
+      template:
+        dest: /etc/gitlab-cli.cfg
+        src: gitlab-cli.cfg.j2
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copy over gitlab-cli wrapper script
+      copy:
+        dest: /usr/bin/gitlab-cli
+        src: gitlab-cli.sh
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Set up gitlab-cli alias
+      copy:
+        dest: /etc/profile.d/99_gitlab-cli.sh
+        src: 99_gitlab-cli.sh
+        owner: root
+        group: root
+        mode: "0644"

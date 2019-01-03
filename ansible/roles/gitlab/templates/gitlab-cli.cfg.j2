@@ -1,0 +1,8 @@
+[global]
+default = umgitlab
+timeout = 5
+ssl_verify = true
+
+[umgitlab]
+url = https://gitlab.umich.edu
+private_token = {{ lookup('hashi_vault', 'secret=secret/gitlab/api:token') }}
