@@ -48,18 +48,13 @@ if [[ $SUDO_USER ]]; then
     export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 fi
 
-function _sshcomplete() {
-    local cur prev
-    COMPREPLY=()
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
+# Override bash-completion's default hostname lookup
+function _known_hosts_real() {
+    local cur
     cur="${COMP_WORDS[COMP_CWORD]}"
-    if [[ $prev = 'ssh' ]]; then
-        if [[ ! -s ~/.sshcomplete ]] || [[ $(stat --format %Y ~/.sshcomplete) -lt $(( $(date +%s) - 60 )) ]]; then
-            ansible --list-hosts all | sed -e '1d; s/^  *//' > ~/.sshcomplete
-        fi
-        COMPREPLY=( $(grep "^$cur" ~/.sshcomplete | sort -u) )
+    if [[ ! -s ~/.sshcomplete ]] || [[ $(stat --format %Y ~/.sshcomplete) -lt $(( $(date +%s) - 60 )) ]]; then
+        ansible --list-hosts all | sed -e '1d; s/^  *//' > ~/.sshcomplete
     fi
+    COMPREPLY=( $(grep "^$cur" ~/.sshcomplete | sort -u) )
     return 0
 }
-
-complete -F _sshcomplete ssh
