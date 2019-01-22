@@ -43,7 +43,7 @@ fi
 # Set up Git
 if [[ $SUDO_USER ]]; then
     export GIT_AUTHOR_EMAIL="${SUDO_USER}@$TLD"
-    export GIT_AUTHOR_NAME=$(grep "^${SUDO_USER}:" /etc/passwd | cut -d: -f5)
+    export GIT_AUTHOR_NAME=$(getent passwd ${SUDO_USER} | cut -d: -f5)
     export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
     export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 fi
