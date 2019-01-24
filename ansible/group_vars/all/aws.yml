@@ -45,6 +45,7 @@ vdc_core: false
 
 sns_region: "{{ lookup('env', 'SNS_REGION') }}"
 efs_region: us-east-2
+ec2sg_region: "{{ aws_region }}"
 yum_aws_region: us-west-2
 
 aws_instance_default:

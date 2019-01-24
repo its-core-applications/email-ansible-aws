@@ -9,7 +9,7 @@
       vars:
         ec2sg_groups:
           - efs
-        region: "{{ efs_region }}"
+        ec2sg_region: us-east-2
 
     - become: false
       delegate_to: localhost
