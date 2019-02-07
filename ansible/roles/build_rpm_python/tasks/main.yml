@@ -21,7 +21,7 @@
             force: true
 
         - name: Build {{ build_name }} RPM
-          command: fpm -s python -t rpm --python-package-name-prefix python2 setup.py
+          command: "fpm -s python -t rpm --python-bin python{{ python_version }} --python-pip pip{{ python_version }} --python-package-name-prefix python{{ python_version }} setup.py"
           register: result
           failed_when:
             - result.rc != 0
