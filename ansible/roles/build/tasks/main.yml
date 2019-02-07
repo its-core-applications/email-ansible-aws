@@ -421,6 +421,17 @@
     - import_role:
         name: build_rpm_python
       tags:
+        - mcommunity
+      vars:
+        build_name: umich_mcomm
+        build_repo: https://gitlab.umich.edu/carleski/python-mcommunity.git
+        build_deps:
+          - python3
+        python_version: 3
+
+    - import_role:
+        name: build_rpm_python
+      tags:
         - box
       vars:
         build_name: umich_box_utils
