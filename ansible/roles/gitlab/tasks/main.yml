@@ -8,7 +8,7 @@
         name:
           - python-gitlab
         state: latest
-        virtualenv: /usr/local/lib/gitlab
+        virtualenv: /usr/local/gitlab
 
     - name: Put gitlab-cli config file in place
       template:
