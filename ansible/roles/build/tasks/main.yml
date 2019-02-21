@@ -66,6 +66,16 @@
           - libxslt
 
     - import_role:
+        name: build_rpm_git
+      tags:
+        - quickxorhash
+      vars:
+        build_name: quickxorhash
+        build_repo: https://github.com/flowerysong/quickxorhash.git
+        build_deps:
+          - openssl-devel
+
+    - import_role:
         name: build_rpm_spec
       tags:
         - corvus
