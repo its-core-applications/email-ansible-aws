@@ -1,0 +1,16 @@
+- tags:
+    - ammit_upload
+  block:
+    - name: Install ammit-upload
+      template:
+        src: ammit-upload.j2
+        dest: /usr/local/sbin/ammit-upload
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Schedule ammit-upload to run
+      cron:
+        name: run ammit-upload
+        minute: '5'
+        job: /usr/local/sbin/ammit-upload

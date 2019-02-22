@@ -59,6 +59,9 @@
             name: jail_efs
 
         - import_role:
+            name: ammit_upload
+
+        - import_role:
             name: google_gam
 
         - import_role:
