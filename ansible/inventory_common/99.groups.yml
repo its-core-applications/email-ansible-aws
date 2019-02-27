@@ -12,9 +12,10 @@ all:
     Class_master: {}
     Class_mx: {}
     Class_mx_test: {}
-    Class_vdc_relay: {}
+    Class_odm: {}
     Class_relay_egress: {}
     Class_syslog: {}
+    Class_vdc_relay: {}
     Status_development: {}
     Status_production: {}
     Status_spindown: {}

@@ -123,6 +123,10 @@ aws_region_layout:
       mx:
         count: 3
         cycle_method: spinup
+      odm:
+        size: t3.large
+        count: 5
+        autocycle: false
       relay-egress: {}
       syslog: {}
       vdc-relay: {}

@@ -1,0 +1,12 @@
+- hosts: Class_odm
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: base
+
+        - import_role:
+            name: sensu
+
+        - import_role:
+            name: odm

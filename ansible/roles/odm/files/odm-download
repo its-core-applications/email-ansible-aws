@@ -1,0 +1,44 @@
+#!/bin/bash
+
+rootdir=/magic
+
+for uniqname in $(cat $1) ; do
+    dirname=${rootdir}/$uniqname
+    [[ -e $dirname ]] || mkdir -p $dirname
+    if [[ -e $dirname/verified ]]; then
+        echo "$uniqname already downloaded and verified"
+        continue
+    fi
+    (
+        flock -n 9 || exit 1
+        startts=$(date -Iseconds)
+        if [[ ! -e $dirname/verified ]]; then
+            echo "Fetching metadata for $uniqname"
+            odm user $uniqname list-items > $dirname/metadata.json
+            [[ -s $dirname/metadata.json ]] || exit
+            try=0
+            retval=1
+            until [[ $retval -eq 0 ]] || [[ $try -gt 3 ]]; do
+                echo "Downloading files for $uniqname (try $try)"
+                odm list $dirname/metadata.json download --filetree $dirname/files -v 2> $dirname/stderr.${startts}.download.$try
+                retval=$?
+                if [[ $try -eq 0 ]] && [[ $retval -ne 0 ]]; then
+                    # The API might have lied about the hashes
+                    echo "Re-fetching metadata for $uniqname"
+                    odm user $uniqname list-items > $dirname/metadata.json
+                fi
+                (( try++ ))
+            done
+            if [[ $retval -eq 0 ]]; then
+                echo "Successfully verified $uniqname download"
+                touch $dirname/verified
+            else
+                echo "Failed to download $uniqname"
+                exit
+            fi
+        fi
+    ) 9>>$dirname/lockfile
+    if [[ $? -ne 0 ]]; then
+        echo "$uniqname already locked"
+    fi
+done
