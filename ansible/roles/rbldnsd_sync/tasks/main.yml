@@ -1,5 +1,3 @@
----
-
 - tags:
     - rbldnsd
     - rbldnsd_sync
@@ -26,8 +24,8 @@
         RETURN_RC: 1
       register: result
       until: result is success
-      retries: 20
-      delay: 5
+      retries: 30
+      delay: 10
       tags: mutable
 
     - name: Schedule syncing
