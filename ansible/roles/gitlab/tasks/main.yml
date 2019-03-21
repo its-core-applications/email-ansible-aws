@@ -7,6 +7,7 @@
       pip:
         name:
           - python-gitlab
+          - pyyaml
         state: latest
         virtualenv: /usr/local/gitlab
 
