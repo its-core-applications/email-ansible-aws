@@ -61,6 +61,7 @@
             host: 0.0.0.0
             port: 25
             state: drained
+          failed_when: false
 
 - hosts: Class_mx:&Status_spindown
   serial: 1
