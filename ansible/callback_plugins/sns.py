@@ -45,11 +45,6 @@ import uuid
 
 import boto3
 
-try:
-    from __main__ import cli
-except ImportError:
-    cli = None
-
 from ansible.module_utils.parsing.convert_bool import boolean
 from ansible.module_utils.urls import open_url
 from ansible.plugins.callback import CallbackBase
@@ -87,10 +82,15 @@ class CallbackModule(CallbackBase):
                                   'installed. Disabling the SNS callback '
                                   'plugin.')
 
-        if cli:
-            self._options = cli.options
-        else:
-            self._options = None
+        try:
+          from ansible import context
+          self.cli_options = {key: value for key, value in context.CLIARGS.items()}
+        except ImportError:
+            try:
+                from __main__ import cli
+                self.cli_options = cli.options.__dict__
+            except ImportError:
+                self.cli_options = {}
 
         self.playbook_name = None
 
@@ -107,8 +107,9 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_start(self, playbook):
         self.playbook_name = os.path.basename(playbook._file_name)
-        if self._options and self._options.tags != ['all']:
-            self.playbook_name = '{} --tags {}'.format(self.playbook_name, ','.join(self._options.tags))
+        tags = self.cli_options.get('tags')
+        if tags and tags != ['all']:
+            self.playbook_name = '{} --tags {}'.format(self.playbook_name, ','.join(tags))
 
     def v2_playbook_on_stats(self, stats):
         hosts = sorted(stats.processed.keys())
