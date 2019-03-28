@@ -2,6 +2,7 @@
 
 - tags:
     - google
+    - collab_admin_kit
   block:
     - name: Install extra python packages
       pip:
@@ -15,10 +16,18 @@
         dest: ~/GAM
         version: 7112a42
 
-    - name: Configure google-admin-kit
+    - name: Install gam script
       template:
         dest: /usr/bin/gam
         src: gam.sh.j2
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Install gam-discussions script
+      template:
+        dest: /usr/bin/gam-discussions
+        src: gam-discussions.sh.j2
         owner: root
         group: root
         mode: "0755"

@@ -1,3 +1,5 @@
 ---
 googled: "{{ ( aws_status == 'prod' ) | ternary('umich.edu', 'collab.its.umich.edu') }}"
 discussionsd: "{{ ( aws_status == 'prod' ) | ternary('discussions.umich.edu', 'discussions-dev.its.umich.edu') }}"
+boxd: "{{ ( aws_status == 'prod' ) | ternary('umich.app.box.com', 'umich-qa.app.box.com') }}"
+kerbrealm: "{{ ( aws_status == 'prod' ) | ternary('umich.edu', 'mcommqa.umich.edu') }}"

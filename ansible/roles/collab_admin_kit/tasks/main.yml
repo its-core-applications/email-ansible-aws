@@ -1,0 +1,97 @@
+- tags:
+    - collab
+    - collab_admin_kit
+  block:
+    - import_role:
+        name: nonpeople
+
+    - import_role:
+        name: python_venv
+      vars:
+        venv_name: collab-admin-kit
+        venv_py3: true
+        venv_build_deps:
+          - python3-devel
+          - krb5-devel
+        venv_packages:
+          - git+https://gitlab.umich.edu/carleski/collab-admin-kit
+        venv_wrappers:
+          - name: collab_create_shared
+          - name: collab_reset_shared
+          - name: discussions_create_group
+          - name: google_archive_data
+          - name: google_build_fitbitstudy
+          - name: google_sift_drive
+          - name: google_sift_labels
+          - name: google_transfer_drive
+          - name: google_transfer_mail
+        venv_sudo_user: collaborate
+
+    - name: Configure Collab Admin Kit
+      template:
+        dest: /etc/collab-admin-kit.yml
+        src: collab-admin-kit.yml.j2
+        owner: collaborate
+        group: root
+        mode: "0640"
+
+    - name: Copy over Box API credentials
+      copy:
+        dest: "/home/collaborate/box-config/{{ boxd }}/auth.json.b64"
+        content: "{{ lookup('hashi_vault', 'secret=secret/box/api:value') }}"
+        owner: collaborate
+        group: root
+        mode: "0640"
+      register: result
+
+    - name: Decode Box API credentials
+      shell: "base64 -d /home/collaborate/box-config/{{ boxd }}/auth.json.b64 > /home/collaborate/box-config/{{ boxd }}/auth.json"
+
+    - name: Set permissions on Box API credentials
+      file:
+        dest: "/home/collaborate/box-config/{{ boxd }}/auth.json"
+        owner: collaborate
+        group: root
+        mode: "0640"
+
+    - name: Copy over the cak keytab
+      copy:
+        dest: /etc/collab-admin-kit.keytab.b64
+        content: "{{ lookup('hashi_vault', 'secret=secret/krb/cak/' ~ kerbrealm ~ ':value') }}"
+        owner: collaborate
+        group: root
+        mode: "0640"
+      register: result
+
+    - name: Decode the keytab
+      shell: base64 -d /etc/collab-admin-kit.keytab.b64 > /etc/collab-admin-kit.keytab
+
+    - name: Set permissions on the keytab
+      file:
+        dest: /etc/collab-admin-kit.keytab
+        owner: collaborate 
+        group: root
+        mode: "0640"
+
+    - name: Cron daily shared account password cleanup in Google Drive
+      copy:
+        src: 99_purge_shared_account_passwords.sh
+        dest: /etc/cron.daily/99_purge_shared_account_passwords.sh
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Schedule daily runs of google_archive_data
+      cron:
+        name: Google Daily Archive
+        user: collaborate
+        minute: '15'
+        hour: '0'
+        job: /usr/local/bin/google_archive_data -D
+
+    - name: Schedule hourly runs of google_archive_data
+      cron:
+        name: Google Hourly Archive
+        user: collaborate
+        minute: '10'
+        job: /usr/local/bin/google_archive_data -H

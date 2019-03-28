@@ -65,14 +65,10 @@
             name: google_gam
 
         - import_role:
-            name: google_gak
+            name: collab_admin_kit
 
         - import_role:
             name: google_gyb
-
-        - import_role:
-            name: google_report_logins
-          when: aws_region == aws_primary_region
 
         - import_role:
             name: box_bam

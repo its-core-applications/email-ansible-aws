@@ -1,0 +1,34 @@
+kerberos:
+    admin: {{ lookup('hashi_vault', 'secret=secret/krb/cak/admin:value' ) }}
+    keytab:  /etc/collab-admin-kit.keytab
+    realm: {{ kerbrealm }}
+
+mcommunity:
+    client_id: {{ lookup('hashi_vault', 'secret=secret/mcommapi/client_id:value' ) }}
+    secret: {{ lookup('hashi_vault', 'secret=secret/mcommapi/secret:value' ) }}
+    api_control_group: collab-api-controller
+
+box:
+    auth_file: /home/collaborate/box-config/{{ boxd }}/auth.json
+
+google:
+    admin_account:
+    gyb_command: /usr/bin/gyb
+    gam_command: /usr/bin/gam
+    domain: {{ googled }}
+    admin_account: admin-mgoogle@{{ googled }}
+
+    archive_data:
+      oauth_ignore_clients:
+        # Google Chrome
+        - '77185425430.apps.googleusercontent.com'
+
+discussions:
+    gam_command: /usr/bin/gam-discussions
+    domain: {{ discussionsd }} 
+
+general:
+    log_facility: local5
+    log_format: 'level=%(levelname)s,message=%(message)s,entity=%(entity)s'
+    console_format: '[%(asctime)s][%(levelname)s]:%(message)s'
+    data_dir: /home/collaborate/collab-admin-kit

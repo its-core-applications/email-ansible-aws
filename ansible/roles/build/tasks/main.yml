@@ -179,24 +179,6 @@
         build_name: dash
 
     - import_role:
-        name: build_rpm_git
-      tags:
-        - google
-        - google-admin-kit
-      vars:
-        build_name: google-admin-kit
-        build_repo: https://bitbucket.org/its-application-delivery/google-admin-kit.git
-
-    - import_role:
-        name: build_rpm_git
-      tags:
-        - google
-        - google-admin-kit-umextras
-      vars:
-        build_name: google-admin-kit-umextras
-        build_repo: https://bitbucket.org/its-application-delivery/google-admin-kit-um-extras.git
-
-    - import_role:
         name: build_rpm_prebuilt
       tags: mod_auth_openidc
       vars:
