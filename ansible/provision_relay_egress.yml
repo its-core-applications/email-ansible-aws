@@ -25,38 +25,16 @@
       delegate_to: localhost
       become: false
       block:
-        - name: Fetch egress EIPs
-          ec2_eip_facts:
-            region: "{{ aws_region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            filters:
-              "tag:Class": relay-egress
-          register: result
-
-        - name: Make sure we have a free EIP
-          assert:
-            that: result.addresses | rejectattr('association_id', 'defined') | list | length > 0
-            msg: No available egress EIPs
-
-        - name: Assign elastic IP
-          ec2_eip:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            device_id: "{{ instance_id }}"
-            public_ip: "{{ (result.addresses | rejectattr('association_id', 'defined') | shuffle | first).public_ip }}"
-          register: result
+        - import_role:
+            name: ec2_eip
+          vars:
+            eip_class: relay-egress
 
 - hosts: Class_relay_egress:&Status_spinup
   tasks:
     - delegate_to: localhost
       become: false
       block:
-        - name: Wait for elastic IP
-          wait_for:
-            host: "{{ result.public_ip }}"
-            port: 22
-            search_regex: OpenSSH
-
         - name: Set status to production
           ec2_tag:
             region: "{{ region }}"

@@ -21,20 +21,10 @@
     - delegate_to: localhost
       become: false
       block:
-        - name: Fetch ctools-mx EIP
-          ec2_eip_facts:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            filters:
-              "tag:Class": ctools-mx
-          register: result
-
-        - name: Assign EIP
-          ec2_eip:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            device_id: "{{ instance_id }}"
-            public_ip: "{{ result.addresses.0.public_ip }}"
+        - import_role:
+            name: ec2_eip
+          vars:
+            eip_class: ctools-mx
 
         - name: Set status to production
           ec2_tag:

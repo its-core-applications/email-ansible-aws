@@ -30,16 +30,8 @@
         - import_role:
             name: redis_spindown
 
-        - name: Disassociate EIP
-          delegate_to: localhost
-          become: false
-          ec2_eip:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            device_id: "{{ instance_id }}"
-            public_ip: "{{ public_ip_address }}"
-            state: absent
-            release_on_disassociation: false
+        - import_role:
+            name: ec2_eip_disassociate
 
         - name: Set status to spundown
           delegate_to: localhost

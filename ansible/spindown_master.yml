@@ -1,10 +1,11 @@
----
-
 - hosts: Class_master
   gather_facts: false
   tasks:
     - when: region == aws_region
       block:
+        - import_role:
+            name: ec2_eip_disassociate
+
         - name: Set status to spundown
           delegate_to: localhost
           become: false
@@ -14,4 +15,3 @@
             resource: "{{ instance_id }}"
             tags:
               Status: spundown
-

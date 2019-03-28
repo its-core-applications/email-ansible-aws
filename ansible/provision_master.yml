@@ -5,6 +5,11 @@
         name: ec2_find_subnets
 
     - import_role:
+        name: ec2_class_eips
+      vars:
+        eip_class: master
+
+    - import_role:
         name: ec2_launch
       vars:
         launch_class: master
@@ -56,6 +61,17 @@
 
     - meta: refresh_inventory
 
+- hosts: Class_master
+  gather_facts: false
+  tasks:
+    - import_role:
+        name: ec2_eip
+      vars:
+        eip_class: master
+
+- hosts: localhost
+  become: false
+  tasks:
     - name: Attach EBS home volume
       ec2_vol:
         name: master_home

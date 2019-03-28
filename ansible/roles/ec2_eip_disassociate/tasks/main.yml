@@ -1,0 +1,14 @@
+- tags:
+    - ec2
+    - eip
+  delegate_to: localhost
+  become: false
+  block:
+     - name: Disassociate EIP
+       ec2_eip:
+         region: "{{ region }}"
+         profile: "{{ aws_profile_ec2 }}"
+         device_id: "{{ instance_id }}"
+         public_ip: "{{ public_ip_address }}"
+         state: absent
+         release_on_disassociation: false
