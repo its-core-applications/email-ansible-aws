@@ -1,6 +1,15 @@
 - tags:
     - email
   block:
+    - name: Install SSH private key
+      copy:
+        dest: /home/email/.ssh/id_ecdsa
+        content: "{{ lookup('hashi_vault', 'secret=secret/ssh/email:value') }}"
+        owner: email
+        group: email
+        mode: "0400"
+      no_log: true
+
     - name: Install dnsbl-update script
       template:
         dest: /usr/bin/dnsbl-update
@@ -33,3 +42,9 @@
         actions:
           - add
           - remove
+
+    - name: Clone DNSBL repo
+      git:
+        name: git@mogo.a.mail.umich.edu:email/umich-rbls
+        dest: /home/email/umich-dnsbls.git
+      become_user: email
