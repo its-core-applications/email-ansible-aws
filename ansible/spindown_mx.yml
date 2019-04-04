@@ -1,5 +1,3 @@
----
-
 - hosts: Class_mx:&Status_production
   serial: 1
   gather_facts: false
@@ -56,28 +54,17 @@
             state: stopped
           ignore_errors: true
 
-        - name: Wait for active connections to finish
-          wait_for:
-            host: 0.0.0.0
-            port: 25
-            state: drained
-          failed_when: false
+        - import_role:
+            name: simta_spindown
 
+# Do Redis management with `serial: 1` to minimize races
 - hosts: Class_mx:&Status_spindown
   serial: 1
   tasks:
     - when: region == aws_region
       block:
-        - import_tasks: task_spindown_redis.yml
-
-- hosts: Class_mx:&Status_spindown
-  tasks:
-    - when: region == aws_region
-      block:
-        - name: Give the queue a chance to quiesce
-          pause: seconds=60
-
-        - import_tasks: task_spindown_simta.yml
+        - import_role:
+            name: redis_spindown
 
         - name: Set status to spundown
           delegate_to: localhost
@@ -88,4 +75,3 @@
             resource: "{{ instance_id }}"
             tags:
               Status: spundown
-

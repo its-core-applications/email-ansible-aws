@@ -38,22 +38,8 @@
             state: stopped
           ignore_errors: true
 
-        - name: Wait for active connections to finish
-          wait_for:
-            host: 0.0.0.0
-            port: 25
-            state: drained
-
-        - name: Give the queue a chance to quiesce
-          pause:
-            seconds: 60
-
-        - import_tasks: task_spindown_simta.yml
-
-        - name: Unmount ammit
-          mount:
-            state: unmounted
-            path: /ammit
+        - import_role:
+            name: simta_spindown
 
         - name: Set status to spundown
           delegate_to: localhost

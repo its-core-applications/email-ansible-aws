@@ -1,0 +1,2 @@
+simqtmp_base: /home/{{ lookup('env', 'USER') }}/simqtmp/inbound/{{ simta_queue_type }}
+simqtmp_path: "{{ simqtmp_base }}/{{ inventory_hostname }}-{{ ansible_facts.date_time.epoch | to_uuid }}"

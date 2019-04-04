@@ -1,0 +1,48 @@
+- tags:
+    - simta
+  block:
+    - name: Wait for active connections to finish
+      wait_for:
+        host: 0.0.0.0
+        port: 25
+        state: drained
+        timeout: 150
+      failed_when: false
+
+    - name: Give the queue a chance to quiesce
+      pause:
+        seconds: 60
+
+    - name: Stop simta
+      systemd:
+        name: simta
+        state: stopped
+
+    - name: Clean queues
+      command: /usr/sbin/simta -C
+
+    - name: Create local queue storage directory
+      delegate_to: localhost
+      file:
+        dest: "{{ simqtmp_base }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+
+    - name: Touch lockfile
+      delegate_to: localhost
+      file:
+        dest: "{{ simqtmp_path }}.lock"
+        state: touch
+
+    - name: Save queue
+      synchronize:
+        mode: pull
+        archive: true
+        src: /var/spool/simta/slow/
+        dest: "{{ simqtmp_path }}/"
+
+    - name: Remove lockfile
+      delegate_to: localhost
+      file:
+        dest: "{{ simqtmp_path }}.lock"
+        state: absent
