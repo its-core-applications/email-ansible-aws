@@ -1,5 +1,6 @@
 - hosts: localhost
   become: false
+  gather_facts: false
   tasks:
     - import_role:
         name: ec2_find_subnets
@@ -71,6 +72,7 @@
 
 - hosts: localhost
   become: false
+  gather_facts: false
   tasks:
     - name: Attach EBS home volume
       ec2_vol:
@@ -85,4 +87,3 @@
         delete_on_termination: false
 
 - import_playbook: bootstrap_master.yml
-

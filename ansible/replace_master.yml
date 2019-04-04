@@ -1,12 +1,14 @@
 - import_playbook: spindown_master.yml
 
 - hosts: localhost
+  gather_facts: false
   tasks:
     - meta: refresh_inventory
 
 - import_playbook: deprovision_spundown.yml
 
 - hosts: localhost
+  gather_facts: false
   tasks:
     - meta: refresh_inventory
 
