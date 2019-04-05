@@ -25,7 +25,7 @@
 
 Summary:	End-user tools for the Clam Antivirus scanner
 Name:		clamav
-Version:	0.100.2
+Version:	0.101.2
 Release:	1%{?dist}
 Epoch:          0
 License:	proprietary
@@ -243,7 +243,6 @@ test -e %freshclamlog || {
 %files
 %defattr(-,root,root,-)
 %doc COPYING*
-%doc docs/*.pdf
 %_bindir/*
 %_mandir/man*/*
 %exclude %_bindir/clamav-config
