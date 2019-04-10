@@ -1,0 +1,5 @@
+if [[ $USER != '{{ venv_sudo_user }}' ]]; then
+{% for wrapper in venv_wrappers %}
+    alias {{ wrapper.name }}='sudo -u {{ venv_sudo_user }} /usr/local/bin/{{ wrapper.name }}'
+{% endfor %}
+fi

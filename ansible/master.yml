@@ -81,7 +81,7 @@
             name: box_examscan
 
         - import_role:
-            name: gitlab
+            name: gitlab_gitlab_cli
 
         - import_role:
             name: redis_master

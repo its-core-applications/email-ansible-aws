@@ -1,0 +1,40 @@
+- tags:
+    - python
+  block:
+    - name: Install build dependencies
+      yum:
+        name: "{{ venv_build_deps | union(venv_base_deps) }}"
+        state: latest
+
+    - name: Create {{ venv_name }} virtualenv
+      pip:
+        name:
+          - pip
+          - setuptools
+        state: latest
+        virtualenv: /usr/local/venv/{{ venv_name }}
+        virtualenv_python: "{{ venv_py3 | ternary('python3', omit) }}"
+
+    - name: Install extra packages for {{ venv_name }}
+      pip:
+        name: "{{ venv_packages }}"
+        state: latest
+        virtualenv: /usr/local/venv/{{ venv_name }}
+
+    - name: Create wrapper scripts
+      template:
+        src: wrapper.sh.j2
+        dest: /usr/local/bin/{{ item.name }}
+        owner: root
+        group: root
+        mode: "0755"
+      loop: "{{ venv_wrappers }}"
+
+    - name: Set up aliases
+      template:
+        src: aliases.sh.j2
+        dest: /etc/profile.d/99_venv_{{ venv_name }}.sh
+        owner: root
+        group: root
+        mode: "{{ 0644 }}"
+      when: venv_sudo_user

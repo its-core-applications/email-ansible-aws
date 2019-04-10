@@ -1,0 +1,22 @@
+- tags:
+    - gitlab
+  block:
+    - import_role:
+        name: python_venv
+      vars:
+        venv_name: gitlab-cli
+        venv_packages:
+         - python-gitlab
+         - pyyaml
+        venv_wrappers:
+          - name: gitlab-cli
+            target: gitlab
+            extra_args: -o yaml
+
+    - name: Configure gitlab-cli
+      template:
+        dest: /etc/python-gitlab.cfg
+        src: gitlab-cli.cfg.j2
+        owner: root
+        group: root
+        mode: "0644"
