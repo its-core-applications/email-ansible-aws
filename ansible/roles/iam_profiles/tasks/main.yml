@@ -166,6 +166,7 @@
           - arn:aws:iam::aws:policy/AmazonS3FullAccess
           - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
           - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+          - arn:aws:iam::aws:policy/SecretsManagerReadWrite
           - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
           - "{{ snspolicy.policy.arn }}"

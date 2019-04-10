@@ -1,0 +1,22 @@
+#!/bin/bash
+
+for try in {0..1}; do
+    seal=$(curl -k -s https://127.0.0.1:8200/v1/sys/seal-status 2>&1)
+    if [[ $? -ne 0 ]]; then
+        echo "curl error:"
+        echo "$seal"
+        exit 2
+    elif [[ $(echo "$seal" | jq .sealed) != 'false' ]]; then
+        if [[ $try -eq 0 ]]; then
+            unseal_key=$(aws --region {{ placement.region }} secretsmanager get-secret-value --secret-id vault_unseal --query SecretString --output text)
+            VAULT_SKIP_VERIFY=true vault operator unseal "$unseal_key"
+        else
+            echo "Vault is sealed"
+            echo "$seal" | jq .
+            exit 2
+        fi
+    else
+        echo "Vault is unsealed"
+        exit 0
+    fi
+done

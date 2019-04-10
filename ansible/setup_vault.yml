@@ -1,0 +1,13 @@
+- hosts: localhost
+  tasks:
+    - when: aws_region == aws_primary_region
+      become: false
+      block:
+        - name: Store the Vault unseal key
+          aws_secret:
+            profile: "{{ aws_profile }}"
+            region: "{{ aws_region }}"
+            name: vault_unseal
+            state: present
+            secret_type: string
+            secret: "{{ vault_unseal_key }}"

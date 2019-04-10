@@ -37,9 +37,9 @@
         enabled: true
 
     - name: Install custom monitoring script
-      copy:
-        dest: "{{ comint_base }}/check-vault-seal"
-        src: check-vault-seal
+      template:
+        dest: "/usr/local/bin/check-vault-seal"
+        src: check-vault-seal.j2
         owner: collaborate
         group: collaborate
         mode: "0755"
