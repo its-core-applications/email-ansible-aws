@@ -108,7 +108,7 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_start(self, playbook):
         self.playbook_name = os.path.basename(playbook._file_name)
         tags = self.cli_options.get('tags')
-        if tags and tags != ['all']:
+        if tags and set(tags) != set(['all']):
             self.playbook_name = '{} --tags {}'.format(self.playbook_name, ','.join(tags))
 
     def v2_playbook_on_stats(self, stats):
