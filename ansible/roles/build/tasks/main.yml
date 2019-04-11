@@ -20,9 +20,9 @@
         - mod_auth_openidc
       vars:
         build_name: cjose
-        rpm: cjose-0.5.1-1.el7.centos.x86_64.rpm
-        rpm_url: https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.3.0/{{ rpm }}
-        rpm_checksum: sha256:32cf071838943ebfe243e0a3c8596fa46ee5f8de0bbc5b1bf1a940c4e26600d1
+        rpm: cjose-0.6.1.4-1.el7.x86_64.rpm
+        rpm_url: https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.3.11/{{ rpm }}
+        rpm_checksum: sha512:f4666b1af1c9b562b33e46337d605573a48aa9e67fe16ffd6566124aaf18763e20f3778c3b576226bfe3f75af1644b3e01e2a3256498674fcffad280ca8233fa
 
     - import_role:
         name: build_rpm_spec
@@ -191,10 +191,10 @@
       tags: mod_auth_openidc
       vars:
         build_name: mod_auth_openidc
-        build_version: 2.3.8
+        build_version: 2.3.11
         rpm: mod_auth_openidc-{{ build_version }}-1.el7.x86_64.rpm
         rpm_url: https://github.com/zmartzone/mod_auth_openidc/releases/download/v{{ build_version }}/{{ rpm }}
-        rpm_checksum: sha256:c02855c3c865a2b1d5a9acc39bf2f947d6fa06276cf6d823bedf0d641052dcb4
+        rpm_checksum: sha512:6e05d9503df904c9f571183368c9355c7860ca740d061fa8afff4f94ea0492e2c6a940a4e4e3c8fdd33103a5079352113db824eebb9701a5476c7556f58e7a36
 
     - import_role:
         name: build_rpm_spec
