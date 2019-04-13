@@ -1,5 +1,3 @@
----
-
 - hosts: localhost
   become: false
   tasks:
@@ -13,6 +11,17 @@
           - redis
         launch_tags:
           redis: 'yes'
+
+- hosts: Class_mx:&Status_spinup
+  tasks:
+    - name: Set status to production
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
           Status: production
+      delegate_to: localhost
+      become: false
 
 - import_playbook: provision_mx.yml

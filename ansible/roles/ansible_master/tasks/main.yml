@@ -7,7 +7,7 @@
         name: ansible-mutable-{{ item }}
         user: "{{ ansible_user }}"
         minute: "{{ 0 + ansible_loop.index % 10 }},{{ 15 + ansible_loop.index % 10 }},{{ 30 + ansible_loop.index % 10 }},{{ 45 + ansible_loop.index % 10 }}"
-        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item | replace('-', '_') }}.yml --tags mutable &>/dev/null
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item | replace('-', '_') }}.yml --tags mutable --limit Status_production &>/dev/null
       loop: "{{ aws_region_layout[aws_status][aws_region] | list }}"
       loop_control:
         extended: true
