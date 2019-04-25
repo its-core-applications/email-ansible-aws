@@ -14,11 +14,6 @@
         dns_host: relay-egress
         dns_group: Class_relay_egress
 
-    - name: Check to see if messages are currently being requeued.
-      wait_for:
-        path: /home/{{ ansible_user }}/simqtmp/simta-requeue-relay-egress
-        state: absent
-
 - hosts: Class_relay_egress:&Status_spindown
   tasks:
     - when: region == aws_region

@@ -13,6 +13,14 @@
       pause:
         seconds: 60
 
+    - name: Wait for simta-requeue to finish
+      delegate_to: localhost
+      become: false
+      wait_for:
+        path: "{{ simqtmp_base }}.lock"
+        state: absent
+      when: tags.Class == simta_queue_type
+
     - name: Stop simta
       systemd:
         name: simta

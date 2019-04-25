@@ -1,28 +1,9 @@
 #!/bin/bash
 
-case $1 in
-
-    egress)
-        class='egress'
-    ;;
-    
-    relay-egress)
-        class='relay-egress'
-    ;;
-
-    jail)
-        class='jail'
-    ;;
-
-    *)
-        echo 'Invalid machine class provided.'
-        exit 1
-
-esac
-
+class=$1
 name=simta-requeue-$class
 workdir=/home/{{ ansible_user }}/simqtmp
-lockfile=$workdir/${name}
+lockfile=${workdir}/inbound/${class}.lock
 startts=$(date +%s)
 retval=0
 
@@ -51,7 +32,7 @@ if [[ -f $lockfile ]]; then
     retval=1
     cleanup
 fi
-touch $lockfile
+touch $lockfile || exit 1
 trap 'rm -f $lockfile ; exit 1' 1 2 3 15
 
 readarray -t hosts < <(ansible --list-hosts "Class_${class/-/_}:&Status_production" 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
@@ -94,14 +75,27 @@ find ${workdir}/outbound -empty -delete
 
 for qhost in ${hosts[@]}; do
     if [[ -d ${workdir}/outbound/${qhost} ]]; then
-        tar -C ${workdir}/outbound/${qhost} --owner=simta --group=mail --mode=0644 -cf ${workdir}/outbound/${qhost}.tar . &>>$tmpfile
+        tarball=${workdir}/outbound/${qhost}.tar
+        tar -C ${workdir}/outbound/${qhost} --owner=simta --group=mail --mode=0644 -cf $tarball . &>>$tmpfile
         if [[ $? -eq 0 ]]; then
             rm -rf ${workdir}/outbound/${qhost}
-            ansible $qhost -m unarchive -a "src=${workdir}/outbound/${qhost}.tar dest=/var/spool/simta/slow extra_opts=--strip-components=1" &>>$tmpfile
-            if [[ $? -eq 0 ]]; then
-                rm -f ${workdir}/outbound/${qhost}.tar
-            else
-                retval=1
+            try=0
+            while [[ -e $tarball ]] && [[ $(( try++ )) -lt 3 ]]; do
+                ansible $qhost -m unarchive -a "src=$tarball dest=/var/spool/simta/slow extra_opts=--strip-components=1" &>>$tmpfile
+                if [[ $? -eq 0 ]]; then
+                    rm -f $tarball
+                else
+                    [[ $try -lt 3 ]] && sleep 5
+                fi
+            done
+            if [[ -e $tarball ]]; then
+                mkdir -p ${workdir}/inbound/${class}/retry
+                tar -C ${workdir}/inbound/${class}/retry --strip-components=1 -xf $tarball &>>$tmpfile
+                if [[ $? -eq 0 ]]; then
+                    rm -f $tarball
+                else
+                    retval=1
+                fi
             fi
         else
             retval=1

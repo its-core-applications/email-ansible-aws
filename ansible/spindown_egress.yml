@@ -21,11 +21,6 @@
         dns_group: Class_egress
         dns_private_ip: false
 
-    - name: Check to see if messages are currently being requeued.
-      wait_for:
-        path: /home/{{ ansible_user }}/simqtmp/simta-requeue-egress
-        state: absent
-
 - hosts: Class_egress:&Status_spindown
   tasks:
     - when: region == aws_region
