@@ -69,6 +69,7 @@
         name: ec2_eip
       vars:
         eip_class: master
+    - wait_for_connection:
 
 - hosts: localhost
   become: false
