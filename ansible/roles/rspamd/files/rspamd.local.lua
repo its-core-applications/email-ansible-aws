@@ -1,3 +1,12 @@
+local google_from = 'From=/\\@[a-z\\.]+\\.google\\.com\\b/iH'
+local umich_from = 'From=/\\@(umich\\.edu|.+\\.umich\\.edu)\\b/iH'
+local suspicious_from = 'From=/[^=]umich\\.edu\\S*\\@/iH'
+config['regexp']['UMICH_FROM_SUSPICIOUS_UMICH_EDU'] = {
+    re = string.format('(%s) & !(%s) & !(%s)', suspicious_from, umich_from, google_from),
+    score = 14,
+    description = 'Non-UM From header contains umich.edu',
+}
+
 config['regexp']['UMICH_HAS_BITCOIN_ADDRESS'] = {
     re = '/\\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\\b/{mime}',
     score = 0.5,
