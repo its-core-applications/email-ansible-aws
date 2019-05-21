@@ -1,8 +1,7 @@
----
-
 - tags:
     - build
     - rpmbuild
+  when: role_rpmbuild_done is not defined
   block:
     - name: Install basic build dependencies
       yum:
@@ -38,3 +37,6 @@
       file:
         dest: ~/rpmbuild/RPMS/x86_64/
         state: directory
+
+    - set_fact:
+        role_rpmbuild_done: true
