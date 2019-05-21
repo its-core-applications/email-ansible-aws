@@ -3,7 +3,7 @@ local umich_from = 'From=/\\@(umich\\.edu|.+\\.umich\\.edu)\\b/iH'
 local suspicious_from = 'From=/[^=]umich\\.edu\\S*\\@/iH'
 config['regexp']['UMICH_FROM_SUSPICIOUS_UMICH_EDU'] = {
     re = string.format('(%s) & !(%s) & !(%s)', suspicious_from, umich_from, google_from),
-    score = 14,
+    score = 12,
     description = 'Non-UM From header contains umich.edu',
 }
 
