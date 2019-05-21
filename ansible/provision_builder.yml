@@ -1,11 +1,10 @@
----
-
 - hosts: localhost
   become: false
   tasks:
     - import_role:
         name: ec2_launch
       vars:
+        aws_region: "{{ yum_aws_region }}"
         launch_class: builder
         launch_ami_class: base
         launch_profile: builder

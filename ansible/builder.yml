@@ -1,25 +1,17 @@
----
-
 - hosts: Class_builder
   vars:
     bootstrap: true
   tasks:
-    - when: region == aws_region
-      block:
+    - block:
         - import_role:
             name: base
 
         - import_role:
             name: build
 
-        - import_role:
-            name: s3repo_build
-          when: groups.Class_master | intersect(aws_region_group) | length == 0
-
-- hosts: Class_master
+- hosts: Class_master:&region_us_west_2
   tasks:
-    - when: region == aws_region
-      block:
+    - block:
         - import_role:
             name: s3repo_build
           tags:
