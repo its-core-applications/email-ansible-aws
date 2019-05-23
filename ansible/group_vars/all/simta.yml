@@ -41,6 +41,8 @@ simta_ldap_domains_mapped:
     prefix: chrt
   - domain: connectedcancercare.org
     prefix: connectedcancercare
+  - domain: datasifter.org
+    prefix: datasifter
   - domain: elmuseodelnorte.org
     prefix: elmuseodelnorte
   - domain: environmentreport.org
@@ -67,10 +69,18 @@ simta_ldap_domains_mapped:
     prefix: openclimate
   - domain: outsmarthpv.org
     prefix: outsmarthpv
+  - domain: predictive.space
+    prefix: predictive
+  - domain: probabilitynetwork.org
+    prefix: probabilitynetwork
   - domain: smartgirl.org
     prefix: smartgirl
   - domain: ssdan.net
     prefix: ssdan
+  - domain: statisticalcomputing.org
+    prefix: statisticalcomputing
+  - domain: statisticsresource.org
+    prefix: statisticsresource
   - domain: stonesoup.org
     prefix: stonesoup
   - domain: teachingworks.org
