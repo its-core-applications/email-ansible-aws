@@ -11,6 +11,7 @@ ExecStart=/usr/sbin/clamd --foreground=true
 ExecReload=/bin/kill -USR2 $MAINPID
 StandardOutput=syslog
 LimitCORE=infinity
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
