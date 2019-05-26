@@ -32,7 +32,7 @@ License:	proprietary
 URL:		http://www.clamav.net
 Source0:	http://www.clamav.net/downloads/production/%name-%version%{?prerelease}.tar.gz
 Source999:	http://www.clamav.net/downloads/production/%name-%version%{?prerelease}.tar.gz.sig
-
+Patch0:         clamav-0.101.2-fix-buffer-length-check.patch
 BuildRoot:	%_tmppath/%name-%version-%release-root
 Requires:	clamav-lib = %epoch:%version-%release
 BuildRequires:	zlib-devel bzip2-devel gmp-devel curl-devel
