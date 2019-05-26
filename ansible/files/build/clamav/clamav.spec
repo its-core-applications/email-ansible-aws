@@ -26,12 +26,13 @@
 Summary:	End-user tools for the Clam Antivirus scanner
 Name:		clamav
 Version:	0.101.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:          0
 License:	proprietary
 URL:		http://www.clamav.net
 Source0:	http://www.clamav.net/downloads/production/%name-%version%{?prerelease}.tar.gz
 Source999:	http://www.clamav.net/downloads/production/%name-%version%{?prerelease}.tar.gz.sig
+# https://github.com/Cisco-Talos/clamav-devel/pull/102
 Patch0:         clamav-0.101.2-fix-buffer-length-check.patch
 BuildRoot:	%_tmppath/%name-%version-%release-root
 Requires:	clamav-lib = %epoch:%version-%release
