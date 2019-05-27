@@ -19,7 +19,7 @@
             profile: "{{ aws_profile_efs }}"
             region: "{{ efs_region }}"
             filters:
-              vpc-id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
+              vpc-id: "{{ ec2_subnets_public[efs_region].0.vpc_id }}"
               group-name: "{{ aws_resource_prefix }} efs"
           register: efs_sg
 
@@ -31,7 +31,7 @@
             name: ammit
             tags:
               Name: ammit
-            targets: "{{ ec2_subnets_public[aws_region] | json_query(target_query) }}"
+            targets: "{{ ec2_subnets_public[efs_region] | json_query(target_query) }}"
             wait: yes
           vars:
             target_query: "[*].{subnet_id: id, security_groups: ['{{ efs_sg.security_groups.0.group_id }}']}"
