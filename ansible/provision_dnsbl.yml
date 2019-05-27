@@ -23,7 +23,7 @@
           become: false
           ec2_tag:
             region: "{{ region }}"
-            profile: "{{ aws_profile }}"
+            profile: "{{ aws_profile_ec2 }}"
             resource: "{{ instance_id }}"
             tags:
               Status: production
