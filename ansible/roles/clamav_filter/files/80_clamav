@@ -28,55 +28,37 @@ if check_dfile; then
     1)  signame=$(sed -e '1d; s/.*: //; s/ FOUND$//' $CLAMOUT)
         case $signame in
             *Phish*)
-                sigtype=phishing
+                sigtype=Phishing
                 ;;
             Sanesecurity.Auction*)
-                sigtype=phishing
+                sigtype=Phishing
                 ;;
             Sanesecurity.Blurl*)
-                sigtype=phishing
+                sigtype=Phishing
                 ;;
             Sanesecurity.Casino*)
-                sigtype=phishing
+                sigtype=Phishing
                 ;;
             Sanesecurity.Test*)
-                sigtype=phishing
+                sigtype=Phishing
                 ;;
             UMICH.APER*)
-                sigtype=phishing
+                sigtype=Phishing
                 ;;
             *)
-                sigtype=virus
+                sigtype=Virus
                 ;;
         esac
-	if [ $sigtype = 'phishing' ]; then
-	    egrep -qwf /etc/mail/clamav.delete $CLAMOUT
-            if [ $? -eq 0 ]; then
-                log "80_clamav ${SIMTA_DFILE}: $signame: Phishing deleted"
-                cleanup
-                filter_exit $(( ${MESSAGE_ACCEPT} + ${MESSAGE_DELETE} ))
-            fi
-            egrep -q 'Heuristics.Phishing.Email' $CLAMOUT
-	    if [ $? -eq 0 ]; then
-		log "80_clamav ${SIMTA_DFILE}: $signame: Phishing URL heuristic ignored"
-		cleanup
-	    else
-	        log "80_clamav ${SIMTA_DFILE}: $signame: Phishing rejected"
-	        cleanup
-	        filter_exit ${MESSAGE_REJECT}
-	    fi
-	else
-	    fgrep -qwf /etc/mail/clamav.reject $CLAMOUT
-	    if [ $? -eq 0 ]; then
-		log "80_clamav ${SIMTA_DFILE}: $signame: Virus rejected"
-		cleanup
-		filter_exit ${MESSAGE_REJECT}
-	    else
-		log "80_clamav ${SIMTA_DFILE}: $signame: Virus deleted"
-		cleanup
-		filter_exit $(( ${MESSAGE_ACCEPT} + ${MESSAGE_DELETE} ))
-	    fi
-	fi
+        egrep -q 'Heuristics.Phishing.Email' $CLAMOUT
+        if [ $? -eq 0 ]; then
+            log "80_clamav ${SIMTA_DFILE}: $signame: $sigtype URL heuristic ignored"
+            cleanup
+        else
+            log "80_clamav ${SIMTA_DFILE}: $signame: $sigtype rejected"
+            cleanup
+            echo "Rejected by local content policy"
+            filter_exit ${MESSAGE_REJECT}
+        fi
 	;;
 
     2)
