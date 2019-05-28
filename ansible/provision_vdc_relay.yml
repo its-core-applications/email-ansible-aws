@@ -6,6 +6,7 @@
       vars:
         vdc_core: true
         aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
+        ec2sg_profile: "{{ aws_profile }}"
         subnet_profile: "{{ aws_profile }}"
         launch_class: vdc-relay
         launch_tags:

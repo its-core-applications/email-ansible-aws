@@ -15,7 +15,7 @@
     - name: Create security groups
       ec2_group:
         region: "{{ ec2sg_region }}"
-        profile: "{{ aws_profiles[aws_status][ec2sg_region] }}"
+        profile: "{{ ec2sg_profile }}"
         name: "{{ aws_resource_prefix }} {{ item }}"
         vpc_id: "{{ ec2_sg[item].vpc_id }}"
         description: "{{ ec2_sg[item].description }}"

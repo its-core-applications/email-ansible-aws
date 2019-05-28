@@ -154,3 +154,5 @@ ec2_sg:
       - proto: tcp
         ports: 2049
         cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | map(attribute='cidr_block') | cidr_merge }}"
+
+ec2sg_profile: "{{ aws_profiles[aws_status][ec2sg_region] }}"
