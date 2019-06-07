@@ -1,23 +1,30 @@
----
-
 - tags:
     - google
+    - gyb
   block:
-    - name: Remove Python 3.4 since it conflicts with 3.7
-      yum:
-        name: python34
-        state: absent
-
-    - name: Install extra dependencies
-      yum:
-        name: python3
-        state: latest
-
+    - import_role:
+        name: python_venv
+      vars:
+        venv_name: gyb
+        venv_py3: true
+        venv_packages:
+          - google-api-python-client
+          # FIXME: GYB is monkey-patching httplib2 in an incompatible way
+          # at the moment.
+          - httplib2<0.13.0
+          - oauth2client
+        venv_sudo_user: collaborate
+        venv_wrappers:
+          - name: gyb
+            target: python
+            extra_args: /home/collaborate/GYB/gyb.py --service-account
+            
     - name: Install GYB
       become_user: collaborate
       git:
         repo: https://github.com/jay0lee/got-your-back.git
         dest: ~/GYB
+        version: v1.27
         force: true
 
     - name: Configure GYB
@@ -29,20 +36,3 @@
       loop:
         - noupdatecheck.txt
         - nobrowser.txt
-
-    - name: Install gyb wrapper
-      copy:
-        dest: /usr/bin/gyb
-        src: gyb.sh
-        owner: root
-        group: root
-        mode: "0755"
-
-    - name: Set up gyb alias
-      copy:
-        dest: /etc/profile.d/99_gyb.sh
-        src: 99_gyb.sh
-        owner: root
-        group: root
-        mode: "0644"
-
