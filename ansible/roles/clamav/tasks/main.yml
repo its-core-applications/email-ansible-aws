@@ -49,6 +49,4 @@
         mode: "0644"
       loop:
         - clamav.badurl
-        - clamav.delete
-        - clamav.reject
       tags: mutable
