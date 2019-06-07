@@ -1,13 +1,28 @@
----
-
 - tags:
     - google
     - collab_admin_kit
+    - gam
   block:
-    - name: Install extra python packages
-      pip:
-        name:
+    - import_role:
+        name: python_venv
+      vars:
+        venv_name: gam
+        venv_packages:
           - google-auth
+        venv_sudo_user: collaborate
+        venv_wrappers:
+          - name: gam
+            target: python
+            extra_args: /home/collaborate/GAM/src/gam.py
+            wrapper_environment:
+              - name: GAMUSERCONFIGDIR
+                value: /home/collaborate/gam-config/{{ googled }}
+          - name: gam-discussions
+            target: python
+            extra_args: /home/collaborate/GAM/src/gam.py
+            wrapper_environment:
+              - name: GAMUSERCONFIGDIR
+                value: /home/collaborate/gam-config/{{ discussionsd }}
 
     - name: Install GAM
       become_user: collaborate
@@ -15,28 +30,3 @@
         repo: https://github.com/jay0lee/GAM.git
         dest: ~/GAM
         version: 7112a42
-
-    - name: Install gam script
-      template:
-        dest: /usr/bin/gam
-        src: gam.sh.j2
-        owner: root
-        group: root
-        mode: "0755"
-
-    - name: Install gam-discussions script
-      template:
-        dest: /usr/bin/gam-discussions
-        src: gam-discussions.sh.j2
-        owner: root
-        group: root
-        mode: "0755"
-
-    - name: Set up gam alias
-      copy:
-        dest: /etc/profile.d/99_gam.sh
-        src: 99_gam.sh
-        owner: root
-        group: root
-        mode: "0644"
-
