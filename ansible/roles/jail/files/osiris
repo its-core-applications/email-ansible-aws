@@ -3,7 +3,7 @@
 declare -A lstatus
 
 ammitdir='/ammit'
-ts=$( date +%F )
+ts=$(date +%F)
 
 find /var/spool/simta/slow/ -ignore_readdir_race -name 'E*' -type f 2>/dev/null | while read efile; do
     # The file might have disappeared
