@@ -2,24 +2,26 @@
   gather_facts: false
   become: false
   tasks:
-    - name: Add tasks for each type of image
-      include_tasks: task_cleanup_amis.yml
+    - name: Clean up each type of image
+      include_role:
+        name: ec2_ami_cleanup
       vars:
         image_retain: "{{ (image_type in [ 'junk', 'rbl' ]) | ternary(0, 4) }}"
       loop:
-        - base
-        - mx
-        - egress
-        - dnsbl
-        - rbl
-        - ctools_mx
-        - junk
         - authn_relay
         - authz_relay
+        - base
+        - ctools_mx
+        - dnsbl
+        - egress
+        - junk
+        - mx
+        - rbl
       loop_control:
         loop_var: image_type
 
-    - import_tasks: task_cleanup_amis.yml
+    - include_role:
+        name: ec2_ami_cleanup
       vars:
         aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
         image_type: vdc_relay

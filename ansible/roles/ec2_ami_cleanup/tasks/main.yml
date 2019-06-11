@@ -1,5 +1,3 @@
----
-
 - name: Find {{ image_type }} AMIs
   ec2_ami_facts:
     region: "{{ aws_region }}"
