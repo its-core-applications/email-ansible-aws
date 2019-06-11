@@ -57,6 +57,5 @@
         user: "{{ ansible_user }}"
         minute: 17
         hour: 17
-        weekday: 3
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/cleanup_{{ item }}.yml &>/dev/null
       loop: "{{ (aws_region == aws_primary_region) | ternary(['amis', 'dns'], ['amis']) }}"
