@@ -1,5 +1,3 @@
----
-
 - name: Fetch resource records
   route53_facts:
     profile: "{{ aws_profile_subd }}"
@@ -9,34 +7,22 @@
     hosted_zone_id: "{{ subd_zone.Id }}"
   register: r53_rrs
 
-- name: Check if we can connect
-  wait_for:
-    host: "{{ item.Name }}"
-    port: 22
-    state: started
-    connect_timeout: 1
-    timeout: 1
-  ignore_errors: true
-  register: result
+- name: Delete stale CNAMEs
+  route53:
+    profile: "{{ aws_profile_subd }}"
+    command: delete
+    zone: "{{ subd }}"
+    record: "{{ item.Name }}"
+    type: CNAME
+    ttl: "{{ item.TTL }}"
+    value: "{{ item.ResourceRecords.0.Value }}"
   loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'CNAME') | list }}"
   loop_control:
     label: "{{ item.Name }}"
   when:
     - item.ResourceRecords.0.Value is match('.+\.compute\.amazonaws\.com')
+    - item.ResourceRecords.0.Value not in hostvars
     - item.Name[:-1] not in hostvars
-
-- name: Delete definitively unused CNAMEs
-  route53:
-    profile: "{{ aws_profile_subd }}"
-    command: delete
-    zone: "{{ subd }}"
-    record: "{{ item.item.Name }}"
-    type: CNAME
-    ttl: "{{ item.item.TTL }}"
-    value: "{{ item.item.ResourceRecords.0.Value }}"
-  loop: "{{ result.results | select('failed') | list }}"
-  loop_control:
-    label: "{{ item.item.Name }}"
 
 - name: Delete ACME authorizations
   route53:
