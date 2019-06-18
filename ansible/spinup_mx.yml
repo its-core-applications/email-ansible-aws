@@ -13,6 +13,7 @@
           redis: 'yes'
 
 - hosts: Class_mx:&Status_spinup
+  gather_facts: false
   tasks:
     - when: region == aws_region
       block:
