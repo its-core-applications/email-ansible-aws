@@ -13,6 +13,7 @@
           - amazon-ssm-agent
           - cronie-anacron
           - cyrus-sasl-plain
+          - ec2-instance-connect
           - postfix
           - update-motd
         state: absent
