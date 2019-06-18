@@ -13,6 +13,7 @@
         launch_subnet_type: vpn
         launch_groups:
           - rsyslog
+          - sensu
         launch_tags:
           Status: production
 
