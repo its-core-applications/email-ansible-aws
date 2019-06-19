@@ -7,3 +7,17 @@ microsoft:
   client_cert: 7E65F72F5305017B3EA0EFE102B7F02B2993B83B
   client_cert_key: |
     {{ lookup('hashi_vault', 'secret=secret/ms/odmcert:value') | indent(4) }}
+
+google:
+  service_credentials:
+    type: service_account
+    project_id: odm-test213419
+    private_key_id: 3edff4b9f1680988ca8b780dd0e96e657d9774ab
+    client_email: odm002@odm-test-213419.iam.gserviceaccount.com
+    client_id: '108344500476958945448'
+    auth_uri: 'https://accounts.google.com/o/oauth2/auth'
+    token_uri: 'https://oauth2.googleapis.com/token'
+    auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs'
+    client_x509_cert_url: 'https://www.googleapis.com/robot/v1/metadata/x509/odm002%40odm-test-213419.iam.gserviceaccount.com'
+    private_key: |
+      {{ lookup('hashi_vault', 'secret=secret/google/odmcert:value') | indent(6) }}
