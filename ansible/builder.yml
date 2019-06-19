@@ -9,9 +9,10 @@
         - import_role:
             name: build
 
-- hosts: Class_master:&region_us_west_2
+- hosts: Class_master
   tasks:
-    - block:
+    - when: region == aws_primary_region
+      block:
         - import_role:
             name: s3repo_build
           tags:
