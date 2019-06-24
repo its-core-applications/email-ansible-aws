@@ -32,9 +32,15 @@
       notify: Restart vault
 
     - name: Enable vault service
-      service:
+      systemd:
         name: vault
         enabled: true
+
+    - name: Start vault
+      systemd:
+        name: vault
+        state: started
+      cancel: Restart vault
 
     - name: Install custom monitoring script
       template:
@@ -43,3 +49,6 @@
         owner: collaborate
         group: collaborate
         mode: "0755"
+
+    - name: Run monitoring script to unseal vault
+      command: /usr/local/bin/check-vault-seal
