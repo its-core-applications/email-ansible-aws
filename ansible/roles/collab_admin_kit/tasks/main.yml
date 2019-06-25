@@ -16,15 +16,22 @@
         venv_packages:
           - git+https://gitlab.umich.edu/carleski/collab-admin-kit
         venv_wrappers:
-          - name: collab_create_shared
-          - name: collab_reset_shared
-          - name: discussions_create_group
-          - name: google_archive_data
-          - name: google_build_fitbitstudy
-          - name: google_sift_drive
-          - name: google_sift_labels
-          - name: google_transfer_drive
-          - name: google_transfer_mail
+          - name: collab-create-shared
+            wrapper_environment:
+              - name: KRB5_CONFIG
+                value: /usr/local/venv/collab-admin-kit/krb5.conf
+          - name: collab-reset-shared
+            wrapper_environment:
+              - name: KRB5_CONFIG
+                value: /usr/local/venv/collab-admin-kit/krb5.conf
+          - name: discussions-create-group
+          - name: google-archive-data
+          - name: google-build-fitbitstudy
+          - name: google-create-resource
+          - name: google-sift-drive
+          - name: google-sift-labels
+          - name: google-transfer-drive
+          - name: google-transfer-mail
         venv_sudo_user: collaborate
 
     - name: Configure Collab Admin Kit
@@ -34,6 +41,19 @@
         owner: collaborate
         group: root
         mode: "0640"
+
+    - name: Create Box and GAM config directories
+      file:
+        path: "/home/collaborate/{{ item }}"
+        owner: collaborate
+        group: collaborate
+        mode: 0755
+        state: directory
+      loop:
+        - 'box-config'
+        - 'box-config/{{ boxd }}'
+        - 'gam-config'
+        - 'gam-config/{{ googled }}'
 
     - name: Copy over Box API credentials
       copy:
@@ -73,6 +93,14 @@
         group: root
         mode: "0640"
 
+    - name: Copy over CAK-specific kerberos config
+      template:
+        src: krb5.conf.j2
+        dest: /usr/local/venv/collab-admin-kit/krb5.conf
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Cron daily shared account password cleanup in Google Drive
       copy:
         src: 99_purge_shared_account_passwords.sh
@@ -81,17 +109,19 @@
         group: root
         mode: "0755"
 
-    - name: Schedule daily runs of google_archive_data
+    - name: Schedule daily runs of google-archive-data
       cron:
         name: Google Daily Archive
         user: collaborate
         minute: '15'
         hour: '0'
-        job: /usr/local/bin/google_archive_data -D
+        job: /usr/local/bin/google-archive-data -D
+      when: aws_region == aws_primary_region
 
-    - name: Schedule hourly runs of google_archive_data
+    - name: Schedule hourly runs of google-archive-data
       cron:
         name: Google Hourly Archive
         user: collaborate
         minute: '10'
-        job: /usr/local/bin/google_archive_data -H
+        job: /usr/local/bin/google-archive-data -H
+      when: aws_region == aws_primary_region
