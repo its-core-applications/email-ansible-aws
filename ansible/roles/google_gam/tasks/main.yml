@@ -30,3 +30,91 @@
         repo: https://github.com/jay0lee/GAM.git
         dest: ~/GAM
         version: 7112a42
+
+    - name: Create GAM config directories
+      file:
+        dest: /home/collaborate/gam-config/{{ item }}
+        state: directory
+        owner: collaborate
+        group: collaborate
+      loop:
+        - "{{ googled }}"
+        - "{{ discussionsd }}"
+
+    - name: Configure primary GAM
+      file:
+        dest: /home/collaborate/gam-config/{{ googled }}/{{ item }}
+        state: touch
+        owner: collaborate
+        group: collaborate
+      loop:
+        - noupdatecheck.txt
+        - nobrowser.txt
+
+    - name: Copy over primary GAM credentials
+      copy:
+        dest: "/home/collaborate/gam-config/{{ googled }}/{{ item.value }}.b64"
+        content: "{{ lookup('hashi_vault', 'secret=secret/google/gam/primary/{{ item.name }}:value') }}"
+        owner: collaborate
+        group: root
+        mode: "0640"
+      loop:
+        - name: clientsecrets
+          value: client_secrets.json
+        - name: oauth2service
+          value: oauth2service.json
+
+    - name: Decode primary GAM credentials
+      shell: "base64 -d /home/collaborate/gam-config/{{ googled }}/{{ item }}.b64 > /home/collaborate/gam-config/{{ googled }}/{{ item }}"
+      loop:
+        - client_secrets.json
+        - oauth2service.json
+
+    - name: Set permissions on primary GAM credentials
+      file:
+        dest: "/home/collaborate/gam-config/{{ googled }}/{{ item }}"
+        owner: collaborate
+        group: collaborate
+        mode: "0640"
+      loop:
+        - client_secrets.json
+        - oauth2service.json
+
+    - name: Configure discussions GAM
+      file:
+        dest: /home/collaborate/gam-config/{{ discussionsd }}/{{ item }}
+        state: touch
+        owner: collaborate
+        group: collaborate
+      loop:
+        - noupdatecheck.txt
+        - nobrowser.txt
+
+    - name: Copy over discussions GAM credentials
+      copy:
+        dest: "/home/collaborate/gam-config/{{ discussionsd }}/{{ item.value }}.b64"
+        content: "{{ lookup('hashi_vault', 'secret=secret/google/gam/discussions/{{ item.name }}:value') }}"
+        owner: collaborate
+        group: root
+        mode: "0640"
+      loop:
+        - name: clientsecrets
+          value: client_secrets.json
+        - name: oauth2service
+          value: oauth2service.json
+
+    - name: Decode discussions GAM credentials
+      shell: "base64 -d /home/collaborate/gam-config/{{ discussionsd }}/{{ item }}.b64 > /home/collaborate/gam-config/{{ discussionsd }}/{{ item }}"
+      loop:
+        - client_secrets.json
+        - oauth2service.json
+
+    - name: Set permissions on discussions GAM credentials
+      file:
+        dest: "/home/collaborate/gam-config/{{ discussionsd }}/{{ item }}"
+        owner: collaborate
+        group: collaborate
+        mode: "0640"
+      loop:
+        - client_secrets.json
+        - oauth2service.json
