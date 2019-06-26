@@ -71,6 +71,10 @@ aws_region_layout:
         count: 6
         cycle_method: spinup
         size: m5.xlarge
+      odm:
+        count: 5
+        size: c5n.large
+        autocycle: false
       relay-egress:
         count: 3
       syslog:

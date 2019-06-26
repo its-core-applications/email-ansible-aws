@@ -1,12 +1,12 @@
 #!/bin/bash
 
-rootdir=/magic/migration
+rootdir=${rootdir:-/magic/migration}
 
 for uniqname in $(cat $1) ; do
     dirname=${rootdir}/$uniqname
     [[ -e $dirname ]] || mkdir -p $dirname
-    if [[ -e $dirname/verified ]]; then
-        echo "$uniqname already downloaded and verified"
+    if [[ -e $dirname/uploaded ]]; then
+        echo "$uniqname already uploaded and verified"
         continue
     fi
     (
@@ -40,6 +40,19 @@ for uniqname in $(cat $1) ; do
                 echo "Failed to download $uniqname"
                 exit
             fi
+        fi
+
+        if [[ -d $dirname/files ]]; then
+            echo "Uploading files for $uniqname"
+            odm -c /etc/odm.umich.yaml list $dirname/metadata.json upload --filetree $dirname/files --upload-user $uniqname --domain-map 5d55e1824c5a44e68bc2.onmicrosoft.com:umich.edu,ms365archive.it.umich.edu:umich.edu -v 2> $dirname/stderr.${startts}.upload
+            if [[ $? -eq 0 ]]; then
+                echo "Successfully uploaded $uniqname"
+                touch $dirname/uploaded
+            fi
+            tail -1 $dirname/stderr.${startts}.upload
+        else
+            echo "Nothing to upload for $uniqname"
+            touch $dirname/uploaded
         fi
     ) 9>>$dirname/lockfile
     if [[ $? -ne 0 ]]; then

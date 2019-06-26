@@ -11,13 +11,19 @@
         name: quickxorhash
         state: latest
 
-    - name: Configure ODM
+    - name: Install ODM config files
       template:
-        dest: /etc/odm.yaml
-        src: odm.yaml.j2
+        dest: /etc/{{ item }}
+        src: "{{ item }}.j2"
         owner: root
         group: root
         mode: "0644"
+      loop:
+        - odm.umich.yaml
+        - odm.5d55.yaml
+      vars:
+        odm_umich_idx: "{{ 1 + groups.Class_odm.index(inventory_hostname) }}"
+        odm_5d55_idx: "{{ 6 + groups.Class_odm.index(inventory_hostname) }}"
 
     - name: Copy utility scripts
       copy:
@@ -31,3 +37,4 @@
         - odm-incremental
         - launch-odm-download
         - launch-odm-incremental
+        - migrate-tenants

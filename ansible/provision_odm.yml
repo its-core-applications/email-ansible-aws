@@ -18,7 +18,7 @@
         instance: "{{ instance_id }}"
         device_name: xvdd
         volume_type: gp2
-        volume_size: 500
+        volume_size: 2000
         encrypted: true
         delete_on_termination: false
       delegate_to: localhost
@@ -37,13 +37,13 @@
         fstype: xfs
         state: mounted
 
-    - name: Set status to production
+    - name: Set status to development
       ec2_tag:
         region: "{{ region }}"
         profile: "{{ aws_profile_ec2 }}"
         resource: "{{ instance_id }}"
         tags:
-          Status: production
+          Status: development
       delegate_to: localhost
       become: false
 

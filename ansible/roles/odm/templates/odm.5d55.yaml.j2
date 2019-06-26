@@ -1,0 +1,9 @@
+domain: ms365archive.it.umich.edu
+
+microsoft:
+  tenant: 5d55e1824c5a44e68bc2
+  client_id: {{ lookup('hashi_vault', 'secret=secret/ms/odm' ~ odm_5d55_idx ~ ':id') }}
+  client_secret: "{{ lookup('hashi_vault', 'secret=secret/ms/odm' ~ odm_5d55_idx ~ ':secret') }}"
+  client_cert: {{ lookup('hashi_vault', 'secret=secret/ms/odm' ~ odm_5d55_idx ~ ':cert') }}
+  client_cert_key: |
+    {{ lookup('hashi_vault', 'secret=secret/ms/odm' ~ odm_5d55_idx ~ ':cert_key') | indent(4) }}

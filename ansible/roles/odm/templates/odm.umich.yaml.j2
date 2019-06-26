@@ -1,0 +1,9 @@
+domain: umich.edu
+
+microsoft:
+  tenant: umich
+  client_id: {{ lookup('hashi_vault', 'secret=secret/ms/odm' ~ odm_umich_idx ~ ':id') }}
+  client_secret: "{{ lookup('hashi_vault', 'secret=secret/ms/odm' ~ odm_umich_idx ~ ':secret') }}"
+  client_cert: {{ lookup('hashi_vault', 'secret=secret/ms/odm' ~ odm_umich_idx ~ ':cert') }}
+  client_cert_key: |
+    {{ lookup('hashi_vault', 'secret=secret/ms/odm' ~ odm_umich_idx ~ ':cert_key') | indent(4) }}
