@@ -1,6 +1,6 @@
 kerberos:
     admin: {{ lookup('hashi_vault', 'secret=secret/krb/cak/admin:value' ) }}
-    keytab:  /etc/collab-admin-kit.keytab
+    keytab: /usr/local/venv/collab-admin-kit/cak.keytab
     realm: {{ kerbrealm }}
 
 mcommunity:

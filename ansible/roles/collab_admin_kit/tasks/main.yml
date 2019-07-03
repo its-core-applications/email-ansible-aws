@@ -76,7 +76,7 @@
 
     - name: Copy over the cak keytab
       copy:
-        dest: /etc/collab-admin-kit.keytab.b64
+        dest: /usr/local/venv/collab-admin-kit/cak.keytab.b64
         content: "{{ lookup('hashi_vault', 'secret=secret/krb/cak/' ~ kerbrealm ~ ':value') }}"
         owner: collaborate
         group: root
@@ -84,11 +84,11 @@
       register: result
 
     - name: Decode the keytab
-      shell: base64 -d /etc/collab-admin-kit.keytab.b64 > /etc/collab-admin-kit.keytab
+      shell: base64 -d /usr/local/venv/collab-admin-kit/cak.keytab.b64 > /usr/local/venv/collab-admin-kit/cak.keytab
 
     - name: Set permissions on the keytab
       file:
-        dest: /etc/collab-admin-kit.keytab
+        dest: /usr/local/venv/collab-admin-kit/cak.keytab
         owner: collaborate 
         group: root
         mode: "0640"
