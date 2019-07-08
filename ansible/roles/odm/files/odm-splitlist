@@ -24,18 +24,24 @@ for item_id in metadata['items']:
     if 'file' not in item:
         continue
 
-    item['odm_split'] = set(item.get('odm_split', [])).union([split])
+    item['odm_split'] = [split]
+
     while 'id' in item['parentReference']:
         item =  metadata['items'][item['parentReference']['id']]
         item['odm_split'] = set(item.get('odm_split', [])).union([split])
 
     count += 1
-    if count > args.length:
+    if count >= args.length:
         split += 1
         count = 0
 
 for i in range(0, split + 1):
-    fname = '{}{}.json'.format(args.output_base, i)
+    fname = '{}{:0{align}d}.json'.format(
+        args.output_base,
+        i,
+        align = len(str(split))
+    )
+
     output = {
         'items': {}
     }
