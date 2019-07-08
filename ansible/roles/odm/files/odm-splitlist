@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+import argparse
+from copy import copy
+import json
+import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('source_file')
+parser.add_argument('output_base')
+parser.add_argument(
+    '--length',
+    default = 500,
+)
+
+args = parser.parse_args()
+with open(args.source_file, 'r') as f:
+    metadata = json.load(f)
+
+count = 0
+split = 0
+for item_id in metadata['items']:
+    item = metadata['items'][item_id]
+    if 'file' not in item:
+        continue
+
+    item['odm_split'] = set(item.get('odm_split', [])).union([split])
+    while 'id' in item['parentReference']:
+        item =  metadata['items'][item['parentReference']['id']]
+        item['odm_split'] = set(item.get('odm_split', [])).union([split])
+
+    count += 1
+    if count > args.length:
+        split += 1
+        count = 0
+
+for i in range(0, split + 1):
+    fname = '{}{}.json'.format(args.output_base, i)
+    output = {}
+    for item_id in metadata['items']:
+        item = metadata['items'][item_id]
+        if 'odm_split' not in item or i in item['odm_split']:
+            output[item_id] = copy(item)
+            output[item_id].pop('odm_split', None)
+
+    with open(fname, 'w') as f:
+        json.dump(output, f, indent = 2)

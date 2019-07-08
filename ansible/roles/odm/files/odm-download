@@ -24,13 +24,6 @@ for uniqname in $(cat $1) ; do
                 echo "Downloading files for $uniqname (try $try)"
                 odm -c /etc/odm.5d55.yaml list $dirname/metadata.json download --filetree $dirname/files -v 2> $dirname/stderr.${startts}.download.$try
                 retval=$?
-                if [[ $try -eq 0 ]] && [[ $retval -ne 0 ]]; then
-                    # The API might have lied about the hashes
-                    echo "Re-fetching metadata for $uniqname"
-                    mv $dirname/metadata.json $dirname/metadata.old
-                    odm -c /etc/odm.5d55.yaml user $uniqname list-items > $dirname/metadata.json
-                    [[ -s $dirname/metadata.json ]] || exit
-                fi
                 (( try++ ))
             done
             if [[ $retval -eq 0 ]]; then

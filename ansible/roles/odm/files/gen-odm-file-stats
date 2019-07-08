@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for i in /magic/migration/*; do
+    u=$(basename $i)
+    c=$(jq -r '[.items[] | select(has("file")) | .size] | [length,add] | @csv' < $i/metadata.json)
+    echo "$u,$c"
+done

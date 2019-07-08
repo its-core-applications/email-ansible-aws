@@ -1,0 +1,19 @@
+#!/bin/bash
+
+rootdir=/magic/migration
+
+for dirname in $rootdir/* ; do
+    uniqname=$(basename $dirname)
+    [[ -e $dirname/zerolen ]] && continue
+    [[ -e $dirname/uploaded ]] && continue
+    (
+        flock -n 9 || exit 1
+        if [[ ! -e $dirname/uploaded ]]; then
+            echo "Not necessary to fix $uniqname"
+            touch $dirname/zerolen
+        fi
+    ) 9>>$dirname/lockfile
+    if [[ $? -ne 0 ]]; then
+        echo "$uniqname already locked"
+    fi
+done
