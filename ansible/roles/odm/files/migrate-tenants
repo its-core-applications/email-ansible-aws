@@ -9,10 +9,12 @@ for uniqname in $(cat $1) ; do
         echo "$uniqname already uploaded and verified"
         continue
     fi
-    (
-        flock -n 9 || exit 1
-        startts=$(date -Iseconds)
-        if [[ ! -e $dirname/verified ]]; then
+
+    startts=$(date -Iseconds)
+
+    if [[ ! -e $dirname/verified ]]; then
+        (
+            flock -n 9 || exit 1
             if [[ ! -s $dirname/metadata.json ]]; then
                 echo "Fetching metadata for $uniqname"
                 odm -c /etc/odm.5d55.yaml user $uniqname list-items > $dirname/metadata.json
@@ -33,22 +35,45 @@ for uniqname in $(cat $1) ; do
                 echo "Failed to download $uniqname"
                 exit
             fi
-        fi
+        ) 9>>$dirname/lockfile
+    fi
 
-        if [[ -d $dirname/files ]]; then
-            echo "Uploading files for $uniqname"
-            odm -c /etc/odm.umich.yaml list $dirname/metadata.json upload --filetree $dirname/files --upload-user $uniqname --domain-map 5d55e1824c5a44e68bc2.onmicrosoft.com:umich.edu,ms365archive.it.umich.edu:umich.edu -v 2> $dirname/stderr.${startts}.upload
-            if [[ $? -eq 0 ]]; then
-                echo "Successfully uploaded $uniqname"
-                touch $dirname/uploaded
+    [[ -s $dirname/metadata.json ]] || continue
+    [[ -e $dirname/verified ]] || continue
+    [[ -d $dirname/files ]] || continue
+
+    if [[ ! -e $dirname/split ]]; then
+        (
+            flock -n 9 || exit 1
+            odm-splitlist $dirname/metadata.json $dirname/metadata-split-
+            [[ $? -eq 0 ]] && touch $dirname/split
+        ) 9>>$dirname/lockfile
+    fi
+
+    [[ -e $dirname/split ]] || continue
+
+    notdone=0
+    for splitlist in $dirname/metadata-split-*.json ; do
+        [[ -e ${splitlist}.uploaded ]] && continue
+        listnum=${splitlist//[^0-9]/}
+        (
+            flock -n 9 || exit 1
+            echo "Uploading file list $listnum for $uniqname"
+            logf=$dirname/stderr.${startts}.${listnum}.upload
+            odm -c /etc/odm.umich.yaml list $splitlist upload --filetree $dirname/files --upload-user $uniqname --domain-map 5d55e1824c5a44e68bc2.onmicrosoft.com:umich.edu,ms365archive.it.umich.edu:umich.edu -v 2> $logf
+            retval=$?
+            if [[ $retval -eq 0 ]]; then
+                echo "Successfully uploaded file list $listnum for $uniqname"
+                touch  ${splitlist}.uploaded
             fi
-            tail -1 $dirname/stderr.${startts}.upload
-        else
-            echo "Nothing to upload for $uniqname"
-            touch $dirname/uploaded
-        fi
-    ) 9>>$dirname/lockfile
-    if [[ $? -ne 0 ]]; then
-        echo "$uniqname already locked"
+            tail -1 $logf
+            exit $retval
+        ) 9>>${splitlist}.lockfile
+        [[ $? -eq 0 ]] || (( notdone++ ))
+    done
+
+    if [[ $notdone -eq 0 ]]; then
+        echo "Finished uploading $uniqname"
+        touch $dirname/uploaded
     fi
 done

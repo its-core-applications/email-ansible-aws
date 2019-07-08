@@ -36,12 +36,14 @@ for item_id in metadata['items']:
 
 for i in range(0, split + 1):
     fname = '{}{}.json'.format(args.output_base, i)
-    output = {}
+    output = {
+        'items': {}
+    }
     for item_id in metadata['items']:
         item = metadata['items'][item_id]
         if 'odm_split' not in item or i in item['odm_split']:
-            output[item_id] = copy(item)
-            output[item_id].pop('odm_split', None)
+            output['items'][item_id] = copy(item)
+            output['items'][item_id].pop('odm_split', None)
 
     with open(fname, 'w') as f:
         json.dump(output, f, indent = 2)
