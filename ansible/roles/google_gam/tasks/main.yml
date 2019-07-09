@@ -17,12 +17,16 @@
             wrapper_environment:
               - name: GAMUSERCONFIGDIR
                 value: /home/collaborate/gam-config/{{ googled }}
+              - name: GAM_THREADS
+                value: 3
           - name: gam-discussions
             target: python
             extra_args: /home/collaborate/GAM/src/gam.py
             wrapper_environment:
               - name: GAMUSERCONFIGDIR
                 value: /home/collaborate/gam-config/{{ discussionsd }}
+              - name: GAM_THREADS
+                value: 3
 
     - name: Install GAM
       become_user: collaborate
