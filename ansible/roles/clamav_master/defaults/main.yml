@@ -1,3 +1,5 @@
 ---
 
-clamav_sigdir: /var/cache/clamav
+clamav_sigdir: /var/cache/clamav/sigs/
+clamav_tmpdir: /var/cache/clamav/tmp/
+clamav_msgdir: /var/cache/clamav/msgs/
