@@ -65,6 +65,8 @@ for uniqname in $(cat $1) ; do
             if [[ $retval -eq 0 ]]; then
                 echo "Successfully uploaded file list $listnum for $uniqname"
                 touch  ${splitlist}.uploaded
+            else
+                echo "Failed to upload file list $listnum for $uniqname"
             fi
             tail -1 $logf
             exit $retval
