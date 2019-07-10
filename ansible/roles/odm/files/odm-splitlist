@@ -31,7 +31,7 @@ for item_id in metadata['items']:
         item['odm_split'] = set(item.get('odm_split', [])).union([split])
 
     count += 1
-    if count >= args.length:
+    if count >= int(args.length):
         split += 1
         count = 0
 

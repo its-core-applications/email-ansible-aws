@@ -37,3 +37,4 @@
         - odm-splitlist
         - migrate-tenants
         - gen-odm-file-stats
+        - gen-odm-split-stats
