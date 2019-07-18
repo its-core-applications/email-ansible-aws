@@ -21,6 +21,7 @@
       loop:
         - odm.umich.yaml
         - odm.5d55.yaml
+        - odm.google.yaml
       vars:
         odm_umich_idx: "{{ 1 + groups.Class_odm.index(inventory_hostname) }}"
         odm_5d55_idx: "{{ 6 + groups.Class_odm.index(inventory_hostname) }}"

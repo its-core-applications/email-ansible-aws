@@ -1,13 +1,5 @@
 domain: {{ tld }}
 
-microsoft:
-  tenant: {{ tld }}
-  client_id: 36cf431b-e4ee-4ea9-9684-ff9610780413
-  client_secret: {{ lookup('hashi_vault', 'secret=secret/ms/odm:value') }}
-  client_cert: 7E65F72F5305017B3EA0EFE102B7F02B2993B83B
-  client_cert_key: |
-    {{ lookup('hashi_vault', 'secret=secret/ms/odmcert:value') | indent(4) }}
-
 google:
   service_credentials:
     type: service_account

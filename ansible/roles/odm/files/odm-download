@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rootdir=/magic/migration
+rootdir=/magic/deprov
 
 for uniqname in $(cat $1) ; do
     dirname=${rootdir}/$uniqname
