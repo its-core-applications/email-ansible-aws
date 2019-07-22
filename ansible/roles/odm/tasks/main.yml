@@ -35,6 +35,7 @@
         mode: "0755"
       loop:
         - odm-download
+        - gdm-upload
         - odm-splitlist
         - migrate-tenants
         - gen-odm-file-stats
