@@ -36,3 +36,22 @@
       loop:
         - noupdatecheck.txt
         - nobrowser.txt
+
+    - name: Copy over GYB service account credentials
+      copy:
+        dest: "/home/collaborate/GYB/oauth2service.json.b64"
+        content: "{{ lookup('hashi_vault', 'secret=secret/google/gyb/oauth2service:value') }}"
+        owner: collaborate
+        group: root
+        mode: "0640"
+      register: result
+
+    - name: Decode GYB service account credentials
+      shell: "base64 -d /home/collaborate/GYB/oauth2service.json.b64 > /home/collaborate/GYB/oauth2service.json"
+
+    - name: Set permissions on GYB service account credentials
+      file:
+        dest: "/home/collaborate/GYB/oauth2service.json"
+        owner: collaborate
+        group: root
+        mode: "0640"
