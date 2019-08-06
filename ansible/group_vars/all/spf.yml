@@ -132,3 +132,7 @@ spf_thirdparty:
       - umpark
     record: 'include:paypal.com'
 
+  - names:
+      - uuis-innleague
+    record: 'ip4:128.177.144.190 ip4:128.177.144.191'
+
