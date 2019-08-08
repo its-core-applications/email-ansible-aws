@@ -1,4 +1,4 @@
-- hosts: Class_authz_relay
+- hosts: Class_authz_relay:Class_authz_static
   tasks:
     - when: region == aws_region
       block:
@@ -17,8 +17,8 @@
         - import_role:
             name: clamav_filter
 
-#        - import_role:
-#            name: relay
+        - import_role:
+            name: tcpd_update
 
         - import_role:
             name: sensu

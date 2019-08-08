@@ -1,0 +1,29 @@
+- hosts: Class_authz_static
+  serial: 1
+  gather_facts: false
+  tasks:
+    - import_role:
+        name: ec2_mark_oldest
+
+- hosts: Class_authz_static:&Status_spindown
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Stop sensu
+          systemd:
+            name: sensu-agent
+            state: stopped
+          ignore_errors: true
+
+        - import_role:
+            name: simta_spindown
+
+        - name: Set status to spundown
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: spundown

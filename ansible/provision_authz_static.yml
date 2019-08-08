@@ -4,35 +4,25 @@
     - import_role:
         name: ec2_launch
       vars:
-        launch_class: authz-relay
+        launch_class: authz-static
+        launch_ami_class: authz-relay
+        launch_subnet: "{{ ec2_subnets_public_sorted[aws_region].2 }}"
         launch_groups:
           - smtp
 
     - import_role:
-        name: ec2_targetgroup
-      vars:
-        tg_group: Class_authz_relay
-        tg_name: authz-relay
+        name: ec2_find_subnets
 
     - import_role:
-        name: ec2_nlb
+        name: ec2_eni
       vars:
-        nlb_name: authz-relay
+        eni_name: authz-static
+        eni_security_groups:
+          - smtp
+        eni_subnet: "{{ ec2_subnets_vpn_sorted[aws_region].2 }}"
+        eni_ip_index: 5
 
-    - import_role:
-        name: ec2_targetgroup
-      vars:
-        tg_group: Class_authz_relay
-        tg_name: authz-relay-vpn
-
-    - import_role:
-        name: ec2_nlb
-      vars:
-        nlb_name: authz-relay-vpn
-        nlb_subnets: "{{ ec2_subnets_vpn[aws_region] | map(attribute='id') | list }}"
-        nlb_scheme: internal
-
-- hosts: Class_authz_relay:&Status_spinup
+- hosts: Class_authz_static:&Status_spinup
   tasks:
     - when: region == aws_region
       block:

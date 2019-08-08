@@ -6,7 +6,7 @@
       vars:
         launch_class: authn-relay
         launch_groups:
-          - relay
+          - smtp
         launch_tags:
           Status: production
 

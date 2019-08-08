@@ -105,6 +105,7 @@ aws_region_layout:
     us-east-2:
       authn-relay: {}
       authz-relay: {}
+      authz-static: {}
       builder:
         autokill: true
         autocycle: false

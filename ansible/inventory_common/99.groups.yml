@@ -3,6 +3,7 @@ all:
   children:
     Class_authn_relay: {}
     Class_authz_relay: {}
+    Class_authz_static: {}
     Class_builder: {}
     Class_ctools_mx: {}
     Class_dev: {}

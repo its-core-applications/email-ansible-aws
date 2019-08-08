@@ -1,0 +1,17 @@
+- hosts: Class_authz_static
+  serial: 1
+  gather_facts: false
+  tasks:
+    - import_role:
+        name: ec2_mark_oldest
+
+- import_playbook: provision_authz_static.yml
+
+- import_playbook: spindown_authz_static.yml
+
+- hosts: localhost
+  tasks:
+    - meta: refresh_inventory
+
+- import_playbook: deprovision_spundown.yml
+

@@ -65,16 +65,6 @@ ec2_sg:
         ports: 25
         cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | list | union(trusted_external_ips) | cidr_merge }}"
 
-  relay:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
-    description: relay hosts
-    rules:
-      - proto: tcp
-        ports:
-          - 25
-          - 587
-        cidr_ip: 0.0.0.0/0
-
   vdc-relay:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
     description: vdc relay hosts

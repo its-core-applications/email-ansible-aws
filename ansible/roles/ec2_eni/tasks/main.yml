@@ -1,0 +1,32 @@
+- tags:
+    - ec2
+    - eni
+  delegate_to: localhost
+  become: false
+  block:
+    - name: Create ENI with static IP
+      ec2_eni:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        security_groups: "{{ eni_security_groups | map('regex_replace', '^', aws_resource_prefix ~ ' ') | list }}"
+        subnet_id: "{{ eni_subnet.id }}"
+        private_ip_address: "{{ eni_subnet.cidr_block | next_nth_usable(eni_ip_index) }}"
+      register: result
+
+    - name: Tag ENI
+      ec2_tag:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        resource: "{{ result.interface.id }}"
+        tags:
+          Name: "{{ aws_resource_prefix }} {{ eni_name }}"
+
+    - name: Attach ENI to instance
+      ec2_eni:
+        eni_id: "{{ result.interface.id }}"
+        attached: true
+        delete_on_termination: false
+        instance_id: "{{ hostvars[eni_target_host].instance_id }}"
+        device_index: 1
+      vars:
+        eni_target_host: "{{ groups[eni_group] | intersect(groups.Status_production | union(groups.Status_spinup)) | first }}"

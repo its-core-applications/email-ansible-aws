@@ -1,0 +1,1 @@
+eni_group: Class_{{ eni_name | replace('-', '_') }}

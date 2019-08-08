@@ -1,0 +1,63 @@
+#!/bin/bash
+
+name=tcpd-update
+confdir={{ comint_base }}/dispatch
+
+updatehost=collaborate@rbldnsd-master.{{ subd }}
+srcfile=/usr/local/collaboration/tcpd-update/hosts.allow
+destfile=/etc/hosts.allow
+sshkey=/root/.ssh/id_rsa.rbldnsd
+
+. /usr/libexec/comint/setup
+(
+    flock -n 9 || exit 1
+
+    retval=0
+    startts=$(date +%s%N)
+
+    tmpdest=${tmpdir}/$(basename $destfile)
+
+    # Excludes version control and sync artifacts
+    /usr/bin/rsync -ri \
+        -e "ssh -i $sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+        ${updatehost}:$srcfile $tmpdest \
+        > ${tmpdir}/rsyncout 2>>$tmpfile
+    if [[ $? -eq 0 ]]; then
+        diff -q $tmpdest $destfile &>/dev/null
+        if [[ $? -eq 1 ]]; then
+            msg='Allowed host data updated'
+            oldcount=$(wc -l $destfile | awk '{print $1}')
+            newcount=$(wc -l $tmpdest | awk '{print $1}')
+            if [[ $oldcount -gt 100 ]] && [[ $newcount -lt $(( oldcount / 2 )) ]]; then
+                msg="Too much negative skew. $tmpdest only has $newcount lines, $destfile has $oldcount."
+                retval=1
+            else
+                msg="$destfile updated"
+                cp $tmpdest $destfile
+            fi
+        else
+            msg="$destfile unchanged"
+        fi
+    else
+        retval=2
+        msg='rsync failed'
+    fi
+
+    duration=$(( $(date +%s%N) - startts ))
+
+    jq -n -r \
+        --arg source $(hostname) \
+        --arg status $retval \
+        --arg duration $(( duration / 1000000000 )).$(( duration % 1000000000 / 1000000 )) \
+        --arg msg "$msg" \
+        '{ name: "tcpd-update", source: $source, ttl: 300, occurrences: 3, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+
+    exit $retval
+) 9>>/var/run/tcpd-update.lock
+retval=$?
+
+cleanup
+
+if [[ $RETURN_RC -ne 0 ]]; then
+    exit $retval
+fi
