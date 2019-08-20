@@ -4,7 +4,7 @@
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 Name:              redis
-Version:           4.0.11
+Version:           4.0.14
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 License:           BSD
