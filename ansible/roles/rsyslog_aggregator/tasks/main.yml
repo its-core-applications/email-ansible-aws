@@ -1,5 +1,3 @@
----
-
 - tags:
     - rsyslog
   block:
@@ -24,7 +22,15 @@
         owner: root
         group: root
         mode: "0644"
-      notify: Restart rsyslog
+      register: result
+
+    - name: Restart rsyslog
+      systemd:
+        name: rsyslog
+        daemon_reload: True
+        state: restarted
+      when: result is changed
+      cancel: Restart rsyslog
 
     - name: Configure logrotate for remote logs
       copy:
@@ -41,4 +47,3 @@
         owner: root
         group: root
         mode: "0755"
-
