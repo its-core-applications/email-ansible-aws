@@ -71,10 +71,6 @@ aws_region_layout:
         count: 6
         cycle_method: spinup
         size: m5.xlarge
-      odm:
-        count: 5
-        size: c5n.large
-        autocycle: false
       relay-egress:
         count: 3
       syslog:
@@ -127,10 +123,6 @@ aws_region_layout:
       mx:
         count: 3
         cycle_method: spinup
-      odm:
-        size: t3.large
-        count: 5
-        autocycle: false
       relay-egress: {}
       syslog: {}
       vdc-relay: {}
