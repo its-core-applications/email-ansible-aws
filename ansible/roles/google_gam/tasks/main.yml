@@ -7,8 +7,15 @@
         name: python_venv
       vars:
         venv_name: gam
+        venv_py3: true
         venv_packages:
+          - python-dateutil
+          - google-api-python-client
           - google-auth
+          - google-auth-httplib2
+          - google-auth-oauthlib==0.4.0
+          - httplib2
+          - passlib
         venv_sudo_user: collaborate
         venv_wrappers:
           - name: gam
@@ -33,7 +40,7 @@
       git:
         repo: https://github.com/jay0lee/GAM.git
         dest: ~/GAM
-        version: 7112a42
+        version: v4.94
 
     - name: Create GAM config directories
       file:
