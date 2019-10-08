@@ -64,7 +64,7 @@ aws_region_layout:
         count: 3
         size: m5.2xlarge
       jail:
-        size: t3.small
+        size: t3.large
       master:
         autocycle: false
       mx:
