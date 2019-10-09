@@ -34,7 +34,7 @@
       loop: "{{ mx_names[aws_region] }}"
 
     - name: Find TGs
-      elb_target_group_facts:
+      elb_target_group_info:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
       register: result
@@ -48,7 +48,7 @@
       loop: "{{ result.target_groups }}"
 
     - name: Find AMIs
-      ec2_ami_facts:
+      ec2_ami_info:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         owners: self

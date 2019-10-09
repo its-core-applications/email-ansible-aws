@@ -3,7 +3,7 @@
   when: (ec2_subnets_public is not defined) or (subnet_region not in ec2_subnets_public)
   block:
     - name: Gather VPC subnet facts
-      ec2_vpc_subnet_facts:
+      ec2_vpc_subnet_info:
         region: "{{ subnet_region }}"
         profile: "{{ subnet_profile }}"
       register: subnet_facts
@@ -24,13 +24,13 @@
         label: "{{ item.tags.Name | default(item.tags) }}"
 
     - name: Gather VPC subnet facts
-      ec2_vpc_subnet_facts:
+      ec2_vpc_subnet_info:
         region: "{{ subnet_region }}"
         profile: "{{ subnet_profile }}"
       register: ec2_subnet_facts
 
     - name: Gather VDC core VPC subnet facts
-      ec2_vpc_subnet_facts:
+      ec2_vpc_subnet_info:
         region: "{{ aws_region_vdc_core }}"
         profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
       register: ec2_subnet_facts_vdc

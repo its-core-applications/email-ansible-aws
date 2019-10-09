@@ -3,7 +3,7 @@
   become: false
   tasks:
     - name: Fetch zone list
-      route53_facts:
+      route53_info:
         profile: "{{ aws_profile_subd }}"
         query: hosted_zone
       register: r53_zones

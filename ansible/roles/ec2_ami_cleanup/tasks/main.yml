@@ -1,5 +1,5 @@
 - name: Find {{ image_type }} AMIs
-  ec2_ami_facts:
+  ec2_ami_info:
     region: "{{ aws_region }}"
     profile: "{{ aws_profile }}"
     owners: self

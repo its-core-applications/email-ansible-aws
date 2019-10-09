@@ -15,7 +15,7 @@
       delegate_to: localhost
       block:
         - name: Fetch EFS security group info
-          ec2_group_facts:
+          ec2_group_info:
             profile: "{{ aws_profile_efs }}"
             region: "{{ efs_region }}"
             filters:

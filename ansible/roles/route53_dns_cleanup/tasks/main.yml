@@ -1,5 +1,5 @@
 - name: Fetch resource records
-  route53_facts:
+  route53_info:
     profile: "{{ aws_profile_subd }}"
     query: record_sets
     start_record_name: "{{ (r53_rrs | default({})).NextRecordName | default(omit) }}"

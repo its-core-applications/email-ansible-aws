@@ -7,7 +7,7 @@
     - when: aws_account is not defined
       block:
         - name: Get account info for each profile
-          aws_caller_facts:
+          aws_caller_info:
             profile: "{{ aws_profiles[aws_status][item] }}"
           loop: "{{ (aws_account is defined) | ternary([], aws_profiles[aws_status] | list) }}"
           register: result

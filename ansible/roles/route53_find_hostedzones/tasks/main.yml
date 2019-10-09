@@ -6,7 +6,7 @@
   when: aws_zone_subd is not defined
   block:
     - name: Fetch route53 zones
-      route53_facts:
+      route53_info:
         profile: "{{ aws_profile_subd }}"
         query: hosted_zone
       register: result

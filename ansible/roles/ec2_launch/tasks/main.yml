@@ -38,7 +38,7 @@
             force: true
 
     - name: Get AMI data
-      ec2_ami_facts:
+      ec2_ami_info:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         owners: self
@@ -79,7 +79,7 @@
       register: ec2
 
     - name: Wait for launched instances to have hostnames
-      ec2_instance_facts:
+      ec2_instance_info:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         instance_ids: "{{ ec2_instances }}"
