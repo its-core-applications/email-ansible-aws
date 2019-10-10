@@ -55,6 +55,10 @@ aws_instance_default:
 aws_region_layout:
   prod:
     us-east-2:
+      authz-relay:
+        count: 3
+      authz-static:
+        size: t3.small
       ctools-mx:
         size: t3.small
       dnsbl:

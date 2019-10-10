@@ -23,6 +23,8 @@
 
     - name: Attach ENI to instance
       ec2_eni:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
         eni_id: "{{ result.interface.id }}"
         attached: true
         delete_on_termination: false

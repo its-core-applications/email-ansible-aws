@@ -8,6 +8,26 @@
         launch_groups:
           - smtp
 
+- hosts: Class_authz_relay:&Status_spinup
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: tcpd_update
+
+        - name: Set status to production
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: production
+
+- hosts: localhost
+  become: false
+  tasks:
     - import_role:
         name: ec2_targetgroup
       vars:
@@ -31,20 +51,3 @@
         nlb_name: authz-relay-vpn
         nlb_subnets: "{{ ec2_subnets_vpn[aws_region] | map(attribute='id') | list }}"
         nlb_scheme: internal
-
-- hosts: Class_authz_relay:&Status_spinup
-  tasks:
-    - when: region == aws_region
-      block:
-        - import_role:
-            name: tcpd_update
-
-        - name: Set status to production
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: production

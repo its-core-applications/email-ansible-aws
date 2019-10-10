@@ -10,18 +10,6 @@
         launch_groups:
           - smtp
 
-    - import_role:
-        name: ec2_find_subnets
-
-    - import_role:
-        name: ec2_eni
-      vars:
-        eni_name: authz-static
-        eni_security_groups:
-          - smtp
-        eni_subnet: "{{ ec2_subnets_vpn_sorted[aws_region].2 }}"
-        eni_ip_index: 5
-
 - hosts: Class_authz_static:&Status_spinup
   tasks:
     - when: region == aws_region
@@ -38,3 +26,20 @@
             resource: "{{ instance_id }}"
             tags:
               Status: production
+
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: ec2_find_subnets
+      tags:
+        - eni
+
+    - import_role:
+        name: ec2_eni
+      vars:
+        eni_name: authz-static
+        eni_security_groups:
+          - smtp
+        eni_subnet: "{{ ec2_subnets_vpn_sorted[aws_region].2 }}"
+        eni_ip_index: 5
