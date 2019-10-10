@@ -1,5 +1,3 @@
----
-
 - tags:
     - nonpeople
     - accounts
@@ -10,7 +8,6 @@
         gid: "{{ item.gid | default(item.uid) }}"
         state: present
       loop: "{{ nonperson_accounts }}"
-      tags: mutable
 
     - name: Create non-person accounts
       user:
@@ -22,7 +19,6 @@
         comment: "{{ item.comment }}"
         state: present
       loop: "{{ nonperson_accounts }}"
-      tags: mutable
 
     - name: Create .ssh directory for non-person accounts
       become_user: "{{ item.name }}"
@@ -33,7 +29,6 @@
         group: "{{ item.name }}"
         mode: "0755"
       loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
-      tags: mutable
 
     - name: Install authorized_keys for non-person accounts
       become_user: "{{ item.name }}"
@@ -44,5 +39,3 @@
         group: "{{ item.name }}"
         mode: "0444"
       loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
-      tags: mutable
-

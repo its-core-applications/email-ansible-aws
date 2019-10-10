@@ -72,7 +72,6 @@
         group: root
         mode: "0644"
       notify: Rebuild aliases
-      tags: mutable
 
     - name: Configure tcpwrappers
       copy:
@@ -85,7 +84,6 @@
         - hosts.allow
         - hosts.deny
       when: simta_tcpwrappers
-      tags: mutable
 
     - name: Install the public suffix list
       get_url:
@@ -97,7 +95,6 @@
         force: true
       when: simta_localmail == false
       notify: Restart simta
-      tags: mutable
 
     - name: Create /etc/mail/ldap
       file:
