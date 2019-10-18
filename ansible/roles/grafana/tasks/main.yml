@@ -53,6 +53,12 @@
         enabled: true
       notify: Restart grafana
 
+    - name: Start grafana
+      systemd:
+        name: grafana-server
+        state: started
+      cancel: Restart grafana
+
     - name: Configure a vhost for graphs.{{ subd }}
       template:
         dest: /etc/httpd/conf.d/graphs.{{ subd }}.conf
