@@ -1,5 +1,3 @@
----
-
 - tags:
     - dynhostname
   block:
@@ -23,13 +21,12 @@
       loop:
         - hostname-prefixes
         - hostname-suffixes
+        - hostname-suffixes-authn-relay
+        - hostname-suffixes-authz-relay
         - hostname-suffixes-builder
         - hostname-suffixes-egress
         - hostname-suffixes-mx
         - hostname-suffixes-mx-test
-        - hostname-suffixes-relay
-        - hostname-suffixes-smtp
-        - hostname-suffixes-smtp-test
 
     - name: Install script
       template:
