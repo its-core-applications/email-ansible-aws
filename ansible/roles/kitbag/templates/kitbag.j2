@@ -11,7 +11,7 @@ ftp_passwd=dead60ff
 export TMPDIR=/var/tmp
 . /usr/libexec/comint/setup
 
-ts=$(date +%F)
+ts=$(date +%Y/%m/%F)
 retval=0
 startts=$(date +%s)
 for dir in ${directories[*]} ; do
