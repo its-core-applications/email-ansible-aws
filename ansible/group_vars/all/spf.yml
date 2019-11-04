@@ -50,7 +50,8 @@ spf_thirdparty:
 
   - names:
       - davidson-hr
-    record: 'ip4:216.12.149.100 ip4:216.12.129.78'
+      - davidson-pr
+    record: 'ip4:216.12.149.100 ip4:216.12.129.78 ip4:216.12.143.31'
 
   - names:
       - dpss-emergency-alert
