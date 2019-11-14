@@ -1,3 +1,4 @@
 feedback: ulib-sd-hathitrust@umich.edu
-projectlib: ulib-jira-projectlib@umich.edu
+ht-support: ulib-sd-hathitrust@umich.edu
 htprojects: ulib-jira-ht-projects@umich.edu
+projectlib: ulib-jira-projectlib@umich.edu
