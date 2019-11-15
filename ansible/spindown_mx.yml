@@ -34,15 +34,7 @@
 
     - meta: refresh_inventory
 
-- hosts: localhost
-  tasks:
-    - include_role:
-        name: ec2_targetgroup
-      vars:
-        tg_group: Class_mx
-      loop: "{{ mx_names[aws_region] }}"
-      loop_control:
-        loop_var: tg_name
+- import_playbook: setup_lb_mx.yml
 
 - hosts: Class_mx:&Status_spindown
   tasks:

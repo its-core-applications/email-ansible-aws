@@ -4,48 +4,11 @@
     - import_role:
         name: ec2_find_subnets
 
-    - include_role:
-        name: ec2_targetgroup
-      vars:
-        tg_group: Class_mx
-      loop: "{{ mx_names[aws_region] }}"
-      loop_control:
-        loop_var: tg_name
+- import_playbook: setup_lb_mx.yml
 
-    - name: Create MX loadbalancer(s)
-      elb_network_lb:
-        name: "{{ item }}"
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
-        state: present
-        cross_zone_load_balancing: true
-        tags:
-          BusinessOwner: "{{ aws_resource_owner }}"
-        subnets: "{{ ec2_subnets_public[aws_region] | map(attribute='id') | list }}"
-        listeners:
-          - Protocol: TCP
-            Port: 25
-            DefaultActions:
-              - Type: forward
-                TargetGroupName: "{{ aws_resource_prefix }}-target-{{ item }}"
-      loop: "{{ mx_names[aws_region] }}"
-      register: result
-
-    - name: Set pretty DNS names for MX loadbalancer(s)
-      route53:
-        profile: "{{ aws_profile_subd }}"
-        command: create
-        overwrite: true
-        zone: "{{ subd }}"
-        record: "{{ item.load_balancer_name }}.{{ subd }}"
-        type: A
-        alias: true
-        alias_hosted_zone_id: "{{ item.canonical_hosted_zone_id }}"
-        value: "{{ item.dns_name }}"
-      loop: "{{ result.results }}"
-      loop_control:
-        label: "{{ item.load_balancer_name }}.{{ subd }} -> {{ item.dns_name }}"
-
+- hosts: localhost
+  become: false
+  tasks:
     - import_role:
         name: sensu_proxyclients
 

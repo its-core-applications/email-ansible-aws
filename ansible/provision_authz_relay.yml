@@ -25,29 +25,4 @@
             tags:
               Status: production
 
-- hosts: localhost
-  become: false
-  tasks:
-    - import_role:
-        name: ec2_targetgroup
-      vars:
-        tg_group: Class_authz_relay
-        tg_name: authz-relay
-
-    - import_role:
-        name: ec2_nlb
-      vars:
-        nlb_name: authz-relay
-
-    - import_role:
-        name: ec2_targetgroup
-      vars:
-        tg_group: Class_authz_relay
-        tg_name: authz-relay-vpn
-
-    - import_role:
-        name: ec2_nlb
-      vars:
-        nlb_name: authz-relay-vpn
-        nlb_subnets: "{{ ec2_subnets_vpn[aws_region] | map(attribute='id') | list }}"
-        nlb_scheme: internal
+- import_playbook: setup_lb_authz_relay.yml

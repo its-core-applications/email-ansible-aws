@@ -1,0 +1,13 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - include_role:
+        name: ec2_nlb
+      vars:
+        tg_group: Class_mx
+        nlb_ports:
+         - 25
+        nlb_dns_name: "{{ nlb_name }}.{{ subd }}"
+      loop: "{{ mx_names[aws_region] }}"
+      loop_control:
+        loop_var: nlb_name

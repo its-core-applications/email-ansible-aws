@@ -1,0 +1,16 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: ec2_nlb
+      vars:
+        tg_group: Class_authz_relay
+        nlb_name: authz-relay
+
+    - import_role:
+        name: ec2_nlb
+      vars:
+        tg_group: Class_authz_relay
+        nlb_name: authz-relay-vpn
+        nlb_subnets: "{{ ec2_subnets_vpn[aws_region] | map(attribute='id') | list }}"
+        nlb_scheme: internal

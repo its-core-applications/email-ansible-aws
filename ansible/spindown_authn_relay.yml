@@ -5,14 +5,7 @@
     - import_role:
         name: ec2_mark_oldest
 
-- hosts: localhost
-  become: false
-  tasks:
-    - include_role:
-        name: ec2_targetgroup
-      vars:
-        tg_group: Class_authn_relay
-        tg_name: authn-relay
+- import_playbook: setup_lb_authn_relay.yml
 
 - hosts: Class_authn_relay:&Status_spindown
   tasks:
