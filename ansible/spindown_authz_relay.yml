@@ -20,7 +20,7 @@
       block:
         - name: Stop sensu
           systemd:
-            name: sensu-agent
+            name: sensu-client
             state: stopped
           ignore_errors: true
 
