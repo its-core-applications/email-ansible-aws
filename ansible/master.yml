@@ -60,6 +60,7 @@
 
         - import_role:
             name: ammit_upload
+          when: aws_region == aws_primary_region
 
         - import_role:
             name: google_gam
