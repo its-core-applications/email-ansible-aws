@@ -128,7 +128,7 @@
 
     - name: Install LDAP config files for subdomains
       template:
-        dest: /etc/mail/ldap/{{ item }}.{{ tld }}
+        dest: /etc/mail/ldap/{{ item.slug }}.{{ item.tld | default(tld) }}
         src: ldap/subdomain.j2
         owner: root
         group: root

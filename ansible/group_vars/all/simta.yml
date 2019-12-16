@@ -14,15 +14,17 @@ simta_redis_host: "pink.{{ aws_region }}.{{ subd }}"
 simta_queue_type: egress
 
 simta_ldap_domains:
-  - alumni.engin
-  - biop.lsa
-  - bus
-  - dc
-  - engin
-  - engin.umd
-  - geo.lsa
-  - lsa
-  - roles
+  - slug: alumni.engin
+  - slug: biop.lsa
+  - slug: bus
+  - slug: dc
+  - slug: engin
+  - slug: engin.umd
+  - slug: geo.lsa
+  - slug: lsa
+  - slug: roles
+  - slug: umflint
+    tld: edu
 
 simta_important_domains:
   - go.itd.umich.edu

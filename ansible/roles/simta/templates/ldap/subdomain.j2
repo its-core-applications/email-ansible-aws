@@ -27,15 +27,16 @@ timeout 180
 # search in the people branch using uid=%s as the search string
 # Then we search in people with cn=%s as the search string.
 
-uri  ldap:///ou=People,dc=umich,dc=edu?*?sub?(&(uid=%25s)(associatedDomain={{ item}}.{{ tld }})(!(disabledDomain={{ item }}.{{ tld }}))) searchtype=USER
+{% set _tld = tld if item.tld is not defined else item.tld %}
+uri  ldap:///ou=People,dc=umich,dc=edu?*?sub?(&(uid=%25s)(associatedDomain={{ item.slug }}.{{ _tld }})(!(disabledDomain={{ item.slug }}.{{ _tld }}))) searchtype=USER
 
-uri  ldap:///ou=People,dc=umich,dc=edu?*?sub?(&(cn=%25s)(associatedDomain={{ item }}.{{ tld }})(!(disabledDomain={{ item }}.{{ tld }}))) searchtype=USER
+uri  ldap:///ou=People,dc=umich,dc=edu?*?sub?(&(cn=%25s)(associatedDomain={{ item.slug }}.{{ _tld }})(!(disabledDomain={{ item.slug }}.{{ _tld }}))) searchtype=USER
 
 # no system groups for subdomains
 
 # updated to use umichEntityDisabled field to detect disabled groups
 # group mail should no longer rely on associatedDomain
-uri  ldap:///ou={{ item }},ou=subdomain%20groups,ou=groups,dc=umich,dc=edu?*?sub?(&(cn=%25s)(!(umichEntryDisabled=TRUE))) RDNPREF searchtype=ALL
+uri  ldap:///ou={{ item.slug }},ou=subdomain%20groups,ou=groups,dc=umich,dc=edu?*?sub?(&(cn=%25s)(!(umichEntryDisabled=TRUE))) RDNPREF searchtype=ALL
 
 # attributes is a list of attributes to be read from the server.
 #            If no attributes are configured,  then all attributes are
