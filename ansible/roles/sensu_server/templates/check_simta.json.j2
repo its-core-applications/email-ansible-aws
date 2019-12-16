@@ -7,7 +7,10 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "interval": 60
     },
@@ -18,7 +21,10 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "interval": 60,
       "aggregate": "simta-expansion",
@@ -39,7 +45,10 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "interval": 60,
       "dependencies": [
@@ -53,7 +62,10 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "interval": 60,
       "dependencies": [
@@ -67,7 +79,10 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "interval": 60,
       "dependencies": [
@@ -81,7 +96,10 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "interval": 60
     },
@@ -92,7 +110,10 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "interval": 60,
       "dependencies": [
@@ -106,7 +127,31 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
+      ],
+      "interval": 300,
+      "dependencies": [
+        "simta"
+      ]
+    },
+    "simta-queue-slow-age": {
+      "command": "/usr/libexec/simta-admin/check-simta-queue-age -q slow -a 60 -c 0",
+      "subscribers": [
+        "Class_mx_test",
+        "Class_mx",
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "interval": 300,
       "dependencies": [
@@ -121,7 +166,10 @@
         "Class_mx",
         "Class_egress",
         "Class_relay_egress",
-        "Class_vdc_relay"
+        "Class_vdc_relay",
+        "Class_authn_relay",
+        "Class_authz_relay",
+        "Class_authz_static"
       ],
       "handler": "graphite",
       "interval": 60
