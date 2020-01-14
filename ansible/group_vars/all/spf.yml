@@ -49,6 +49,10 @@ spf_thirdparty:
     record: 'ip4:198.100.45.34'
 
   - names:
+      - coethanks
+    record: 'include:spf.mandrillapp.com'
+
+  - names:
       - davidson-hr
       - davidson-pr
     record: 'ip4:216.12.149.100 ip4:216.12.129.78 ip4:216.12.143.31'
@@ -132,6 +136,10 @@ spf_thirdparty:
   - names:
       - umpark
     record: 'include:paypal.com'
+
+  - names:
+      - umra
+    record: 'include:_spf.membeemail.com'
 
   - names:
       - uuis-innleague
