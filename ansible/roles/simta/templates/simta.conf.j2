@@ -88,6 +88,7 @@ BANNER_DELAY            1
 BANNER_PUNISH_WRITES    ON
 
 {% elif simta_egress == false %}
+DNS_LIST    connect TRUST   relay-trust.dnsal
 DNS_LIST    connect ACCEPT  relay-accept.dnsal
 DNS_LIST    connect BLOCK   relay-deny.dnsbl
 

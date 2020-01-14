@@ -24,7 +24,6 @@
         group: root
         mode: "0755"
       loop:
-        - 15_trust
         - 35_recipient
 
     - name: Install ingress-specific templated filters
