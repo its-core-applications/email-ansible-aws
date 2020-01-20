@@ -55,6 +55,8 @@ aws_instance_default:
 aws_region_layout:
   prod:
     us-east-2:
+      authn-relay:
+        count: 3
       authz-relay:
         count: 3
       authz-static:
