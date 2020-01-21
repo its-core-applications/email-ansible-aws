@@ -25,4 +25,6 @@
             tags:
               Status: production
 
+        - meta: refresh_inventory
+
 - import_playbook: setup_lb_authz_relay.yml
