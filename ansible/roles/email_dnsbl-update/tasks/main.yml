@@ -34,6 +34,7 @@
           - penaltybox-skip-domains
           - relay-accept
           - relay-deny
+          - relay-trust
           - spamassassin-reject
           - ual
           - ubl
