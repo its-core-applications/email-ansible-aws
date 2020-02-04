@@ -12,6 +12,7 @@ simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
 simta_ldap_host: 'ldap-mail.itd.umich.edu'
 simta_redis_host: "pink.{{ aws_region }}.{{ subd }}"
 simta_queue_type: egress
+simta_jail_host: "jail.{{ aws_region }}.{{ subd }}"
 
 simta_ldap_domains:
   - slug: alumni.engin

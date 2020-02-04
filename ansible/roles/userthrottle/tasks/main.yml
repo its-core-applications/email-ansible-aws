@@ -1,0 +1,15 @@
+- tags:
+    - userthrottle
+  block:
+    - name: Install penaltybox package
+      yum:
+        name: penaltybox
+        state: latest
+
+    - name: Install userthrottle filter
+      template:
+        dest: /etc/mail/filters/90_ut
+        src: 90_ut.j2
+        owner: root
+        group: root
+        mode: "0755"

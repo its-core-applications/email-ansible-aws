@@ -1,0 +1,22 @@
+#!/bin/dash
+
+if check_tfile && SIMTA_NRCPTS=$(grep -h -c '^R' $SIMTA_TFILE) ; then
+    export SIMTA_NRCPTS
+
+    if simrbl -q -l relay-accept.dnsal $SIMTA_REMOTE_IP; then
+        ipal=false
+    else
+        ipal=true
+    fi
+
+    total=$(/usr/bin/ipthrottle -h pink.{{ aws_region }}.{{ subd }} -d umich.edu)
+
+    log "ipthrottle: simta_remote_ip=$SIMTA_REMOTE_IP simta_body_checksum=$SIMTA_BODY_CHECKSUM simta_nrcpts=$SIMTA_NRCPTS relay_accept=$ipal ip_nrcpts_total=$total"
+
+    if [ "x$ipal" = 'xfalse' -a ${total-0} -gt 150 ]; then
+        log "90_ipt: I want to jail this message"
+        #filter_exit $MESSAGE_JAIL
+    fi
+else
+    log "90_ipt: Number of recipients not found"
+fi

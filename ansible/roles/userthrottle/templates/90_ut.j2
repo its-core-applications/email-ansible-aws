@@ -1,0 +1,23 @@
+#!/bin/dash
+
+if check_tfile && SIMTA_NRCPTS=$(grep -h -c '^R' $SIMTA_TFILE) ; then
+    export SIMTA_NRCPTS
+
+    if simrbl -q -l ual.dnswl -t $SIMTA_AUTH_ID ; then
+        ual=false
+    else
+        ual=true
+    fi
+
+    total=$(/usr/bin/userthrottle -h pink.{{ aws_region }}.{{ subd }} -d umich.edu)
+
+    log "userthrottle: simta_auth_id=$SIMTA_AUTH_ID simta_body_checksum=$SIMTA_BODY_CHECKSUM simta_nrcpts=$SIMTA_NRCPTS ual=$ual id_nrcpts_total=$total"
+
+    if [ "x$ual" = 'xfalse' -a ${total-0} -gt 150 ]; then
+        log "90_ut: jailing message"
+        filter_exit $MESSAGE_JAIL
+    fi
+else
+    log "90_ut: Number of recipients not found"
+fi
+

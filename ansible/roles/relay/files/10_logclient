@@ -1,0 +1,10 @@
+#!/bin/bash
+# log X-Mailer
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin
+export PATH
+
+if check_dfile; then
+    client=`formail -XX-Mailer <$SIMTA_DFILE`
+    log "10_logclient: user $SIMTA_AUTH_ID $client"
+fi

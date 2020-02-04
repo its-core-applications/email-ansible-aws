@@ -6,5 +6,6 @@ simta_authn: true
 simta_dkim: true
 simta_dkim_selector: relay-2018-08-29
 simta_dkim_level: ALWAYS
+simta_jail_mail: true
 simta_ldap: true
 simta_ldap_password: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value') }}"

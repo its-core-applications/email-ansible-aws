@@ -133,7 +133,9 @@ PUNT_STRATEGY           ALL
 RECEIVE_QUEUE_STRATEGY  JAIL
 {% endif %}
 PUNT                    {% if simta_relay %}relay-{% endif %}egress.{{ aws_region }}.{{ subd }}
-
+{% if simta_jail_mail %}
+JAIL                    {{ simta_jail_host }}
+{% endif %}
 {% endif %}
 SUBADDRESS_SEPARATOR    +
 

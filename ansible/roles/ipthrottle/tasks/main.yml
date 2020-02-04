@@ -1,0 +1,15 @@
+- tags:
+    - ipthrottle
+  block:
+    - name: Install penaltybox package
+      yum:
+        name: penaltybox
+        state: latest
+
+    - name: Install ipthrottle filter
+      template:
+        dest: /etc/mail/filters/90_ipt
+        src: 90_ipt.j2
+        owner: root
+        group: root
+        mode: "0755"

@@ -3,22 +3,7 @@
     - when: region == aws_region
       block:
         - import_role:
-            name: base
-
-        - import_role:
-            name: rsyslog_forward
-
-        - import_role:
-            name: localnameserver
-
-        - import_role:
-            name: simta
-
-        - import_role:
-            name: clamav_filter
+            name: relay
 
         - import_role:
             name: tcpd_update
-
-        - import_role:
-            name: sensu

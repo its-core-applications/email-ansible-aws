@@ -1,0 +1,36 @@
+- tags:
+    - relay
+  block:
+    - import_role:
+        name: base
+
+    - import_role:
+        name: rsyslog_forward
+
+    - import_role:
+        name: localnameserver
+
+    - import_role:
+        name: simta
+
+    - import_role:
+        name: clamav_filter
+
+    - import_role:
+        name: sensu
+
+    - import_role:
+        name: userthrottle
+
+    - import_role:
+        name: ipthrottle
+
+    - name: Install relay-specific filters
+      copy:
+        dest: /etc/mail/filters/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - 10_logclient
