@@ -81,6 +81,9 @@
             name: gitlab_gitlab_cli
 
         - import_role:
+            name: kerberos_client
+
+        - import_role:
             name: redis_master
 
         - import_role:

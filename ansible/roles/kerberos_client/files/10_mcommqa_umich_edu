@@ -1,0 +1,4 @@
+[realms]
+ MCOMMQA.UMICH.EDU = {
+     admin_server = scops.dsc.umich.edu:749 
+ }

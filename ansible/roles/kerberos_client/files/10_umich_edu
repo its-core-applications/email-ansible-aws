@@ -1,0 +1,4 @@
+[realms]
+ UMICH.EDU = {
+     admin_server = kerberos-admin.umich.edu:749
+ }
