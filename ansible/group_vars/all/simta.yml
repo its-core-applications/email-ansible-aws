@@ -23,6 +23,7 @@ simta_ldap_domains:
   - slug: geo.lsa
   - slug: lsa
   - slug: roles
+  - slug: umd
   - slug: umflint
     tld: edu
 
