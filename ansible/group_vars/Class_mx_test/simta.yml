@@ -7,7 +7,7 @@ simta_dkim: true
 simta_ldap: true
 simta_ldap_red: RE
 simta_ldap_domains:
-  - test.mail
+  - slug: test.mail
 simta_devnull_domains:
   - devnull.mail.umich.edu
   - devnull.mr.itd.umich.edu
