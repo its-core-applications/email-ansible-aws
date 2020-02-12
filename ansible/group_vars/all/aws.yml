@@ -120,7 +120,8 @@ aws_region_layout:
       dev:
         autokill: true
         autocycle: false
-      dnsbl: {}
+      dnsbl:
+        count: 2
       egress:
         count: 2
       jail: {}
