@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c17e27a841c45f39e6f7e9b729df2a3d557c66d5730137a80c326cbee56c452e"
+            "sha256": "b6bd5db8a4626ecc6acad69ab012fa4bccf22a644a71b6159753d04194e1a4fb"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,17 +16,21 @@
         ]
     },
     "default": {
+        "ansible": {
+            "git": "https://github.com/flowerysong/ansible",
+            "ref": "5774baf72d5e5220c80d59c1b1c1d7de5027bcb7"
+        },
         "ara": {
             "git": "https://github.com/flowerysong/ara",
             "ref": "347ee6dabb4a21d15c2c3a2e65acf4f4201aa069"
         },
         "awscli": {
             "hashes": [
-                "sha256:3c2cab2a780535e274a3c8ca66950324a8e19219540974c1552f14d31cb73a0f",
-                "sha256:62dffd77132afb6b74e22668199f9656781a9178991156edd1997a811463d91e"
+                "sha256:12ea93daa39922c206a0dc26404d5f40dd80605113f3681b0fb8496ed5e617fb",
+                "sha256:b20bacedd752bfa7c99288ae200155690aa211bb3cfd1755c2e8b9d047b99f65"
             ],
             "index": "pypi",
-            "version": "==1.18.5"
+            "version": "==1.18.7"
         },
         "bcrypt": {
             "hashes": [
@@ -61,19 +65,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:599608a8ed50dc184e83852e3050e6997d7825b404a6e3612c27425e4f12ec10",
-                "sha256:627a0c2366e420383065d9b191fa90a315a4d394fd007c2a85cfa5afa93ba974"
+                "sha256:5260c4138f8492108c53239f3dda912235700938ea9afe7843ce4e2c559dcaed",
+                "sha256:5a97a13777a83fcfddff34a7ca0528ec99a65b1c76113e9d517a6d1791fb82a7"
             ],
             "index": "pypi",
-            "version": "==1.12.5"
+            "version": "==1.12.7"
         },
         "botocore": {
             "hashes": [
-                "sha256:8c9fa943e1890b44a7f31be2654cd4f4f88e634adadb931b0f298f1cf03a52a4",
-                "sha256:9de7885e9e9d6dbc30b9846d7edd8f98251db7f00395a6f4cfd765efc7098bdb"
+                "sha256:00bcc6375d331cff8b66430d4979eaa26cb22dac842778d98bb827f31671162d",
+                "sha256:6874d7117c8266076e5038475e0970bd90f315f0de825be48e71f9c5957b1927"
             ],
             "index": "pypi",
-            "version": "==1.15.5"
+            "version": "==1.15.7"
         },
         "certifi": {
             "hashes": [
@@ -223,10 +227,10 @@
         },
         "jmespath": {
             "hashes": [
-                "sha256:3720a4b1bd659dd2eecad0666459b9788813e032b83e7ba58578e48254e0a0e6",
-                "sha256:bde2aef6f44302dfb30320115b17d030798de8c4110e28d5cf6cf91a7a31074c"
+                "sha256:695cb76fa78a10663425d5b73ddc5714eb711157e52704d69be03b1a02ba4fec",
+                "sha256:cca55c8d153173e21baa59983015ad0daf603f9cb799904ff057bfb8ff8dc2d9"
             ],
-            "version": "==0.9.4"
+            "version": "==0.9.5"
         },
         "markupsafe": {
             "hashes": [

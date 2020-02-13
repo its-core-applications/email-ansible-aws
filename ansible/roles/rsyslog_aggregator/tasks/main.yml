@@ -30,7 +30,6 @@
         daemon_reload: True
         state: restarted
       when: result is changed
-      cancel: Restart rsyslog
 
     - name: Configure logrotate for remote logs
       copy:

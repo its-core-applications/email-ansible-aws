@@ -7,7 +7,7 @@ export TLD=umich.edu
 hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
 VIRTUAL_ENV_DISABLE_PROMPT=1
 . $hacking_dir/.venv/bin/activate
-. $hacking_dir/bin/ansible/hacking/env-setup
+export ANSIBLE_DEVEL_WARNING=False
 export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
 export ANSIBLE_PRIVATE_KEY_FILE=$hacking_dir/id_rsa
 export AWS_STATUS=prod

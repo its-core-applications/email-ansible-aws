@@ -26,7 +26,6 @@
       systemd:
         name: unbound
         state: started
-      cancel: Restart unbound
 
     - name: Set 127.0.0.1 as the active nameserver
       copy:

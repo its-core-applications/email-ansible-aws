@@ -40,7 +40,6 @@
       systemd:
         name: vault
         state: started
-      cancel: Restart vault
 
     - name: Install custom monitoring script
       template:

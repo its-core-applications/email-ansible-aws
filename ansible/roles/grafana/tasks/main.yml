@@ -57,7 +57,6 @@
       systemd:
         name: grafana-server
         state: started
-      cancel: Restart grafana
 
     - name: Configure a vhost for graphs.{{ subd }}
       template:

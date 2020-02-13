@@ -29,4 +29,3 @@
       systemd:
         name: rabbitmq-server
         state: started
-      cancel: Restart RabbitMQ

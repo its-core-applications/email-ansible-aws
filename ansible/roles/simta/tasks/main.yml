@@ -187,9 +187,6 @@
       systemd:
         name: simta
         state: started
-      cancel:
-        - Restart simta
-        - Rebuild aliases
 
     - name: Install custom monitoring scripts
       template:
