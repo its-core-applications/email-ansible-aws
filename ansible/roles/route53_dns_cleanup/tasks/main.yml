@@ -2,7 +2,7 @@
   route53_info:
     profile: "{{ aws_profile_subd }}"
     query: record_sets
-    start_record_name: "{{ (r53_rrs | default({})).NextRecordName | default(omit) }}"
+    start_record_name: "{{ r53_rrs.NextRecordName | default(omit) }}"
     max_items: 25
     hosted_zone_id: "{{ subd_zone.Id }}"
   register: r53_rrs
