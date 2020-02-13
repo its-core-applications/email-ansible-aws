@@ -1,0 +1,8 @@
+default:
+  BASE_DIR: /home/ara
+  DATABASE_NAME: /home/ara/ansible.sqlite
+  TIME_ZONE: US/Eastern
+  SECRET_KEY: {{ lookup('password', '/home/ara/djangosecret length=50') }}
+  CORS_ORIGIN_WHITELIST:
+    - http://127.0.0.1:8082
+    - https://{{ ara_hostname }}

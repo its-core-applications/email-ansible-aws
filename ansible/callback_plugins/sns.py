@@ -56,9 +56,7 @@ except ImportError:
     HAS_PRETTYTABLE = False
 
 try:
-    from ara import models
-    from ara.webapp import create_app
-    from flask import current_app
+    from ara.clients import utils as ara_client_utils
     HAS_ARA = True
 except ImportError:
     HAS_ARA = False
@@ -113,6 +111,9 @@ class CallbackModule(CallbackBase):
         if tags and set(tags) != set(['all']):
             self.playbook_name = '{} --tags {}'.format(self.playbook_name, ','.join(tags))
 
+    def v2_playbook_on_play_start(self, play):
+        self.playbook_uuid = play._uuid
+
     def v2_playbook_on_stats(self, stats):
         hosts = sorted(stats.processed.keys())
 
@@ -148,16 +149,11 @@ class CallbackModule(CallbackBase):
         msg_lambda = '```\n{}\n```'.format(msg_default)
 
         if HAS_ARA and self.ara_base:
-            app = create_app()
-            if not current_app:
-                context = app.app_context()
-                context.push()
-            playbook_id = current_app._cache['playbook']
-            db_file = os.path.basename(current_app.config.get('ARA_DATABASE'))
-            db_file = db_file.replace('.sqlite', '')
-            ara_url = '{}/{}/ara-report/reports/{}.html'.format(
+            client = ara_client_utils.active_client()
+            play = client.get('/api/v1/plays?uuid={}'.format(self.playbook_uuid))
+            playbook_id = play['results'][0]['playbook']
+            ara_url = '{}/playbook/{}.html'.format(
                 self.ara_base,
-                db_file,
                 playbook_id,
             )
             msg_default += '\n{}'.format(ara_url)

@@ -6,7 +6,7 @@ export TLD=umich.edu
 # Set up Ansible
 hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
 VIRTUAL_ENV_DISABLE_PROMPT=1
-. $hacking_dir/bin/python/bin/activate
+. $hacking_dir/.venv/bin/activate
 . $hacking_dir/bin/ansible/hacking/env-setup
 export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
 export ANSIBLE_PRIVATE_KEY_FILE=$hacking_dir/id_rsa
@@ -17,16 +17,11 @@ export SNS_TOPIC=rootmail
 
 export VAULT_ADDR="https://vault.a.mail.umich.edu:8200"
 
-if which ara &>/dev/null; then
+if which ara-manage &>/dev/null && [[ -d /home/ara ]]; then
     eval $(python -m ara.setup.env)
-    if [[ -d /home/ara ]]; then
-        export ARA_DIR=/home/ara
-        export ARA_BASE_URL=https://ara.${AWS_DEFAULT_REGION}.a.mail.umich.edu/
-        # We set this as an env variable and an alias so that it works for
-        # both people and cron jobs.
-        export ARA_DATABASE=sqlite:////home/ara/$(date +%F).sqlite
-        alias ansible-playbook='env ARA_DATABASE=sqlite:////home/ara/$(date +%F).sqlite ansible-playbook'
-    fi
+    export ARA_API_CLIENT=http
+    export ARA_API_SERVER=http://127.0.0.1:8082
+    export ARA_BASE_URL=https://ara.${AWS_DEFAULT_REGION}.a.mail.umich.edu/
 fi
 
 if [[ -s $hacking_dir/localenv ]]; then

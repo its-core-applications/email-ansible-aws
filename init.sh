@@ -2,10 +2,7 @@
 
 cd $(readlink -fn $(dirname "$BASH_SOURCE"))
 
-virtualenv --system-site-packages bin/python
-. bin/python/bin/activate
-pip install -U pip
-pip install -I -r python-requirements.txt
+PIPENV_IGNORE_VIRTUALENVS=1 PIPENV_VENV_IN_PROJECT=1 pipenv sync
 
 git submodule update --init --recursive
 

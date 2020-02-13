@@ -19,6 +19,7 @@
           - Jinja2
           - ftptool
           - hvac
+          - pipenv
         state: latest
 
     - name: Create filesystem for /home

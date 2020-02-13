@@ -29,15 +29,5 @@
         Require claim hd:{{ tld }}
     </Location>
 
-    WSGIDaemonProcess ara user=apache group=apache processes=4 threads=1
-
-    SetEnv ARA_WSGI_LOG_ROOT /home/ara
-
-    <Directory "/usr/bin">
-        <Files "ara-wsgi-sqlite-custom">
-            Require all granted
-        </Files>
-    </Directory>
-
-    WSGIScriptAliasMatch ^.*/ara-report /usr/bin/ara-wsgi-sqlite-custom
+    ProxyPass / http://localhost:8082/
 </VirtualHost>

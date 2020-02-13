@@ -1,0 +1,16 @@
+[Unit]
+Description=ARA API gunicorn
+After=network.target
+
+[Service]
+User={{ ansible_user }}
+RuntimeDirectory=ara-api
+WorkingDirectory=/home/ara
+Environment=ARA_SETTINGS=/home/ara/settings.yml
+ExecStart=/usr/local/venv/ara_server/bin/gunicorn --workers=8 --bind 127.0.0.1:8082 ara.server.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

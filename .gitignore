@@ -6,3 +6,4 @@ packer/template.json
 private/
 *.pyc
 bin/python/
+.venv/

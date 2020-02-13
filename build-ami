@@ -14,6 +14,9 @@ if [[ ! -f ansible/${class}.yml ]]; then
     exit 1
 fi
 
+# Don't load callbacks like ARA for the ad hoc commands
+export ANSIBLE_LOAD_CALLBACK_PLUGINS=0
+
 if [[ $class = 'vdc_relay' ]]; then
     export AWS_PROFILE=$(ansible --playbook-dir ansible localhost -m debug -a 'var=aws_profiles[aws_status]["vdc-core"]' | awk '/aws_profile/{print $NF}' | tr -d '"')
 else
@@ -57,7 +60,7 @@ base=$(echo "$base" | jq -r '.Images | sort_by(.CreationDate) | last(.[]).ImageI
 python -c '
 import sys, json, yaml
 with open(sys.argv[1]) as f:
-   print json.dumps(yaml.load(f), indent=2)
+   print(json.dumps(yaml.safe_load(f), indent=2))
 ' packer/template.yml >| packer/template.json
 
 # Quick and dirty elision of unnecessary encryption step

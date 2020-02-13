@@ -1,0 +1,24 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+ara = {git = "https://github.com/flowerysong/ara",ref = "next"}
+awscli = "*"
+boto = "*"
+boto3 = "*"
+botocore = "*"
+cryptography = "*"
+dnspython = "*"
+hvac = "*"
+netaddr = "*"
+paramiko = "*"
+PyYAML = "*"
+Jinja2 = "*"
+PrettyTable = "*"
+
+[requires]
+python_version = "3.7"
