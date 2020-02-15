@@ -5,7 +5,7 @@ hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
 $hacking_dir/build-ami
 
 if [[ $? -eq 0 ]]; then
-    for i in $(ansible localhost  --playbook-dir $hacking_dir/ansible -m debug -a 'msg={{ aws_region_layout[aws_status][aws_region] | list }}' | grep '        ' | tr -d '", ' | tr '-' '_'); do
+    for i in $(ansible localhost --playbook-dir $hacking_dir/ansible -m debug -a 'msg={{ aws_region_layout[aws_status][aws_region] | list }}' | grep '        ' | tr -d '", ' | tr '-' '_'); do
         [[ $i = 'master' ]] && continue
         [[ $i = 'syslog' ]] && continue
         [[ $i = 'builder' ]] && continue
