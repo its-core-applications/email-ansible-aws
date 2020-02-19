@@ -49,12 +49,6 @@
         - import_role:
             name: simta_spindown
 
-# Do Redis management with `serial: 1` to minimize races
-- hosts: Class_mx:&Status_spindown
-  serial: 1
-  tasks:
-    - when: region == aws_region
-      block:
         - import_role:
             name: redis_spindown
 

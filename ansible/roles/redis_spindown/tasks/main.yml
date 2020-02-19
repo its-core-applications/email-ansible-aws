@@ -19,6 +19,9 @@
         dns_host: pink
         dns_group: redis
 
+    # Throttle limits execution to 1 worker, which should help avoid races
+    # during removal.
     - name: Remove from redis cluster
       delegate_to: localhost
       command: "/usr/local/sbin/redis-remove {{ private_ip_address }}"
+      throttle: 1
