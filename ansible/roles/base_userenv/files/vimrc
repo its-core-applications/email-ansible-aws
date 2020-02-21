@@ -12,3 +12,10 @@ set expandtab
 set modeline
 
 autocmd FileType yaml set softtabstop=2 shiftwidth=2
+autocmd FileType jsonnet set softtabstop=2 shiftwidth=2
+
+call plug#begin()
+Plug 'ntpeters/vim-better-whitespace'
+Plug 'google/vim-jsonnet'
+call plug#end()
+filetype indent off
