@@ -10,10 +10,6 @@
       tags: always
 
     - import_role:
-        name: build_sensu_plugins
-      tags: sensu
-
-    - import_role:
         name: build_rpm_prebuilt
       tags:
         - cjose

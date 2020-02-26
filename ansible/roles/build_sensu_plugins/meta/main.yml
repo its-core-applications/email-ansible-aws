@@ -1,5 +1,0 @@
----
-
-dependencies:
-  - role: sensu
-    tags: sensu
