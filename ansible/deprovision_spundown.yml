@@ -1,13 +1,12 @@
----
-
 - hosts: Status_spundown
   gather_facts: false
   tasks:
     - name: Destroy host
       become: false
       delegate_to: localhost
-      ec2:
+      ec2_instance:
         region: "{{ region }}"
         profile: "{{ aws_profile_ec2 }}"
-        instance_id: "{{ instance_id }}"
+        instance_ids: "{{ instance_id }}"
         state: absent
+        wait: false

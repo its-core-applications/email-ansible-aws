@@ -55,18 +55,22 @@
         name: ec2_find_subnets
 
     - name: Create {{ launch_class }} instance(s)
-      ec2:
+      ec2_instance:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        group: "{{ launch_groups_default | union(launch_groups) | map('regex_replace', '^', aws_resource_prefix ~ ' ') | list }}"
+        security_groups: "{{ launch_groups_default | union(launch_groups) | map('regex_replace', '^', aws_resource_prefix ~ ' ') | list }}"
         key_name: "{{ aws_ssh_key }}"
         instance_type: "{{ aws_region_layout[aws_status][aws_region][launch_class].size | default(aws_instance_default[aws_status]) }}"
         vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[aws_region][item % (ec2_subnets[aws_region] | length)])).id }}"
-        assign_public_ip: true
-        image: "{{ find_ami.image_id }}"
-        instance_profile_name: "{{ aws_resource_prefix }}_{{ launch_profile | default('standard') }}"
-        instance_tags: "{{ launch_tags_default | combine(launch_tags) }}"
-        count: 1
+        network:
+          assign_public_ip: true
+          delete_on_termination: true
+        image_id: "{{ find_ami.image_id }}"
+        instance_role: "{{ aws_resource_prefix }}_{{ launch_profile | default('standard') }}"
+        tags: "{{ launch_tags_default | combine(launch_tags) }}"
+        filters:
+          "tag:Name": We never want to match an existing instance, and this should ensure that.
+        wait: false
       vars:
         ec2_subnets: "{{ hostvars[inventory_hostname]['ec2_subnets_' ~ (launch_subnet_type | default('public'))] }}"
         launch_count_default: "{{ aws_region_layout[aws_status][aws_region][launch_class].count | default(1) - (groups['Class_' ~ launch_class | replace('-', '_')] | intersect(aws_region_group) | intersect(groups.Status_production | union(groups.Status_spinup) | union(groups.Status_development)) | length) }}"
@@ -84,7 +88,7 @@
         profile: "{{ aws_profile }}"
         instance_ids: "{{ ec2_instances }}"
       vars:
-        ec2_instances: "{{ ec2.results | selectattr('instances', 'defined') | map(attribute='instances') | flatten | map(attribute='id') | list }}"
+        ec2_instances: "{{ ec2.results | selectattr('instance_ids', 'defined') | map(attribute='instance_ids') | flatten }}"
       when: ec2_instances | length
       ignore_errors: true
       register: result
