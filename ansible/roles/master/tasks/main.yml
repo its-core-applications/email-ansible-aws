@@ -102,6 +102,7 @@
                     Service: dlm.amazonaws.com
             create_instance_profile: false
             managed_policy: "{{ dlm_policy.policy.arn }}"
+            purge_policies: true
           register: dlm_role
 
         - name: Enable automatic snapshots of the home volume

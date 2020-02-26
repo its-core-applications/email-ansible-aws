@@ -65,8 +65,9 @@
               Effect: Allow
               Principal:
                 AWS: arn:aws:iam::{{ aws_account }}:root
-        managed_policy:
+        managed_policies:
           - "{{ result.policy.arn }}"
+        purge_policies: true
       register: result
 
     - name: Create local IAM policy for {{ subd }}
@@ -112,8 +113,9 @@
               Effect: Allow
               Principal:
                 AWS: arn:aws:iam::{{ aws_account }}:root
-        managed_policy:
+        managed_policies:
           - "{{ result.policy.arn }}"
+        purge_policies: true
       register: result
 
     - name: Create local IAM policy for SNS
@@ -144,10 +146,11 @@
               Action: sts:AssumeRole
               Principal:
                 Service: ec2.amazonaws.com
-        managed_policy:
+        managed_policies:
           - arn:aws:iam::aws:policy/AmazonS3FullAccess
           - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
+        purge_policies: true
 
     - name: Create master role
       iam_role:
@@ -162,7 +165,7 @@
               Action: sts:AssumeRole
               Principal:
                 Service: ec2.amazonaws.com
-        managed_policy:
+        managed_policies:
           - arn:aws:iam::aws:policy/AmazonS3FullAccess
           - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
           - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
@@ -170,6 +173,7 @@
           - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
           - "{{ snspolicy.policy.arn }}"
+        purge_policies: true
 
     - name: Create standard role
       iam_role:
@@ -184,8 +188,9 @@
               Action: sts:AssumeRole
               Principal:
                 Service: ec2.amazonaws.com
-        managed_policy:
+        managed_policies:
           - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
           - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
           - "{{ snspolicy.policy.arn }}"
+        purge_policies: true
