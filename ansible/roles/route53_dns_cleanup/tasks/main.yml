@@ -24,6 +24,23 @@
     - item.ResourceRecords.0.Value not in hostvars
     - item.Name[:-1] not in hostvars
 
+- name: Delete stale A records
+  route53:
+    profile: "{{ aws_profile_subd }}"
+    command: delete
+    zone: "{{ subd }}"
+    record: "{{ item.Name }}"
+    type: A
+    ttl: "{{ item.TTL }}"
+    value: "{{ item.ResourceRecords.0.Value }}"
+  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'A') | list }}"
+  loop_control:
+    label: "{{ item.Name }}"
+  when:
+    - item.ResourceRecords | default([]) | length == 1
+    - item.Name[:-1] not in hostvars
+    - item.Name is match('[a-z]+-[a-z]+\.[a-z-]+\.' ~ subd ~ '\.')
+
 - name: Delete ACME authorizations
   route53:
     profile: "{{ aws_profile_subd }}"

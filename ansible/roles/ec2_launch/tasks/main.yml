@@ -63,7 +63,7 @@
         instance_type: "{{ aws_region_layout[aws_status][aws_region][launch_class].size | default(aws_instance_default[aws_status]) }}"
         vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[aws_region][item % (ec2_subnets[aws_region] | length)])).id }}"
         network:
-          assign_public_ip: true
+          assign_public_ip: "{{ launch_class != 'syslog' or aws_profile == 'umcollab' }}"
           delete_on_termination: true
         image_id: "{{ find_ami.image_id }}"
         instance_role: "{{ aws_resource_prefix }}_{{ launch_profile | default('standard') }}"

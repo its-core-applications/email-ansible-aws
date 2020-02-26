@@ -5,12 +5,19 @@ if [[ $1 = 'clear' ]]; then
     exit 0
 fi
 
+rectype=CNAME
 ttl=60
-region=$(curl -fs http://169.254.169.254/latest/meta-data/placement/availability-zone) 
-region=${region::-1} 
+region=$(curl -fs http://169.254.169.254/latest/meta-data/placement/availability-zone)
+region=${region::-1}
 instanceid=$(curl -fs http://169.254.169.254/latest/meta-data/instance-id)
 zoneid=$(aws --profile dynhostname route53 list-hosted-zones --query "HostedZones[?Name=='{{ subd }}.'].Id" --output text)
 publicname=$(curl -fs http://169.254.169.254/latest/meta-data/public-hostname)
+
+# Fall back to the private name
+if [[ -z $publicname ]]; then
+    publicname=$(curl -fs http://169.254.169.254/latest/meta-data/local-ipv4)
+    rectype=A
+fi
 
 sethostname() {
     echo "Setting FQDN to $1"
@@ -31,8 +38,9 @@ route53update() {
             --arg ttl $ttl \
             --arg fqdn $fqdn \
             --arg publicname $publicname \
+            --arg rectype $rectype \
             --arg action ${1:-UPSERT} \
-            '{ HostedZoneId: $zoneid, ChangeBatch: { Changes: [{ Action: $action, ResourceRecordSet: { Name: $fqdn, Type: "CNAME", TTL: $ttl | tonumber, ResourceRecords: [{ Value: $publicname }]}}]}}'
+            '{ HostedZoneId: $zoneid, ChangeBatch: { Changes: [{ Action: $action, ResourceRecordSet: { Name: $fqdn, Type: $rectype, TTL: $ttl | tonumber, ResourceRecords: [{ Value: $publicname }]}}]}}'
         )
     )
     [[ $? -ne 0 ]] && return 1
