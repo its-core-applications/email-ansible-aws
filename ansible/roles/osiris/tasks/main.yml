@@ -1,8 +1,8 @@
 - tags:
-    - jail
+    - osiris
   block:
     - import_role:
-        name: jail_efs
+        name: ammit
 
     - name: Install osiris
       copy:

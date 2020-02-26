@@ -3,8 +3,12 @@
 declare -A lstatus
 
 ammitdir='/ammit'
+class=jail
+tmpdir=$(mktemp -d /var/tmp/osiris.XXXXXXXX)
 ts=$(date +%F)
 
+(
+flock -n 9 || exit 1
 find /var/spool/simta/slow/ -ignore_readdir_race -name 'E*' -type f 2>/dev/null | while read efile; do
     # The file might have disappeared
     [[ -s $efile ]] || continue
@@ -33,9 +37,18 @@ find /var/spool/simta/slow/ -ignore_readdir_race -name 'E*' -type f 2>/dev/null 
         logger -p mail.info -t "osiris[$$]" "$mid from $uniqname is released to continue on its journey"
         simc -m $mid &>/dev/null
     elif [[ ${lstatus[$uniqname]} = 'block' ]]; then
-        archivedir="$ammitdir/$ts/$uniqname/jail"
+        archivedir="$tmpdir/$uniqname"
         logger -p mail.info -t "osiris[$$]" "$mid from $uniqname fed to Ammit"
         mkdir -p $archivedir
         mv $efile $dfile $archivedir
     fi
 done
+) 9>>/run/osiris.lock
+
+for dir in $tmpdir/*; do
+    [[ -d $dir ]] || continue
+    archivedir=$ammitdir/$ts/$(basename $dir)/$class
+    mkdir -p $archivedir
+    find $dir -type f | xargs -r -I msg mv msg $archivedir
+done
+rm -rf $tmpdir

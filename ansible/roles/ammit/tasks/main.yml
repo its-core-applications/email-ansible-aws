@@ -1,5 +1,5 @@
 - tags:
-    - jail_efs
+    - ammit
   block:
     - import_role:
         name: ec2_find_subnets
@@ -23,7 +23,7 @@
               group-name: "{{ aws_resource_prefix }} efs"
           register: efs_sg
 
-        - name: Create EFS volume for jail
+        - name: Create EFS volume for ammit
           efs:
             profile: "{{ aws_profile_efs }}"
             region: "{{ efs_region }}"

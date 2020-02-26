@@ -18,4 +18,4 @@
             name: sensu
 
         - import_role:
-            name: jail
+            name: osiris
