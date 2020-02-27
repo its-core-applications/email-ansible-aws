@@ -11,7 +11,7 @@ if [[ $? -eq 0 ]]; then
         [[ $i = 'builder' ]] && continue
         [[ $i = 'dev' ]] && continue
         $hacking_dir/build-ami $i &
-        sleep 5
+        sleep 1m
     done
 fi
 
