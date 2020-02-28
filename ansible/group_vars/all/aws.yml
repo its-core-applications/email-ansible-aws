@@ -17,8 +17,10 @@ aws_region_vdc_core: us-east-2
 aws_profiles:
   prod:
     efs: vdc-prod
+    lambda: vdc-prod
     s3: umcollab
     sns: umcollab
+    sqs: vdc-prod
     spfd: umcollab
     subd: umcollab
     us-east-2: vdc-prod
@@ -26,8 +28,10 @@ aws_profiles:
     vdc-core: vdc-core
   nonprod:
     efs: vdc-nonprod
+    lambda: vdc-nonprod
     s3: vdc-nonprod
     sns: vdc-nonprod
+    sqs: vdc-nonprod
     spfd: vdc-nonprod
     subd: vdc-nonprod
     us-east-2: vdc-nonprod
@@ -39,11 +43,13 @@ aws_profile_s3: "{{ aws_profiles[aws_status].s3 }}"
 aws_profile_subd: "{{ aws_profiles[aws_status].subd }}"
 aws_profile_spfd: "{{ aws_profiles[aws_status].spfd }}"
 aws_profile_sns: "{{ aws_profiles[aws_status].sns }}"
+aws_profile_sqs: "{{ aws_profiles[aws_status].sqs }}"
 aws_profile_efs: "{{ aws_profiles[aws_status].efs }}"
 
 vdc_core: false
 
 sns_region: "{{ lookup('env', 'SNS_REGION') }}"
+sqs_region: "{{ lookup('env', 'SQS_REGION') }}"
 efs_region: us-east-2
 ec2sg_region: "{{ aws_region }}"
 yum_aws_region: us-west-2

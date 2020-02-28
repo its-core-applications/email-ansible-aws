@@ -14,6 +14,7 @@ export AWS_STATUS=prod
 export AWS_DEFAULT_REGION=us-west-2
 export SNS_REGION=us-west-2
 export SNS_TOPIC=rootmail
+export SQS_REGION=us-west-2
 
 export VAULT_ADDR="https://vault.a.mail.umich.edu:8200"
 

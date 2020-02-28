@@ -1,0 +1,6 @@
+lambda_env: {}
+lambda_timeout: 5
+lambda_git_repo: ~
+lambda_region: "{{ sns_region }}"
+lambda_profile: "{{ aws_profile_sns }}"
+lambda_cache_dir: /var/cache/{{ lambda_name }}
