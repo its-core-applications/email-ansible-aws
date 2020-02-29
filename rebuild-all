@@ -10,6 +10,7 @@ if [[ $? -eq 0 ]]; then
         [[ $i = 'syslog' ]] && continue
         [[ $i = 'builder' ]] && continue
         [[ $i = 'dev' ]] && continue
+        [[ $i = 'mx_test' ]] && continue
         $hacking_dir/build-ami $i &
         sleep 1m
     done
