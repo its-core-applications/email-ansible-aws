@@ -9,7 +9,6 @@ DOCUMENTATION = '''
     callback: sns
     callback_type: notification
     requirements:
-      - whitelist in configuration
       - prettytable (python library)
     short_description: Sends play events to SNS
     description:
@@ -41,12 +40,9 @@ DOCUMENTATION = '''
 import json
 import os
 import socket
-import uuid
 
 import boto3
 
-from ansible.module_utils.parsing.convert_bool import boolean
-from ansible.module_utils.urls import open_url
 from ansible.plugins.callback import CallbackBase
 
 try:
@@ -60,6 +56,7 @@ try:
     HAS_ARA = True
 except ImportError:
     HAS_ARA = False
+
 
 class CallbackModule(CallbackBase):
     """This is an ansible callback plugin that sends status
@@ -81,8 +78,8 @@ class CallbackModule(CallbackBase):
                                   'plugin.')
 
         try:
-          from ansible import context
-          self.cli_options = {key: value for key, value in context.CLIARGS.items()}
+            from ansible import context
+            self.cli_options = {key: value for key, value in context.CLIARGS.items()}
         except ImportError:
             try:
                 from __main__ import cli
@@ -120,23 +117,17 @@ class CallbackModule(CallbackBase):
         t = prettytable.PrettyTable(['Host', 'Changed', 'Unreachable', 'Failed'])
 
         failures = False
-        unreachable = False
-        changes = False
 
         for h in hosts:
             s = stats.summarize(h)
 
-            if s['failures'] > 0:
+            if (s['failures'] > 0) or (s['unreachable'] > 0):
                 failures = True
-            if s['unreachable'] > 0:
-                unreachable = True
-            if s['changed'] > 0:
-                changes = True
 
             t.add_row([h] + [s[k] for k in ['changed', 'unreachable',
                                             'failures']])
 
-        if not unreachable and not failures:
+        if not failures:
             return
 
         subject = '{}/{} - ALERT - {} FAILED'.format(
@@ -178,9 +169,9 @@ class CallbackModule(CallbackBase):
                 if t['TopicArn'].endswith(':' + self.sns_topic):
                     arn = t['TopicArn']
 
-        response = client.publish(
-            TopicArn = arn,
-            Message = json.dumps(msg),
-            MessageStructure = 'json',
-            Subject = subject,
+        client.publish(
+            TopicArn=arn,
+            Message=json.dumps(msg),
+            MessageStructure='json',
+            Subject=subject,
         )
