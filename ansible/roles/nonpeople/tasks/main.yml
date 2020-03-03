@@ -1,6 +1,7 @@
 - tags:
     - nonpeople
     - accounts
+  when: role_nonpeople_done is not defined
   block:
     - name: Create non-person groups
       group:
@@ -39,3 +40,6 @@
         group: "{{ item.name }}"
         mode: "0444"
       loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
+
+    - set_fact:
+        role_nonpeople_done: true
