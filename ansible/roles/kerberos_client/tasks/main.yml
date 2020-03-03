@@ -1,5 +1,3 @@
----
-
 - tags:
     - kerberos
   block:
@@ -12,14 +10,6 @@
         mode: "0644"
       loop:
         - 00_default_realm
-
-    - name: Add umich kerberos realms
-      copy:
-        dest: /etc/krb5.conf.d/{{ item }}
-        src: "{{ item }}"
-        owner: root
-        group: root
-        mode: "0644"
-      loop:
+        - 00_defaults
         - 10_umich_edu
         - 10_mcommqa_umich_edu

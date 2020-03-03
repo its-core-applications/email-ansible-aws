@@ -1,3 +1,6 @@
+%global commit0 85c08cca8dedbfa5c8d2658491cceccde15c9721
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+
 %define username        saslauth
 %define hint            Saslauthd user
 %define homedir         /run/saslauthd
@@ -9,17 +12,15 @@
 
 Summary: The Cyrus SASL library
 Name: cyrus-sasl
-Version: 2.1.27
-Release: 1%{?dist}
+Version: 2.1.28
+Release: 0.1.20200303.%{shortcommit0}%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
-Source0: https://github.com/cyrusimap/%{name}/archive/%{name}-%{version}.tar.gz
+Source0: https://github.com/flowerysong/%{name}/archive/%{commit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
 Source5: saslauthd.service
 Source9: saslauthd.sysconfig
 Requires: %{name}-lib%{?_isa} = %{version}-%{release}
-# https://github.com/cyrusimap/cyrus-sasl/pull/472
-Patch0:  cyrus-sasl-2.1.27-saslauthd-krb5.patch
 
 BuildRequires: autoconf, automake, libtool, gdbm-devel, groff
 BuildRequires: krb5-devel >= 1.2.2, openssl-devel, pam-devel, pkgconfig
@@ -61,7 +62,7 @@ compiling applications which use the Cyrus SASL library.
 
 
 %prep
-%autosetup -p 1 -n %{name}-%{name}-%{version}
+%autosetup -p 1 -n %{name}-%{commit0}
 chmod -x include/*.h
 
 %build
@@ -157,6 +158,11 @@ getent passwd %{username} >/dev/null || useradd -r -g %{username} -d %{homedir} 
 
 %postun
 %systemd_postun_with_restart saslauthd.service
+
+%triggerun -n cyrus-sasl -- cyrus-sasl < 2.1.23-32
+/usr/bin/systemd-sysv-convert --save saslauthd >/dev/null 2>&1 || :
+/sbin/chkconfig --del saslauthd >/dev/null 2>&1 || :
+/bin/systemctl try-restart saslauthd.service >/dev/null 2>&1 || :
 
 %post lib -p /sbin/ldconfig
 %postun lib -p /sbin/ldconfig
