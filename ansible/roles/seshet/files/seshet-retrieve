@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import argparse
+
+from rediscluster import RedisCluster
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-H', '--host', default='localhost')
+parser.add_argument('-P', '--port', default='6379')
+parser.add_argument('-t', '--threshold', type=int, default=15)
+args = parser.parse_args()
+
+red = RedisCluster(
+    startup_nodes = [
+        {
+            'host': args.host,
+            'port': args.port,
+        },
+    ],
+    decode_responses = True,
+)
+
+for subkey in red.scan_iter(match='seshet:subnet:*', count=1000):
+    subres = red.hgetall(subkey)
+
+    if len(subres) > args.threshold:
+        print(subkey.replace('seshet:subnet:', ''))
+        continue
+
+    for key in subres.keys():
+        print(key)

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+redis_host=pink.us-east-2.x.mail.umich.edu
+
+while getopts H: opt; do
+    case $opt in
+    H)  redis_host=$OPTARG
+        ;;
+    esac
+done
+
+grep -Fh 'failed to authenticate' /var/log/remote/*.authn-relay.*/mail | awk '{print $5, $7}' | tr -d '][' | sort -u | awk '{print $1}' | uniq -c | awk '{ if ($1 > 1) print $2 }' | while read ip ; do
+    country=$(mmdblookup -f /usr/share/GeoIP/GeoLite2-Country.mmdb -i $ip country iso_code | awk 'NF {print $1}')
+    if [[ $country ]] && [[ $country != '"US"' ]]; then
+        seshet-record -H redis_host $ip
+    fi
+done

@@ -1,0 +1,41 @@
+- tags:
+    - seshet
+  block:
+    - import_role:
+        name: geolite2
+
+    - import_role:
+        name: python_venv
+      vars:
+        venv_name: seshet
+        venv_py3: true
+        venv_packages:
+          - netaddr
+          - redis-py-cluster
+        venv_wrappers:
+          - name: seshet
+            target: seshet
+          - name: seshet-record
+            target: python
+            extra_args: /usr/local/venv/seshet/bin/seshet-record
+          - name: seshet-retrieve
+            target: python
+            extra_args: /usr/local/venv/seshet/bin/seshet-retrieve
+
+    - name: Install seshet
+      copy:
+        src: "{{ item }}"
+        dest: /usr/local/venv/seshet/bin/{{ item }}
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - seshet
+        - seshet-record
+        - seshet-retrieve
+
+    - name: Schedule seshet runs
+      cron:
+        name: seshet
+        minute: "*/5"
+        job: seshet -H pink.{{ aws_region }}.{{ subd }}

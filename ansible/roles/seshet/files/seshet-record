@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+
+from datetime import date
+
+import netaddr
+from rediscluster import RedisCluster
+
+
+today = date.today()
+
+parser = argparse.ArgumentParser()
+parser.add_argument('ip')
+parser.add_argument('-H', '--host', default='localhost')
+parser.add_argument('-P', '--port', default='6379')
+args = parser.parse_args()
+
+red = RedisCluster(
+    startup_nodes = [
+        {
+            'host': args.host,
+            'port': args.port,
+        },
+    ],
+    decode_responses = True,
+)
+
+ip = netaddr.IPAddress(args.ip)
+subnet = netaddr.IPNetwork(ip)
+if ip.version == 6:
+    subnet.prefixlen = 48
+else:
+    subnet.prefixlen = 24
+
+subkey = 'seshet:subnet:{0}/{1}'.format(str(subnet[0]), subnet.prefixlen)
+print('Recording {0} to {1}'.format(str(ip), subkey))
+
+red.hset(subkey, str(ip), today.strftime('%F'))
+red.expire(subkey, 60 * 60 * 24 * 30 * 6)   # approximately six months
+
+# FIXME: log things instead of just printing
+print(red.hgetall(subkey))

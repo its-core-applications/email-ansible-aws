@@ -1,0 +1,4 @@
+AccountID {{ lookup('hashi_vault', 'secret=secret/maxmind:account_id') }}
+LicenseKey {{ lookup('hashi_vault', 'secret=secret/maxmind:license_key') }}
+# We also have access to GeoLite2-ASN and GeoLite2-City
+EditionIDs GeoLite2-Country
