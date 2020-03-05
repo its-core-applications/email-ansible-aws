@@ -1,5 +1,3 @@
----
-
 - tags:
     - rsyslog
   block:
@@ -10,5 +8,12 @@
         owner: root
         group: root
         mode: "0644"
-      notify: Restart rsyslog
+      register: result
 
+    # We want to restart immediately instead of waiting for a handler
+    - name: Restart rsyslog
+      systemd:
+        name: rsyslog
+        daemon_reload: true
+        state: restarted
+      when: result is changed
