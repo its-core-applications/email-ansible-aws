@@ -1,12 +1,12 @@
 Name:    hyperscan
-Version: 5.1.0
+Version: 5.2.1
 Release: 1%{?dist}
 Summary: High-performance regular expression matching library
 
 License: BSD
 URL:     https://01.org/hyperscan
 Source0: https://github.com/01org/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source1: http://downloads.sourceforge.net/project/boost/boost/1.61.0/boost_1_61_0.tar.gz
+Source1: http://downloads.sourceforge.net/project/boost/boost/1.72.0/boost_1_72_0.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:	pcre-devel
@@ -72,7 +72,7 @@ needed for developing Hyperscan applications.
 
 %prep
 %autosetup
-(cd include && tar zxf %{SOURCE1} boost_1_61_0/boost --strip-components=1)
+(cd include && tar zxf %{SOURCE1} boost_1_72_0/boost --strip-components=1)
 
 
 %build

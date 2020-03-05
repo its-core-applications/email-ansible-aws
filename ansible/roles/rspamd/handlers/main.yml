@@ -1,7 +1,0 @@
----
-
-- name: Restart rspamd
-  systemd:
-    name: rspamd
-    daemon_reload: true
-    state: restarted

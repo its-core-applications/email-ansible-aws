@@ -5,7 +5,7 @@
       yum:
         name: rspamd
         state: latest
-      notify: Restart rspamd
+      register: install_result
 
     - name: Local rspamd configuration
       copy:
@@ -19,26 +19,29 @@
         - local.d/arc.conf
         - local.d/dkim.conf
         - local.d/dmarc.conf
-        - local.d/emails.conf
         - local.d/fuzzy_check.conf
         - local.d/logging.inc
         - local.d/metrics.conf
         - local.d/multimap.conf
+        - local.d/phishing.conf
         - local.d/rbl.conf
         - local.d/spf.conf
-        - local.d/surbl.conf
         - local.d/whitelist.conf
         - local.d/worker-proxy.inc
         - rspamd.local.lua
         - umich_bad_tld.inc
-      notify: Restart rspamd
+      register: config_result
 
     - name: Enable rspamd
       systemd:
         name: rspamd
         enabled: true
         daemon_reload: true
-      notify: Restart rspamd
+
+    - name: Start rspamd
+      systemd:
+        name: rspamd
+        state: "{{ (install_result is changed or config_result is changed) | ternary('restarted', 'started') }}"
 
     - name: Install custom monitoring scripts
       copy:

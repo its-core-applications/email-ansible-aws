@@ -298,6 +298,7 @@
       vars:
         build_name: rspamd
         build_deps:
+          - cmake3
           - fann-devel
           - file-devel
           - glib2-devel
@@ -305,6 +306,7 @@
           - jemalloc-devel
           - libevent-devel
           - libicu-devel
+          - libsodium-devel
           - luajit-devel
           - openssl-devel
           - perl-Digest-MD5

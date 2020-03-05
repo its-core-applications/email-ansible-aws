@@ -4,7 +4,7 @@
 %define rspamd_confdir   %{_sysconfdir}/rspamd
 
 Name:           rspamd
-Version:        1.9.4
+Version:        2.7
 Release:        1
 Summary:        Rapid spam filtering system
 License:        BSD2c
@@ -13,7 +13,7 @@ BuildRequires:  glib2-devel
 BuildRequires:  libevent-devel
 BuildRequires:  openssl-devel
 BuildRequires:  hyperscan-devel
-BuildRequires:  cmake
+BuildRequires:  cmake3
 BuildRequires:  file-devel
 BuildRequires:  perl
 BuildRequires:  ragel < 7.0
@@ -34,7 +34,7 @@ Rspamd is a rapid, modular and lightweight spam filter. It is designed to work
 %autosetup -p 1 -n %{name}-%{version}
 
 %build
-cmake \
+cmake3 \
     -DCMAKE_C_OPT_FLAGS="%{optflags}" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCONFDIR=%{_sysconfdir}/rspamd \
@@ -93,6 +93,7 @@ rm -rf %{buildroot}
 %{_bindir}/rspamd_stats
 %{_bindir}/rspamc
 %{_bindir}/rspamadm
+%config(noreplace) %{rspamd_confdir}/maps.d/*
 %config(noreplace) %{rspamd_confdir}/modules.d/*
 %config(noreplace) %{rspamd_confdir}/scores.d/*
 %config(noreplace) %{rspamd_confdir}/*.inc
@@ -100,6 +101,7 @@ rm -rf %{buildroot}
 %attr(-, _rspamd, _rspamd) %dir %{rspamd_home}
 %dir %{rspamd_confdir}
 %dir %{rspamd_confdir}/local.d
+%dir %{rspamd_confdir}/maps.d
 %dir %{rspamd_confdir}/modules.d
 %dir %{rspamd_confdir}/override.d
 %dir %{rspamd_confdir}/scores.d
