@@ -2,6 +2,17 @@
     - people
     - accounts
   block:
+    - name: Configure PAM
+      copy:
+        src: "{{ item }}.pam"
+        dest: /etc/pam.d/{{ item }}
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - password-auth
+        - sudo
+
     - name: Create staff group
       group:
         name: staff

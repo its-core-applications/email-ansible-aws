@@ -1,0 +1,9 @@
+#%PAM-1.0
+auth       required     pam_env.so
+auth       sufficient   pam_unix.so try_first_pass nullok
+auth       sufficient   pam_krb5.so use_first_pass no_validate realm=UMICH.EDU
+auth       requisite    pam_deny.so
+account    include      system-auth
+password   include      system-auth
+session    optional     pam_keyinit.so revoke
+session    required     pam_limits.so
