@@ -89,8 +89,8 @@ class CallbackModule(CallbackBase):
 
         self.playbook_name = None
 
-    def set_options(self, task_keys=None, var_options=None, direct=None):
-        super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
+    def set_options(self, **kwargs):
+        super(CallbackModule, self).set_options(**kwargs)
 
         self.ara_base = self.get_option('ara_base_url')
         if self.ara_base:
