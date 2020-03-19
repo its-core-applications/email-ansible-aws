@@ -4,45 +4,88 @@ declare -A lstatus
 
 ammitdir='/ammit'
 class=jail
+queues=/var/spool/simta/slow
 tmpdir=$(mktemp -d /var/tmp/osiris.XXXXXXXX)
 ts=$(date +%F)
 
+while getopts c:f opt; do
+    case $opt in
+    c)  class=$OPTARG
+        ;;
+    f)  queues="/var/spool/simta/fast $queues"
+        ;;
+    esac
+done
+
 (
 flock -n 9 || exit 1
-find /var/spool/simta/slow/ -ignore_readdir_race -name 'E*' -type f 2>/dev/null | while read efile; do
+simta_state=$(systemctl is-active simta)
+find $queues -ignore_readdir_race -name 'E*' -type f 2>/dev/null | while read efile; do
     # The file might have disappeared
     [[ -s $efile ]] || continue
 
-    # Only check prisoners
-    grep -q '^J2$' $efile || continue
+    jailed=false
+    grep -q '^J2$' $efile && jailed=true
 
     dfile=${efile/E/D}
     mid=$(basename $efile)
     mid=${mid#E}
 
-    uniqname=$(sed -n '/^$/q; /smtp.auth/{ s/.\+smtp.auth=//; p; q;}'  $dfile 2>/dev/null )
-    [[ $uniqname ]] || continue
+    src=$(sed -n '/^$/q; /smtp.auth/{ s/.\+smtp.auth=//; p; q;}' $dfile 2>/dev/null)
 
-    if [[ -z ${lstatus[$uniqname]} ]]; then
-        if ! simrbl -q -t -l ual.dnsal $uniqname; then
-            lstatus[$uniqname]=allow
-        elif ! simrbl -q -t -l ubl.dnsbl $uniqname; then
-            lstatus[$uniqname]=block
-        else
-            lstatus[$uniqname]=absent
+    disposition=none
+    if [[ $src ]]; then
+        if [[ -z ${lstatus[$src]} ]]; then
+            if ! simrbl -q -t -l ual.dnsal $src; then
+                lstatus[$src]=allow
+            elif ! simrbl -q -t -l ubl.dnsbl $src; then
+                lstatus[$src]=block
+            else
+                lstatus[$src]=none
+            fi
         fi
+        disposition=${lstatus[$src]}
     fi
 
-    if [[ ${lstatus[$uniqname]} = 'allow' ]]; then
-        logger -p mail.info -t "osiris[$$]" "$mid from $uniqname is released to continue on its journey"
-        simc -m $mid &>/dev/null
-    elif [[ ${lstatus[$uniqname]} = 'block' ]]; then
-        archivedir="$tmpdir/$uniqname"
-        logger -p mail.info -t "osiris[$$]" "$mid from $uniqname fed to Ammit"
+    if [[ $disposition = 'none' ]]; then
+        src=$(sed -n '/^$/q; /iprev=/{ s/.\+policy.iprev=//; s/ .\+//; p; q;}' $dfile 2>/dev/null)
+        # This generally should not happen, but might for mail generated
+        # on the machine.
+        [[ $src ]] || continue
+        if [[ -z ${lstatus[$src]} ]]; then
+            if ! simrbl -q -i -l relay-trust.dnsal $src; then
+                lstatus[$src]=allow
+            elif ! simrbl -q -i -l relay-accept.dnsal $src; then
+                lstatus[$src]=allow
+            elif ! simrbl -q -i -l relay-deny.dnsbl $src; then
+                lstatus[$src]=block
+            else
+                lstatus[$src]=none
+            fi
+        fi
+        disposition=${lstatus[$src]}
+    fi
+
+    if [[ $disposition = 'allow' ]]; then
+        if [[ $jailed = 'true' ]]; then
+            logger -p mail.info -t "osiris[$$]" "$mid from $src is released to continue on its journey"
+            simc -m $mid &>/dev/null
+        fi
+    elif [[ $disposition = 'block' ]]; then
+        if [[ $simta_state = 'active' ]] && [[ $jailed = 'false' || $efile =~ /fast/ ]]; then
+            systemctl stop simta
+            simta_state='stopped'
+        fi
+        archivedir="$tmpdir/$src"
+        logger -p mail.info -t "osiris[$$]" "$mid from $src fed to Ammit"
         mkdir -p $archivedir
         mv $efile $dfile $archivedir
     fi
 done
+
+if [[ $simta_state = 'active' ]]; then
+    systemctl start simta
+fi
 ) 9>>/run/osiris.lock
 
 for dir in $tmpdir/*; do

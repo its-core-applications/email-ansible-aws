@@ -16,4 +16,4 @@
       cron:
         name: run osiris
         minute: "*"
-        job: /usr/local/sbin/osiris
+        job: /usr/local/sbin/osiris {{ osiris_args | default('') }} -c {{ simta_config }}

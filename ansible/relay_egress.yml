@@ -6,3 +6,6 @@
       block:
         - import_role:
             name: egress
+
+        - import_role:
+            name: osiris
