@@ -19,44 +19,55 @@ nonperson_accounts:
     group: mail
 
 user_accounts:
-  - name: ezekielh
-    comment: Ezekiel Hendrickson
-    uid: 1913323
+  - name: aafletch
+    comment: Angel Fletcher
+    uid: 620307
     full_sudo: true
-  - name: carleski
-    comment: Rob Carleski
-    uid: 257994
-    full_sudo: true
-  - name: rsauosci
-    comment: Richard Sawoscinski
-    uid: 874078
-    sudo_collaborate: true
-  - name: crm
-    comment: Chris Mueller
-    uid: 23449
-    full_sudo: true
-  - name: cohenj
-    comment: Jeffrey Cohen
-    uid: 53720
-    sudo_email: true
-    sudo_collaborate: true
+
   - name: awilkins
     comment: Adam Wilkinson
     uid: 56060
     sudo_email: true
     sudo_collaborate: true
+
+  - name: carleski
+    comment: Rob Carleski
+    uid: 257994
+    full_sudo: true
+
+  - name: cohenj
+    comment: Jeffrey Cohen
+    uid: 53720
+    sudo_email: true
+    sudo_collaborate: true
+
+  - name: crm
+    comment: Chris Mueller
+    uid: 23449
+    full_sudo: true
+
+  - name: ezekielh
+    comment: Ezekiel Hendrickson
+    uid: 1913323
+    full_sudo: true
+
+  - name: jimcald
+    comment: Jim Caldwell
+    uid: 30540
+    full_sudo: true
+
+  - name: mdeeds
+    comment: Matthew R Deeds
+    uid: 99447974
+    full_sudo: true
+
   - name: neda
     comment: Neda Ganjei
     uid: 23665
     sudo_email: true
     sudo_collaborate: true
-  - name: willrhee
-    comment: Will Rhee
-    uid: 48422
-  - name: kcheek
-    comment: Kevin Cheek
-    uid: 57997
-  - name: jimcald
-    comment: Jim Caldwell
-    uid: 30540
-    full_sudo: true
+
+  - name: rsauosci
+    comment: Richard Sawoscinski
+    uid: 874078
+    sudo_collaborate: true
