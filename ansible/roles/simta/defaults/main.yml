@@ -31,6 +31,7 @@ simta_dnsbls:
   - pbl.dnsbl
   - sbl.dnsbl
   - sip.dnsbl
+  - sip24.dnsbl
 
 simta_tls_domains:
   - adsroot.itcs.umich.edu
