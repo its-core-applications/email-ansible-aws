@@ -1,2 +1,3 @@
 launch_groups: []
 launch_tags: {}
+launch_public_ip: true
