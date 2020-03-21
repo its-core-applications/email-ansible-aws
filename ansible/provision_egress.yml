@@ -29,7 +29,8 @@
 
 - hosts: Class_egress:&Status_spinup
   tasks:
-    - delegate_to: localhost
+    - when: region == aws_region
+      delegate_to: localhost
       become: false
       block:
         - name: Set status to production
