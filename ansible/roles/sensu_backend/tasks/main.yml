@@ -454,6 +454,7 @@
           - Class_relay_egress
         handlers:
           - default
+      when: aws_status == 'prod'
 
     - name: Extra monitoring for inbound hosts
       vars:
