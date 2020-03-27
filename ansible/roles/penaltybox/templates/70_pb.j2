@@ -24,8 +24,6 @@ elif [ $SIMTA_WRITE_BEFORE_BANNER -ne 0 ]; then
     reason='write before banner'
 else
     DNSBL=$(simrbl \
-        -l {{ trendmicro_key }}.r.mail-abuse.com \
-        -l {{ trendmicro_key }}.q.mail-abuse.com \
         -l sip24.dnsbl \
         -l b.barracudacentral.org \
         -l bl.spamcop.net \
