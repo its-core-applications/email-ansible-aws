@@ -9,4 +9,3 @@ simta_connlimit: 0
 simta_ldap: true
 simta_ldap_password: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value') }}"
 simta_bitbucket: "{{ aws_status == 'nonprod' }}"
-trendmicro_key: "{{ lookup('hashi_vault', 'secret=secret/simta/trendmicro:value') }}"

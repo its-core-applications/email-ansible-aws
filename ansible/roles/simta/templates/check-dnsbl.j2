@@ -26,11 +26,8 @@ for bl in \
     sip.dnsbl \
     sip24.dnsbl \
     xbl.dnsbl \
-{% if trendmicro_key is defined %}
-    {{ trendmicro_key }}.q.mail-abuse.com \
-    {{ trendmicro_key }}.r.mail-abuse.com
-{% endif %}
-
+    ix.dnsbl.manitu.net \
+    bl.blocklist.de
 do
     if ! simrbl -q -l $bl $ip ; then
         echo "$ip is listed on $bl"

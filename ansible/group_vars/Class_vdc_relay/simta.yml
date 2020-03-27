@@ -5,7 +5,6 @@ simta_dkim_selector: relay-2018-08-29
 simta_dkim_level: ALWAYS
 simta_ldap: true
 simta_ldap_password: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value') }}"
-trendmicro_key: "{{ lookup('hashi_vault', 'secret=secret/simta/trendmicro:value') }}"
 simta_msa: true
 simta_tcpwrappers: true
 simta_queue_type: relay-egress
