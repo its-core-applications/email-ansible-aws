@@ -62,7 +62,7 @@
 
     - meta: refresh_inventory
 
-- hosts: Class_master
+- hosts: Class_master:&Status_spinup
   gather_facts: false
   tasks:
     - import_role:

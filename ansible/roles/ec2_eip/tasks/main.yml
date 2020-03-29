@@ -10,13 +10,13 @@
         profile: "{{ aws_profile_ec2 }}"
         filters:
           "tag:Class": "{{ eip_class }}"
-      register: eips 
-            
+      register: eips
+
     - name: Make sure we have a free EIP
       assert:
-        that: eips.addresses | rejectattr('association_id', 'defined') | list | length > 0 
-        msg: No available egress EIPs
-            
+        that: eips.addresses | rejectattr('association_id', 'defined') | list | length > 0
+        msg: No available {{ eip_class }} EIPs
+
     - name: Assign elastic IP
       ec2_eip:
         region: "{{ region }}"
