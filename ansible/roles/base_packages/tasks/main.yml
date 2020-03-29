@@ -1,5 +1,3 @@
----
-
 - tags:
     - base
     - base_packages
@@ -44,6 +42,7 @@
           - mosh
           - nc
           - openldap-clients
+          - pam_krb5
           - pv
           - python-boto
           - python-pip
