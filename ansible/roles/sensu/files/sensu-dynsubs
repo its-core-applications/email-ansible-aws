@@ -31,7 +31,9 @@ with open('/etc/sensu/labels.yml', 'r') as f:
 config['labels'] = {
     'region': region,
 }
-config['labels'].update(static_labels)
+
+if static_labels:
+    config['labels'].update(static_labels)
 
 config['subscriptions'] = []
 stop_agent = False
