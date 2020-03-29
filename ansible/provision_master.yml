@@ -37,7 +37,6 @@
         ttl: 60
         value: "{{ master_hostname }}"
       loop:
-        - dashboard
         - graphs
         - vault
       when: aws_region == aws_primary_region
@@ -54,6 +53,7 @@
         value: "{{ master_hostname }}"
       loop:
         - ara
+        - dashboard
 
     - name: Wait for instance to be available
       pause:
