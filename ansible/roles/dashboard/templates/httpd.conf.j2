@@ -1,6 +1,6 @@
 <VirtualHost *:80>
-    ServerName dashboard.{{ subd }}
-    Redirect permanent / https://dashboard.{{ subd }}/
+    ServerName dashboard.{{ region }}.{{ subd }}
+    Redirect permanent / https://dashboard.{{ region }}.{{ subd }}/
 </VirtualHost>
 
 <VirtualHost *:443>
