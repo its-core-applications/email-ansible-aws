@@ -98,7 +98,7 @@ if check_threshold(args.critical, critical, total, 'critical', args.check):
     retval = 2
 if check_threshold(args.warning, warning, total, 'warning', args.check) and retval == 0:
     retval = 1
-if check_threshold(args.unknown, unknown, total, 'unknown', args.check) and retvl == 0:
+if check_threshold(args.unknown, unknown, total, 'unknown', args.check) and retval == 0:
     retval = 3
 print('{:g}% of check results for {} are OK'.format(round(ok / total * 100, 1), args.check))
 
