@@ -405,9 +405,9 @@
         - name: simta-queue-fast
           command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q fast -w {{ .labels.simta_fastqwarn | default "1000" }}  -c {{ .labels.simta_fastqmax | default "2000" }}
         - name: simta-queue-local
-          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q local -w {{ .labels.simta_localqwarn | default "10" }}  -c {{ .labels.simta_fastqmax | default "20" }}
+          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q local -w {{ .labels.simta_localqwarn | default "10" }}  -c {{ .labels.simta_localqmax | default "20" }}
         - name: simta-queue-slow
-          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q slow -w {{ .labels.simta_slowqwarn | default "100" }}  -c {{ .labels.simta_fastqmax | default "200" }}
+          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q slow -w {{ .labels.simta_slowqwarn | default "100" }}  -c {{ .labels.simta_slowqmax | default "200" }}
         - name: simta-queue-fast-age
           command: /usr/libexec/simta-admin/check-simta-queue-age -q fast -a 120 -c 0
         - name: simta-queue-ownership

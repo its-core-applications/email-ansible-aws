@@ -70,6 +70,14 @@
         - check-tls
         - metrics-ec2
 
+    - name: Configure static labels
+      template:
+        dest: /etc/sensu/labels.yml
+        src: labels.yml.j2
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Install sensu-dynsubs
       copy:
         dest: /usr/local/sbin/sensu-dynsubs

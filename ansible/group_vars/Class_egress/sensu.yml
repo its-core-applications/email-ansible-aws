@@ -1,4 +1,3 @@
-sensu_extra:
-  simta:
-    slowqwarn: 6000
-    slowqmax: 8000
+sensu_labels:
+  simta_slowqwarn: 6000
+  simta_slowqmax: 8000
