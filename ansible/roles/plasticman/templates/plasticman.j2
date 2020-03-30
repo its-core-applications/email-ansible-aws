@@ -53,10 +53,10 @@ checkcount() {
     getcount
     if [[ $count -eq $oldcount ]]; then
         retval=2
-        sendresult "host count did not change after scaling event" $2
+        sendresult "host count did not change after scaling event" $1
         outlog "count did not change!"
     else
-        sendresult "host count changed after scaling event" $2
+        sendresult "host count changed after scaling event" $1
     fi
 }
 
@@ -81,8 +81,9 @@ scaleup() {
 getcount
 
 rup=$($influx "SELECT COUNT(DISTINCT(sum)) FROM (SELECT SUM(instance_count) FROM ec2 WHERE Class = '$class' AND Status = 'production' AND time > now() - 6m GROUP BY time(30s)) WHERE sum <= $count" | $influx_jq)
+rpup=$($influx "SELECT SUM(count) FROM plasticman WHERE class = '$class' AND action = 'scale-up' AND time > now() - 6m" | $influx_jq)
 
-if [[ $count -lt $min_count && $rup -eq 1 ]]; then
+if [[ $count -lt $min_count && $rup -eq 1 && $rpup = 'null' ]]; then
     outlog "$count is below the $min_count floor"
     scaleup
     exit 0
@@ -92,7 +93,7 @@ fi
 # average was over 3
 quint=$($influx "SELECT COUNT(mean) FROM (SELECT MEAN(\"1_min\") FROM load_avg WHERE time >= now() - 6m AND sensu_entity_name =~ /.+\.${class}\..+/ GROUP BY time(1m)) WHERE mean > 3" | $influx_jq)
 
-if [[ $quint != 'null' && $rup -eq 1 ]]; then
+if [[ $quint != 'null' && $rup -eq 1 && $rpup = 'null' ]]; then
     if [[ $count -ge $max_count ]]; then
         retval=1
         sendresult "maximum number of hosts provisioned." scale-up
@@ -104,12 +105,13 @@ if [[ $quint != 'null' && $rup -eq 1 ]]; then
 fi
 
 rscale=$($influx "SELECT COUNT(DISTINCT(sum)) FROM (SELECT SUM(instance_count) FROM ec2 WHERE Class = '$class' AND Status = 'production' AND time > now() - 1h GROUP BY time(30s))" | $influx_jq)
+rpscale=$($influx "SELECT SUM(count) FROM plasticman WHERE class = '$class' AND time > now() - 1h" | $influx_jq)
 
 # Check for any datapoints in the last hour and a bit where the one minute
 # load average was over 1
 hour=$($influx "SELECT COUNT(mean) FROM (SELECT MEAN(\"1_min\") FROM load_avg WHERE time >= now() - 75m AND sensu_entity_name =~ /.+\.${class}\..+/ GROUP BY time(1m)) WHERE mean > 1" | $influx_jq)
 
-if [[ $count -gt $min_count && $hour == 'null' && $rscale -eq 1 ]]; then
+if [[ $count -gt $min_count && $hour == 'null' && $rscale -eq 1 && $rpscale = 'null' ]]; then
     scaledown
     exit 0
 fi
