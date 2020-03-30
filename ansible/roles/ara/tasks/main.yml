@@ -77,11 +77,16 @@
         group: root
         mode: "0644"
 
+    - name: Enable ara-api
+      systemd:
+        name: ara-api
+        enabled: true
+        daemon_reload: true
+
     - name: Start ara-api
       systemd:
         name: ara-api
         state: restarted
-        daemon_reload: true
 
     - name: Configure ARA vhost
       template:
