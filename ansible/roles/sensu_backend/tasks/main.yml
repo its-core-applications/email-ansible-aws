@@ -500,7 +500,21 @@
       loop:
         - dnsl
         - simta-expansion
-        - simta-smtp-auth
+
+    - name: Monitor simta auth aggregate
+      sensu_go_check:
+        name: simta-smtp-auth-aggregate
+        command: check-aggregate -H {{ influxdb_server }} --check simta-smtp-auth
+        stdin: true
+        subscriptions:
+          - Class_syslog
+        handlers:
+          - default
+        proxy_entity_name: "{{ aws_region }}.{{ subd }}"
+        annotations:
+          dashboard_host: dashboard.{{ aws_region }}.{{ subd }}
+          fatigue_check/occurrences: 2
+      when: "'authn-relay' in aws_region_layout[aws_status][aws_region]"
 
     - name: Monitor rbldnsd
       sensu_go_check:
