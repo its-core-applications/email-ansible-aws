@@ -13,3 +13,6 @@ for i in $(ansible localhost --playbook-dir $hacking_dir/ansible -m debug -a 'ms
 done
 
 wait
+
+# Fix the terminal
+reset
