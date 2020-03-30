@@ -161,7 +161,7 @@
             - typeof event.check !== undefined
         - name: critical
           expressions:
-            - "event.history.filter(function(hist) { return hist.status == 2 }).length > 0"
+            - "event.check.history.filter(function(hist) { return hist.status == 2 }).length > 0"
         - name: production
           expressions:
             - "event.entity.subscriptions.filter(function(s) { return s == 'Status_production' }).length > 0"
