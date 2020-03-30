@@ -20,6 +20,7 @@
         protocol: tcp
         target_type: instance
         targets: "{{ groups[tg_group] | intersect(groups.Status_production) | intersect(aws_region_group) | map('extract', hostvars, 'instance_id') | map('json_query', '{Id: @}') | map('combine', { 'Port': tg_port }) | list }}"
+        stickiness_type: ~
         health_check_interval: 30
         health_check_protocol: tcp
         health_check_port: 25
