@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+import argparse
+
+import requests
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('query')
+parser.add_argument('-H', '--host', default='localhost')
+parser.add_argument('-P', '--port', default='8086')
+parser.add_argument('-d', '--database', required=True)
+args = parser.parse_args()
+
+params = {
+    'db': args.database,
+}
+
+if args.query.startswith('INSERT'):
+    requests.post(
+        'http://{}:{}/write'.format(args.host, args.port),
+        timeout=10,
+        params=params,
+        data=args.query[7:],
+    )
+
+else:
+    params['q'] = args.query
+
+    res = requests.get(
+        'http://{}:{}/query'.format(args.host, args.port),
+        timeout=10,
+        params=params,
+    )
+
+    print(res.text)

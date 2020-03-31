@@ -1,10 +1,8 @@
 - tags:
     - plasticman
   block:
-    - name: Install InfluxDB
-      yum:
-        name: influxdb
-        state: latest
+    - import_role:
+        name: influxquery
 
     - name: Install plasticman
       template:

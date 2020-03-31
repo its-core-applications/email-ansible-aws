@@ -6,7 +6,7 @@ influx_server={{ influxdb_server }}
 class=${1:-mx}
 region=${2:-{{ aws_region | replace('-', '_') }}}
 
-influx="influx -host $influx_server -database sensu -format json -execute"
+influx="/usr/local/bin/influxquery -H $influx_server -d sensu"
 influx_jq="jq .results[0].series[0].values[0][1]"
 
 # FIXME: This should probably go in a config file or a command line flag
@@ -50,6 +50,8 @@ getcount() {
 
 checkcount() {
     oldcount=$count
+    # instances that were just put in production might not be counted immediately
+    [[ $1 = 'scale-up' ]] && sleep 1m
     getcount
     if [[ $count -eq $oldcount ]]; then
         retval=2
