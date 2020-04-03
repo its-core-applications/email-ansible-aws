@@ -14,13 +14,10 @@ if [[ ! -f ansible/${class}.yml ]]; then
     exit 1
 fi
 
-# Don't load callbacks like ARA for the ad hoc commands
-export ANSIBLE_LOAD_CALLBACK_PLUGINS=0
-
 if [[ $class = 'vdc_relay' ]]; then
-    export AWS_PROFILE=$(ansible --playbook-dir ansible localhost -m debug -a 'var=aws_profiles[aws_status]["vdc-core"]' | awk '/aws_profile/{print $NF}' | tr -d '"')
+    export AWS_PROFILE=$(ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ aws_profiles[aws_status]["vdc-core"] }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
 else
-    export AWS_PROFILE=$(ansible localhost --playbook-dir ansible -m debug -a 'var=aws_profile' | awk '/aws_profile/{print $NF}' | tr -d '"')
+    export AWS_PROFILE=$(ANSIBLE_STDOUT_CALLBACK=json ansible localhost --playbook-dir ansible -m debug -a 'msg={{ aws_profile }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
 fi
 
 if [[ $2 ]]; then
