@@ -295,6 +295,20 @@
           subscriptions:
             - Status_production
 
+    - name: Register Sensu proxy entities for loadbalancers
+      sensu_go_entity:
+        name: "{{ item }}"
+        entity_class: proxy
+        subscriptions:
+            - Class_loadbalancer
+            - Status_production
+      loop: "{{ mx_lbs | union(authn_lbs) | union(authz_lbs) }}"
+      vars:
+        mx_lbs: "{{ mx_names[aws_region] | map('regex_replace', '$', '.' ~ subd) | list }}"
+        authn_lbs: "{{ ('authn-relay' in aws_region_layout[aws_status][aws_region]) | ternary(['authn-relay' ~ elbd, 'authn-relay-vpn' ~ elbd], []) }}"
+        authz_lbs: "{{ ('authz-relay' in aws_region_layout[aws_status][aws_region]) | ternary(['authz-relay' ~ elbd, 'authz-relay-vpn' ~ elbd], []) }}"
+        elbd: ".{{ aws_region }}.{{ subd }}"
+
     - name: Monitor Sensu metrics
       sensu_go_check:
         name: sensu-metrics
@@ -322,6 +336,7 @@
           domain: google.com
       loop_control:
         label: "{{ item.domain }}"
+      when: aws_region == aws_primary_region
 
     - name: Monitor EC2 instance counts
       sensu_go_check:
@@ -346,6 +361,16 @@
           - default
         output_metric_format: graphite_plaintext
 
+    - name: Monitor disk usage
+      sensu_go_check:
+        name: disks
+        command: check-disks
+        subscriptions:
+          - Status_production
+        handlers:
+          - default
+        output_metric_format: influxdb_line
+
     - name: Monitor Vault
       sensu_go_check:
         name: vault-seal
@@ -367,6 +392,18 @@
         annotations:
           fatigue_check/occurrences: 3
 
+    - name: Monitor loadbalancers
+      sensu_go_check:
+        name: cert
+        command: !unsafe check-tls -H {{ .name }} --check-hostname
+        subscriptions:
+          - Class_master
+        interval: 300
+        handlers:
+          - fyi
+        proxy_entity_attributes:
+          - "entity.subscriptions.filter(function(s) { return s == 'Class_loadbalancer' }).length > 0"
+
     - name: Monitor redis clusters
       sensu_go_check:
         name: redis-cluster
@@ -379,6 +416,17 @@
           fatigue_check/occurrences: 3
         proxy_entity_attributes:
           - "entity.subscriptions.filter(function(s) { return s == 'Class_redis_cluster' }).length > 0"
+
+    - name: Monitor corvus
+      sensu_go_check:
+        name: corvus
+        command: check-redis -p 6380
+        subscriptions:
+          - Class_egress
+        handlers:
+          - default
+        annotations:
+          fatigue_check/occurrences: 3
 
     - name: Monitor simta
       sensu_go_check:

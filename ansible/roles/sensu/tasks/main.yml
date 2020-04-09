@@ -61,6 +61,7 @@
       loop:
         - check-aggregate
         - check-box-status
+        - check-disks
         - check-google-status
         - check-load
         - check-process

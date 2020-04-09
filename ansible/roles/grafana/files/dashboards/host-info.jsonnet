@@ -74,4 +74,15 @@ grafana.dashboard.new(
     )
   ),
   {x: 12, y: 10, w: 12, h: 10},
+).addPanel(
+  grafana.graphPanel.new(
+    'Disks',
+    datasource='$INFLUX_DS',
+  ).addTarget(
+    grafana.influxdb.target(
+      'SELECT max("pct_used") FROM disk_usage WHERE ("sensu_entity_name" = \'$entity\') AND $timeFilter GROUP BY time($__interval), mountpoint fill(none)',
+      '$tag_mountpoint',
+    )
+  ),
+  {x: 0, y: 20, w: 12, h: 10},
 )

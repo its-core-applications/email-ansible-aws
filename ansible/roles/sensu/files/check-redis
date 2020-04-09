@@ -1,6 +1,6 @@
 #!/bin/bash
 
-redis-cli PING
+redis-cli $@ PING
 if [[ $? -ne 0 ]]; then
     exit 2
 fi

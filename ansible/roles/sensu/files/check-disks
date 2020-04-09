@@ -1,0 +1,35 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import argparse
+import sys
+import shutil
+import time
+
+
+ts = int(time.time())
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-w', '--warning', type=int, default=90)
+parser.add_argument('-c', '--critical', type=int, default=95)
+args = parser.parse_args()
+
+retval = 0
+with open('/proc/mounts', 'r') as f:
+    for line in f.read().splitlines():
+        mount = line.split()
+        if mount[0] in ('cgroup', 'devtmpfs', 'tmpfs', 'tracefs'):
+            continue
+
+        usage = shutil.disk_usage(mount[1])
+        if usage.total == 0:
+            continue
+
+        pct = round(usage.used / usage.total * 100)
+        if pct > args.critical:
+            retval = 2
+        elif pct > args.warning:
+            if retval == 0:
+                retval = 1
+        print('disk_usage,mountpoint={} total={},used={},free={},pct_used={} {}'.format(mount[1], usage.total, usage.used, usage.free, pct, ts))
+
+sys.exit(retval)
