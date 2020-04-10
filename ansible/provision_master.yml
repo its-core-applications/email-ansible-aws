@@ -39,7 +39,10 @@
       loop:
         - graphs
         - vault
+        - wiki
       when: aws_region == aws_primary_region
+      tags:
+        - dns
 
     - name: Set CNAMEs for regional vhosts
       route53:
@@ -54,6 +57,8 @@
       loop:
         - ara
         - dashboard
+      tags:
+        - dns
 
     - name: Wait for instance to be available
       pause:

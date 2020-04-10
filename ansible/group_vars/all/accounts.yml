@@ -2,25 +2,35 @@ nonperson_accounts:
   - name: collaborate
     comment: Collaboration
     uid: 1000537
+
   - name: email
     comment: Mail Routing
     uid: 1002
     ssh: true
+
   - name: git
     comment: Gitolite
     uid: 1001
+
   - name: splunk
     comment: Splunk
     uid: 1005
+
   - name: simta
     comment: simta
     uid: 1006
     home: /var/spool/simta
     group: mail
+
   - name: sensu
     comment: sensu
     uid: 1007
     home: /var/lib/sensu
+
+  - name: gollum
+    comment: gollum
+    uid: 1008
+    home: /var/lib/gollum
 
 user_accounts:
   - name: aafletch

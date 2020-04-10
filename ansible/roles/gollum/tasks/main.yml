@@ -1,0 +1,78 @@
+- tags:
+    - gollum
+  block:
+    - name: Install required packages
+      yum:
+        name:
+          - cmake
+          - gcc-c++
+          - gdbm-devel
+          - libffi-devel
+          - libicu-devel
+          - libyaml-devel
+          - ncurses-devel
+          - openssl-devel
+          - readline-devel
+          - zlib-devel
+        state: latest
+
+    - become_user: gollum
+      block:
+        - name: Install SSH private key
+          copy:
+            dest: ~/.ssh/id_ed25519
+            content: "{{ lookup('hashi_vault', 'secret=secret/ssh/gollum:value') }}"
+            mode: "0400"
+          no_log: true
+
+        - name: Clone documentation
+          git:
+            dest: ~/cia-documentation
+            repo: git@gitlab.umich.edu:ITS/inf/core-infrastructure-and-automation/documentation.git
+            accept_hostkey: true
+            update: true
+
+        - name: Clone ruby-build
+          git:
+            dest: ~/ruby-build
+            repo: https://github.com/rbenv/ruby-build
+            force: true
+            update: true
+
+        - name: Build Ruby 2.6.5
+          command: ~/ruby-build/bin/ruby-build 2.6.5 ~/ruby
+          args:
+            creates: ~/ruby/bin/ruby
+          environment:
+            RUBY_CONFIGURE_OPTS: "--disable-install-doc"
+
+        - name: Disable documentation for gems
+          copy:
+            dest: ~/.gemrc
+            content: "gem: --no-document"
+
+        - name: Update RubyGem
+          command: ~/ruby/bin/gem update
+
+        # rugged requires cmake >= 3.5.1, but doesn't support calling it by
+        # an alternate name.
+        - name: Link cmake to cmake3
+          file:
+            dest: ~/ruby/bin/cmake
+            state: link
+            src: /usr/bin/cmake3
+
+        - name: Clone gollum
+          git:
+            dest: ~/gollum
+            repo: https://github.com/flowerysong/gollum.git
+            version: 13808f5d8142b103c57a719c405d8933800091f1
+            force: true
+            update: true
+
+        - name: Install gollum
+          bundler:
+            executable: ~/ruby/bin/bundler
+            chdir: ~/gollum
+          environment:
+            PATH: /var/lib/gollum/ruby/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin

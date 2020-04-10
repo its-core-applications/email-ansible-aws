@@ -1,0 +1,71 @@
+- tags:
+    - wiki
+  block:
+    - import_role:
+        name: httpd
+
+    - import_role:
+        name: gollum
+
+    - name: Install extra packages
+      yum:
+        name:
+          - mod_auth_openidc
+          - mod_ldap
+
+    - name: Clone documentation repo
+      become_user: gollum
+      git:
+        dest: ~/cia-documentation
+        repo: git@gitlab.umich.edu:ITS/inf/core-infrastructure-and-automation/documentation.git
+        accept_hostkey: true
+        update: true
+
+    - name: Set up automatic syncing
+      cron:
+        user: gollum
+        name: git_sync_wiki
+        job: cd ~gollum/cia-documentation && git fetch origin && git rebase origin/master && git push origin master
+
+    - name: Configure gollum-wiki
+      copy:
+        dest: /etc/gollum-wiki.rb
+        src: config.rb
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Configure gollum-wiki service
+      copy:
+        dest: /etc/systemd/system/gollum-wiki.service
+        src: gollum-wiki.service
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Enable gollum-wiki
+      systemd:
+        name: gollum-wiki
+        enabled: true
+        daemon_reload: true
+
+    - name: Start gollum-wiki
+      systemd:
+        name: gollum-wiki
+        state: restarted
+
+    - import_role:
+        name: letsencrypt
+      vars:
+        certificate: wiki.{{ subd }}
+        le_services:
+          - httpd
+
+    - name: Configure gollum vhost
+      template:
+        dest: /etc/httpd/conf.d/wiki.{{ subd }}.conf
+        src: httpd.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart httpd

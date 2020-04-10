@@ -1,0 +1,42 @@
+<VirtualHost *:80>
+    ServerName wiki.{{ subd }}
+    Redirect permanent / https://wiki.{{ subd }}/
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerAdmin {{ ops_email }}
+    ServerName wiki.{{ subd }}
+    ErrorLog /var/log/httpd/wiki-error.log
+    CustomLog /var/log/httpd/wiki-access.log common
+    SSLEngine On
+    SSLCertificateFile /etc/pki/collab/private/wiki.{{ subd }}.crt
+    SSLCertificateKeyFile /etc/pki/collab/private/wiki.{{ subd }}.key
+    SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+    SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+    SSLHonorCipherOrder on
+
+    OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration
+    OIDCClientID {{ lookup('hashi_vault', 'secret=secret/google/wiki:id') }}
+    OIDCClientSecret {{ lookup('hashi_vault', 'secret=secret/google/wiki:secret') }}
+    OIDCCryptoPassphrase {{ lookup('hashi_vault', 'secret=secret/google/wiki:passphrase') }}
+    OIDCRedirectURI https://wiki.{{ subd }}/login/google
+    OIDCScope "openid email"
+    OIDCRemoteUserClaim email
+
+    <Location />
+        AuthType openid-connect
+        AuthLDAPURL "ldap://{{ ldap_host }}/{{ ldap_base }}?mail"
+
+        <Limit GET>
+            Require valid-user
+        </Limit>
+        <LimitExcept GET>
+            <RequireAll>
+                Require claim hd:{{ tld }}
+                Require ldap-group {{ ldap_group }}
+            </RequireAll>
+        </LimitExcept>
+    </Location>
+
+    ProxyPass / http://localhost:8087/
+</VirtualHost>
