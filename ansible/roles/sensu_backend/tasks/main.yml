@@ -151,7 +151,7 @@
       loop:
         - name: bad_hostname
           expressions:
-            - event.entity.name.match('compute.internal$')
+            - event.entity.name.match('compute.internal$') || event.entity.name.match('.aws.vdc.it.umich.edu$')
         - name: good_hostname
           action: deny
           expressions:
