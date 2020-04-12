@@ -51,7 +51,7 @@ grafana.dashboard.new(
       region + ' InfluxDB'
     ) {
       query: "SELECT * FROM plasticman WHERE phase = 'end'",
-      textColumn: 'action',
+      tagsColumn: 'action,region',
     } for region in regions
   ]
 ).addPanel(
