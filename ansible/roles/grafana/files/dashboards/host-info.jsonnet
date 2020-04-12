@@ -78,6 +78,9 @@ grafana.dashboard.new(
   grafana.graphPanel.new(
     'Disks',
     datasource='$INFLUX_DS',
+    min=0,
+    max=100,
+    decimals=0,
   ).addTarget(
     grafana.influxdb.target(
       'SELECT max("pct_used") FROM disk_usage WHERE ("sensu_entity_name" = \'$entity\') AND $timeFilter GROUP BY time($__interval), mountpoint fill(none)',
