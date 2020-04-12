@@ -64,6 +64,8 @@
       vars:
         dns_host: syslog
         dns_group: Class_syslog
+      tags:
+        - dns
 
     - name: Set aliases
       route53:
@@ -78,3 +80,5 @@
       loop:
         - influxdb
         - sensu
+      tags:
+        - dns
