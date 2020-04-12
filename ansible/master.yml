@@ -97,7 +97,6 @@
 
         - import_role:
             name: dashboard
-          when: aws_region == aws_primary_region
 
         - import_role:
             name: grafana
