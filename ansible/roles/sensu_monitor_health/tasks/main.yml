@@ -24,6 +24,7 @@
         lambda_name: sensu_monitor_health
         lambda_description: Monitor Sensu /health endpoint
         lambda_region: "{{ aws_region }}"
+        lambda_profile: "{{ aws_profile }}"
         lambda_subnets:
           - "{{ ec2_subnets_vpn_sorted[aws_region].0.id }}"
         lambda_sg: "{{ result_sg_group.security_groups.0.group_id }}"

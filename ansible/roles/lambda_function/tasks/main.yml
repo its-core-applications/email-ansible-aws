@@ -69,7 +69,7 @@
               - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
               - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
               - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
-              - "{{ snspolicy.policy.arn }}"
+              - arn:aws:iam::{{ lookup('vars', 'aws_account_' ~ (lambda_profile | replace('-', '_'))) }}:policy/umcollab_SNSPublish_XAccount
             purge_policies: true
           register: result
 

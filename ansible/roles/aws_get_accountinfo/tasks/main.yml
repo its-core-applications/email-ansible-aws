@@ -15,6 +15,7 @@
         - name: Set account facts
           set_fact:
             "aws_account_{{ item.item | replace('-', '_') }}": "{{ item.account }}"
+            "aws_account_{{ aws_profiles[aws_status][item.item] | replace('-', '_') }}": "{{ item.account }}"
           loop: "{{ result.results }}"
           loop_control:
             label: "{{ item.item }}"
