@@ -25,6 +25,7 @@
           - feedparser
           - html2text
           - python-dateutil
+          - pyyaml
           - requests
 
     - name: Install sensu unit

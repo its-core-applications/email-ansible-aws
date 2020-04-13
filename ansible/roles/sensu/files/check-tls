@@ -1,7 +1,6 @@
 #!/usr/local/venv/sensu/bin/python3
 
 import argparse
-import json
 import smtplib
 import socket
 import ssl
@@ -9,6 +8,7 @@ import sys
 
 from datetime import datetime
 
+import yaml
 
 def get_cert_smtp(host, port, context):
     with smtplib.SMTP(host, port) as smtp:
@@ -92,7 +92,7 @@ def main():
             print('Cert expires in less than {} days: {}\n'.format(args.warning, expires))
             retval = 1
 
-        print(json.dumps(cert, indent=2))
+        print(yaml.safe_dump(cert, indent=2))
 
     sys.exit(retval)
 
