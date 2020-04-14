@@ -11,7 +11,7 @@
       git:
         repo: https://github.com/flowerysong/ara.git
         dest: /var/cache/ara.git
-        version: 347ee6da
+        version: 1706faf9a8595be6bb2994874e6d3389bb243a96
         update: true
         force: true
 
