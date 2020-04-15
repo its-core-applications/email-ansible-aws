@@ -57,7 +57,7 @@ grafana.dashboard.new(
 ).addPanel(
   regionQueryPanel(
     'Average load average',
-    max=20,
+    max=30,
     decimals=1,
     query='SELECT mean("5_min") FROM "load_avg" WHERE $timeFilter GROUP BY time($__interval), "class" fill(linear)',
   ),
