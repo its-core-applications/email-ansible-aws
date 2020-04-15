@@ -92,8 +92,8 @@ if [[ $count -lt $min_count && $rup -eq 1 && $rpup = 'null' ]]; then
 fi
 
 # Check for datapoints in the last six minutes where the one minute load
-# average was over 3
-quint=$($influx "SELECT COUNT(mean) FROM (SELECT MEAN(\"1_min\") FROM load_avg WHERE time >= now() - 6m AND sensu_entity_name =~ /.+\.${class}\..+/ GROUP BY time(1m)) WHERE mean > 3" | $influx_jq)
+# average was over 9
+quint=$($influx "SELECT COUNT(mean) FROM (SELECT MEAN(\"1_min\") FROM load_avg WHERE time >= now() - 6m AND sensu_entity_name =~ /.+\.${class}\..+/ GROUP BY time(1m)) WHERE mean > 9" | $influx_jq)
 
 if [[ $quint != 'null' && $rup -eq 1 && $rpup = 'null' ]]; then
     if [[ $count -ge $max_count ]]; then
@@ -110,8 +110,8 @@ rscale=$($influx "SELECT COUNT(DISTINCT(sum)) FROM (SELECT SUM(instance_count) F
 rpscale=$($influx "SELECT SUM(count) FROM plasticman WHERE class = '$class' AND time > now() - 1h" | $influx_jq)
 
 # Check for any datapoints in the last hour and a bit where the one minute
-# load average was over 1
-hour=$($influx "SELECT COUNT(mean) FROM (SELECT MEAN(\"1_min\") FROM load_avg WHERE time >= now() - 75m AND sensu_entity_name =~ /.+\.${class}\..+/ GROUP BY time(1m)) WHERE mean > 1" | $influx_jq)
+# load average was over 2
+hour=$($influx "SELECT COUNT(mean) FROM (SELECT MEAN(\"1_min\") FROM load_avg WHERE time >= now() - 75m AND sensu_entity_name =~ /.+\.${class}\..+/ GROUP BY time(1m)) WHERE mean > 2" | $influx_jq)
 
 if [[ $count -gt $min_count && $hour == 'null' && $rscale -eq 1 && $rpscale = 'null' ]]; then
     scaledown
