@@ -196,10 +196,10 @@
         - vault
       vars:
         build_name: vault
-        build_version: 1.4.0-beta1
+        build_version: 1.4.0
         archive_url: https://releases.hashicorp.com/vault/{{ build_version }}/vault_{{ build_version }}_linux_amd64.zip
         archive_file: vault_{{build_version }}_linux_amd64.zip
-        archive_checksum: sha256:44196060161b123f82eb170bad56c3dd23f6cb59e61f61efcf3c796e551d1a75
+        archive_checksum: sha256:8f739c4850bab35e971e27c8120908f48f247b07717d19aabad1110e9966cded
 
     - import_role:
         name: build_rpm_spec
