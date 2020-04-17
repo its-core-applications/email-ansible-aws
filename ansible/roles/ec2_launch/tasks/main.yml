@@ -92,7 +92,7 @@
       when: ec2_instances | length
       ignore_errors: true
       register: result
-      until: (result.instances | map(attribute='tags.CustomDNSName') | select('defined') | list | length) == (ec2_instances | length)
+      until: (result.instances | default([]) | map(attribute='tags.CustomDNSName') | select('defined') | list | length) == (ec2_instances | length)
       retries: 20
       delay: 15
 
