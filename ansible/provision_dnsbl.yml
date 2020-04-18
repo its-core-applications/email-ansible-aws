@@ -1,5 +1,3 @@
----
-
 - hosts: localhost
   become: false
   tasks:
@@ -38,4 +36,3 @@
       vars:
         dns_host: rbldnsd
         dns_group: Class_dnsbl
-

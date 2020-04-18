@@ -26,7 +26,6 @@
       until: result is success
       retries: 30
       delay: 10
-      tags: mutable
 
     - name: Schedule syncing
       copy:
