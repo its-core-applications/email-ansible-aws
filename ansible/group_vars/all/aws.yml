@@ -80,6 +80,7 @@ aws_region_layout:
       mx:
         count: 6
         size: m5.xlarge
+        cycle_method: spinup
       relay-egress:
         count: 3
       syslog:
@@ -105,6 +106,7 @@ aws_region_layout:
       mx:
         count: 6
         size: m5.xlarge
+        cycle_method: spinup
       mx-test:
         size: t3.small
       syslog:
@@ -132,6 +134,7 @@ aws_region_layout:
         size: t3.large
       mx:
         count: 3
+        cycle_method: spinup
       relay-egress: {}
       syslog: {}
       vdc-relay: {}
