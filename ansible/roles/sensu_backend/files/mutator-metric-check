@@ -21,14 +21,15 @@ for label in event['entity']['metadata'].get('labels', {}).items():
 
 points = []
 for key in ['duration', 'occurrences', 'status']:
-    points.append(
-        {
-            'name': 'sensu_event.{}'.format(key),
-            'value': event['check'][key],
-            'tags': tags,
-            'timestamp': event['timestamp'],
-        }
-    )
+    if key in event['check']:
+        points.append(
+            {
+                'name': 'sensu_event.{}'.format(key),
+                'value': event['check'][key],
+                'tags': tags,
+                'timestamp': event['timestamp'],
+            }
+        )
 
 event['metrics'] = {
     'points': points,
