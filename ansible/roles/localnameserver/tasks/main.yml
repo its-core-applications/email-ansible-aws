@@ -34,7 +34,7 @@
         owner: root
         group: root
         mode: "0444"
-      tags: mutable
+        attributes: i
 
     - name: Disable PEERDNS for eth0
       copy:
