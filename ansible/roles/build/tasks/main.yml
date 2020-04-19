@@ -143,7 +143,7 @@
       vars:
         build_repo: https://gitlab.umich.edu/flowerysong/sensu-go.git
         build_path: github.com/sensu/sensu-go
-        build_version: 5.16.1.1
+        build_version: 5.19.1.1
 
     - import_role:
         name: build_rpm_archive
