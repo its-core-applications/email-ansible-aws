@@ -45,8 +45,6 @@
         mode: "0755"
       loop:
         - 15_trust
-        - 19_dropfrom
-        - 20_auth
         - 21_domain
         - 21_to
         - 21_ubl
