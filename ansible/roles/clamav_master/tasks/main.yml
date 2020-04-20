@@ -34,8 +34,6 @@
         group: root
         mode: "0755"
       loop:
-        - clamav_aper_addresses
-        - clamav_aper_links
         - clamav_iia_hashes
         - clamav_rfxn
 

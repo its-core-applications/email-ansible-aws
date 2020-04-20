@@ -1,5 +1,3 @@
----
-
 clamav_custom_sigs:
   - name: umich_bad_sigs.ign2
     url: local
@@ -33,12 +31,6 @@ clamav_custom_sigs:
     url: rsync://rsync.sanesecurity.net/sanesecurity/MiscreantPunch099-Low.ldb
   - name: porcupine.hsb
     url: rsync://rsync.sanesecurity.net/sanesecurity/porcupine.hsb
-  - name: phishing_reply_addresses.ndb
-    url: https://svn.code.sf.net/p/aper/code/phishing_reply_addresses
-    process: aper_addresses
-  - name: phishing_links.gdb
-    url: https://svn.code.sf.net/p/aper/code/phishing_links
-    process: aper_links
   - name: rfxn.hdb
     url: https://cdn.rfxn.com/downloads/rfxn.hdb
     process: rfxn

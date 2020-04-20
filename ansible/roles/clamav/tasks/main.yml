@@ -39,14 +39,3 @@
         owner: collaborate
         group: collaborate
         mode: "0755"
-
-    - name: Install clamav filter configuration files
-      copy:
-        dest: /etc/mail/{{ item }}
-        src: "{{ item }}"
-        owner: root
-        group: root
-        mode: "0644"
-      loop:
-        - clamav.badurl
-      tags: mutable
