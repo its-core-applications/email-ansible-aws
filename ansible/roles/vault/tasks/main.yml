@@ -49,5 +49,17 @@
         group: collaborate
         mode: "0755"
 
+    - name: Configure a vhost for vault.{{ subd }}
+      template:
+        dest: /etc/httpd/conf.d/vault.{{ subd }}.conf
+        src: httpd.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart httpd
+
+    - import_role:
+        name: httpd
+
     - name: Run monitoring script to unseal vault
       command: /usr/local/bin/check-vault-seal
