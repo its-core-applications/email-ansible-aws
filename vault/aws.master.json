@@ -1,0 +1,9 @@
+{
+  "auth_type": "iam",
+  "bound_iam_principal_arn": "arn:aws:iam::440653842962:role/umcollab_master",
+  "resolve_aws_unique_ids": false,
+  "token_policies": [
+    "ec2",
+    "master"
+  ]
+}
