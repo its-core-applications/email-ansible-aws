@@ -38,6 +38,12 @@ user_accounts:
     uid: 620307
     full_sudo: true
 
+  - name: alleycat
+    comment: Ali Wilkes
+    uid: 517118
+    sudo_email: true
+    sudo_collaborate: true
+
   - name: awilkins
     comment: Adam Wilkinson
     uid: 56060
