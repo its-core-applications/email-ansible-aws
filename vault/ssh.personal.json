@@ -1,0 +1,11 @@
+{
+  "allow_user_certificates": true,
+  "allowed_users": "{{identity.entity.aliases.auth_ldap_8cc664bd.name}}",
+  "allowed_users_template": true,
+  "default_extensions": {
+    "permit-pty": ""
+  },
+  "key_type": "ca",
+  "ttl": 1800,
+  "max_ttl": 1800
+}

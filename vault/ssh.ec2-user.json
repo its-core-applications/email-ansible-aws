@@ -1,0 +1,11 @@
+{
+  "allow_user_certificates": true,
+  "allowed_users": "ec2-user",
+  "default_extensions": {
+    "permit-pty": ""
+  },
+  "default_user": "ec2-user",
+  "key_type": "ca",
+  "ttl": 1800,
+  "max_ttl": 1800
+}

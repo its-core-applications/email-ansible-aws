@@ -14,6 +14,22 @@ path "secret" {
   capabilities = ["list"]
 }
 
+path "ssh-client-signer/*" {
+  capabilities = ["list"]
+}
+
+path "ssh-client-signer/sign/ec2-user" {
+  capabilities = ["read", "update", "list"]
+}
+
+path "ssh-client-signer/sign/personal" {
+  capabilities = ["read", "update", "list"]
+}
+
+path "ssh-client-signer" {
+  capabilities = ["list"]
+}
+
 path "sys/*" {
   capabilities = ["read", "list"]
 }
