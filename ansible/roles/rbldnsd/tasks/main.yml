@@ -50,3 +50,11 @@
         name: rsyncd
         enabled: true
       notify: Restart rsyncd
+
+    - name: Install custom monitoring script
+      copy:
+        dest: /usr/local/bin/metrics-rbldnsd
+        src: metrics-rbldnsd
+        owner: root
+        group: root
+        mode: "0755"

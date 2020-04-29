@@ -1,0 +1,22 @@
+#!/usr/local/venv/sensu/bin/python
+
+import mmap
+import os
+import sys
+
+
+logfile = '/var/log/rbldnsd/stats'
+
+if not os.path.exists(logfile):
+    sys.exit(0)
+
+with open(logfile, 'rb') as f, mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mf:
+    bline = mf[(mf.rfind(b'\n', 0, len(mf) - 1) + 1):].replace(b'\n', b'')
+    line = bline.decode('utf-8').split()
+
+ts = line.pop(0)
+for raw in line:
+    if raw.startswith('*'):
+        continue
+
+    print('rbldnsd,zone={cooked[0]} queries={cooked[1]},ok={cooked[2]},nxdomain={cooked[3]},bytes_in={cooked[4]},bytes_out={cooked[5]} {}'.format(ts, cooked=raw.split(':')))
