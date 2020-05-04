@@ -1,5 +1,3 @@
----
-
 - tags:
     - box
     - box_bam
@@ -19,4 +17,3 @@
         owner: root
         group: root
         mode: "0644"
-

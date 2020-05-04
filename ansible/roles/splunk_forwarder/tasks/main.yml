@@ -1,5 +1,3 @@
----
-
 - tags:
     - splunk
   block:
@@ -44,4 +42,3 @@
       service:
         name: splunkforwarder
         enabled: true
-

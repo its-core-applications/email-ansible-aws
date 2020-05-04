@@ -1,5 +1,3 @@
----
-
 - import_playbook: spindown_jail.yml
 
 - hosts: localhost

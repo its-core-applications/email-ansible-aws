@@ -1,5 +1,3 @@
----
-
 - name: Restart sshguard
   systemd:
     name: sshguard

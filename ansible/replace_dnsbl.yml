@@ -1,5 +1,3 @@
----
-
 - import_playbook: spindown_dnsbl.yml
 
 - hosts: localhost

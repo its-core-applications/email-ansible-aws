@@ -1,5 +1,3 @@
----
-
 - tags:
     - certificate
   block:
@@ -27,4 +25,3 @@
       group: mail
       mode: "0644"
     when: certificate_type == 'tls'
-

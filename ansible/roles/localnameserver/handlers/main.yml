@@ -1,8 +1,5 @@
----
-
-- name: Restart unbound 
+- name: Restart unbound
   systemd:
     name: unbound
     daemon_reload: true
     state: restarted
-

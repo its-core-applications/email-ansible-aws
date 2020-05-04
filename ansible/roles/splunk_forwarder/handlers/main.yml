@@ -1,5 +1,3 @@
----
-
 - name: Restart splunkforwarder
   systemd:
     name: splunkforwarder

@@ -1,5 +1,3 @@
----
-
 spfd: "{{ (aws_status == 'prod') | ternary('spf.mail.' ~ tld, 'spf.' ~ subd) }}"
 
 spf_main:

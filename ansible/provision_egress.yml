@@ -1,5 +1,3 @@
----
-
 - hosts: localhost
   become: false
   tasks:
@@ -22,7 +20,7 @@
   serial: 1
   tasks:
     - when: region == aws_region
-      import_role: 
+      import_role:
         name: ec2_eip
       vars:
         eip_class: egress

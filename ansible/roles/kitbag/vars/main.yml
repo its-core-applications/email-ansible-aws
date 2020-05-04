@@ -1,5 +1,3 @@
----
-
 # This isn't in group_vars because the Vault lookup would be a chicken and egg
 # problem when bootstrapping the master.
 kitbag_ftp_base: ftp.box.com/Pyrocumulonimbus/backups

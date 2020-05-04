@@ -1,5 +1,3 @@
----
-
 - import_playbook: spindown_relay_egress.yml
 
 - hosts: localhost

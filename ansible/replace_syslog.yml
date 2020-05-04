@@ -1,5 +1,3 @@
----
-
 - import_playbook: spindown_syslog.yml
 
 - hosts: localhost
@@ -9,4 +7,3 @@
 - import_playbook: deprovision_spundown.yml
 
 - import_playbook: provision_syslog.yml
-

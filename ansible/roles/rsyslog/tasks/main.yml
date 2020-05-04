@@ -1,5 +1,3 @@
----
-
 - tags:
     - rsyslog
   block:
@@ -69,4 +67,3 @@
         group: root
         mode: "0644"
       notify: Run logrotate
-

@@ -1,5 +1,3 @@
----
-
 - import_playbook: spinup_mx.yml
 
 - import_playbook: spindown_mx.yml

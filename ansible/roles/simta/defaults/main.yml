@@ -1,5 +1,3 @@
----
-
 tld: umich.edu
 simta_config: 'this host'
 simta_tls: true

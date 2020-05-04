@@ -1,5 +1,3 @@
----
-
 - hosts: Class_dnsbl
   tasks:
     - when: region == aws_region
