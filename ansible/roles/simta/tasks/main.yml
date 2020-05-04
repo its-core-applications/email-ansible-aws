@@ -165,15 +165,39 @@
         mode: "0644"
       when: simta_ldap
 
-    - name: Install SASL config file
-      copy:
-        dest: /etc/sasl2/simta.conf
-        src: simta.sasl2
-        owner: root
-        group: root
-        mode: "0644"
-      notify: Restart simta
-      when: simta_authn
+    - when: simta_authn
+      block:
+        - import_role:
+            name: saslauthd
+
+        - name: Install SASL config file
+          copy:
+            dest: /etc/sasl2/simta.conf
+            src: simta.sasl2
+            owner: root
+            group: root
+            mode: "0644"
+          notify: Restart simta
+
+    - import_role:
+        name: certificate
+      vars:
+        certificate: "{{ simta_config }}.{{ tld }}"
+      when: simta_tls
+
+    - import_role:
+        name: certificate
+      vars:
+        certificate: "{{ simta_dkim_selector }}._domainkey.{{ tld }}"
+        certificate_type: dkim
+      when: simta_dkim
+
+    - import_role:
+        name: certificate
+      vars:
+        certificate: "{{ simta_arc_selector }}._domainkey.{{ tld }}"
+        certificate_type: dkim
+      when: simta_arc
 
     - name: Enable simta
       systemd:

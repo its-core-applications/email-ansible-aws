@@ -1,8 +1,9 @@
----
-
 - tags:
     - build
   block:
+    - import_role:
+        name: rpmbuild
+
     - import_role:
         name: localrepo_update
 
@@ -13,4 +14,3 @@
         owner: root
         group: root
         mode: "0644"
-

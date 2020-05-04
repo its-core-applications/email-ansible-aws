@@ -1,6 +1,9 @@
 - tags:
     - kitbag
   block:
+    - import_role:
+        name: comint
+
     - name: Install kitbag
       template:
         dest: "{{ comint_base }}/dispatch/kitbag"

@@ -1,8 +1,9 @@
----
-
 - tags:
     - saslauthd
   block:
+    - import_role:
+        name: kerberos_client
+
     - name: Install sasl
       yum:
         name: cyrus-sasl

@@ -1,5 +1,0 @@
----
-
-dependencies:
-  - { role: s3repo, tags: s3repo }
-  - { role: nonpeople, tags: nonpeople }

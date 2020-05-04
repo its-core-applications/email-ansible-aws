@@ -2,6 +2,9 @@
     - clamav
   block:
     - import_role:
+        name: clamav
+
+    - import_role:
         name: s3_website
       vars:
         s3_hostname: clamav.{{ subd }}

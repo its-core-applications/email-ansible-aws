@@ -5,6 +5,19 @@
       selinux:
         state: disabled
 
+    - import_role:
+        name: base_packages
+
+    - import_role:
+        name: base_userenv
+
+    - import_role:
+        name: nonpeople
+      when: not bootstrap
+
+    - import_role:
+        name: rsyslog
+
     - name: Configure sshd
       copy:
         dest: /etc/ssh/sshd_config
@@ -29,6 +42,10 @@
         owner: root
         group: root
         mode: "0444"
+
+    - import_role:
+        name: sshguard
+      when: not bootstrap
 
     - name: Configure sudoers
       template:
@@ -138,3 +155,6 @@
       loop:
         - openssl.cnf
         - openssl-san.cnf
+
+    - import_role:
+        name: dynhostname

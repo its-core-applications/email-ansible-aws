@@ -1,6 +1,12 @@
 - tags:
     - clamav
   block:
+    - import_role:
+        name: clamav
+
+    - import_role:
+        name: clamav_freshclam
+
     - name: Install clamav filter
       copy:
         dest: /etc/mail/filters/80_clamav

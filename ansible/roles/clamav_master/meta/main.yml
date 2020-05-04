@@ -1,5 +1,0 @@
----
-
-dependencies:
-  - role: clamav
-    tags: clamav

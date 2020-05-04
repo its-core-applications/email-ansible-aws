@@ -1,5 +1,0 @@
----
-
-dependencies:
-  - role: kerberos_client
-    tags: kerberos

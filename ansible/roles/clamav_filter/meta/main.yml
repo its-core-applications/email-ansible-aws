@@ -1,6 +1,0 @@
----
-
-dependencies:
-  - role: clamav
-  - role: clamav_freshclam
-

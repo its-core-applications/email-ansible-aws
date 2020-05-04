@@ -1,9 +1,10 @@
----
-
 - tags:
     - build
     - s3repo
   block:
+    - import_role:
+        name: rpmbuild
+
     - import_role:
         name: s3_website
       tags: s3_website
