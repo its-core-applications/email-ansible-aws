@@ -143,7 +143,8 @@
       vars:
         build_repo: https://gitlab.umich.edu/flowerysong/sensu-go.git
         build_path: github.com/sensu/sensu-go
-        build_version: 5.19.1.1
+        build_flags: '-ldflags ''-X "github.com/sensu/sensu-go/version.Version={{ build_version }}" -X "github.com/sensu/sensu-go/version.BuildDate={{ ansible_facts.date_time.date }}"'''
+        build_version: 5.20.1.1
 
     - import_role:
         name: build_rpm_archive
@@ -173,10 +174,10 @@
         - sensu
       vars:
         build_name: sensu-system-profile-linux
-        build_version: 0.9
+        build_version: 0.10.1
         archive_url: https://github.com/sensu/system-profile-linux/releases/download/{{ build_version }}/system-profile-linux_{{ build_version }}_linux_amd64.tar.gz
         archive_file: system-profile-linux_{{ build_version }}_linux_amd64.tar.gz
-        archive_checksum: sha512:f88c72bb1af36a75b9adea7eb00a7ad55f2c51a13596e92d3f1dcbb61aae9b60250fa1fb92cc7721a602f949d011a2ab81d15464013382aa80f1471d39dfe1e8
+        archive_checksum: sha512:29a6e1725f37e533cd9f6a8a17b40ef757ba5ea5dc27701c19a7fb9ac9c2bdf9f684d758d4440f278bb7fc669e52bf02efb3fc6758731f7f3e10617a2fe026cf
 
     - import_role:
         name: build_rpm_git

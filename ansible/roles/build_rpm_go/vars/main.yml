@@ -1,1 +1,2 @@
+build_flags: ""
 build_path: "{{ build_repo | replace('https://', '') }}"

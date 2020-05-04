@@ -14,7 +14,7 @@
             force: true
 
         - name: Build {{ build_name }} binary
-          command: "{{ go_cmd }} build ./cmd/{{ build_name }}"
+          command: "{{ go_cmd }} build {{ build_flags }} ./cmd/{{ build_name }}"
           args:
             chdir: ~/go/src/{{ build_path }}
 

@@ -1,2 +1,2 @@
-go_version: 1.14.2
+go_version: 1.14.3
 go_cmd: ~/go/bin/go{{ go_version }}
