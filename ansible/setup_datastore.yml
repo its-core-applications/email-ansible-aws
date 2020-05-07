@@ -1,0 +1,7 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - import_role:
+        name: s3_website
+      vars:
+        s3_hostname: datastore.{{ subd }}

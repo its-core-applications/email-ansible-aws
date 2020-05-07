@@ -38,6 +38,12 @@ vault write auth/aws/role/umcollab_standard @aws.standard.json
 vault policy write ec2 policy.ec2.hcl
 ```
 
+```
+vault auth enable approle
+vault policy write s3_datastore policy.s3_datastore.hcl
+vault write auth/approle/role/dnsbl @approle.dnsbl.json
+```
+
 # SSH signing
 
 ```
@@ -48,3 +54,10 @@ vault write ssh-client-signer/roles/personal @ssh.personal.json
 
 The `personal` role uses a hardcoded mount accessor which you probably
 need to update if you're building a Vault instance from scratch.
+
+# AWS credentials
+
+```
+vault secrets enable aws
+vault write aws/roles/s3_datastore credential_type=assumed_role role_arns=arn:aws:iam::440653842962:role/umcollab_440653842962_S3_ds
+```

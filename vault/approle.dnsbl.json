@@ -1,0 +1,15 @@
+{
+    "token_policies": "s3_datastore",
+    "bind_secret_id": false,
+    "token_type": "batch",
+    "token_ttl": "15m",
+    "token_max_ttl": "15m",
+    "secret_id_bound_cidrs": [
+        "141.211.21.71/32",
+        "141.211.7.108/32"
+    ],
+    "token_bound_cidrs": [
+        "141.211.21.71/32",
+        "141.211.7.108/32"
+    ]
+}

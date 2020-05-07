@@ -133,6 +133,66 @@
                 - "{{ result.iam_role.arn }}"
       register: snspolicy
 
+    - name: Create IAM policy for S3 datastore
+      iam_managed_policy:
+        profile: "{{ aws_profile_s3 }}"
+        state: present
+        policy_name: "{{ aws_resource_prefix }}_S3_ds"
+        policy_description: Access datastore
+        policy:
+          Version: "2012-10-17"
+          Statement:
+            - Action:
+                - s3:ListAllMyBuckets
+              Effect: Allow
+              Resource: '*'
+            - Action:
+                - s3:ListBucket
+                - s3:GetBucketLocation
+              Effect: Allow
+              Resource: arn:aws:s3:::datastore.{{ subd }}
+            - Action:
+                - s3:PutObject
+                - s3:PutObjectAcl
+                - s3:GetObject
+                - s3:GetObjectAcl
+                - s3:DeleteObject
+              Effect: Allow
+              Resource: arn:aws:s3:::datastore.{{ subd }}/*
+      register: result
+
+    - name: Create IAM role for S3 datastore
+      iam_role:
+        profile: "{{ aws_profile_s3 }}"
+        name: "{{ aws_resource_prefix }}_{{ aws_account }}_S3_ds"
+        description: Cross-account access to S3 datastore for {{ aws_profile }}
+        assume_role_policy_document:
+          Version: "2012-10-17"
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Principal:
+                AWS: arn:aws:iam::{{ aws_account }}:root
+        managed_policies:
+          - "{{ result.policy.arn }}"
+        purge_policies: true
+      register: result
+
+    - name: Create local IAM policy for S3 datastore
+      iam_managed_policy:
+        profile: "{{ aws_profile }}"
+        state: present
+        policy_name: "{{ aws_resource_prefix }}_S3_ds_XAccount"
+        policy_description: Access to S3 datastore
+        policy:
+          Version: "2012-10-17"
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Resource:
+                - "{{ result.iam_role.arn }}"
+      register: s3dspolicy
+
     - name: Create builder role
       iam_role:
         region: "{{ aws_region }}"
@@ -174,6 +234,7 @@
           - "{{ subdpolicy.policy.arn }}"
           - "{{ tagpolicy.policy.arn }}"
           - "{{ snspolicy.policy.arn }}"
+          - "{{ s3dspolicy.policy.arn }}" # Used by Vault to issue creds
         purge_policies: true
 
     - name: Create standard role
