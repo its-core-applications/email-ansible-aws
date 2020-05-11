@@ -1,0 +1,10 @@
+- tags:
+    - datastore_fetch
+  block:
+    - name: Install datastore-fetch
+      copy:
+        src: datastore-fetch
+        dest: /usr/local/bin/datastore-fetch
+        owner: root
+        group: root
+        mode: "0755"

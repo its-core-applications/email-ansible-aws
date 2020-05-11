@@ -2,7 +2,7 @@
     - tcpd_update
   block:
     - import_role:
-        name: comint
+        name: datastore_fetch
 
     - name: Install SSH private key
       copy:
@@ -13,9 +13,9 @@
         mode: "0400"
 
     - name: Install sync script
-      template:
+      copy:
         dest: /usr/local/sbin/tcpd-update
-        src: tcpd-update.j2
+        src: tcpd-update
         owner: root
         group: root
         mode: "0755"
@@ -31,7 +31,7 @@
         mode: "0664"
 
     - name: Sync /etc/hosts.allow
-      command: /usr/local/sbin/tcpd-update
+      command: /usr/local/sbin/tcpd-update -d http://datastore.{{ subd }}
       environment:
         RETURN_RC: 1
       register: result
@@ -40,9 +40,9 @@
       delay: 10
 
     - name: Schedule syncing
-      copy:
+      template:
         dest: /etc/cron.d/tcpd-update
-        src: tcpd-update.cron
+        src: tcpd-update.cron.j2
         owner: root
         group: root
         mode: "0644"

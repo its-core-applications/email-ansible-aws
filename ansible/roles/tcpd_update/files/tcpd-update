@@ -1,14 +1,15 @@
 #!/bin/bash
 
-name=tcpd-update
-confdir={{ comint_base }}/dispatch
-
-updatehost=collaborate@rbldnsd-master.{{ subd }}
-srcfile=/usr/local/collaboration/tcpd-update/hosts.allow
 destfile=/etc/hosts.allow
-sshkey=/root/.ssh/id_rsa.rbldnsd
 
-. /usr/libexec/comint/setup
+while getopts d:f: opt; do
+    case $opt in
+    d)  datastore=$OPTARG
+        ;;
+    f)  destfile=$OPTARG
+        ;;
+    esac
+done
 (
     flock -n 9 || exit 1
 
@@ -16,13 +17,9 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
     startts=$(date +%s%N)
 
     tmpdest=$(mktemp $destfile.XXXXXXXX)
-    chmod 644 $tmpdest
+    cp $destfile $tmpdest
 
-    # Excludes version control and sync artifacts
-    /usr/bin/rsync -ri \
-        -e "ssh -i $sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-        ${updatehost}:$srcfile $tmpdest \
-        > ${tmpdir}/rsyncout 2>>$tmpfile
+    msg=$(datastore-fetch ${datastore}/hosts.allow/relay.mail.umich.edu $tmpdest)
     if [[ $? -eq 0 ]]; then
         diff -q $tmpdest $destfile &>/dev/null
         if [[ $? -eq 1 ]]; then
@@ -34,14 +31,13 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
                 retval=1
             else
                 msg="$destfile updated"
-                cp $tmpdest $destfile
+                mv $tmpdest $destfile
             fi
         else
             msg="$destfile unchanged"
         fi
     else
         retval=2
-        msg='rsync failed'
     fi
 
     rm -f $tmpdest
@@ -49,17 +45,14 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
     duration=$(( $(date +%s%N) - startts ))
 
     jq -n -r \
-        --arg source $(hostname) \
         --arg status $retval \
         --arg duration $(( duration / 1000000000 )).$(( duration % 1000000000 / 1000000 )) \
         --arg msg "$msg" \
-        '{ name: "tcpd-update", source: $source, ttl: 3600, occurrences: 3, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+        '{ check: { metadata: { name: "tcpd-update", "fatigue_check/occurrences": "3" }, ttl: 3600, duration: $duration | tonumber, status: $status | tonumber, output: $msg }}' | ncat localhost 3030
 
     exit $retval
 ) 9>>/var/run/tcpd-update.lock
 retval=$?
-
-cleanup
 
 if [[ $RETURN_RC -ne 0 ]]; then
     exit $retval

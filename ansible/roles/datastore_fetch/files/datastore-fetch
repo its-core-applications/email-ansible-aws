@@ -1,0 +1,72 @@
+#!/usr/local/venv/system/bin/python3
+
+import argparse
+import fcntl
+import os
+import sys
+import tempfile
+
+from hashlib import sha512
+
+import requests
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('src')
+parser.add_argument('dest')
+parser.add_argument('--lockfile')
+args = parser.parse_args()
+
+if args.lockfile:
+    try:
+        f = open(args.lockfile, 'wb')
+        fcntl.flock(f)
+    except:
+        sys.exit(1)
+
+head = requests.head(args.src)
+s3hash = head.headers['x-amz-meta-sha512']
+h = sha512()
+try:
+    with open(args.dest, 'rb') as f:
+        while True:
+            block = f.read(64 * 1024)
+            if block:
+                h.update(block)
+            else:
+                break
+    filehash = h.hexdigest()
+except:
+    filehash = ''
+
+if filehash == s3hash:
+    print('File is up to date')
+    sys.exit(0)
+
+with tempfile.NamedTemporaryFile(
+    dir=os.path.dirname(args.dest),
+    prefix=os.path.basename(args.dest) + '.',
+    suffix='.tmp'
+) as f:
+    h = sha512()
+    try:
+        with requests.get(args.src, stream=True, timeout=60) as r:
+            r.raise_for_status()
+            for chunk in r.iter_content(chunk_size = 1024 * 1024):
+                f.write(chunk)
+                h.update(bytearray(chunk))
+    except requests.exceptions.RequestException as e:
+        print('Requests error')
+        sys.exit(1)
+
+    newhash = h.hexdigest()
+    if newhash != s3hash:
+        print('File failed verification: sha512 is {}, expected {}'.format(newhash, s3hash))
+        sys.exit(1)
+
+    f.flush()
+    os.fchmod(f.fileno(), 0o644)
+    os.fsync(f.fileno())
+    os.replace(f.name, args.dest)
+    # relink it so the context manager can unlink it
+    os.link(args.dest, f.name)
