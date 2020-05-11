@@ -2,7 +2,7 @@
 
 hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
 
-for i in $(ansible localhost --playbook-dir $hacking_dir/ansible -m debug -a 'msg={{ aws_region_layout[aws_status][aws_region] | list }}' | grep '        ' | tr -d '", ' | tr '-' '_'); do
+for i in $(ANSIBLE_STDOUT_CALLBACK=json ansible localhost --playbook-dir $hacking_dir/ansible -m debug -a 'msg={{ aws_region_layout[aws_status][aws_region] | list }}' | jq -r '.plays[0].tasks[0].hosts.localhost.msg[]' | tr '-' '_'); do
     [[ $i = 'master' ]] && continue
     [[ $i = 'syslog' ]] && continue
     [[ $i = 'builder' ]] && continue
