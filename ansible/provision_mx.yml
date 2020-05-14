@@ -1,3 +1,20 @@
+- hosts: Class_mx:&Status_spinup
+  gather_facts: false
+  tasks:
+    - when: region == aws_region
+      block:
+        - name: Set status to production
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: production
+          delegate_to: localhost
+          become: false
+
+        - meta: refresh_inventory
+
 - hosts: localhost
   become: false
   tasks:
