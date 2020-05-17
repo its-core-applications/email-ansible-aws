@@ -42,7 +42,7 @@ for entry in $@ ; do
         entry="$(echo -n $label | sha1sum | cut -d' ' -f1) $label"
     fi
     if [[ $action = "add" ]]; then
-        if grep -q -w "$entry" $file ; then
+        if grep -q -x "$entry" $file ; then
             echo ""
             echo -n "Oh dear, it looks like $label is already in ${file}. "
             echo "I'm skipping this one."
@@ -51,7 +51,7 @@ for entry in $@ ; do
             sed -i -e "5i$entry" $file
         fi
     elif [[ $action = "remove" ]]; then
-        if grep -q -w "$entry" $file ; then
+        if grep -q -x "$entry" $file ; then
             sed -ri -e "/^${entry}\b/d" $file
         else
             echo ""
