@@ -368,9 +368,9 @@
       tags: influxdb
       vars:
         build_name: influxdb
-        rpm: influxdb-1.7.10.x86_64.rpm
+        rpm: influxdb-1.8.0.x86_64.rpm
         rpm_url: https://repos.influxdata.com/rhel/7/x86_64/stable/{{ rpm }}
-        rpm_checksum: sha512:b31ca7e375d5bf28d4b6b76ce2c2bc5a69c3365b35533437e068c98bd40e0883311ddeded7a67fd6e06799d665ab98a039dc64d9efd67aca2bad868f45da5118
+        rpm_checksum: sha512:82178b60006f962fb0d3f011a1df656db984484fb4213fe5808b3ac9d79af2b6bf4e05a683f0d2d6f095a3d8cf939555892fa5bcb6512c90e1ac7be1c3c4adf3
 
     - import_role:
         name: build_rpm_go
