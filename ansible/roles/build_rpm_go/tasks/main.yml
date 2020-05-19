@@ -14,12 +14,12 @@
             force: true
 
         - name: Build {{ build_name }} binary
-          command: "{{ go_cmd }} build {{ build_flags }} ./cmd/{{ build_name }}"
+          command: "{{ go_cmd }} build {{ build_flags }} -o bin/{{ build_name }} {{ build_target }}"
           args:
             chdir: ~/go/src/{{ build_path }}
 
         - name: Build {{ build_name }} RPM
-          command: fpm -t rpm -s dir -n {{ build_name }} -v {{ build_version | replace('v', '') }} --prefix /usr/bin ~/go/src/{{ build_path }}/{{ build_name }}={{ build_name }}
+          command: fpm -t rpm -s dir -n {{ build_name }} -v {{ build_version | replace('v', '') }} --prefix /usr/bin ~/go/src/{{ build_path }}/bin/{{ build_name }}={{ build_name }}
           args:
             chdir: ~/rpmbuild/RPMS/x86_64
           register: result

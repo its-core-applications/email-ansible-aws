@@ -1,2 +1,3 @@
 build_flags: ""
+build_target: ./cmd/{{ build_name }}
 build_path: "{{ build_repo | replace('https://', '') }}"
