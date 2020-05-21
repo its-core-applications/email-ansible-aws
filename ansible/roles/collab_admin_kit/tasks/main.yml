@@ -125,3 +125,14 @@
         minute: '10'
         job: /usr/local/bin/google-archive-data -H
       when: aws_region == aws_primary_region
+
+    - name: Schedule daily runs of Meet Metrics Gatherer
+      cron:
+        name: Google Meet Exec Dashboard Metrics Gatherer
+        user: root
+        minute: '20'
+        hour: '0'
+        job: /home/rsauosci/google-env/bin/python /home/rsauosci/google-env/meet-metrics/daily-google-meet-executivedash.py
+      when:
+        - aws_region == aws_primary_region
+        - aws_status == 'prod'
