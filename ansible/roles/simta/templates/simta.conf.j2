@@ -122,21 +122,23 @@ CHECKSUM_ALGORITHM  sha1
 CONTENT_FILTER      /usr/sbin/simta-mscan
 
 {% endif %}
-{% if simta_egress %}
-{% if simta_punt is defined %}
-PUNT                    {{ simta_punt }}
-{% endif %}
-{% else %}
+{% if not simta_egress %}
 DELIVER_TLS             REQUIRED
 PUNT_STRATEGY           ALL
 {% if simta_jail %}
 RECEIVE_QUEUE_STRATEGY  JAIL
 {% endif %}
+{% if simta_punt is not defined %}
 PUNT                    {% if simta_relay %}relay-{% endif %}egress.{{ aws_region }}.{{ subd }}
+{% endif %}
 {% if simta_jail_mail %}
 JAIL                    {{ simta_jail_host }}
 {% endif %}
 {% endif %}
+{% if simta_punt is defined %}
+PUNT                    {{ simta_punt }}
+{% endif %}
+
 SUBADDRESS_SEPARATOR    +
 
 {% if simta_ldap %}

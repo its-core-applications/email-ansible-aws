@@ -1,0 +1,38 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - when: aws_region == 'us-east-2'
+      block:
+        - import_role:
+            name: ec2_class_eips
+          vars:
+            eip_class: covid-relay
+
+        - import_role:
+            name: ec2_launch
+          vars:
+            launch_class: covid-relay
+            launch_groups:
+              - smtp
+
+- hosts: Class_covid_relay:&Status_spinup
+  tasks:
+    - delegate_to: localhost
+      become: false
+      block:
+        - import_role:
+            name: ec2_eip
+          vars:
+            eip_class: covid-relay
+
+        - name: Set status to production
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: production
+
+        - meta: refresh_inventory
+
+- import_playbook: setup_lb_covid_relay.yml

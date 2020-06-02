@@ -1,0 +1,7 @@
+simta_config: covid-relay.mail
+simta_queue_type: covid-relay
+simta_punt: coreav.state.mi.us
+simta_relay: true
+simta_msa: true
+simta_authn: true
+simta_ldap: false

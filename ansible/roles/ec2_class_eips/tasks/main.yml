@@ -16,6 +16,7 @@
       ec2_eip:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
+        in_vpc: true
         state: present
       loop: "{{ range(aws_region_layout[aws_status][aws_region][eip_class].count | default(1) - (result.addresses | length)) | list }}"
       register: result

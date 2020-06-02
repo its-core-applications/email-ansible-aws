@@ -5,6 +5,7 @@ all:
     Class_authz_relay: {}
     Class_authz_static: {}
     Class_builder: {}
+    Class_covid_relay: {}
     Class_ctools_mx: {}
     Class_dev: {}
     Class_dnsbl: {}

@@ -116,6 +116,9 @@ aws_region_layout:
       authn-relay: {}
       authz-relay: {}
       authz-static: {}
+      covid-relay:
+        count: 1
+        size: t3.small
       builder:
         autokill: true
         autocycle: false

@@ -1,0 +1,8 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: ec2_nlb
+      vars:
+        tg_group: Class_covid_relay
+        nlb_name: covid-relay

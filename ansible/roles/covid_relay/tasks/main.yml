@@ -1,0 +1,10 @@
+- tags:
+    - covid-relay
+  block:
+    - name: Install authuser filter for rejecting mail from unatuhorized senders
+      copy:
+        dest: /etc/mail/filters/00_authuser
+        src: 00_authuser
+        owner: root
+        group: root
+        mode: "0755"

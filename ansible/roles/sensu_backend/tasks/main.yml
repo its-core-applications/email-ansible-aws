@@ -436,6 +436,7 @@
           - Class_authn_relay
           - Class_authz_relay
           - Class_authz_static
+          - Class_covid_relay
           - Class_egress
           - Class_jail
           - Class_mx
@@ -488,6 +489,7 @@
           SMTP_PASSWORD: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value') }}"
         subscriptions:
           - Class_authn_relay
+          - Class_covid_relay
         handlers:
           - influxdb_event
 
@@ -499,6 +501,7 @@
         timeout: 240
         subscriptions:
           - Class_egress
+          - Class_covid_relay
           - Class_relay_egress
         handlers:
           - default
@@ -510,6 +513,7 @@
           - Class_authn_relay
           - Class_authz_relay
           - Class_authz_static
+          - Class_covid_relay
           - Class_mx
           - Class_mx_test
           - Class_vdc_relay
