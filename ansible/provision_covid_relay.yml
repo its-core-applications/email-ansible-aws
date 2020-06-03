@@ -16,6 +16,7 @@
               - smtp
 
 - hosts: Class_covid_relay:&Status_spinup
+  serial: 1
   tasks:
     - delegate_to: localhost
       become: false

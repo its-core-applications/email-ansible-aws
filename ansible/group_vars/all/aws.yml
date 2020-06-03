@@ -65,6 +65,9 @@ aws_region_layout:
         count: 3
       authz-static:
         size: t3.small
+      covid-relay:
+        count: 2
+        size: t3.medium
       ctools-mx:
         size: t3.small
       dnsbl:
