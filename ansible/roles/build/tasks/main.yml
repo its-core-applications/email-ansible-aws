@@ -461,9 +461,9 @@
       tags: splunk
       vars:
         build_name: splunk
-        rpm: splunkforwarder-8.0.2-a7f645ddaf91-linux-2.6-x86_64.rpm
-        rpm_url: https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.2&product=universalforwarder&filename=splunkforwarder-8.0.2-a7f645ddaf91-linux-2.6-x86_64.rpm&wget=true
-        rpm_checksum: md5:8eb8e0d8f94470247fb30309aa4073ff
+        rpm: splunkforwarder-8.0.4-767223ac207f-linux-2.6-x86_64.rpm
+        rpm_url: https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.4&product=universalforwarder&filename=splunkforwarder-8.0.4-767223ac207f-linux-2.6-x86_64.rpm&wget=true
+        rpm_checksum: md5:9ea182a8fb1540eb42499b8c501b161e
 
     - import_role:
         name: build_rpm_spec
