@@ -3,7 +3,7 @@
 if check_tfile && SIMTA_NRCPTS=$(grep -h -c '^R' $SIMTA_TFILE) ; then
     export SIMTA_NRCPTS
 
-    if simrbl -q -l ual.dnswl -t $SIMTA_AUTH_ID ; then
+    if simrbl -q -l ual.dnsal -t $SIMTA_AUTH_ID ; then
         ual=false
     else
         ual=true
