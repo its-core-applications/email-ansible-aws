@@ -20,6 +20,13 @@
           - setup
         state: present
 
+    # FIXME: this is an ugly hack to prevent an error while installing fpm
+    - name: Install ffi
+      gem:
+        name: ffi
+        version: 1.12.2
+        user_install: false
+
     - name: Install fpm
       gem:
         name: fpm
