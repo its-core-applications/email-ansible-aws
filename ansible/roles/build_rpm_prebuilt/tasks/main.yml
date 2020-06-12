@@ -8,5 +8,6 @@
       get_url:
         url: "{{ rpm_url }}"
         dest: ~/rpmbuild/RPMS/x86_64/{{ rpm }}
+        timeout: 60
         checksum: "{{ rpm_checksum }}"
 
