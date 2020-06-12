@@ -9,6 +9,4 @@
 - import_role:
     name: redis
 - import_role:
-    name: corvus
-- import_role:
     name: sensu

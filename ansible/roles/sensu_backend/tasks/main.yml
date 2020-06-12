@@ -417,17 +417,6 @@
         proxy_entity_attributes:
           - "entity.subscriptions.filter(function(s) { return s == 'Class_redis_cluster' }).length > 0"
 
-    - name: Monitor corvus
-      sensu_go_check:
-        name: corvus
-        command: check-redis -p 6380
-        subscriptions:
-          - Class_egress
-        handlers:
-          - default
-        annotations:
-          fatigue_check/occurrences: 3
-
     - name: Monitor simta
       sensu_go_check:
         name: "{{ item.name }}"

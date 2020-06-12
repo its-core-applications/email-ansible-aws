@@ -116,10 +116,6 @@ ec2_sg:
           - 6379  # Redis
           - 16379 # Redis cluster
         cidr_ip: "{{ (ec2_subnets_public[ec2sg_region] + ec2_subnets_vpn[ec2sg_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
-      - proto: tcp
-        ports:
-          - 6380  # Corvus
-        cidr_ip: "{{ (ec2_subnets_public[ec2sg_region] + ec2_subnets_vpn[ec2sg_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | list | union(trusted_external_ips) | cidr_merge }}"
 
   vault:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"

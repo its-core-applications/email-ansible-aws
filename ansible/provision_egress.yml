@@ -59,10 +59,3 @@
       vars:
         dns_host: pink
         dns_group: redis
-
-    - import_role:
-        name: route53_dns_from_inventory
-      vars:
-        dns_host: pink-jackdaw
-        dns_group: Class_egress
-        dns_private_ip: false

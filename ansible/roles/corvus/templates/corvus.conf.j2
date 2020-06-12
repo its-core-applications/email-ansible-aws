@@ -1,9 +1,0 @@
-bind 6380
-node pink.{{ aws_region }}.{{ subd }}:6379
-thread 4
-
-loglevel debug
-syslog 1
-
-client_timeout 30
-server_timeout 5
