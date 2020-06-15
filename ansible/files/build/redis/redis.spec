@@ -4,7 +4,7 @@
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 Name:              redis
-Version:           4.0.14
+Version:           6.0.18
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 License:           BSD
@@ -19,7 +19,7 @@ Source6:           %{name}.init
 Source7:           %{name}-shutdown
 Source8:           %{name}-limit-systemd
 Source9:           %{name}-limit-init
-Patch0:            redis-3.2.5-use-system-jemalloc.patch
+Patch0:            redis-6.0.5-use-system-jemalloc.patch
 BuildRequires:     jemalloc-devel
 %if 0%{?with_tests}
 BuildRequires:     procps-ng
@@ -35,29 +35,9 @@ Requires(preun):   systemd
 Requires(postun):  systemd
 
 %description
-Redis is an advanced key-value store. It is often referred to as a data 
-structure server since keys can contain strings, hashes, lists, sets and 
+Redis is an advanced key-value store. It is often referred to as a data
+structure server since keys can contain strings, hashes, lists, sets and
 sorted sets.
-
-You can run atomic operations on these types, like appending to a string;
-incrementing the value in a hash; pushing to a list; computing set 
-intersection, union and difference; or getting the member with highest 
-ranking in a sorted set.
-
-In order to achieve its outstanding performance, Redis works with an 
-in-memory dataset. Depending on your use case, you can persist it either 
-by dumping the dataset to disk every once in a while, or by appending 
-each command to a log.
-
-Redis also supports trivial-to-setup master-slave replication, with very 
-fast non-blocking first synchronization, auto-reconnection on net split 
-and so forth.
-
-Other features include Transactions, Pub/Sub, Lua scripting, Keys with a 
-limited time-to-live, and configuration settings to make Redis behave like 
-a cache.
-
-You can use Redis from most programming languages also.
 
 %prep
 %setup -q
@@ -119,9 +99,6 @@ ln -sf %{name}-server %{buildroot}%{_bindir}/%{name}-sentinel
 
 # Install redis-shutdown
 install -pDm755 %{S:7} %{buildroot}%{_bindir}/%{name}-shutdown
-
-# Install redis-trib
-install -pDm755 src/redis-trib.rb %{buildroot}%{_bindir}/%{name}-trib
 
 %check
 %if 0%{?with_tests}
