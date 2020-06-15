@@ -45,8 +45,8 @@ if [[ ${#goodhosts[@]} -eq 0 ]]; then
         exit $EX_ERROR
     fi
     outlog "Creating a new cluster using ${badhosts[@]:0:3}"
-    # redis-trib always requires a port, because it's dumber than redis-cli
-    /bin/yes yes | redis-trib create $(for i in ${badhosts[@]:0:3}; do echo $i:6379; done)
+    # redis-cli --cluster always requires a port
+    /bin/yes yes | redis-cli --cluster create $(for i in ${badhosts[@]:0:3}; do echo $i:6379; done)
     retval=$EX_OK
     goodhosts=(${badhosts[@]:0:3})
     badhosts=(${badhosts[@]:3})

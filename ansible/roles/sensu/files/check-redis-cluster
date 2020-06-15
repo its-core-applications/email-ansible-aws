@@ -17,7 +17,7 @@ fi
 
 for ip in $ips; do
     if [[ $(redis-cli -h $ip PING 2>&1) = 'PONG' ]]; then
-        state=$(redis-trib check ${ip}:6379 2>&1)
+        state=$(redis-cli --cluster check ${ip}:6379 2>&1)
         [[ $state =~ '[OK] All nodes agree about slots configuration.' ]] || retval=1
         [[ $state =~ '[OK] All 16384 slots covered.' ]] || retval=2
 
