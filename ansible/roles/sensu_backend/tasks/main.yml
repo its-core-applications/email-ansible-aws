@@ -440,7 +440,6 @@
           - Class_egress
           - Class_jail
           - Class_mx
-          - Class_mx_test
           - Class_relay_egress
           - Class_vdc_relay
         handlers:
@@ -515,7 +514,6 @@
           - Class_authz_static
           - Class_covid_relay
           - Class_mx
-          - Class_mx_test
           - Class_vdc_relay
       block:
         - name: Extra simta queue monitoring for inbound hosts
@@ -592,7 +590,6 @@
         name: "{{ item.name }}"
         command: "{{ item.command }}"
         subscriptions:
-          - Class_mx_test
           - Class_mx
         handlers:
           - default
@@ -613,7 +610,6 @@
           - Class_authz_relay
           - Class_authz_static
           - Class_mx
-          - Class_mx_test
           - Class_vdc_relay
         handlers:
           - default

@@ -110,8 +110,6 @@ aws_region_layout:
         count: 6
         size: m5.xlarge
         cycle_method: spinup
-      mx-test:
-        size: t3.small
       syslog:
         autocycle: false
   nonprod:

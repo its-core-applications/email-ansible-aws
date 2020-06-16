@@ -26,7 +26,6 @@
         - hostname-suffixes-builder
         - hostname-suffixes-egress
         - hostname-suffixes-mx
-        - hostname-suffixes-mx-test
 
     - name: Install script
       template:

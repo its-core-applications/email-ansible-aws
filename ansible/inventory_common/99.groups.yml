@@ -13,7 +13,6 @@ all:
     Class_jail: {}
     Class_master: {}
     Class_mx: {}
-    Class_mx_test: {}
     Class_odm: {}
     Class_relay_egress: {}
     Class_syslog: {}
