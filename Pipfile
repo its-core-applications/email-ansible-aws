@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 ansible = {git = "https://github.com/flowerysong/ansible",ref = "next"}
-ara = {git = "https://github.com/flowerysong/ara",ref = "next"}
+ara = {git = "https://github.com/ansible-community/ara",ref = "master"}
 awscli = "*"
 boto = "*"
 boto3 = "*"

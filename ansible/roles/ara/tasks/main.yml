@@ -6,12 +6,11 @@
     - import_role:
         name: httpd
 
-    # Installing from git mainly for pagination support
     - name: Clone ARA repo
       git:
-        repo: https://github.com/flowerysong/ara.git
+        repo: https://github.com/ansible-community/ara.git
         dest: /var/cache/ara.git
-        version: 1706faf9a8595be6bb2994874e6d3389bb243a96
+        version: 8d3de34ee00545c6e7ada5ef5f72f053a14fb121
         update: true
         force: true
 
