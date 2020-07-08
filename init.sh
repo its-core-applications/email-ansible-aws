@@ -2,7 +2,12 @@
 
 cd $(readlink -fn $(dirname "$BASH_SOURCE"))
 
-PIPENV_IGNORE_VIRTUALENVS=1 PIPENV_VENV_IN_PROJECT=1 pipenv sync
+export PIPENV_IGNORE_VIRTUALENVS=1
+export PIPENV_VENV_IN_PROJECT=1
+# Pipenv doesn't put these in the lockfile, and also doesn't automatically
+# update them.
+pipenv run pip install -U setuptools pip
+pipenv sync
 
 git submodule update --init --recursive
 
