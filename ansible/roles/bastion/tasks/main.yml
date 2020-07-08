@@ -19,7 +19,13 @@
           - Jinja2
           - ftptool
           - hvac
+        state: latest
+
+    - name: Install extra pip3 packages
+      pip:
+        name:
           - pipenv
+        executable: pip3
         state: latest
 
     - name: Create filesystem for /home
