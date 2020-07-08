@@ -145,4 +145,4 @@
         name: ansible-clamav-sync
         user: "{{ ansible_user }}"
         minute: 10,25,40,55
-        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags clamav
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/bastion.yml --tags clamav

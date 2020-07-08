@@ -47,7 +47,7 @@
         mode: "0400"
       when:
         - bootstrap == false
-        - "'Class_master' in group_names"
+        - "'Class_bastion' in group_names"
 
     - name: Configure git
       copy:

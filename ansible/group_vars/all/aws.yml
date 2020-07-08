@@ -78,7 +78,7 @@ aws_region_layout:
         size: m5.2xlarge
       jail:
         size: t3.large
-      master:
+      bastion:
         autocycle: false
       mx:
         count: 6
@@ -104,7 +104,7 @@ aws_region_layout:
       egress:
         count: 3
         size: m5.2xlarge
-      master:
+      bastion:
         autocycle: false
       mx:
         count: 6
@@ -133,7 +133,7 @@ aws_region_layout:
       egress:
         count: 2
       jail: {}
-      master:
+      bastion:
         autocycle: false
         size: t3.large
       mx:
@@ -146,9 +146,9 @@ aws_region_layout:
 yum_hostname: yum.{{ subd }}
 yum_repo_path: "{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distribution_major_version }}"
 
-master_hostname: "{{ master_hostnames[aws_status][aws_region] }}.{{ subd }}"
+bastion_hostname: "{{ bastion_hostnames[aws_status][aws_region] }}.{{ subd }}"
 
-master_hostnames:
+bastion_hostnames:
   nonprod:
     us-east-2: pandora
   prod:

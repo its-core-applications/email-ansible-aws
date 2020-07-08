@@ -60,7 +60,7 @@ if [[ $(awk '$9 && $3 == "myself,master"' $tmpfile) ]]; then
         replica=$(sed -n -e "/slave $myid/{s/:.*//;s/.* //;p;q}" $tmpfile)
     done
     if [[ $replica ]]; then
-        outlog "Promoting $replica to master"
+        outlog "Promoting $replica to primary"
         try=0
         res=$(redis-cli -h $replica CLUSTER FAILOVER)
         until [[ $res = 'OK' ]]; do
@@ -75,9 +75,9 @@ if [[ $(awk '$9 && $3 == "myself,master"' $tmpfile) ]]; then
 
     try=0
     until grep -q myself,slave $tmpfile; do
-        [[ $(( try % 5 )) -eq 0 ]] && outlog "Waiting for $1 to stop being a master..."
+        [[ $(( try % 5 )) -eq 0 ]] && outlog "Waiting for $1 to stop being primary..."
         if [[ $(( try++ )) -gt 30 ]]; then
-            outlog "$1 is still a master, we can't remove it!" >&2
+            outlog "$1 is still primary, we can't remove it!" >&2
             rm -f $tmpfile
             exit 1
         fi

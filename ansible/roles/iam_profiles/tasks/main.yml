@@ -212,11 +212,11 @@
           - "{{ tagpolicy.policy.arn }}"
         purge_policies: true
 
-    - name: Create master role
+    - name: Create bastion role
       iam_role:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        name: "{{ aws_resource_prefix }}_master"
+        name: "{{ aws_resource_prefix }}_bastion"
         state: present
         assume_role_policy_document:
           Version: "2012-10-17"

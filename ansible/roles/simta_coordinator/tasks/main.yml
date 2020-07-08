@@ -1,6 +1,6 @@
 - tags:
     - simta
-    - master
+    - coordinator
   block:
     - name: Install simta-requeue
       template:
@@ -20,7 +20,7 @@
         - egress
         - relay-egress
         - jail
-    
+
     - name: Schedule SPF updates
       cron:
         name: ansible-spf-update

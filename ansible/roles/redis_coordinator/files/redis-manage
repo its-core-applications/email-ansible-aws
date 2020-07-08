@@ -28,7 +28,7 @@ for rhost in "${rhosts[@]}"; do
             badhosts+=( $rhost )
         else
             if [[ $(redis-cli -h $rhost CLUSTER NODES | awk '! $9 && $3 == "myself,master"') ]]; then
-                outlog "$rhost is a clustered master with no slots"
+                outlog "$rhost is a clustered primary with no slots"
                 badhosts+=( $rhost )
             else
                 outlog "$rhost is good"
@@ -60,7 +60,7 @@ done
 ghost=${goodhosts[0]}
 for rhost in ${badhosts[@]}; do
     outlog "Adding $rhost to the cluster using $ghost"
-    loser=$(redis-cli -h $ghost CLUSTER NODES | awk '/slave [a-f0-9]{40}/{ master[$4]++ } $9 && /master -/{ master[$1]++ } END{ x=99; for (id in master) if( master[id] < x ) { x=master[id]; loser=id }; print loser }')
+    loser=$(redis-cli -h $ghost CLUSTER NODES | awk '/slave [a-f0-9]{40}/{ primary[$4]++ } $9 && /master -/{ primary[$1]++ } END{ x=99; for (id in primary) if( primary[id] < x ) { x=primary[id]; loser=id }; print loser }')
     redis-cli -h $ghost CLUSTER MEET $rhost 6379
     until redis-cli -h $rhost CLUSTER NODES | grep -q "^$loser"; do
         outlog "Waiting for $rhost to know about $loser"
@@ -83,7 +83,7 @@ for rhost in "${goodhosts[@]}"; do
             echo "${rhosts[@]}" | fgrep -wq $nip
             if [[ $? -eq 1 ]]; then
                 if [[ $flags = 'master' ]]; then
-                    outlog "found unknown master $nip, no more forgetting"
+                    outlog "found unknown primary $nip, no more forgetting"
                     exit $retval
                 fi
                 outlog "forgetting $nip on $rhost"

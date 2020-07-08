@@ -1,5 +1,5 @@
 - tags:
-    - master
+    - bastion
   block:
     - name: Install extra packages
       yum:
@@ -110,8 +110,8 @@
             region: "{{ aws_region }}"
             profile: "{{ aws_profile }}"
             role: "{{ dlm_role.iam_role.arn }}"
-            description: Snapshot home on master
+            description: Snapshot home on bastion
             target_tags:
-              Name: master_home
+              Name: bastion_home
             copy_tags: true
             retain: 60

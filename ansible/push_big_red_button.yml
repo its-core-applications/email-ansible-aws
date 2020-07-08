@@ -4,7 +4,7 @@
         that: aws_status == 'nonprod'
         msg: I'm sorry, Dave, I'm afraid I can't do that.
 
-    - name: Terminate all non-master instances
+    - name: Terminate all non-bastion instances
       delegate_to: localhost
       become: false
       ec2_instance:
@@ -13,7 +13,7 @@
         instance_ids: "{{ instance_id }}"
         state: absent
         wait: false
-      when: "'Class_master' not in group_names"
+      when: "'Class_bastion' not in group_names"
 
 - hosts: localhost
   become: false

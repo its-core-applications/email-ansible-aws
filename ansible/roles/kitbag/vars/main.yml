@@ -1,5 +1,5 @@
 # This isn't in group_vars because the Vault lookup would be a chicken and egg
-# problem when bootstrapping the master.
+# problem when bootstrapping the bastion.
 kitbag_ftp_base: ftp.box.com/Pyrocumulonimbus/backups
 kitbag_ftp_user: its-collab-pyrocumulonimbus@umich.edu
 kitbag_ftp_passwd: "{{ lookup('hashi_vault', 'secret=secret/box/its-collab-pyrocumulonimbus:value') }}"

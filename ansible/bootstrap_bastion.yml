@@ -1,4 +1,4 @@
-- hosts: Class_master:&Status_spinup
+- hosts: Class_bastion:&Status_spinup
   vars:
     bootstrap: true
   tasks:
@@ -8,7 +8,7 @@
             name: base
 
         - import_role:
-            name: master
+            name: bastion
 
         - import_role:
             name: vault

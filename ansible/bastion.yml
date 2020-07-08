@@ -1,4 +1,4 @@
-- hosts: Class_master
+- hosts: Class_bastion
   tasks:
     - when: region == aws_region
       block:
@@ -6,7 +6,7 @@
             name: base
 
         - import_role:
-            name: master
+            name: bastion
 
         - import_role:
             name: ssh_certs
@@ -83,16 +83,16 @@
             name: kerberos_client
 
         - import_role:
-            name: redis_master
+            name: redis_coordinator
 
         - import_role:
-            name: simta_master
+            name: simta_coordinator
 
         - import_role:
             name: plasticman
 
         - import_role:
-            name: ansible_master
+            name: ansible_coordinator
 
         - import_role:
             name: dashboard
@@ -102,7 +102,7 @@
           when: aws_region == aws_primary_region
 
         - import_role:
-            name: clamav_master
+            name: clamav_coordinator
           when: aws_region == aws_primary_region
 
         - import_role:

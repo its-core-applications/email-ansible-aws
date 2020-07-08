@@ -8,20 +8,20 @@
     - import_role:
         name: ec2_class_eips
       vars:
-        eip_class: master
+        eip_class: bastion
 
     - import_role:
         name: ec2_launch
       vars:
-        launch_class: master
+        launch_class: bastion
         launch_ami_class: base
-        launch_profile: master
+        launch_profile: bastion
         launch_subnet: "{{ ec2_subnets_public_sorted[aws_region].0 }}"
         launch_groups:
           - vault
         launch_tags:
-          CustomDNSName: "{{ master_hostname }}"
-        launch_count: "{{ (master_hostname in hostvars) | ternary(0, 1) }}"
+          CustomDNSName: "{{ bastion_hostname }}"
+        launch_count: "{{ (bastion_hostname in hostvars) | ternary(0, 1) }}"
         launch_wait: false
         aws_ssh_key: "{{ aws_resource_prefix }} {{ (aws_status == 'prod') | ternary('31d2b0', 'cb8c7a') }}"
         bootstrap: true
@@ -35,7 +35,7 @@
         record: "{{ item }}.{{ subd }}"
         type: CNAME
         ttl: 60
-        value: "{{ master_hostname }}"
+        value: "{{ bastion_hostname }}"
       loop:
         - graphs
         - vault
@@ -53,7 +53,7 @@
         record: "{{ item }}.{{ aws_region }}.{{ subd }}"
         type: CNAME
         ttl: 60
-        value: "{{ master_hostname }}"
+        value: "{{ bastion_hostname }}"
       loop:
         - ara
         - dashboard
@@ -63,17 +63,18 @@
     - name: Wait for instance to be available
       pause:
         seconds: 120
-      when: master_hostname not in hostvars
+      when: bastion_hostname not in hostvars
 
     - meta: refresh_inventory
 
-- hosts: Class_master:&Status_spinup
+- hosts: Class_bastion:&Status_spinup
   gather_facts: false
   tasks:
     - import_role:
         name: ec2_eip
       vars:
-        eip_class: master
+        eip_class: bastion
+
     - wait_for_connection:
 
 - hosts: localhost
@@ -82,14 +83,14 @@
   tasks:
     - name: Attach EBS home volume
       ec2_vol:
-        name: master_home
+        name: bastion_home
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        instance: "{{ hostvars[master_hostname]['instance_id'] }}"
+        instance: "{{ hostvars[bastion_hostname]['instance_id'] }}"
         device_name: xvdd
         volume_type: gp2
         volume_size: 40
         encrypted: true
         delete_on_termination: false
 
-- import_playbook: bootstrap_master.yml
+- import_playbook: bootstrap_bastion.yml

@@ -376,7 +376,7 @@
         name: vault-seal
         command: check-vault-seal
         subscriptions:
-          - Class_master
+          - Class_bastion
         handlers:
           - default
       when: aws_region == aws_primary_region

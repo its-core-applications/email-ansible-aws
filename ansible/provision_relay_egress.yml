@@ -54,7 +54,7 @@
         dns_group: Class_relay_egress
 
     - import_role:
-         name: redis_master
+         name: redis_coordinator
       tags: redis
 
     - import_role:

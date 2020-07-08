@@ -27,7 +27,7 @@
   become: false
   tasks:
     - import_role:
-        name: redis_master
+        name: redis_coordinator
 
     - import_role:
         name: route53_dns_from_inventory

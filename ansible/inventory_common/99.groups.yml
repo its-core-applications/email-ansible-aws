@@ -4,6 +4,7 @@ all:
     Class_authn_relay: {}
     Class_authz_relay: {}
     Class_authz_static: {}
+    Class_bastion: {}
     Class_builder: {}
     Class_covid_relay: {}
     Class_ctools_mx: {}
@@ -11,7 +12,6 @@ all:
     Class_dnsbl: {}
     Class_egress: {}
     Class_jail: {}
-    Class_master: {}
     Class_mx: {}
     Class_odm: {}
     Class_relay_egress: {}

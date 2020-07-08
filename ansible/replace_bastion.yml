@@ -1,4 +1,4 @@
-- import_playbook: spindown_master.yml
+- import_playbook: spindown_bastion.yml
 
 - hosts: localhost
   gather_facts: false
@@ -12,5 +12,5 @@
   tasks:
     - meta: refresh_inventory
 
-- import_playbook: provision_master.yml
+- import_playbook: provision_bastion.yml
 

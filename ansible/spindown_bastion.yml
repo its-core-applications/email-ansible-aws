@@ -1,4 +1,4 @@
-- hosts: Class_master
+- hosts: Class_bastion
   gather_facts: false
   tasks:
     - when: region == aws_region

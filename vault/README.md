@@ -33,8 +33,9 @@ vault write sys/auth/ldap/tune listing_visibility='unauth'
 
 ```
 vault auth enable aws
-vault write auth/aws/role/umcollab_master @aws.master.json
+vault write auth/aws/role/umcollab_bastion @aws.bastion.json
 vault write auth/aws/role/umcollab_standard @aws.standard.json
+vault policy write bastion policy.bastion.hcl
 vault policy write ec2 policy.ec2.hcl
 ```
 

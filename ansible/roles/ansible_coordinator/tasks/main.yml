@@ -1,6 +1,6 @@
 - tags:
     - ansible
-    - master
+    - coordinator
   block:
     - name: Schedule cycling of hosts
       cron:
@@ -39,7 +39,7 @@
         minute: 10
         hour: 10
         weekday: 1-5
-        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/master.yml --tags certificate &>/dev/null
+        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/bastion.yml --tags certificate &>/dev/null
 
     - name: Schedule cleanup tasks
       cron:
