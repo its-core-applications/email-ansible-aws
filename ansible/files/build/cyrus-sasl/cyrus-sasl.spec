@@ -17,7 +17,7 @@ Release: 0.1.20200303.%{shortcommit0}%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
-Source0: https://github.com/flowerysong/%{name}/archive/%{commit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
+Source0: https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/forks/cyrus-sasl/-/archive/%{commit0}/cyrus-sasl-%{commit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
 Source5: saslauthd.service
 Source9: saslauthd.sysconfig
 Requires: %{name}-lib%{?_isa} = %{version}-%{release}
