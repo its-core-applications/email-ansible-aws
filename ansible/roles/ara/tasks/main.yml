@@ -10,7 +10,7 @@
       git:
         repo: https://github.com/ansible-community/ara.git
         dest: /var/cache/ara.git
-        version: 8d3de34ee00545c6e7ada5ef5f72f053a14fb121
+        version: 8491cc5a72e24de5e1f608f39ba7c0997601c279
         update: true
         force: true
 
