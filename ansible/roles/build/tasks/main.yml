@@ -132,7 +132,7 @@
           vars:
             build_name: sensuctl
       vars:
-        build_repo: https://gitlab.umich.edu/flowerysong/sensu-go.git
+        build_repo: https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/forks/sensu-go.git
         build_path: github.com/sensu/sensu-go
         build_flags: '-ldflags ''-X "github.com/sensu/sensu-go/version.Version={{ build_version }}" -X "github.com/sensu/sensu-go/version.BuildDate={{ ansible_facts.date_time.date }}"'''
         build_version: 5.20.1.1

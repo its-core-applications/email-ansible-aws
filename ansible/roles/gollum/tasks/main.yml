@@ -71,8 +71,8 @@
         - name: Clone gollum
           git:
             dest: ~/gollum
-            repo: https://github.com/flowerysong/gollum.git
-            version: 13808f5d8142b103c57a719c405d8933800091f1
+            repo: https://github.com/gollum/gollum.git
+            version: b32dcfa8dd4aba7ebefcb535643e8a96715169ff
             force: true
             update: true
 
