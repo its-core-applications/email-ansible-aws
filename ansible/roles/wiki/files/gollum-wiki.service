@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=gollum
 WorkingDirectory=/var/lib/gollum/gollum
-ExecStart=/var/lib/gollum/ruby/bin/ruby /var/lib/gollum/gollum/bin/gollum -p 8087 --config /etc/gollum-wiki.rb --allow-uploads dir --emoji /var/lib/gollum/cia-documentation/
+ExecStart=/var/lib/gollum/ruby/bin/ruby /var/lib/gollum/gollum/bin/gollum -p 8087 --config /etc/gollum-wiki.rb --allow-uploads dir --emoji --ref main /var/lib/gollum/cia-documentation/
 
 [Install]
 WantedBy=multi-user.target

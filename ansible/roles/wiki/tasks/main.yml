@@ -25,7 +25,7 @@
       cron:
         user: gollum
         name: git_sync_wiki
-        job: cd ~gollum/cia-documentation && git fetch origin && git rebase origin/master && git push origin master
+        job: cd ~gollum/cia-documentation && git fetch origin && git rebase origin/main && git push origin main
 
     - name: Configure gollum-wiki
       copy:
