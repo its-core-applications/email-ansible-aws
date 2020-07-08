@@ -12,9 +12,10 @@
         venv_py3: true
         venv_build_deps:
           - python3-devel
+          - bison
           - krb5-devel
         venv_packages:
-          - git+https://gitlab.umich.edu/carleski/collab-admin-kit
+          - git+https://gitlab.umich.edu/ITS/inf/collaboration-services/collab-admin-kit
         venv_wrappers:
           - name: collab-create-shared
             wrapper_environment:
