@@ -398,7 +398,6 @@
       vars:
         build_name: simta
         build_repo: https://github.com/simta/simta.git
-        build_version: master
         build_deps:
           - denser-devel
           - jemalloc-devel
