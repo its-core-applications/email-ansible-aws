@@ -1,3 +1,7 @@
+Host gitlab.umich.edu
+    IdentityFile ~/.ssh/id_ed25519.git
+    User git
+
 Host *.{{ subd }}
     IdentityFile ~/.ssh/id_rsa.ec2
     User {{ ansible_user }}
