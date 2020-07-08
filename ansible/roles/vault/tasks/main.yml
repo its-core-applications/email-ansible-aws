@@ -49,6 +49,9 @@
         group: collaborate
         mode: "0755"
 
+    - import_role:
+        name: httpd
+
     - name: Configure a vhost for vault.{{ subd }}
       template:
         dest: /etc/httpd/conf.d/vault.{{ subd }}.conf
@@ -57,9 +60,6 @@
         group: root
         mode: "0644"
       notify: Restart httpd
-
-    - import_role:
-        name: httpd
 
     - name: Run monitoring script to unseal vault
       command: /usr/local/bin/check-vault-seal
