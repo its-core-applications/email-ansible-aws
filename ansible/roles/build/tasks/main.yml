@@ -95,7 +95,7 @@
         - simta
       vars:
         build_name: openarc
-        build_repo: git://scm.marwnad.com/misc/openarc.git
+        build_repo: https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/forks/openarc.git
     #      build_repo: https://github.com/mskucherawy/OpenARC.git
         build_deps:
           - libbsd-devel
@@ -207,13 +207,6 @@
           - openssl-devel
           - sendmail-devel
           - tcp_wrappers-devel
-
-    - import_role:
-        name: build_rpm_git
-      tags: comint
-      vars:
-        build_name: comint
-        build_repo: http://scm.marwnad.com/umich/comint.git/
 
     - import_role:
         name: build_rpm_spec
