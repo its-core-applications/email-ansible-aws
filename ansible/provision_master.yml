@@ -23,7 +23,7 @@
           CustomDNSName: "{{ master_hostname }}"
         launch_count: "{{ (master_hostname in hostvars) | ternary(0, 1) }}"
         launch_wait: false
-        aws_ssh_key: "{{ (aws_status == 'prod') | ternary('umcollab 31d2b0', 'umcollab cb8c7a') }}"
+        aws_ssh_key: "{{ aws_resource_prefix }} {{ (aws_status == 'prod') | ternary('31d2b0', 'cb8c7a') }}"
         bootstrap: true
 
     - name: Set CNAMEs for vhosts
