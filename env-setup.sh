@@ -6,6 +6,7 @@ export TLD=umich.edu
 # Set up Ansible
 hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
 VIRTUAL_ENV_DISABLE_PROMPT=1
+export PIPENV_IGNORE_VIRTUALENVS=1
 . $hacking_dir/.venv/bin/activate
 export ANSIBLE_DEVEL_WARNING=False
 export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
