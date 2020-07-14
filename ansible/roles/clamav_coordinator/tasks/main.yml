@@ -85,6 +85,8 @@
     - name: Post-process signatures
       shell: /usr/local/sbin/clamav_{{ item.item.process }} {{ clamav_tmpdir }}/{{ item.item.name }}.raw | sort -u >| {{ clamav_tmpdir }}/{{ item.item.name }}
       loop: "{{ updated_sigs | selectattr('item.process', 'defined') | list }}"
+      loop_control:
+        label: "{{ item.item.name }}"
       changed_when: false
 
     - name: Copy signatures to cache directory
@@ -92,6 +94,8 @@
         src: "{{ clamav_tmpdir }}/{{ item.item.name }}"
         dest: "{{ clamav_sigdir }}/{{ item.item.name }}"
       loop: "{{ updated_sigs }}"
+      loop_control:
+        label: "{{ item.item.name }}"
 
     - name: Clone test messages
       git:
