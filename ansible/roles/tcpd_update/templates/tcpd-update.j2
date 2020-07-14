@@ -15,7 +15,8 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
     retval=0
     startts=$(date +%s%N)
 
-    tmpdest=${tmpdir}/$(basename $destfile)
+    tmpdest=$(mktemp $destfile.XXXXXXXX)
+    chmod 644 $tmpdest
 
     # Excludes version control and sync artifacts
     /usr/bin/rsync -ri \
@@ -42,6 +43,8 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
         retval=2
         msg='rsync failed'
     fi
+
+    rm -f $tmpdest
 
     duration=$(( $(date +%s%N) - startts ))
 
