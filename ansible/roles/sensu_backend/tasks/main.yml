@@ -602,6 +602,8 @@
           - Class_vdc_relay
         handlers:
           - default
+        annotations:
+          fatigue_check/occurrences: 2
       loop:
         - name: clamd
           command: check-process -p clamd
