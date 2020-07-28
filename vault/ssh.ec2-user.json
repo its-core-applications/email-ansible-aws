@@ -6,6 +6,7 @@
   },
   "default_user": "ec2-user",
   "key_type": "ca",
+  "algorithm_signer": "rsa-sha2-512",
   "ttl": 1800,
   "max_ttl": 1800
 }

@@ -6,6 +6,7 @@
     "permit-pty": ""
   },
   "key_type": "ca",
+  "algorithm_signer": "rsa-sha2-512",
   "ttl": 1800,
   "max_ttl": 1800
 }
