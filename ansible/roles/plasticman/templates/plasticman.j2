@@ -45,7 +45,7 @@ outlog() {
 }
 
 getcount() {
-    count=$($influx "SELECT LAST(sum) FROM (SELECT SUM(instance_count) FROM ec2 WHERE Class = '$class' AND Status = 'production' GROUP BY time(1m))" | $influx_jq)
+    count=$($influx "SELECT LAST(sum) FROM (SELECT SUM(instance_count) FROM ec2 WHERE Class = '$class' AND Status = 'production' GROUP BY time(5s))" | $influx_jq)
 }
 
 checkcount() {
