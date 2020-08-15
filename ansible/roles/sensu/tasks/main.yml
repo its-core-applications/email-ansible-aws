@@ -22,8 +22,6 @@
         venv_py3: true
         venv_packages:
           - boto3
-          - feedparser
-          - html2text
           - python-dateutil
           - pyyaml
           - requests
@@ -61,9 +59,7 @@
         mode: "0755"
       loop:
         - check-aggregate
-        - check-box-status
         - check-disks
-        - check-google-status
         - check-load
         - check-process
         - check-redis
