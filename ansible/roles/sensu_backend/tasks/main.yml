@@ -434,9 +434,11 @@
         handlers:
           - default
         output_metric_format: "{{ ('metrics' in item.name) | ternary('influxdb_line', omit) }}"
+        annotations: "{{ ('occurrences' in item) | ternary({'fatigue_check/occurrences': item.occurrences}, omit) }}"
       loop:
         - name: simta
           command: check-process -p simta
+          occurrences: 2
         - name: simta-queue-dead
           command: /usr/libexec/simta-admin/check-simta-queue -q dead -c 0
         - name: simta-queue-fast
