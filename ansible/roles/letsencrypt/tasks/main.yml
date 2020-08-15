@@ -15,17 +15,34 @@
       args:
         creates: /etc/pki/collab/private/letsencrypt_account.key
 
-    - name: Create certificate key
+    - name: Create RSA certificate key for {{ certificate }}
+      command: openssl genrsa -out /etc/pki/collab/private/{{ certificate }}.key 4096
+      args:
+        creates: /etc/pki/collab/private/{{ certificate }}.key
+      register: rsa_key_result
+      # FIXME
+      when: false
+
+    - name: Create EC certificate key for {{ certificate }}
       command: openssl ecparam -genkey -name prime256v1 -out /etc/pki/collab/private/{{ certificate }}.key
       args:
         creates: /etc/pki/collab/private/{{ certificate }}.key
-      register: result
+      register: ec_key_result
 
-    - name: Generate CSR
-      command: openssl req -new -sha256 -key /etc/pki/collab/private/{{ certificate }}.key -out /etc/pki/collab/{{ certificate }}.csr -subj /CN={{ certificate }}
-      when: result is changed
+    - name: Create OpenSSL configuration file for {{ certificate }}
+      template:
+        src: openssl.cnf.j2
+        dest: /etc/pki/collab/{{ certificate }}.cnf
+        owner: root
+        group: root
+        mode: "0644"
+      register: cnf_result
 
-    - name: Get ACME challenge
+    - name: Generate CSR for {{ certificate }}
+      command: openssl req -new -sha256 -key /etc/pki/collab/private/{{ certificate }}.key -out /etc/pki/collab/{{ certificate }}.csr -config /etc/pki/collab/{{ certificate }}.cnf
+      when: "[rsa_key_result, ec_key_result, cnf_result] | select('changed') | list"
+
+    - name: Get ACME challenge for {{ certificate }}
       acme_certificate:
         account_email: letsencrypt@devnull.mail.umich.edu
         account_key: /etc/pki/collab/private/letsencrypt_account.key
@@ -47,13 +64,14 @@
         overwrite: true
         wait: true
         zone: "{{ subd }}"
-        record: "{{ acme_data.challenge_data[certificate]['dns-01']['resource'] }}.{{ certificate }}"
+        record: "{{ item.value['dns-01']['resource'] }}.{{ item.key }}"
         type: TXT
-        value: "\"{{ acme_data.challenge_data[certificate]['dns-01']['resource_value'] }}\""
+        value: "\"{{ item.value['dns-01']['resource_value'] }}\""
         ttl: 30
+      loop: "{{ acme_data.challenge_data | default({}) | dict2items }}"
       when: acme_data is changed
 
-    - name: Get certificate
+    - name: Get certificate for {{ certificate }}
       acme_certificate:
         account_key: /etc/pki/collab/private/letsencrypt_account.key
         acme_directory: https://acme-v02.api.letsencrypt.org/directory

@@ -1,0 +1,16 @@
+[req]
+prompt = no
+req_extensions = req_ext
+distinguished_name = dn
+
+[dn]
+CN = {{ certificate }}
+
+[req_ext]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = {{ certificate }}
+{% for san in certificate_sans | default([]) %}
+DNS.{{ loop.index + 1 }} = {{ san }}
+{% endfor %}
