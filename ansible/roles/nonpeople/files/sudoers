@@ -1,0 +1,1 @@
+sensu       ALL=(ALL)   NOPASSWD: /bin/systemctl restart *

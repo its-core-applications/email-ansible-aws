@@ -392,6 +392,11 @@
         proxy_entity_attributes:
           - "entity.subscriptions.filter(function(s) { return s == 'Class_redis_cluster' }).length > 0"
 
+    - name: Add simta restart hook
+      sensu_go_hook:
+        name: restart_simta
+        command: sudo /bin/systemctl restart simta
+
     - name: Monitor simta
       sensu_go_check:
         name: "{{ item.name }}"
@@ -410,6 +415,7 @@
           - default
         output_metric_format: "{{ ('metrics' in item.name) | ternary('influxdb_line', omit) }}"
         annotations: "{{ ('occurrences' in item) | ternary({'fatigue_check/occurrences': item.occurrences}, omit) }}"
+        check_hooks: "{{ item.hooks | default(omit) }}"
       loop:
         - name: simta
           command: check-process -p simta
@@ -423,7 +429,11 @@
         - name: simta-queue-slow
           command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q slow -w {{ .labels.simta_slowqwarn | default "100" }}  -c {{ .labels.simta_slowqmax | default "200" }}
         - name: simta-queue-fast-age
-          command: /usr/libexec/simta-admin/check-simta-queue-age -q fast -a 120 -c 0
+          command: /usr/libexec/simta-admin/check-simta-queue-age -q fast -a 60 -c 0
+          occurrences: 2
+          hooks:
+            critical:
+              - restart_simta
         - name: simta-queue-ownership
           command: /usr/libexec/simta-admin/check-simta-queue-ownership
         - name: simta-queue-slow-jailed

@@ -41,5 +41,14 @@
         mode: "0444"
       loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
 
+    - name: Grant sudo access
+      copy:
+        dest: /etc/sudoers.d/99_nonpeople
+        src: sudoers
+        owner: root
+        group: root
+        mode: "0440"
+        validate: visudo -cf %s
+
     - set_fact:
         role_nonpeople_done: true
