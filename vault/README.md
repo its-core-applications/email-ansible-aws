@@ -60,5 +60,14 @@ need to update if you're building a Vault instance from scratch.
 
 ```
 vault secrets enable aws
+```
+
+Nonprod:
+```
 vault write aws/roles/s3_datastore credential_type=assumed_role role_arns=arn:aws:iam::440653842962:role/umcollab_440653842962_S3_ds
+```
+
+Prod:
+```
+vault write aws/roles/s3_datastore credential_type=assumed_role role_arns=arn:aws:iam::236262816615:role/umcollab_236262816615_S3_ds
 ```
