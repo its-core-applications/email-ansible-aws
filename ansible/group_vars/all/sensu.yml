@@ -10,6 +10,8 @@ sensu_sns:
       prod:
         - endpoint: "{{ lookup('hashi_vault', 'secret=secret/phone/pager:value') }}"
           protocol: sms
+        - endpoint: cia.pager.archive@umich.edu
+          protocol: email-json
 
   - name: rootmail
     display_name: rootmail
