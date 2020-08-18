@@ -20,6 +20,13 @@ def handler(event, context):
     arn = os.environ.get('SNS_ARN')
     sns_region = os.environ.get('SNS_REGION', 'us-east-2')
     sns_role = os.environ.get('SNS_ROLE')
+    
+    #sensu_backend = 'http://sensu.us-east-2.x.mail.umich.edu:4567/'
+    #sensu_region = 'us-east-2'
+    #sensu_status = 'nonprod'
+    #arn = 'arn:aws:sns:us-west-2:440653842962:oncall'
+    #sns_region = 'us-west-2'
+    #sns_role = 'arn:aws:iam::440653842962:role/umcollab_440653842962_SNS'
 
     status = None
     sts = boto3.client('sts')
@@ -35,23 +42,17 @@ def handler(event, context):
         aws_session_token=creds['Credentials']['SessionToken'],
     )
 
+    fail_count = 0
     response = None
-    try:
-        response = requests.get(sensu_backend.rstrip('/') + '/health', timeout=12)
-    except Exception as e:
-        status = 'CRITICAL'
-        msg = 'Exception: {}'.format(e)
+    retries = 5
 
-    if response:
-        if not response.ok:
-            status = 'CRITICAL'
-            msg = 'HTTP {}'.format(result.status_code)
-        else:
-            health = response.json()
-            print(health)
-            if not all(x['Healthy'] for x in health['ClusterHealth']):
-                status = 'CRITICAL'
-                msg = ','.join([x['Err'] for x in health['ClusterHealth']])
+    while fail_count < retries:
+        health_result = health_check(sensu_backend, fail_count, response, retries, status)
+        fail_count = health_result[0]
+        print("Check: ",fail_count)
+
+    msg = health_result[1]
+    status = health_result[2]
 
     if not status:
         return
@@ -78,6 +79,32 @@ def handler(event, context):
     )
     print(response)
 
+def health_check(sensu_backend, fail_count, response, retries, status):
+    msg = None 
+    try:
+        response = requests.get(sensu_backend.rstrip('/') + '/health', timeout=12)
+    except Exception as e:
+        status = 'CRITICAL'
+        msg = 'Exception: {}'.format(e)
+        fail_count = retries
+
+    if response:
+        if not response.ok:
+            status = 'CRITICAL'
+            msg = 'HTTP {}'.format(response.status_code)
+            fail_count = retries
+        else:
+            health = response.json()
+            print(health)
+            if not all(x['Healthy'] for x in health['ClusterHealth']):
+                status = 'CRITICAL'
+                msg = ','.join([x['Err'] for x in health['ClusterHealth']])
+                fail_count +=1
+
+    if not status:
+        fail_count = retries
+    
+    return (fail_count, msg, status)
 
 if __name__ == '__main__':
     handler({}, None)
