@@ -27,7 +27,7 @@
         - name: Install SSH private key
           copy:
             dest: ~/.ssh/id_ed25519
-            content: "{{ lookup('hashi_vault', 'secret=secret/ssh/gollum:value') }}"
+            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/gollum').value }}"
             mode: "0400"
           no_log: true
 

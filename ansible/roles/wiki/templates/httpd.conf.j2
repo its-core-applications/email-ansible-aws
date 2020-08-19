@@ -16,9 +16,9 @@
     SSLHonorCipherOrder on
 
     OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration
-    OIDCClientID {{ lookup('hashi_vault', 'secret=secret/google/wiki:id') }}
-    OIDCClientSecret {{ lookup('hashi_vault', 'secret=secret/google/wiki:secret') }}
-    OIDCCryptoPassphrase {{ lookup('hashi_vault', 'secret=secret/google/wiki:passphrase') }}
+    OIDCClientID {{ lookup('flowerysong.hvault.kv', 'google/wiki').id }}
+    OIDCClientSecret {{ lookup('flowerysong.hvault.kv', 'google/wiki').secret }}
+    OIDCCryptoPassphrase {{ lookup('flowerysong.hvault.kv', 'google/wiki').passphrase }}
     OIDCRedirectURI https://wiki.{{ subd }}/login/google
     OIDCScope "openid email"
     OIDCRemoteUserClaim email

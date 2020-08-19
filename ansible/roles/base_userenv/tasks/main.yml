@@ -24,6 +24,7 @@
       get_url:
         dest: ~/.vim/autoload/plug.vim
         url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        mode: "0644"
 
     - name: Install vim plugins
       command: vim +'PlugInstall --sync' +qall
@@ -42,7 +43,7 @@
 
     - name: Install ssh private key
       copy:
-        content: "{{ lookup('hashi_vault', 'secret=secret/ssh/' ~ ansible_user ~ ':value') }}"
+        content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ ansible_user).value }}"
         dest: ~/.ssh/id_rsa.ec2
         mode: "0400"
       when:

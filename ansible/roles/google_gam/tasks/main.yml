@@ -65,7 +65,7 @@
     - name: Copy over primary GAM credentials
       copy:
         dest: "/home/collaborate/gam-config/{{ googled }}/{{ item.value }}.b64"
-        content: "{{ lookup('hashi_vault', 'secret=secret/google/gam/primary/{{ item.name }}:value') }}"
+        content: "{{ lookup('flowerysong.hvault.kv', 'google/gam/primary/' ~ item.name).value }}"
         owner: collaborate
         group: root
         mode: "0640"
@@ -104,7 +104,7 @@
     - name: Copy over discussions GAM credentials
       copy:
         dest: "/home/collaborate/gam-config/{{ discussionsd }}/{{ item.value }}.b64"
-        content: "{{ lookup('hashi_vault', 'secret=secret/google/gam/discussions/{{ item.name }}:value') }}"
+        content: "{{ lookup('flowerysong.hvault.kv', 'google/gam/discussions/' ~ item.name).value }}"
         owner: collaborate
         group: root
         mode: "0640"

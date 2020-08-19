@@ -27,7 +27,7 @@
             aws_ssh_key: "{{ aws_resource_prefix }} {{ (public_key | hash('sha1'))[:6] }}"
             aws_ssh_key_material: "{{ public_key }}"
           vars:
-            public_key: "{{ lookup('hashi_vault', 'secret=secret/ssh/' ~ ansible_user ~ ':public') }}"
+            public_key: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ ansible_user).public }}"
 
         - name: Create keypair
           ec2_key:
@@ -58,7 +58,7 @@
       ec2_instance:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        security_groups: "{{ launch_groups_default | union(launch_groups) | map('regex_replace', '^', aws_resource_prefix ~ ' ') | list }}"
+        security_groups: "{{ launch_groups_default | union(launch_groups) | map('regex_replace', '^', aws_resource_prefix ~ ' ') }}"
         key_name: "{{ aws_ssh_key }}"
         instance_type: "{{ aws_region_layout[aws_status][aws_region][launch_class].size | default(aws_instance_default[aws_status]) }}"
         vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[aws_region][item % (ec2_subnets[aws_region] | length)])).id }}"
@@ -78,7 +78,7 @@
           Class: "{{ launch_class }}"
           Status: spinup
           BusinessOwner: "{{ aws_resource_owner }}"
-      loop: "{{ range(launch_count | default(launch_count_default) | int) | list }}"
+      loop: "{{ range(launch_count | default(launch_count_default) | int) }}"
       ignore_errors: true
       register: ec2
 
@@ -92,7 +92,7 @@
       when: ec2_instances | length
       ignore_errors: true
       register: result
-      until: (result.instances | default([]) | map(attribute='tags.CustomDNSName') | select('defined') | list | length) == (ec2_instances | length)
+      until: (result.instances | default([]) | map(attribute='tags.CustomDNSName') | select('defined') | length) == (ec2_instances | length)
       retries: 20
       delay: 15
 
@@ -103,7 +103,7 @@
         resource: "{{ item.instance_id }}"
         tags:
           Status: spundown
-      loop: "{{ result.instances | default([]) | rejectattr('tags.CustomDNSName', 'defined') | list }}"
+      loop: "{{ result.instances | default([]) | rejectattr('tags.CustomDNSName', 'defined') }}"
       loop_control:
         label: "{{ item.instance_id }}"
 
@@ -123,7 +123,7 @@
         sleep: 2
         timeout: 300
       when: launch_wait | default(true)
-      loop: "{{ result.instances | default([]) | selectattr('tags.CustomDNSName', 'defined') | list }}"
+      loop: "{{ result.instances | default([]) | selectattr('tags.CustomDNSName', 'defined') }}"
       loop_control:
         label: "{{ item.instance_id }}"
 

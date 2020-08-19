@@ -29,7 +29,7 @@
         owner: "{{ item.name }}"
         group: "{{ item.name }}"
         mode: "0755"
-      loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
+      loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') }}"
 
     - name: Install authorized_keys for non-person accounts
       become_user: "{{ item.name }}"
@@ -39,7 +39,7 @@
         owner: "{{ item.name }}"
         group: "{{ item.name }}"
         mode: "0444"
-      loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') | list }}"
+      loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') }}"
 
     - name: Grant sudo access
       copy:

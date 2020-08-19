@@ -4,7 +4,7 @@
     - name: Install SSH private key
       copy:
         dest: /home/email/.ssh/id_ecdsa
-        content: "{{ lookup('hashi_vault', 'secret=secret/ssh/email:value') }}"
+        content: "{{ lookup('flowerysong.hvault.kv', 'ssh/email').value }}"
         owner: email
         group: email
         mode: "0400"

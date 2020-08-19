@@ -4,9 +4,9 @@ simta_arc_selector: arc-2017-08-04
 simta_dkim: true
 simta_ldap: true
 simta_ldap_red: RE
-simta_ldap_password: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value') }}"
+simta_ldap_password: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
 simta_srs: true
-simta_srs_secret: "{{ lookup('hashi_vault', 'secret=secret/simta/srs_secret:value') }}"
+simta_srs_secret: "{{ lookup('flowerysong.hvault.kv', 'simta/srs_secret').value }}"
 
 simta_alias_domains:
   - issues.hathitrust.org

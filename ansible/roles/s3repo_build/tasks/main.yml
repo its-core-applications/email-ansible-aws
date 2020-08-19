@@ -17,7 +17,7 @@
         mode: "0755"
 
     - name: Download files from S3
-      aws_s3_sync:
+      flowerysong.melange.s3_sync:
         direction: pull
         bucket: "{{ yum_hostname }}"
         region: "{{ yum_aws_region }}"
@@ -31,7 +31,7 @@
       command: createrepo --database --update {{ cache_root }}
 
     - name: Upload metadata to S3
-      aws_s3_sync:
+      flowerysong.melange.s3_sync:
         bucket: "{{ yum_hostname }}"
         region: "{{ yum_aws_region }}"
         direction: push

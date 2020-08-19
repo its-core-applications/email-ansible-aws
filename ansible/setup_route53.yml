@@ -25,7 +25,7 @@
         record: "{{ subd }}"
         type: SOA
         ttl: 300
-        value: "{{ result.set.value.split()[0:3] | join(' ') }} 7200 900 1209600 60"
+        value: "{{ result.set.ResourceRecords.0.Value.split()[0:3] | join(' ') }} 7200 900 1209600 60"
 
     - name: Create {{ spfd }}
       route53_zone:

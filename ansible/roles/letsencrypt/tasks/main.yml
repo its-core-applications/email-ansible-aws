@@ -40,7 +40,7 @@
 
     - name: Generate CSR for {{ certificate }}
       command: openssl req -new -sha256 -key /etc/pki/collab/private/{{ certificate }}.key -out /etc/pki/collab/{{ certificate }}.csr -config /etc/pki/collab/{{ certificate }}.cnf
-      when: "[rsa_key_result, ec_key_result, cnf_result] | select('changed') | list"
+      when: "[rsa_key_result, ec_key_result, cnf_result] | select('changed')"
 
     - name: Get ACME challenge for {{ certificate }}
       acme_certificate:
@@ -66,7 +66,7 @@
         zone: "{{ subd }}"
         record: "{{ item.value['dns-01']['resource'] }}.{{ item.key }}"
         type: TXT
-        value: "\"{{ item.value['dns-01']['resource_value'] }}\""
+        value: "'\"{{ item.value['dns-01']['resource_value'] }}\"'"
         ttl: 30
       loop: "{{ acme_data.challenge_data | default({}) | dict2items }}"
       when: acme_data is changed

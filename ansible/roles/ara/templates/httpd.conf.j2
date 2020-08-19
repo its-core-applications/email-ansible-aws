@@ -17,9 +17,9 @@
     SSLHonorCipherOrder on
 
     OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration
-    OIDCClientID {{ lookup('hashi_vault', 'secret=secret/google/' ~ ara_hostname ~ ':id') }}
-    OIDCClientSecret {{ lookup('hashi_vault', 'secret=secret/google/' ~ ara_hostname ~ ':secret') }}
-    OIDCCryptoPassphrase {{ lookup('hashi_vault', 'secret=secret/google/' ~ ara_hostname ~ ':passphrase') }}
+    OIDCClientID {{ lookup('flowerysong.hvault.kv', 'google/' ~ ara_hostname).id }}
+    OIDCClientSecret {{ lookup('flowerysong.hvault.kv', 'google/' ~ ara_hostname).secret }}
+    OIDCCryptoPassphrase {{ lookup('flowerysong.hvault.kv', 'google/' ~ ara_hostname).passphrase }}
     OIDCRedirectURI https://{{ ara_hostname }}/login/google
     OIDCScope "openid email"
     OIDCRemoteUserClaim email

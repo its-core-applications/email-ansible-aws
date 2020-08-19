@@ -18,11 +18,12 @@
       when: result is success
 
     - name: Remove entity from sensu
-      flowerysong.sensu_go.sensu_go_entity:
+      sensu.sensu_go.entity:
         name: "{{ inventory_hostname }}"
         state: absent
-        url: http://{{ sensu_server }}:4567/
-        password: "{{ sensu_password }}"
+        auth:
+          url: http://{{ sensu_server }}:4567/
+          password: "{{ sensu_password }}"
       delegate_to: localhost
       async: 60
       poll: 0

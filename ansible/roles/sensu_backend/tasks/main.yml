@@ -1,12 +1,13 @@
 - tags:
     - sensu
     - sensu_backend
-  collections:
-    - flowerysong.sensu_go
-  module_defaults:
-    group/sensu_go:
-      url: http://localhost:4567/
-      password: "{{ sensu_password }}"
+  # I've given up on waiting for custom module groups to be implemented upstream.
+  # Hacks it is.
+  vars:
+    sensu_auth: &sensu_auth
+      auth:
+        url: http://localhost:4567/
+        password: "{{ sensu_password }}"
   block:
     - import_role:
         name: influxdb
@@ -117,37 +118,41 @@
         - "'store already initialized' not in result.stderr"
 
     - name: Disable Tessen
-      sensu_go_tessen:
-        enabled: false
+      sensu.sensu_go.tessen:
+        state: disabled
+        <<: *sensu_auth
 
     - name: Bind admin role
-      sensu_go_rolebinding:
+      sensu.sensu_go.role_binding:
         name: blackops-admin
-        cluster: true
-        role: cluster-admin
+        cluster_role: cluster-admin
         groups:
           - blackops
+        <<: *sensu_auth
 
     - name: Bind read-only role for default namespace
-      sensu_go_rolebinding:
+      sensu.sensu_go.role_binding:
         name: readonly-list
-        role: view
-        cluster_role: true
+        cluster_role: view
         groups:
           - readonly
+        <<: *sensu_auth
 
     - name: Install fatigue filter
-      sensu_go_asset:
+      sensu.sensu_go.asset:
         name: fatigue_check_filter
-        download_url: https://github.com/nixwiz/sensu-go-fatigue-check-filter/releases/download/0.5.0/sensu-go-fatigue-check-filter_0.5.0.tar.gz
-        sha512: 6b0097d2414c10e5ccf644a21575b1cf7f495016ff3b61c2ced7ee0371da88d6a428f556e24f63255f4d3e1a45a73e6ac62805ec493f8286d8b6d0c5a6a7488b
+        builds:
+          - url: https://github.com/nixwiz/sensu-go-fatigue-check-filter/releases/download/0.5.0/sensu-go-fatigue-check-filter_0.5.0.tar.gz
+            sha512: 6b0097d2414c10e5ccf644a21575b1cf7f495016ff3b61c2ced7ee0371da88d6a428f556e24f63255f4d3e1a45a73e6ac62805ec493f8286d8b6d0c5a6a7488b
+        <<: *sensu_auth
 
     - name: Create the filters
-      sensu_go_filter:
+      sensu.sensu_go.filter:
         name: "{{ item.name }}"
         action: "{{ item.action | default('allow') }}"
         expressions: "{{ item.expressions }}"
         runtime_assets: "{{ item.runtime_assets | default(omit) }}"
+        <<: *sensu_auth
       loop:
         - name: bad_hostname
           expressions:
@@ -176,11 +181,11 @@
             - fatigue_check_filter
 
     - name: Create the SNS handlers
-      sensu_go_handler:
+      sensu.sensu_go.pipe_handler:
         name: "{{ item.name }}"
-        type: pipe
         command: handler-sns -r {{ sns_region }} -t {{ item.topic }} -d {{ aws_status }}/{{ aws_region }} -u https://dashboard.{{ aws_region }}.{{ subd }}
         filters: "{{ item.filters | union(default_filters) }}"
+        <<: *sensu_auth
       vars:
         default_filters:
           - not_silenced
@@ -204,20 +209,21 @@
             - critical
 
     - name: Create the mutators
-      sensu_go_mutator:
+      sensu.sensu_go.mutator:
         name: "{{ item }}"
         command: mutator-{{ item }}
+        <<: *sensu_auth
       loop:
         - metric-check
         - metric-labels
 
     - name: Create the InfluxDB handlers
-      sensu_go_handler:
+      sensu.sensu_go.pipe_handler:
         name: "{{ item.name }}"
-        type: pipe
         command: sensu-influxdb-handler -d sensu
         mutator: "{{ item.mutator }}"
         filters: "{{ item.filters }}"
+        <<: *sensu_auth
       loop:
         - name: influxdb
           mutator: metric-labels
@@ -244,36 +250,38 @@
         default: true
 
     - name: Create Agent 47
-      sensu_go_handler:
+      sensu.sensu_go.pipe_handler:
         name: kill_bad_clients
         command: handler-deregister
         filters:
           - bad_hostname
+        <<: *sensu_auth
 
     - name: Create the default handler set
-      sensu_go_handler:
+      sensu.sensu_go.handler_set:
         name: default
-        type: set
         handlers:
           - page
           - email
           - influxdb
           - influxdb_event
           - kill_bad_clients
+        <<: *sensu_auth
 
     # Sensu Go hardcodes the handler name for keepalive events
     - name: Handle keepalive timeouts
-      sensu_go_handler:
+      sensu.sensu_go.handler_set:
         name: keepalive
-        type: set
         handlers:
           - default
+        <<: *sensu_auth
 
     - name: Register Sensu proxy entities
-      sensu_go_entity:
+      sensu.sensu_go.entity:
         name: "{{ item.name }}"
         entity_class: proxy
         subscriptions: "{{ item.subscriptions }}"
+        <<: *sensu_auth
       loop:
         - name: "{{ aws_region }}.{{ subd }}"
           subscriptions:
@@ -293,45 +301,53 @@
             - Status_production
 
     - name: Register Sensu proxy entities for loadbalancers
-      sensu_go_entity:
+      sensu.sensu_go.entity:
         name: "{{ item }}"
         entity_class: proxy
         subscriptions:
             - Class_loadbalancer
             - Status_production
+        <<: *sensu_auth
       loop: "{{ mx_lbs | union(authn_lbs) | union(authz_lbs) }}"
       vars:
-        mx_lbs: "{{ mx_names[aws_region] | map('regex_replace', '$', '.' ~ subd) | list }}"
+        mx_lbs: "{{ mx_names[aws_region] | map('regex_replace', '$', '.' ~ subd) }}"
         authn_lbs: "{{ ('authn-relay' in aws_region_layout[aws_status][aws_region]) | ternary(['authn-relay' ~ elbd, 'authn-relay-vpn' ~ elbd], []) }}"
         authz_lbs: "{{ ('authz-relay' in aws_region_layout[aws_status][aws_region]) | ternary(['authz-relay' ~ elbd, 'authz-relay-vpn' ~ elbd], []) }}"
         elbd: ".{{ aws_region }}.{{ subd }}"
 
     - name: Monitor Sensu metrics
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: sensu-metrics
         command: sensu-prometheus-collector -exporter-url http://localhost:4567/metrics -metric-prefix sensu_
+        interval: 60
+        publish: true
         subscriptions:
           - Class_syslog
         handlers:
           - default
         output_metric_format: influxdb_line
+        <<: *sensu_auth
 
     - name: Monitor Area 1
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: area1-statuspage
         command: check-statuspage -d status.area1security.com -c 'Email Protection Service'
+        interval: 300
+        publish: true
         subscriptions:
           - Class_syslog
         handlers:
           - default
-        interval: 300
         proxy_entity_name: area1security.com
+        <<: *sensu_auth
       when: aws_region == aws_primary_region
 
     - name: Monitor EC2 instance counts
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: ec2-instances
         command: metrics-ec2
+        interval: 60
+        publish: true
         subscriptions:
           - Class_syslog
         handlers:
@@ -340,21 +356,27 @@
         output_metric_format: influxdb_line
         annotations:
           fatigue_check/occurrences: 3
+        <<: *sensu_auth
 
     - name: Monitor system metrics
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: system-profile
         command: system-profile-linux
+        interval: 60
+        publish: true
         subscriptions:
           - Status_production
         handlers:
           - default
         output_metric_format: graphite_plaintext
+        <<: *sensu_auth
 
     - name: Monitor disk usage
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: disks
         command: check-disks
+        interval: 60
+        publish: true
         subscriptions:
           - Status_production
         handlers:
@@ -362,62 +384,80 @@
         output_metric_format: influxdb_line
         annotations:
           fatigue_check/occurrences: 2
+        <<: *sensu_auth
 
     - name: Monitor Vault
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: vault-seal
         command: check-vault-seal
+        interval: 60
+        publish: true
         subscriptions:
           - Class_bastion
         handlers:
           - default
+        <<: *sensu_auth
       when: aws_region == aws_primary_region
 
     - name: Monitor redis
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: redis
         command: check-redis
+        interval: 60
+        publish: true
         subscriptions:
           - redis
         handlers:
           - default
         annotations:
           fatigue_check/occurrences: 3
+        <<: *sensu_auth
 
     - name: Monitor loadbalancers
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: cert
         command: !unsafe check-tls -H {{ .name }} --check-hostname
+        interval: 300
+        publish: true
         subscriptions:
           - Class_syslog
-        interval: 300
         handlers:
           - fyi
-        proxy_entity_attributes:
-          - "entity.subscriptions.filter(function(s) { return s == 'Class_loadbalancer' }).length > 0"
+        proxy_requests:
+          entity_attributes:
+            - "entity.subscriptions.filter(function(s) { return s == 'Class_loadbalancer' }).length > 0"
+        <<: *sensu_auth
 
     - name: Monitor redis clusters
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: redis-cluster
         command: !unsafe check-redis-cluster -c {{ .name }}
+        interval: 60
+        publish: true
         subscriptions:
           - Class_syslog
         handlers:
           - default
         annotations:
           fatigue_check/occurrences: 3
-        proxy_entity_attributes:
-          - "entity.subscriptions.filter(function(s) { return s == 'Class_redis_cluster' }).length > 0"
+        proxy_requests:
+          entity_attributes:
+            - "entity.subscriptions.filter(function(s) { return s == 'Class_redis_cluster' }).length > 0"
+        <<: *sensu_auth
 
     - name: Add simta restart hook
-      sensu_go_hook:
+      sensu.sensu_go.hook:
         name: restart_simta
         command: sudo /bin/systemctl restart simta
+        timeout: 60
+        <<: *sensu_auth
 
     - name: Monitor simta
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: "{{ item.name }}"
         command: "{{ item.command }}"
+        interval: 60
+        publish: true
         subscriptions:
           - Class_authn_relay
           - Class_authz_relay
@@ -433,6 +473,7 @@
         output_metric_format: "{{ ('metrics' in item.name) | ternary('influxdb_line', omit) }}"
         annotations: "{{ ('occurrences' in item) | ternary({'fatigue_check/occurrences': item.occurrences}, omit) }}"
         check_hooks: "{{ item.hooks | default(omit) }}"
+        <<: *sensu_auth
       loop:
         - name: simta
           command: check-process -p simta
@@ -459,9 +500,11 @@
           command: /usr/libexec/simta-admin/metrics-simta
 
     - name: Monitor simta expansion
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: simta-expansion
         command: /usr/libexec/simta-admin/check-simta-expansion -g simta.expansion.test@umich.edu -t success@devnull.mail.umich.edu
+        interval: 60
+        publish: true
         subscriptions:
           - Class_authn_relay
           - Class_authz_relay
@@ -472,31 +515,37 @@
           - Class_vdc_relay
         handlers:
           - influxdb_event
+        <<: *sensu_auth
 
     - name: Monitor simta authentication
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: simta-smtp-auth
         command: check-smtp-auth -u simta
+        interval: 60
+        publish: true
         env_vars:
-          SMTP_PASSWORD: "{{ lookup('hashi_vault', 'secret=secret/simta/ldap_password:value') }}"
+          SMTP_PASSWORD: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
         subscriptions:
           - Class_authn_relay
           - Class_covid_relay
         handlers:
           - influxdb_event
+        <<: *sensu_auth
 
     - name: Monitor IP reputation
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: dnsbl
         command: check-dnsbl
         interval: 300
         timeout: 240
+        publish: true
         subscriptions:
           - Class_egress
           - Class_covid_relay
           - Class_relay_egress
         handlers:
           - default
+        <<: *sensu_auth
       when: aws_status == 'prod'
 
     - name: Extra monitoring for inbound hosts
@@ -510,28 +559,35 @@
           - Class_vdc_relay
       block:
         - name: Extra simta queue monitoring for inbound hosts
-          sensu_go_check:
+          sensu.sensu_go.check:
             name: simta-queue-slow-age
             command: /usr/libexec/simta-admin/check-simta-queue-age -q slow -a 60 -c 0
+            interval: 60
+            publish: true
             subscriptions: "{{ inbound_hosts }}"
             handlers:
               - default
+            <<: *sensu_auth
 
         - name: Monitor DNSLs
-          sensu_go_check:
+          sensu.sensu_go.check:
             name: dnsl
             command: check-dnsl
-            subscriptions: "{{ inbound_hosts }}"
             interval: 300
             timeout: 240
+            publish: true
+            subscriptions: "{{ inbound_hosts }}"
             handlers:
               - influxdb_event
+            <<: *sensu_auth
 
     - name: Monitor simta aggregates
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: "{{ item }}-aggregate"
         command: check-aggregate -H {{ influxdb_server }} --check {{ item }}
         stdin: true
+        interval: 60
+        publish: true
         subscriptions:
           - Class_syslog
         handlers:
@@ -540,15 +596,18 @@
         annotations:
           dashboard_host: dashboard.{{ aws_region }}.{{ subd }}
           fatigue_check/occurrences: 2
+        <<: *sensu_auth
       loop:
         - dnsl
         - simta-expansion
 
     - name: Monitor simta auth aggregate
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: simta-smtp-auth-aggregate
         command: check-aggregate -H {{ influxdb_server }} --check simta-smtp-auth
         stdin: true
+        interval: 60
+        publish: true
         subscriptions:
           - Class_syslog
         handlers:
@@ -557,35 +616,45 @@
         annotations:
           dashboard_host: dashboard.{{ aws_region }}.{{ subd }}
           fatigue_check/occurrences: 2
+        <<: *sensu_auth
       when: "'authn-relay' in aws_region_layout[aws_status][aws_region]"
 
     - name: Monitor rbldnsd
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: rbldnsd
         command: check-process -p rbldnsd
+        interval: 60
+        publish: true
         subscriptions:
           - Class_dnsbl
         handlers:
           - default
+        <<: *sensu_auth
 
     - name: Monitor rbldnsd metrics
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: rbldnsd-metrics
         command: metrics-rbldnsd
+        interval: 60
+        publish: true
         subscriptions:
           - Class_dnsbl
         handlers:
           - default
         output_metric_format: influxdb_line
+        <<: *sensu_auth
 
     - name: Monitor rspamd
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: "{{ item.name }}"
         command: "{{ item.command }}"
+        interval: 60
+        publish: true
         subscriptions:
           - Class_mx
         handlers:
           - default
+        <<: *sensu_auth
       loop:
         - name: rspamd
           command: check-process -p rspamd
@@ -595,9 +664,11 @@
           command: check-rspamd-gtube
 
     - name: Monitor clamd
-      sensu_go_check:
+      sensu.sensu_go.check:
         name: "{{ item.name }}"
         command: "{{ item.command }}"
+        interval: 60
+        publish: true
         subscriptions:
           - Class_authn_relay
           - Class_authz_relay
@@ -608,6 +679,7 @@
           - default
         annotations:
           fatigue_check/occurrences: 2
+        <<: *sensu_auth
       loop:
         - name: clamd
           command: check-process -p clamd

@@ -1,3 +1,27 @@
-[submodule "ansible/collections/flowerysong/sensu_go"]
-	path = ansible/collections/ansible_collections/flowerysong/sensu_go
-	url = https://github.com/flowerysong/ansible-sensu-go.git
+[submodule "ansible/collections/ansible_collections/community/aws"]
+	path = ansible/collections/ansible_collections/community/aws
+	url = https://github.com/ansible-collections/community.aws
+[submodule "ansible/collections/ansible_collections/amazon/aws"]
+	path = ansible/collections/ansible_collections/amazon/aws
+	url = https://github.com/ansible-collections/amazon.aws
+[submodule "ansible/collections/ansible_collections/ansible/netcommon"]
+	path = ansible/collections/ansible_collections/ansible/netcommon
+	url = https://github.com/ansible-collections/ansible.netcommon
+[submodule "ansible/collections/ansible_collections/community/general"]
+	path = ansible/collections/ansible_collections/community/general
+	url = https://github.com/ansible-collections/community.general
+[submodule "ansible/collections/ansible_collections/community/crypto"]
+	path = ansible/collections/ansible_collections/community/crypto
+	url = https://github.com/ansible-collections/community.crypto
+[submodule "ansible/collections/ansible_collections/ansible/posix"]
+	path = ansible/collections/ansible_collections/ansible/posix
+	url = https://github.com/ansible-collections/ansible.posix
+[submodule "ansible/collections/ansible_collections/sensu/sensu_go"]
+	path = ansible/collections/ansible_collections/sensu/sensu_go
+	url = https://github.com/sensu/sensu-go-ansible
+[submodule "ansible/collections/ansible_collections/flowerysong/melange"]
+	path = ansible/collections/ansible_collections/flowerysong/melange
+	url = https://github.com/flowerysong/ansible-flowerysong.melange
+[submodule "ansible/collections/ansible_collections/flowerysong/hvault"]
+	path = ansible/collections/ansible_collections/flowerysong/hvault
+	url = https://github.com/flowerysong/ansible-flowerysong.hvault

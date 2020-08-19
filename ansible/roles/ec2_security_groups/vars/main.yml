@@ -63,7 +63,7 @@ ec2_sg:
     rules:
       - proto: tcp
         ports: 25
-        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | list | union(trusted_external_ips) | cidr_merge }}"
+        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
 
   vdc-relay:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
@@ -94,7 +94,7 @@ ec2_sg:
         ports:
           - 2514 # Remote syslog using RELP
           - 8086 # InfluxDB
-        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | list | union(trusted_external_ips) | cidr_merge }}"
+        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
 
   rbldnsd:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
@@ -133,7 +133,7 @@ ec2_sg:
         ports:
           - 3000 # sensu dashboard
           - 8081 # sensu backend transport
-        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | list | union(trusted_external_ips) | cidr_merge }}"
+        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
       - proto: tcp
         ports:
           - 4567 # sensu API

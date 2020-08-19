@@ -13,18 +13,9 @@
           - unzip
         state: latest
 
-    - name: Install extra pip packages
+    - name: Install pipenv
       pip:
-        name:
-          - Jinja2
-          - ftptool
-          - hvac
-        state: latest
-
-    - name: Install extra pip3 packages
-      pip:
-        name:
-          - pipenv
+        name: pipenv
         executable: pip3
         state: latest
 
@@ -112,7 +103,7 @@
           register: dlm_role
 
         - name: Enable automatic snapshots of the home volume
-          aws_data_lifecycle_manager:
+          flowerysong.melange.aws_data_lifecycle_manager:
             region: "{{ aws_region }}"
             profile: "{{ aws_profile }}"
             role: "{{ dlm_role.iam_role.arn }}"

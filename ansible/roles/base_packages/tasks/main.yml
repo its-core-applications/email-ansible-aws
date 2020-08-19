@@ -17,6 +17,10 @@
         state: absent
         lock_timeout: 30
 
+    - name: Install Amazon Linux extras
+      command: amazon-linux-extras install -y python3.8
+      when: ansible_facts.distribution == 'Amazon'
+
     # Only for the fake hostname that packer uses when building the base image
     - name: Upgrade all packages
       yum:

@@ -12,5 +12,5 @@
       vars:
         tg_group: Class_authn_relay
         nlb_name: authn-relay-vpn
-        nlb_subnets: "{{ ec2_subnets_vpn[aws_region] | map(attribute='id') | list }}"
+        nlb_subnets: "{{ ec2_subnets_vpn[aws_region] | map(attribute='id') }}"
         nlb_scheme: internal

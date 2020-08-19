@@ -23,7 +23,7 @@
         hour: 12
         weekday: 6
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/spindown_{{ item.key }}.yml &>/dev/null
-      loop: "{{ aws_region_layout[aws_status][aws_region] | dict2items | selectattr('value.autokill', 'defined') | selectattr('value.autokill') | list }}"
+      loop: "{{ aws_region_layout[aws_status][aws_region] | dict2items | selectattr('value.autokill', 'defined') | selectattr('value.autokill') }}"
 
     - name: Schedule deprovisioning of spundown hosts
       cron:

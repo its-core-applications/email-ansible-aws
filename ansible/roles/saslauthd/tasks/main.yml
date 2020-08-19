@@ -31,7 +31,7 @@
     - name: Copy the encoded keytab
       copy:
         dest: /etc/krb5.keytab.b64
-        content: "{{ lookup('hashi_vault', 'secret=secret/krb/' ~ simta_config ~ '.' ~ tld ~ ':value') }}"
+        content: "{{ lookup('flowerysong.hvault.kv', 'krb/' ~ simta_config ~ '.' ~ tld).value }}"
         owner: root
         group: mail
         mode: "0640"

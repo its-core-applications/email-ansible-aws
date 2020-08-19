@@ -7,6 +7,7 @@
         url: "{{ archive_url }}"
         dest: ~/{{ archive_file }}
         checksum: "{{ archive_checksum }}"
+        mode: "0644"
 
     - name: Create extraction dir
       file:
@@ -35,4 +36,4 @@
         - result.stdout is not search('File already exists, refusing to continue')
       changed_when: result.rc == 0
       vars:
-        build_executables: "{{ result.files | selectattr('mode', 'match', '^07') | list }}"
+        build_executables: "{{ result.files | selectattr('mode', 'match', '^07') }}"

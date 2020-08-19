@@ -8,3 +8,4 @@
         dest: ~/rpmbuild/RPMS/x86_64/{{ rpm }}
         timeout: 60
         checksum: "{{ rpm_checksum }}"
+        mode: "0644"

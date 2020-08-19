@@ -16,7 +16,7 @@
     type: CNAME
     ttl: "{{ item.TTL }}"
     value: "{{ item.ResourceRecords.0.Value }}"
-  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'CNAME') | list }}"
+  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'CNAME') }}"
   loop_control:
     label: "{{ item.Name }}"
   when:
@@ -33,7 +33,7 @@
     type: A
     ttl: "{{ item.TTL }}"
     value: "{{ item.ResourceRecords.0.Value }}"
-  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'A') | list }}"
+  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'A') }}"
   loop_control:
     label: "{{ item.Name }}"
   when:
@@ -49,8 +49,8 @@
     record: "{{ item.Name }}"
     type: TXT
     ttl: "{{ item.TTL }}"
-    value: "{{ item.ResourceRecords.0.Value }}"
-  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'TXT') | selectattr('Name', 'match', '^_acme-challenge\\.') | list }}"
+    value: "'{{ item.ResourceRecords.0.Value }}'"
+  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'TXT') | selectattr('Name', 'match', '^_acme-challenge\\.') }}"
   loop_control:
     label: "{{ item.Name }}"
   when: item.Name[16:-1] not in hostvars

@@ -58,11 +58,12 @@
       copy:
         src: "{{ item.name }}"
         dest: "{{ clamav_sigdir }}/{{ item.name }}"
-      loop: "{{ clamav_custom_sigs | selectattr('url', 'equalto', 'local') | list }}"
+        mode: "0644"
+      loop: "{{ clamav_custom_sigs | selectattr('url', 'equalto', 'local') }}"
 
     - name: rsync custom signatures
       command: rsync -t --timeout=60 {{ item.url }} {{ clamav_tmpdir }}/{{ item.name }}{{ ('process' in item) | ternary('.raw', '') }}
-      loop: "{{ clamav_custom_sigs | selectattr('url', 'match', '^rsync') | list }}"
+      loop: "{{ clamav_custom_sigs | selectattr('url', 'match', '^rsync') }}"
       register: rsync_result
       until: rsync_result.rc == 0
       changed_when: rsync_result.rc == 0
@@ -72,19 +73,20 @@
       get_url:
         url: "{{ item.url }}"
         dest: "{{ clamav_tmpdir }}/{{ item.name }}{{ ('process' in item) | ternary('.raw', '') }}"
+        mode: "0644"
         force: yes
-      loop: "{{ clamav_custom_sigs | selectattr('url', 'match', '^http') | list }}"
+      loop: "{{ clamav_custom_sigs | selectattr('url', 'match', '^http') }}"
       register: http_result
       changed_when: '"OK" in http_result.msg'
       failed_when: false
 
     - name: Generate a list of successfully updated sigs
       set_fact:
-        updated_sigs: "{{ (rsync_result.results + http_result.results) | select('changed') | list }}"
+        updated_sigs: "{{ (rsync_result.results + http_result.results) | select('changed') }}"
 
     - name: Post-process signatures
       shell: /usr/local/sbin/clamav_{{ item.item.process }} {{ clamav_tmpdir }}/{{ item.item.name }}.raw | sort -u >| {{ clamav_tmpdir }}/{{ item.item.name }}
-      loop: "{{ updated_sigs | selectattr('item.process', 'defined') | list }}"
+      loop: "{{ updated_sigs | selectattr('item.process', 'defined') }}"
       loop_control:
         label: "{{ item.item.name }}"
       changed_when: false
@@ -121,7 +123,7 @@
         infected_files: "{{ (result.stdout_lines | select('match', 'Infected files:') | first).split(':')[1] | int }}"
 
     - name: Upload signature files to S3
-      aws_s3_sync:
+      flowerysong.melange.s3_sync:
         direction: push
         bucket: clamav.{{ subd }}
         region: "{{ aws_region }}"

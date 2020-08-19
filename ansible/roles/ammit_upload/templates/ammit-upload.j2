@@ -2,7 +2,7 @@
 
 ftp_base="ftp.box.com/IIA%20SMTP%20Captures"
 ftp_user=its-collab-pyrocumulonimbus@umich.edu
-ftp_passwd={{ lookup('hashi_vault', 'secret=secret/box/its-collab-pyrocumulonimbus:value') }}
+ftp_passwd={{ lookup('flowerysong.hvault.kv', 'box/its-collab-pyrocumulonimbus').value }}
 
 tmpdir=/ammit/tmp
 retval=0

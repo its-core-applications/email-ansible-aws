@@ -18,7 +18,7 @@
           - name: gyb
             target: python
             extra_args: /home/collaborate/GYB/gyb.py --service-account
-            
+
     - name: Install GYB
       become_user: collaborate
       git:
@@ -40,7 +40,7 @@
     - name: Copy over GYB service account credentials
       copy:
         dest: "/home/collaborate/GYB/oauth2service.json.b64"
-        content: "{{ lookup('hashi_vault', 'secret=secret/google/gyb/oauth2service:value') }}"
+        content: "{{ lookup('flowerysong.hvault.kv', 'google/gyb/oauth2service').value }}"
         owner: collaborate
         group: root
         mode: "0640"

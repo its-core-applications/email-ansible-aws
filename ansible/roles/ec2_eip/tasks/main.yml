@@ -14,7 +14,7 @@
 
     - name: Make sure we have a free EIP
       assert:
-        that: eips.addresses | rejectattr('association_id', 'defined') | list | length > 0
+        that: eips.addresses | rejectattr('association_id', 'defined') | length > 0
         msg: No available {{ eip_class }} EIPs
 
     - name: Assign elastic IP

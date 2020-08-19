@@ -25,7 +25,7 @@
         group: staff
         home: /home/{{ item.name }}
         shell: /bin/bash
-        password: "{{ lookup('hashi_vault', 'secret=secret/shadow/' ~ item.name ~ ':value', errors='ignore') | default('!!', true) }}"
+        password: "{{ lookup('flowerysong.hvault.kv', 'shadow/' ~ item.name, errors='ignore').value | default('!!', true) }}"
         uid: "{{ item.uid }}"
         comment: "{{ item.comment }}"
         state: present

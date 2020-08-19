@@ -1,11 +1,11 @@
 kerberos:
-    admin: {{ lookup('hashi_vault', 'secret=secret/krb/cak/admin:value' ) }}
+    admin: {{ lookup('flowerysong.hvault.kv', 'krb/cak/admin').value }}
     keytab: /usr/local/venv/collab-admin-kit/cak.keytab
     realm: {{ kerbrealm }}
 
 mcommunity:
-    client_id: {{ lookup('hashi_vault', 'secret=secret/mcommapi/client_id:value' ) }}
-    secret: {{ lookup('hashi_vault', 'secret=secret/mcommapi/secret:value' ) }}
+    client_id: {{ lookup('flowerysong.hvault.kv', 'mcommapi/client_id').value }}
+    secret: {{ lookup('flowerysong.hvault.kv', 'mcommapi/secret').value }}
     api_control_group: collab-api-controller
 
 box:
@@ -25,7 +25,7 @@ google:
 
 discussions:
     gam_command: gam-discussions
-    domain: {{ discussionsd }} 
+    domain: {{ discussionsd }}
 
 general:
     log_facility: local5

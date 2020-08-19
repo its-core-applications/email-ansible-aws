@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-ansible = {git = "https://github.com/flowerysong/ansible",ref = "next"}
 ara = {git = "https://github.com/ansible-community/ara",ref = "master"}
 awscli = "*"
 boto = "*"
@@ -14,12 +13,12 @@ boto3 = "*"
 botocore = "*"
 cryptography = "*"
 dnspython = "*"
-hvac = "*"
 netaddr = "*"
 paramiko = "*"
 PyYAML = "*"
 Jinja2 = "*"
 PrettyTable = "*"
+ansible-core = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

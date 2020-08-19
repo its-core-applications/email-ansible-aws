@@ -14,6 +14,7 @@
           copy:
             src: build/{{ build_name }}/{{ build_name }}.spec
             dest: ~/{{ build_name }}.spec
+            mode: "0644"
 
         - name: Fetch sources for {{ build_name }}
           command: spectool -g -R ~/{{ build_name }}.spec
@@ -22,6 +23,7 @@
           copy:
             src: "{{ item }}"
             dest: ~/rpmbuild/SOURCES/{{ item | basename }}
+            mode: "0644"
           loop: "{{ query('fileglob', 'build/' ~ build_name ~ '/sources/*') }}"
 
         - name: Build {{ build_name }} RPM

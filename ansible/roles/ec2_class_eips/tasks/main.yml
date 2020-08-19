@@ -18,7 +18,7 @@
         profile: "{{ aws_profile }}"
         in_vpc: true
         state: present
-      loop: "{{ range(aws_region_layout[aws_status][aws_region][eip_class].count | default(1) - (result.addresses | length)) | list }}"
+      loop: "{{ range(aws_region_layout[aws_status][aws_region][eip_class].count | default(1) - (result.addresses | length)) }}"
       register: result
 
     - name: Tag new EIPs
@@ -48,4 +48,4 @@
         record: "{{ eip_host }}"
         type: A
         ttl: 60
-        value: "{{ result.addresses | map(attribute='public_ip') | list }}"
+        value: "{{ result.addresses | map(attribute='public_ip') }}"

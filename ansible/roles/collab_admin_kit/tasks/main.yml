@@ -59,7 +59,7 @@
     - name: Copy over Box API credentials
       copy:
         dest: "/home/collaborate/box-config/{{ boxd }}/auth.json.b64"
-        content: "{{ lookup('hashi_vault', 'secret=secret/box/api:value') }}"
+        content: "{{ lookup('flowerysong.hvault.kv', 'box/api').value }}"
         owner: collaborate
         group: root
         mode: "0640"
@@ -78,7 +78,7 @@
     - name: Copy over the cak keytab
       copy:
         dest: /usr/local/venv/collab-admin-kit/cak.keytab.b64
-        content: "{{ lookup('hashi_vault', 'secret=secret/krb/cak/' ~ kerbrealm ~ ':value') }}"
+        content: "{{ lookup('flowerysong.hvault.kv', 'krb/cak/' ~ kerbrealm).value }}"
         owner: collaborate
         group: root
         mode: "0640"
