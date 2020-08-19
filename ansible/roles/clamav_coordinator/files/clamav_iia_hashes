@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cat $1 | while read hash; do
+cat $1 | tr -d '"\r' | while read hash; do
     [[ $hash = 'observable' ]] && continue
+    [[ $hash = 'indicator' ]] && continue
     echo "$hash:*:UMICH.IIA.MalwareHash.$hash:73"
 done
