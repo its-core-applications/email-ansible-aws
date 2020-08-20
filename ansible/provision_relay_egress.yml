@@ -18,6 +18,7 @@
 
 - hosts: Class_relay_egress:&Status_spinup
   serial: 1
+  gather_facts: false
   tasks:
     - when: region == aws_region
       delegate_to: localhost
@@ -29,6 +30,7 @@
             eip_class: relay-egress
 
 - hosts: Class_relay_egress:&Status_spinup
+  gather_facts: false
   tasks:
     - when: region == aws_region
       delegate_to: localhost

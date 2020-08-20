@@ -9,6 +9,7 @@
           - smtp
 
 - hosts: Class_authz_relay:&Status_spinup
+  gather_facts: false
   tasks:
     - when: region == aws_region
       block:

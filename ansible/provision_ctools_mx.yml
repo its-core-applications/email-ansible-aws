@@ -17,6 +17,7 @@
               - mx-elb
 
 - hosts: Class_ctools_mx:&Status_spinup
+  gather_facts: false
   tasks:
     - delegate_to: localhost
       become: false
