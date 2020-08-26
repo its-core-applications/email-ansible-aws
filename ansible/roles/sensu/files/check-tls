@@ -54,7 +54,7 @@ def main():
 
     args = parser.parse_args()
 
-    socket.setdefaulttimeout(5)
+    socket.setdefaulttimeout(15)
 
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     context.verify_mode = ssl.CERT_REQUIRED
