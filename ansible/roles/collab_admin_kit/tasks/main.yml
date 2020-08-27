@@ -90,7 +90,7 @@
     - name: Set permissions on the keytab
       file:
         dest: /usr/local/venv/collab-admin-kit/cak.keytab
-        owner: collaborate 
+        owner: collaborate
         group: root
         mode: "0640"
 
