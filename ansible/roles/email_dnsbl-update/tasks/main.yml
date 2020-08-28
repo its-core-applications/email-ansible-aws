@@ -48,4 +48,5 @@
       git:
         name: git@gitlab.umich.edu:ITS/inf/core-infrastructure-and-automation/mail-routing/umich-dnsbls.git
         dest: /home/email/umich-dnsbls.git
+        accept_hostkey: true
       become_user: email
