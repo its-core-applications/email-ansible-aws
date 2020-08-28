@@ -46,6 +46,6 @@
 
     - name: Clone DNSBL repo
       git:
-        name: git@mogo.a.mail.umich.edu:email/umich-rbls
+        name: git@gitlab.umich.edu:ITS/inf/core-infrastructure-and-automation/mail-routing/umich-dnsbls.git
         dest: /home/email/umich-dnsbls.git
       become_user: email
