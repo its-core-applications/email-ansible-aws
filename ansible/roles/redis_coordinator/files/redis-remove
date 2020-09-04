@@ -69,6 +69,7 @@ if [[ $(awk '$9 && $3 == "myself,master"' $tmpfile) ]]; then
                 outlog "Giving up on failover!" >&2
                 exit 1
             fi
+            sleep 1
             res=$(redis-cli -h $replica CLUSTER FAILOVER)
         done
     fi
