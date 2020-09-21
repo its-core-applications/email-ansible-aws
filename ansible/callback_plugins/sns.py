@@ -143,7 +143,7 @@ class CallbackModule(CallbackBase):
             client = ara_client_utils.active_client()
             play = client.get('/api/v1/plays?uuid={}'.format(self.playbook_uuid))
             playbook_id = play['results'][0]['playbook']
-            ara_url = '{}/playbook/{}.html'.format(
+            ara_url = '{}/playbooks/{}.html?status=failed&status=unreachable'.format(
                 self.ara_base,
                 playbook_id,
             )

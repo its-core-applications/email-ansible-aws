@@ -10,7 +10,7 @@
       git:
         repo: https://github.com/ansible-community/ara.git
         dest: /var/cache/ara.git
-        version: 8491cc5a72e24de5e1f608f39ba7c0997601c279
+        version: 6c7ac4cc3f90a6703b2a037f466b085709181500
         update: true
         force: true
 
@@ -64,11 +64,9 @@
       cron:
         name: ara-cleanup
         user: "{{ ansible_user }}"
-        # FIXME: use `--limit` with `ara playbook prune` once ARA 1.5 is out
-        # https://github.com/ansible-community/ara/issues/166
-        hour: 0,1,2,3,4,5,6
+        hour: 0
         minute: 15
-        job: env ARA_SETTINGS=/home/ara/settings.yml /usr/local/venv/ara_server/bin/ara-manage prune --days 20 --confirm
+        job: env ARA_SETTINGS=/home/ara/settings.yml /usr/local/venv/ara_server/bin/ara playbook prune --days 20 --limit 2000 --confirm
 
     - name: Configure gunicorn service
       template:
