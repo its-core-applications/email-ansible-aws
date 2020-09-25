@@ -37,7 +37,7 @@
           SENSU_BACKEND: http://{{ sensu_server}}:4567/
           SENSU_REGION: "{{ aws_region }}"
           SENSU_STATUS: "{{ aws_status }}"
-          SNS_ARN: arn:aws:sns:{{ sns_region }}:{{ aws_account_sns }}:oncall
+          SNS_ARNS: arn:aws:sns:{{ sns_region }}:{{ aws_account_sns }}:oncall,arn:aws:sns:{{ sns_region }}:{{ aws_account_sns }}:rootmail
           SNS_REGION: "{{ sns_region }}"
           SNS_ROLE: arn:aws:iam::{{ aws_account_sns }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_SNS
 

@@ -8,8 +8,33 @@ import os
 import boto3
 import requests
 
+
+def health_check(sensu_backend):
+    status = 'CRITICAL'
+    msg = None
+
+    try:
+        response = requests.get(sensu_backend.rstrip('/') + '/health', timeout=12)
+    except Exception as e:
+        msg = 'Exception: {}'.format(e)
+    else:
+        if not response.ok:
+            msg = 'HTTP {}'.format(response.status_code)
+        else:
+            health = response.json()
+            print(health)
+            if not all(x['Healthy'] for x in health['ClusterHealth']):
+                msg = ','.join([x['Err'] for x in health['ClusterHealth']])
+
+    if msg == None:
+        status = 'OK'
+        msg = 'All checks passed'
+
+    return (status, msg)
+
+
 def handler(event, context):
-    for req in ('SENSU_BACKEND', 'SNS_ARN', 'SNS_ROLE'):
+    for req in ('SENSU_BACKEND', 'SNS_ARNS', 'SNS_ROLE'):
         if not os.environ.get(req):
             print('{} not set'.format(req))
             return
@@ -17,16 +42,9 @@ def handler(event, context):
     sensu_backend = os.environ.get('SENSU_BACKEND')
     sensu_region = os.environ.get('SENSU_REGION', 'us-west-2')
     sensu_status = os.environ.get('SENSU_STATUS', 'prod')
-    arn = os.environ.get('SNS_ARN')
+    arns = os.environ.get('SNS_ARNS').split(',')
     sns_region = os.environ.get('SNS_REGION', 'us-east-2')
     sns_role = os.environ.get('SNS_ROLE')
-    
-    #sensu_backend = 'http://sensu.us-east-2.x.mail.umich.edu:4567/'
-    #sensu_region = 'us-east-2'
-    #sensu_status = 'nonprod'
-    #arn = 'arn:aws:sns:us-west-2:440653842962:oncall'
-    #sns_region = 'us-west-2'
-    #sns_role = 'arn:aws:iam::440653842962:role/umcollab_440653842962_SNS'
 
     status = None
     sts = boto3.client('sts')
@@ -42,26 +60,23 @@ def handler(event, context):
         aws_session_token=creds['Credentials']['SessionToken'],
     )
 
-    fail_count = 0
-    response = None
-    retries = 5
+    attempt = 0
+    status = None
+    msg = None
 
-    while fail_count < retries:
-        health_result = health_check(sensu_backend, fail_count, response, retries, status)
-        fail_count = health_result[0]
-        print("Check: ",fail_count)
+    while status != 'OK' and attempt < 3:
+        attempt += 1
+        status, msg = health_check(sensu_backend)
+        print('{}: {}'.format(status, msg))
 
-    msg = health_result[1]
-    status = health_result[2]
-
-    if not status:
+    if status == 'OK':
         return
 
     subject = '{}/{} - ALERT - {}/sensu-monitor-health {}'.format(sensu_status, sensu_region, sensu_backend.split(':')[1][2:], status)
 
     lambda_msg = {
-        'sourcetype': 'lambda',
-        'source': 'sensu_monitor_health',
+        'sourcetype': 'sensu_monitor_health',
+        'source': 'lambda',
         'message': msg,
     }
 
@@ -71,40 +86,15 @@ def handler(event, context):
         'lambda': json.dumps(lambda_msg),
     }
 
-    response = client.publish(
-        TopicArn = arn,
-        Message = json.dumps(sns_msg),
-        MessageStructure = 'json',
-        Subject = subject,
-    )
-    print(response)
+    for arn in arns:
+        response = client.publish(
+            TopicArn = arn,
+            Message = json.dumps(sns_msg),
+            MessageStructure = 'json',
+            Subject = subject,
+        )
+        print(response)
 
-def health_check(sensu_backend, fail_count, response, retries, status):
-    msg = None 
-    try:
-        response = requests.get(sensu_backend.rstrip('/') + '/health', timeout=12)
-    except Exception as e:
-        status = 'CRITICAL'
-        msg = 'Exception: {}'.format(e)
-        fail_count = retries
-
-    if response:
-        if not response.ok:
-            status = 'CRITICAL'
-            msg = 'HTTP {}'.format(response.status_code)
-            fail_count = retries
-        else:
-            health = response.json()
-            print(health)
-            if not all(x['Healthy'] for x in health['ClusterHealth']):
-                status = 'CRITICAL'
-                msg = ','.join([x['Err'] for x in health['ClusterHealth']])
-                fail_count +=1
-
-    if not status:
-        fail_count = retries
-    
-    return (fail_count, msg, status)
 
 if __name__ == '__main__':
     handler({}, None)
