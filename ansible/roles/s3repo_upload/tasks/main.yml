@@ -23,6 +23,5 @@
         overwrite: never
       failed_when: false
       loop:
-        - /var/tmp/sensugems/cache
         - /home/{{ ansible_user }}/rpmbuild/RPMS/x86_64
         - /home/{{ ansible_user }}/rpmbuild/RPMS/noarch
