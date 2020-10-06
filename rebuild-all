@@ -7,6 +7,7 @@ for i in $(ANSIBLE_STDOUT_CALLBACK=json ansible localhost --playbook-dir $hackin
     [[ $i = 'syslog' ]] && continue
     [[ $i = 'builder' ]] && continue
     [[ $i = 'dev' ]] && continue
+    [[ $i = 'authz_static' ]] && continue
     $hacking_dir/build-ami $i &
     sleep 1m
 done
