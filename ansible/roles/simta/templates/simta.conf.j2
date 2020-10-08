@@ -90,7 +90,7 @@ BANNER_PUNISH_WRITES    ON
 {% elif simta_egress == false %}
 DNS_LIST    connect TRUST   relay-trust.dnsal
 DNS_LIST    connect ACCEPT  relay-accept.dnsal
-DNS_LIST    connect BLOCK   relay-deny.dnsbl
+DNS_LIST    connect BLOCK   relay-deny.dnsbl denied
 
 {% endif %}
 CONNECTION_LIMIT                    {{ simta_connlimit }}
