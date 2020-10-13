@@ -68,8 +68,6 @@ aws_region_layout:
       covid-relay:
         count: 2
         size: t3.medium
-      ctools-mx:
-        size: t3.small
       dnsbl:
         count: 3
         size: c5n.large
@@ -124,7 +122,6 @@ aws_region_layout:
         autokill: true
         autocycle: false
         size: t3.large
-      ctools-mx: {}
       dev:
         autokill: true
         autocycle: false

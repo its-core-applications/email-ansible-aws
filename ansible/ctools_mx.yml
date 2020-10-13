@@ -1,6 +1,0 @@
-- hosts: Class_ctools_mx
-  tasks:
-    - when: region == aws_region
-      block:
-        - import_role:
-            name: ctools_mx

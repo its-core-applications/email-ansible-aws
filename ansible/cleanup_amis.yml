@@ -6,7 +6,11 @@
       include_role:
         name: ec2_ami_cleanup
       vars:
-        image_retain: "{{ (image_type in [ 'junk', 'rbl' ]) | ternary(0, 4) }}"
+        bad_classes:
+          - junk
+          - ctools_mx
+          - rbl
+        image_retain: "{{ (image_type in bad_classes) | ternary(0, 4) }}"
       loop:
         - authn_relay
         - authz_relay

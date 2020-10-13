@@ -184,13 +184,6 @@ DEFAULT_LOCAL_MAILER /usr/libexec/simta/simda $R /usr/bin/procmail -f $S
 {% endfor %}
 
 {% endif %}
-{% if simta_ctools_domains is defined %}
-{% for domain in simta_ctools_domains %}
-@{{ domain.ljust( 30 ) }} R  NOT_FOUND  CTools sites have become read-only and are no longer accepting email. Please visit the CTools project website <http://its.umich.edu/projects/ctools-project-sites/> for more information.
-@{{ domain.ljust( 30 ) }} R  ALIAS /etc/mail/aliases-{{ domain }}.db
-{% endfor %}
-
-{% endif %}
 {% if simta_jail %}
 JAIL_CLEANUP_INTERVAL       600
 MID_LIST                    ON
