@@ -21,4 +21,5 @@ all:
     Status_spindown: {}
     Status_spinup: {}
     Status_spundown: {}
+    miserver: {}
     redis: {}

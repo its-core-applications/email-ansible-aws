@@ -1,4 +1,4 @@
-- hosts: all:!Status_spindown:!Status_spundown:!umce:!miserver
+- hosts: all:!Status_spindown:!Status_spundown:!miserver
   tasks:
     - import_role:
         name: base
