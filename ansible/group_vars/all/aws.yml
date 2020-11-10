@@ -63,6 +63,7 @@ aws_region_layout:
         count: 3
       authz-relay:
         count: 3
+        size: m5.xlarge
       authz-static:
         size: t3.small
       covid-relay:
