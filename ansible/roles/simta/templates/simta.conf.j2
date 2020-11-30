@@ -226,5 +226,9 @@ SRS                             FOREIGN
 {% for domain in simta_tls_domains %}
 @{{ domain.ljust( 30 ) }} D  TLS REQUIRED
 {% endfor %}
+# Limit # of recipients per delivery attempt
+{% for domain in simta_mrcpts_domains %}
+@{{ domain.domain.ljust(30) }} D  MAX_RCPTS {{ domain.max_rcpts }}
+{% endfor %}
 {% endif %}
 {% endif %}{# simta_localmail == false #}

@@ -51,3 +51,7 @@ simta_tls_domains:
   - verizon.net
   - wayne.edu
   - yahoo.com
+
+simta_mrcpts_domains:
+  - domain: med.umich.edu
+    max_rcpts: 50
