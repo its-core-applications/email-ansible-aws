@@ -1,4 +1,4 @@
-simta_config: covid-relay.mail
+simta_config: "{{ (aws_status == 'prod') | ternary('covid-relay.mail', 'covid-relay-nonprod.mail') }}"
 simta_queue_type: covid-relay
 simta_punt: coreav.state.mi.us
 simta_relay: true

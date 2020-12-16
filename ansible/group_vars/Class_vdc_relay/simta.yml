@@ -1,4 +1,4 @@
-simta_config: vdc-relay.mail
+simta_config: "{{ (aws_status == 'prod') | ternary('vdc-relay.mail', 'vdc-relay-nonprod.mail') }}"
 simta_relay: true
 simta_dkim: true
 simta_dkim_selector: relay-2018-08-29

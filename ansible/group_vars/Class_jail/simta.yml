@@ -1,4 +1,4 @@
-simta_config: jail.a.mail
+simta_config: jail.{{ subd | replace('.' ~ tld, '') }}
 simta_jail: true
 simta_relay: true
 simta_filters: false

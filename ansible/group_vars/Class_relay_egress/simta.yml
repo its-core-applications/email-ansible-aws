@@ -1,6 +1,5 @@
 simta_queue_type: relay-egress
-
-simta_config: egress.a.mail
+simta_config: egress.{{ subd | replace('.' ~ tld, '') }}
 simta_relay: true
 simta_egress: true
 simta_filters: false

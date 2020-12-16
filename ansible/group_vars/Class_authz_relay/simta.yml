@@ -1,4 +1,4 @@
-simta_config: relay.mail
+simta_config: "{{ (aws_status == 'prod') | ternary('relay.mail', 'relay-nonprod.mail') }}"
 simta_queue_type: relay-egress
 simta_relay: true
 simta_msa: true
