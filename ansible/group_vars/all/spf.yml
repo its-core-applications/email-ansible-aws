@@ -83,6 +83,12 @@ spf_thirdparty:
     record: 'include:greathill.com'
 
   - names:
+      - m-compass
+      - m-compass.admin
+      - travel.registry
+    record: 'ip4:216.248.199.106'
+
+  - names:
       - merchantcreditcard
     record: 'include:quikpayasp.com'
 
