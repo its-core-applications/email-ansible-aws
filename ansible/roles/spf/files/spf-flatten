@@ -56,9 +56,10 @@ def main():
         else:
             print(' '.join(spf))
 
+
 def parse_domain(domain):
     try:
-        records = dns.resolver.query(domain, 'TXT')
+        records = dns.resolver.resolve(domain, 'TXT')
     except dns.exception.DNSException as e:
         if strict:
             print(e)
@@ -73,6 +74,7 @@ def parse_record(record, domain):
     if fields[0] == 'v=spf1':
         for field in fields:
             parse_mech(field, domain)
+
 
 def parse_mech(mech, domain):
     value = None
@@ -98,10 +100,11 @@ def parse_mech(mech, domain):
     elif mech == 'redirect' or mech == 'include':
         parse_domain(value)
 
+
 # Resolve address records and add them to the list
 def resolve_addr(domain):
     try:
-        records = dns.resolver.query(domain, 'A')
+        records = dns.resolver.resolve(domain, 'A')
     except dns.resolver.NoAnswer:
         pass
     except dns.exception.DNSException as e:
@@ -113,7 +116,7 @@ def resolve_addr(domain):
             ip_list.append(netaddr.IPNetwork(str(ip)))
 
     try:
-        records = dns.resolver.query(domain, "AAAA")
+        records = dns.resolver.resolve(domain, 'AAAA')
     except dns.resolver.NoAnswer:
         pass
     except dns.exception.DNSException as e:
@@ -123,11 +126,12 @@ def resolve_addr(domain):
     else:
         for ip in records:
             ip_list.append(netaddr.IPNetwork(str(ip)))
+
 
 # Resolve MX records and add them to the list
 def resolve_mx(domain):
     try:
-        records = dns.resolver.query(domain, "MX")
+        records = dns.resolver.resolve(domain, 'MX')
     except dns.exception.DNSException as e:
         if strict:
             print(e)
@@ -136,4 +140,5 @@ def resolve_mx(domain):
         for record in records:
             resolve_addr(str(record).split(' ')[1])
 
-if __name__ == "__main__": main()
+
+if __name__ == '__main__': main()

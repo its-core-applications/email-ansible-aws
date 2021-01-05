@@ -2,25 +2,98 @@ spfd: "{{ (aws_status == 'prod') | ternary('spf.mail.' ~ tld, 'spf.' ~ subd) }}"
 
 spf_main:
   - name: _umich
-    record: "a:egress-host.a.mail.umich.edu a:egress-host.us-east-2.a.mail.umich.edu a:relay-egress-host.us-east-2.a.mail.umich.edu ip4:141.211.12.0/23 ip4:141.211.125.0/24 ip4:141.211.4.224 ip4:141.211.61.69 ip4:141.211.76.102 ip4:141.211.91.0/26 ip4:141.214.17.0/24 ip4:141.215.69.0/24"
+    record:
+      # 2016-11-15: AWS egress
+      - a:egress-host.a.mail.umich.edu
+      # 2018-05-11: AWS egress
+      - a:egress-host.us-east-2.a.mail.umich.edu
+      # 2018-05-11: AWS egress
+      - a:relay-egress-host.us-east-2.a.mail.umich.edu
+      # MACC
+      - ip4:141.211.12.0/23
+      # ASB
+      - ip4:141.211.125.0/24
+      # 2016-12-14: sherry.umdl.umich.edu
+      - ip4:141.211.4.224
+      # 2017-02-06: l-glarose02.math.lsa.umich.edu, INC0960628
+      - ip4:141.211.61.69
+      # hawkgirl
+      - ip4:141.211.76.102
+      # Exchange
+      - ip4:141.211.91.0/26
+      # 2017-02-08: nat-mail{x}.med.umich.edu
+      - ip4:141.214.17.0/24
+      # UMD
+      - ip4:141.215.69.0/24
 
 spf_thirdparty:
   - names:
       - '*'
-    record: 'include:outboundmail.convio.net include:servers.mcsv.net ip4:205.139.105.0/23 ip4:206.79.6.0/24 ip4:72.55.140.81 include:e2ma.net include:cust-spf.exacttarget.com ip4:199.231.134.72 ip4:199.231.134.73 ip4:198.58.97.164 ip4:50.116.17.165 ip6:2600:3c00::f03c:91ff:fe6e:bbb8 include:relay01.evenue.net ip4:66.151.109.0/24 ip4:34.194.230.233 ip4:34.230.107.215 include:rnmk.com ip4:162.247.216.0/22 include:ngwebsolutions.net ip4:170.30.0.0/16 ip4:216.248.199.106'
+    record:
+      # 2016-02-08: lholt / Office of University Development
+      # Blackbaud, possibly just sending as ucodevelopment
+      - include:outboundmail.convio.net
+      - ip4:205.139.105.0/23
+      - ip4:206.79.6.0/24
 
-  - names:
-      - 4help
-      - accounts.payable
-      - epay
-      - expensereports
-      - lsait-service-desk
-      - nonprod.sc
-      - qa.sc
-      - sharedservices
-      - supplier.maintenance
-    record: 'include:service-now.com'
+      # 2016-06-03: daduenn / College of Engineering / INC0743545
+      # MailChimp
+      - include:servers.mcsv.net
 
+      # 2016-03-16: kpeckens / LSA International Institute, Office of Academic Multicultural Initiatives / INC0679149, INC1053990
+      # FluidReview, sending as at least oami-uofm (second incident), wolverinepathways, and m-prep
+      - ip4:72.55.140.81
+
+      # 2016-10-10: cparkins / U-M Dearborn Office of Admissions & Orientation / INC0853708
+      # MyEmma
+      - include:e2ma.net
+
+      # 2016-10-17: cparkins / U-M Dearborn Office of Admissions & Orientation / INC0866923
+      # DDM sending as a lot of addresses
+      - include:cust-spf.exacttarget.com
+
+      # 2016-12-13: awilkins / ITS Postmaster / INC0914203
+      # M-Compass, sends as a lot of addresses
+      - ip4:199.231.134.72
+      - ip4:199.231.134.73
+
+      # 2017-02-08: billickc / Marketing and Communications / INC0962098
+      # VPS in Texas, sends as multiple addresses
+      - ip4:198.58.97.164
+      - ip4:50.116.17.165
+      - ip6:2600:3c00::f03c:91ff:fe6e:bbb8
+
+      # 2017-02-08: btmitch / Athletics / TDx 116777
+      # evenue.net, sends as multiple addresses
+      - include:relay01.evenue.net
+
+      # 2017-02-08: Office of Student Conflict Resolution, Athletics, etc.
+      # umich-advocate.symplicity.com, umichathletics-csm.symplicity.com, soe-umich.symplicity.com probably others
+      - ip4:66.151.109.0/24
+      - ip4:34.194.230.233
+      - ip4:34.230.107.215
+
+      # 2017-02-13: Registration Office
+      # rightnowtech.com sending as individual admissions people
+      - include:rnmk.com
+
+      # 2017-03-09: awilkins / ITS Postmaster / INC0988437
+      # Qualtrics
+      - ip4:162.247.216.0/22
+
+      # 2017-02-17: Office of Financial Aid
+      # sends as a large number of individuals and groups
+      - include:ngwebsolutions.net
+
+      # 2017-02-10: Risk Management
+      # csc-fsg.com
+      - ip4:170.30.0.0/16
+
+      # 2021-01-04: hdoyle / Global Engagement / TDx 490173
+      # Terra Dotta, sends as many addresses
+      - ip4:216.248.199.106
+
+  # 2017-05-30: Dentistry
   - names:
       - bldawson
       - dental.statements
@@ -28,121 +101,10 @@ spf_thirdparty:
       - domsw
       - jeffwa
       - stefanac
-    record: 'include:certifiedmail.com'
+    record: include:certifiedmail.com
 
-  - names:
-      - casl-touchnet
-      - ericstar
-      - tadavis
-    record: 'ip4:198.187.196.0/24 ip4:199.106.139.112/28 ip4:198.187.195.89'
-
-  - names:
-      - chermcb
-      - nbbickel
-    record: 'include:vocsmail.com'
-
-  - names:
-      - cjacobse
-      - umhsdev-web
-    record: 'ip4:198.100.45.34'
-
-  - names:
-      - coethanks
-    record: 'include:spf.mandrillapp.com'
-
-  - names:
-      - davidson-hr
-      - davidson-pr
-    record: 'ip4:216.12.149.100 ip4:216.12.129.78 ip4:216.12.143.31'
-
-  - names:
-      - dpss-emergency-alert
-    record: 'include:spf.blackboardconnect.com'
-
-  - names:
-      - eperformancelsahr
-      - psmitow
-    record: 'include:spf.peopleadmin.com'
-
-  - names:
-      - fleetrental
-    record: 'ip4:209.25.178.7'
-
-  - names:
-      - hathitrust-system
-      - lit-ae-root
-      - lit-ae-mysql
-    record: 'ip4:134.68.0.0/16'
-
-  - names:
-      - lawlibnotices
-    record: 'include:umil.iii.com'
-
-  - names:
-      - lentzs
-    record: 'include:greathill.com'
-
-  - names:
-      - merchantcreditcard
-    record: 'include:quikpayasp.com'
-
-  - names:
-      - mlearninginfo
-    record: 'include:sabacloud.com'
-
-  - names:
-      - moa-mustech
-    record: 'ip4:96.30.56.221 ip4:192.138.19.78 ip4:64.91.241.212 ip4:67.225.165.182'
-
-  - names:
-      - ochfitnesscenter
-    record: 'ip4:72.3.208.43'
-
-  - names:
-      - ocme-ll.support
-    record: 'a:mx1.aievolution.com a:mx2.aievolution.com'
-
-  - names:
-      - printingservices
-    record: 'include:pti.com'
-
-  - names:
-      - procurement.services
-      - umich.procurement
-    record: 'include:sciquest.com'
-
-  - names:
-      - pubstoreowners
-    record: 'include:_spf.bigcommerce.com'
-
-  - names:
-      - ross-elcc
-    record: 'a:657272-reswave.northwind.ca'
-
-  - names:
-      - rosscareerservices
-    record: 'include:mbafocus.com'
-
-  - names:
-      - umdearborn-orsp
-    record: 'a:in4corp.com'
-
-  - names:
-      - umditmais
-    record: 'include:itmnow.com'
-
-  - names:
-      - umpark
-    record: 'include:paypal.com'
-
-  - names:
-      - umra
-    record: 'include:_spf.membeemail.com'
-
-  - names:
-      - uuis-innleague
-    record: 'ip4:128.177.144.190 ip4:128.177.144.191'
-
+  # 2020-12-03: brash / Michigan Radio / TDx 373029
+  # Michigan Radio / Salesforce Pardot
   - names:
       - caroljla
       - christaq
@@ -151,4 +113,159 @@ spf_thirdparty:
       - edperry
       - heaton
       - jkovala
-    record: 'include:aspmx.pardot.com'
+    record: include:aspmx.pardot.com
+
+  # 2017-06-16: U-M Dearborn College of Arts, Sciences, and Letters
+  # touchnet.com
+  - names:
+      - casl-touchnet
+      - ericstar
+      - tadavis
+    record:
+      - ip4:198.187.196.0/24
+      - ip4:199.106.139.112/28
+      - ip4:198.187.195.89
+
+  # 2017-05-30
+  # Cision
+  - names:
+      - chermcb
+      - nbbickel
+    record: include:vocsmail.com
+
+  # 2017-06-16
+  # host at a2webhosting.com
+  - names:
+      - cjacobse
+      - umhsdev-web
+    record: ip4:198.100.45.34
+
+  # 2020-01-14: jmchris / CoE Office of Advancement / INC1882190
+  - names:
+      - coethanks
+    record: include:spf.mandrillapp.com
+
+  # 2018-09-10: cfz / William Davidson Institute / INC1454054, INC1826705
+  # Kronos Workforce Ready (WorkForce Go!)
+  - names:
+      - davidson-hr
+      - davidson-pr
+    record:
+      - ip4:216.12.149.100
+      - ip4:216.12.129.78
+      - ip4:216.12.143.31
+
+  # 2017-04-27: psmitow / LSA Human Resources / INC1033889
+  # PeopleAdmin
+  - names:
+      - eperformancelsahr
+      - psmitow
+    record: include:spf.peopleadmin.com
+
+  # 2017-01-05: hodel / Parking Services / INC0918517
+  # Agile
+  - names:
+      - fleetrental
+    record: ip4:209.25.178.7
+
+  # 2017-02-17: Library Information Technology
+  # Servers in .umdl.umich.edu (on an Indiana University IP range)
+  - names:
+      - hathitrust-system
+      - lit-ae-root
+      - lit-ae-mysql
+    record: ip4:134.68.0.0/16
+
+  # 2017-02-21: Law Library
+  - names:
+      - lawlibnotices
+    record: include:umil.iii.com
+
+  # 2017-05-30
+  # No MCommunity entry for the name, but it looks kind of legitimate.
+  - names:
+      - merchantcreditcard
+    record: include:quikpayasp.com
+
+  # 2017-02-17: Learning Management Services
+  # MLearning
+  - names:
+      - mlearninginfo
+    record: include:sabacloud.com
+
+  # 2017-02-01: jmturner / U-M Museum of Art / INC0957078, INC1083573
+  # LiquidWeb IPs. VPS?
+  - names:
+      - moa-mustech
+    record:
+      - ip4:96.30.56.221
+      - ip4:192.138.19.78
+      - ip4:64.91.241.212
+      - ip4:67.225.165.182
+
+  # 2017-05-31: Ross School of Business
+  - names:
+      - ochfitnesscenter
+    record: ip4:72.3.208.43
+
+  # 2019-02-25: ceagl / MiCME / INC1609152
+  - names:
+      - ocme-ll.support
+    record:
+      - a:mx1.aievolution.com
+      - a:mx2.aievolution.com
+
+  # 2017-02-13: Printing Services
+  - names:
+      - printingservices
+    record: include:pti.com
+
+  # 2017-10-02: Procurement Services
+  - names:
+      - procurement.services
+      - umich.procurement
+    record: include:sciquest.com
+
+  # 2017-02-08: Office of Student Publications
+  - names:
+      - pubstoreowners
+    record: include:_spf.bigcommerce.com
+
+  # 2017-06-07
+  - names:
+      - ross-elcc
+    record: a:657272-reswave.northwind.ca
+
+  # 2017-02-13: Ross School of Business Career Services
+  - names:
+      - rosscareerservices
+    record: include:mbafocus.com
+
+  # 2017-02-13: U-M Dearborn
+  - names:
+      - umdearborn-orsp
+    record: a:in4corp.com
+
+  # 2017-07-03: pmayhew / / INC1092757
+  - names:
+      - umditmais
+    record: include:itmnow.com
+
+  # 2017-05-30
+  - names:
+      - umpark
+    record: include:paypal.com
+
+  # 2019-12-10: vargos / HR Records & Info Services / INC1851455
+  # Membee service for UM Retiree's association
+  - names:
+      - umra
+    record: include:_spf.membeemail.com
+
+  # 2019-08-06: aslewis / DSA Central Administration (University Unions) / INC1737112
+  # OPERA
+  - names:
+      - uuis-innleague
+    record:
+      - ip4:128.177.144.190
+      - ip4:128.177.144.191
