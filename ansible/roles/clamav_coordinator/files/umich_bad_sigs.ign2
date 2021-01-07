@@ -1,5 +1,3 @@
-UMICH.APER.any.privacy@childrens.com
-UMICH.APER.from.info@gmail.com
 Sanesecurity.Malware.7313
 PUA.PDF.OpenActionObject
 PUA.OLE.EmbeddedPDF
@@ -17,7 +15,6 @@ Sanesecurity.Blurl.91c02b
 Sanesecurity.Malware.25370.XmlHeurGen.1
 Sanesecurity.Badmacro.25370.XmlHeurGen.1
 Sanesecurity.Blurl.a30903
-UMICH.APER.from.info@service.com
 Sanesecurity.Blurl.1395b2
 Sanesecurity.Blurl.599130
 Sanesecurity.Blurl.d7bc7f
@@ -29,3 +26,4 @@ Sanesecurity.Blurl.4cc733
 MiscreantPunch.EvilDoc.Exploit.2017-11882.M2
 Sanesecurity.Rogue.0hr.20181004-1536
 Sanesecurity.Malware.27888.SPUrl
+Sanesecurity.Blurl.06907a
