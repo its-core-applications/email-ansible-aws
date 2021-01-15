@@ -236,6 +236,11 @@ spf_thirdparty:
       - ross-elcc
     record: a:657272-reswave.northwind.ca
 
+  # 2021-01-15: csobko / Ross School of Business / TDx 510757
+  - names:
+      - rossale45conference
+    record: include:sendgrid.net
+
   # 2017-02-13: Ross School of Business Career Services
   - names:
       - rosscareerservices
