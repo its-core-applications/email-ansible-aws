@@ -1,0 +1,65 @@
+# This playbook takes all of the mail for a specific destination domain out of
+# the queue and stages it for automatic requeueing by simta-requeue.
+#
+# Example:
+# ansible-playbook task_requeue_destination.yml -e target_destination=hotmail.com --limit calm-bunyip.egress.a.mail.umich.edu
+
+- hosts: Class_egress:Class_relay_egress:&Status_production
+  tasks:
+    - name: Check for limit
+      assert:
+        that: ansible_limit is defined
+        fail_msg: This playbook requires that you use --limit to target specific host(s)
+
+    - name: Check configuration
+      assert:
+        that: target_destination is defined
+        fail_msg: Missing destination. Try something like `-e target_destination=hotmail.com`
+
+    - name: Select messages to requeue
+      command: simqclean -e -s H{{ target_destination }}
+
+    - find:
+        path: /var/tmp/simqclean/H{{ target_destination }}
+        file_type: directory
+      register: result
+
+    - file:
+        path: "{{ item.path }}/files"
+        state: absent
+      loop: "{{ result.files }}"
+
+    - name: Lock and load
+      vars:
+        simqtmp_base: /home/{{ lookup('env', 'USER') }}/simqtmp/inbound/{{ simta_queue_type }}
+        simqtmp: "{{ simqtmp_base }}/{{ inventory_hostname }}-{{ ansible_facts.date_time.epoch | to_uuid }}"
+      block:
+        - name: Create local queue storage directory
+          delegate_to: localhost
+          file:
+            dest: "{{ simqtmp_base }}"
+            state: directory
+            owner: "{{ ansible_user }}"
+
+        - name: Touch lockfile
+          delegate_to: localhost
+          file:
+            dest: "{{ simqtmp }}.lock"
+            state: touch
+
+        - name: Save queue
+          synchronize:
+            mode: pull
+            archive: true
+            src: "{{ item.path }}/"
+            dest: "{{ simqtmp }}/"
+          loop: "{{ result.files }}"
+
+        - name: Remove remote directories from consideration
+          command: mv /var/tmp/simqclean/H{{ target_destination }} /var/tmp/{{ target_destination }}.requeued.{{ ansible_facts.date_time.iso8601 }}
+
+        - name: Remove lockfile
+          delegate_to: localhost
+          file:
+            dest: "{{ simqtmp }}.lock"
+            state: absent
