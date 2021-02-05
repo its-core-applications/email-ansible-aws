@@ -1,0 +1,23 @@
+- tags:
+    - ealert
+  block:
+    - import_role:
+        name: python_venv
+      vars:
+        venv_py3: true
+        venv_name: ealert
+        venv_packages:
+          - git+https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/mail-routing/ealert.git
+        venv_wrappers:
+          - name: ealert-getmids
+          - name: ealert-processlogs
+          - name: ealert-processraw
+          - name: ealert-summarize
+
+    - name: Install preprocessing script
+      copy:
+        dest: /usr/local/bin/ealert-preprocess
+        src: ealert-preprocess
+        owner: root
+        group: root
+        mode: "0755"

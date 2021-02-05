@@ -24,5 +24,8 @@
             name: sensu
 
         - import_role:
+            name: ealert
+
+        - import_role:
             name: seshet
           when: "'authn-relay' in aws_region_layout[aws_status][aws_region]"

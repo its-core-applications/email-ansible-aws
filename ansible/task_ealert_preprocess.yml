@@ -1,0 +1,31 @@
+# This playbook does the preprocessing for emergency alert statistics on each
+# syslog host, then fetches the resulting JSON files for final processing.
+#
+# Example:
+# ansible-playbook task_ealert_preprocess.yml
+# ealert-summarize ~/ealert/2021-02-26T13:30
+
+- hosts: localhost
+  tasks:
+    - set_fact:
+        destdir: ~/ealert/{{ ansible_facts.date_time.iso8601[:-4] }}
+
+- hosts: Class_syslog
+  gather_facts: false
+  vars:
+    logname: mail
+  tasks:
+    - name: Preprocess logs
+      command: ealert-preprocess {{ logname }}
+      register: result
+
+    - name: Fetch preprocessed logs
+      fetch:
+        src: "{{ result.stdout_lines | last }}"
+        dest: "{{ hostvars.localhost.destdir }}/"
+        flat: true
+
+- hosts: localhost
+  tasks:
+    - debug:
+        msg: Artifacts have been saved to {{ destdir }}

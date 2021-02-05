@@ -1,0 +1,37 @@
+#!/bin/bash
+
+logname=${1:-mail}
+tmpdir=$(mktemp -d /var/tmp/ealert.XXXXXXXX)
+cd $tmpdir
+
+mkdir raw
+pushd raw
+mkdir mx
+pushd mx
+launched=0
+for logfile in /var/log/remote/*.mx.*/${logname}; do
+    ealert-processlogs -t mx $logfile > $(basename $(dirname $logfile)).json &
+    if [[ $(( launched++ )) -ge 3 ]]; then
+        launched=0
+        wait
+    fi
+done
+wait
+popd
+
+ealert-getmids mx > mids.json
+
+mkdir -p egress
+pushd egress
+for logfile in /var/log/remote/*.egress.*/${logname}; do
+    ealert-processlogs -t egress -m ../mids.json $logfile > $(basename $(dirname $logfile)).json &
+done
+wait
+popd
+
+popd
+
+output=$(hostname)-$(date +%F).json
+ealert-processraw raw > $output
+
+echo $tmpdir/$output

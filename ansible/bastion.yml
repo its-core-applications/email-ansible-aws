@@ -115,3 +115,6 @@
         - import_role:
             name: wiki
           when: aws_region == aws_primary_region
+
+        - import_role:
+            name: ealert
