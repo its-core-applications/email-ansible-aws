@@ -27,6 +27,13 @@
         version: 1.12.2
         user_install: false
 
+    # FIXME: ibid.
+    - name: Install git gem
+      gem:
+        name: git
+        version: 1.6.0
+        user_install: false
+
     - name: Install fpm
       gem:
         name: fpm
