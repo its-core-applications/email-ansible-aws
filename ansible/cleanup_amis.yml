@@ -17,7 +17,6 @@
         - authz_relay
         - base
         - covid_relay
-        - ctools_mx
         - dnsbl
         - egress
         - jail
