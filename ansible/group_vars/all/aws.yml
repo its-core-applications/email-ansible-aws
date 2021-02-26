@@ -115,9 +115,12 @@ aws_region_layout:
         size: m5.xlarge
   nonprod:
     us-east-2:
-      authn-relay: {}
-      authz-relay: {}
-      authz-static: {}
+      authn-relay:
+        size: t3.medium
+      authz-relay:
+        size: t3.medium
+      authz-static:
+        size: t3.medium
       covid-relay:
         count: 1
       builder:
@@ -138,10 +141,12 @@ aws_region_layout:
         size: t3.large
       mx:
         count: 3
+        size: t3.medium
         cycle_method: spinup
       relay-egress: {}
       syslog: {}
-      vdc-relay: {}
+      vdc-relay:
+        size: t3.medium
 
 yum_hostname: yum.{{ subd }}
 yum_repo_path: "{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distribution_major_version }}"

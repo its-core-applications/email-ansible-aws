@@ -25,15 +25,13 @@
 
 Summary:	End-user tools for the Clam Antivirus scanner
 Name:		clamav
-Version:	0.102.4
+Version:	0.103.3
 Release:	1%{?dist}
 Epoch:          0
 License:	proprietary
 URL:		http://www.clamav.net
 Source0:	http://www.clamav.net/downloads/production/%name-%version%{?prerelease}.tar.gz
 Source999:	http://www.clamav.net/downloads/production/%name-%version%{?prerelease}.tar.gz.sig
-# https://bugzilla.clamav.net/show_bug.cgi?id=10979
-#Patch0:         clamav-0.102.2-threaded-reload.patch
 BuildRoot:	%_tmppath/%name-%version-%release-root
 Requires:	clamav-lib = %epoch:%version-%release
 BuildRequires:	zlib-devel bzip2-devel gmp-devel curl-devel
@@ -232,10 +230,6 @@ test -e %freshclamlog || {
 	! test -x /sbin/restorecon || /sbin/restorecon %freshclamlog
 }
 
-%triggerin update -- %name-update < 0.97.3-1704
-# remove me after F19
-! test -x /sbin/restorecon || /sbin/restorecon %freshclamlog &>/dev/null || :
-
 
 %post   lib -p /sbin/ldconfig
 %postun lib -p /sbin/ldconfig
@@ -286,6 +280,7 @@ test -e %freshclamlog || {
 %dir %_sysconfdir/clamd.d
 
 %defattr(-,root,root,-)
+%_unitdir/clamav-clamonacc.service
 %_unitdir/clamav-daemon.service
 %_unitdir/clamav-daemon.socket
 
