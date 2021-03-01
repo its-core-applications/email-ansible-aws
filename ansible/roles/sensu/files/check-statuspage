@@ -1,0 +1,40 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import argparse
+import sys
+
+import requests
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--domain', required=True)
+parser.add_argument('-c', '--component', action='append')
+args = parser.parse_args()
+domain = args.domain
+
+try:
+    res = requests.get('https://{}/api/v2/incidents/unresolved.json'.format(domain))
+except Exception as e:
+    print('Failed to fetch incident feed for {}: {}'.format(domain, e))
+    sys.exit(3)
+
+if not res.ok:
+    print('Failed to fetch incident feed for {}: HTTP {}'.format(domain, response.status_code))
+    sys.exit(3)
+
+incidents = res.json()['incidents']
+if not incidents:
+    print('No incidents reported on {}'.format(domain))
+    sys.exit(0)
+
+retval = 1
+for inc in incidents:
+    if inc['components'] and args.component:
+        if any(x['name'] in args.component for x in inc['components']):
+            retval = 2
+    else:
+        retval = 2
+
+    print(inc['incident_updates'][0]['body'])
+
+sys.exit(retval)

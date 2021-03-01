@@ -288,6 +288,9 @@
           subscriptions:
             - Class_redis_cluster
             - Status_production
+        - name: area1security.com
+          subscriptions:
+            - Status_production
 
     - name: Register Sensu proxy entities for loadbalancers
       sensu_go_entity:
@@ -312,6 +315,18 @@
         handlers:
           - default
         output_metric_format: influxdb_line
+
+    - name: Monitor Area 1
+      sensu_go_check:
+        name: area1-statuspage
+        command: check-statuspage -d status.area1security.com -c 'Email Protection Service'
+        subscriptions:
+          - Class_syslog
+        handlers:
+          - default
+        interval: 300
+        proxy_entity_name: area1security.com
+      when: aws_region == aws_primary_region
 
     - name: Monitor EC2 instance counts
       sensu_go_check:

@@ -65,6 +65,7 @@
         - check-redis
         - check-redis-cluster
         - check-smtp-auth
+        - check-statuspage
         - check-tls
         - metrics-ec2
 
