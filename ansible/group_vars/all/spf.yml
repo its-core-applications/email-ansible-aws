@@ -267,6 +267,11 @@ spf_thirdparty:
       - umra
     record: include:_spf.membeemail.com
 
+  # 2021-03-08: dparry / UMSI / TDx 686194 (Marching Order)
+  - names:
+      - umsi.studentlife
+    record: ip4:176.31.145.254
+
   # 2019-08-06: aslewis / DSA Central Administration (University Unions) / INC1737112
   # OPERA
   - names:
