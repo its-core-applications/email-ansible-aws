@@ -181,6 +181,14 @@ spf_thirdparty:
       - lawlibnotices
     record: include:umil.iii.com
 
+  # Marching Order
+  - names:
+      # 2021-03-09: jjude / Law School / TDx 692956
+      - lawseniorday
+      # 2021-03-08: dparry / UMSI / TDx 686194
+      - umsi.studentlife
+    record: ip4:176.31.145.254
+
   # 2017-05-30
   # No MCommunity entry for the name, but it looks kind of legitimate.
   - names:
@@ -266,11 +274,6 @@ spf_thirdparty:
   - names:
       - umra
     record: include:_spf.membeemail.com
-
-  # 2021-03-08: dparry / UMSI / TDx 686194 (Marching Order)
-  - names:
-      - umsi.studentlife
-    record: ip4:176.31.145.254
 
   # 2019-08-06: aslewis / DSA Central Administration (University Unions) / INC1737112
   # OPERA
