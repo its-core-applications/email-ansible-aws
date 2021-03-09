@@ -40,6 +40,7 @@
           - ubl
           - ubl-preemptive
           - deny-from
+          - drop-from
         actions:
           - add
           - remove

@@ -1,0 +1,12 @@
+#!/bin/dash
+# drop based on sender
+
+hashed=$(echo -n $SIMTA_SMTP_MAIL_FROM | tr A-Z a-z | sha1sum)
+# throw away the non-hash parts
+hashed=${hashed%% *}
+
+bl=$(simrbl -l drop-from.dnsbl -t $hashed)
+if [ $? -eq 1 ]; then
+    log "21_drop_from: $SIMTA_SMTP_MAIL_FROM ($bl)"
+    filter_exit $MESSAGE_DELETE
+fi

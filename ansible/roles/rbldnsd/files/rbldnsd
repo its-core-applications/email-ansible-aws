@@ -18,6 +18,7 @@ RBLDNSD="- -q -a -s +/var/log/rbldnsd/stats -t 300:300:600 -b 0.0.0.0 \
         ual.dnsal:dnset:/var/lib/rbldnsd/umich/ual \
         ubl.dnsbl:dnset:/var/lib/rbldnsd/umich/ubl,/var/lib/rbldnsd/umich/ubl-preemptive \
         deny-from.dnsbl:dnset:/var/lib/rbldnsd/umich/deny-from \
+        drop-from.dnsbl:dnset:/var/lib/rbldnsd/umich/drop-from \
         test1.dnsbl:ip4set:/var/lib/rbldnsd/umich/testrbl1 \
         test2.dnsbl:ip4set:/var/lib/rbldnsd/umich/testrbl2 \
         test3.dnsbl:ip4set:/var/lib/rbldnsd/umich/testrbl3 \
