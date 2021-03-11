@@ -28,7 +28,7 @@
 
     - name: Fix file permissions
       file:
-        dest: /var/lib/carbon
+        dest: /var/lib/influxdb
         state: directory
         owner: influxdb
         group: influxdb
