@@ -87,6 +87,7 @@ aws_region_layout:
         count: 3
       syslog:
         autocycle: false
+        size: m5.xlarge
       vdc-relay:
         count: 2
         size: t3.small
@@ -111,6 +112,7 @@ aws_region_layout:
         cycle_method: spinup
       syslog:
         autocycle: false
+        size: m5.xlarge
   nonprod:
     us-east-2:
       authn-relay: {}
