@@ -59,6 +59,8 @@ simta_ldap_domains_mapped:
     prefix: iracda2019
   - domain: isbis.org
     prefix: isbis
+  - domain: michigandaily.com
+    prefix: michigandaily
   - domain: michiganemagine.org
     prefix: michiganemagine
   - domain: michiganherc.org
