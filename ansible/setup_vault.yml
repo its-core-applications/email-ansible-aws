@@ -1,4 +1,190 @@
+- hosts: Class_bastion
+  environment:
+    VAULT_ADDR: "{{ lookup('env', 'VAULT_ADDR') }}"
+  tasks:
+    - when: aws_region == aws_primary_region
+      become: false
+      block:
+        - name: Mount secret/
+          flowerysong.hvault.engine:
+            path: secret
+            # FIXME: can we upgrade these to use the new backend name?
+            type: generic
+            #options:
+            #  version: 1
+
+        - name: Mount auth/ldap/
+          flowerysong.hvault.auth_method:
+            path: ldap
+            type: ldap
+            listing_visibility: unauth
+
+        - name: Configure LDAP authentication
+          flowerysong.hvault.ldap_config:
+            url: ldaps://ldap.umich.edu
+            userdn: ou=People,dc=umich,dc=edu
+            userattr: uid
+            groupdn: ou=User Groups,ou=Groups,dc=umich,dc=edu
+            groupfilter: !unsafe (member={{.UserDN}})
+            groupattr: cn
+
+        - name: Create blackops policy
+          flowerysong.hvault.policy:
+            name: blackops
+            policy:
+              identity/*: [read, list]
+              identity: [list]
+              secret/*: [create, read, update, delete, list]
+              secret: [list]
+              ssh-client-signer/*: [list]
+              ssh-client-signer/sign/ec2-user: [read, update, list]
+              ssh-client-signer/sign/personal: [read, update, list]
+              ssh-client-signer: [list]
+              sys/*: [read, list]
+              sys/capabilities-self: [read, list, update]
+              sys: [list]
+
+        - name: Bind blackops policy to the blackops group
+          flowerysong.hvault.ldap_group:
+            name: blackops
+            policies:
+              - default
+              - blackops
+
+        - name: Mount SSH signers
+          flowerysong.hvault.engine:
+            path: "{{ item }}"
+            type: ssh
+          loop:
+            - ssh-host-signer
+            - ssh-client-signer
+
+        #vault write ssh-host-signer/config/ca generate_signing_key=true
+        #vault write ssh-client-signer/config/ca generate_signing_key=true
+
+        - name: Configure SSH host key signer
+          flowerysong.hvault.ssh_role:
+            mount_point: ssh-host-signer
+            name: host
+            allow_host_certificates: true
+            allow_subdomains: true
+            allowed_domains:
+              - mail.{{ tld }}
+            max_ttl: 315360000
+            ttl: 315360000
+
+        - name: Configure SSH signer for ec2-user
+          flowerysong.hvault.ssh_role:
+            mount_point: ssh-client-signer
+            name: ec2-user
+            allow_user_certificates: true
+            allowed_users:
+              - ec2-user
+            default_extensions:
+              permit-pty: ""
+              permit-agent-forwarding: ""
+            default_user: ec2-user
+            ttl: 1800
+            max_ttl: 1800
+
+        - name: Fetch mount info
+          flowerysong.hvault.auth_method_info:
+          register: result
+
+        - name: Configure SSH signer for individual users
+          flowerysong.hvault.ssh_role:
+            mount_point: ssh-client-signer
+            name: personal
+            allow_user_certificates: true
+            # This is a hacky way to template part of an unsafe value
+            allowed_users: "{{ allowed_t | replace('accessor', result.mounts['ldap/'].accessor) }}"
+            default_extensions:
+              permit-pty: ""
+              permit-agent-forwarding: ""
+            ttl: 1800
+            max_ttl: 1800
+          vars:
+            allowed_t: !unsafe "{{identity.entity.aliases.accessor.name}}"
+
+        - name: Mount auth/aws/
+          flowerysong.hvault.auth_method:
+            path: aws
+            type: aws
+
+        - name: Create bastion policy
+          flowerysong.hvault.policy:
+            name: bastion
+            policy:
+              identity/*: [read, list]
+              identity: [list]
+              secret/*: [create, read, update, delete, list]
+              secret: [list]
+              ssh-client-signer/*: [list]
+              ssh-client-signer/sign/ec2-user: [read, update, list]
+              ssh-client-signer: [list]
+
+        - name: Create ec2 policy
+          flowerysong.hvault.policy:
+            name: ec2
+            policy:
+              ssh-host-signer/*: [list]
+              ssh-host-signer/sign/host: [read, update, list]
+
+        - import_role:
+            name: aws_get_accountinfo
+
+        # FIXME: what about cross-account access?
+        - name: Create AWS auth roles
+          flowerysong.hvault.aws_auth_role:
+            name: "{{ aws_resource_prefix }}_{{ item.name }}"
+            bound_iam_principal_arn: arn:aws:iam::{{ aws_account }}:role/{{ aws_resource_prefix }}_{{ item.name }}
+            resolve_aws_unique_ids: false
+            token_policies: "{{ item.policies }}"
+          loop:
+            - name: bastion
+              policies:
+                - ec2
+                - bastion
+            - name: standard
+              policies: ec2
+
+        - name: Mount auth/approle/
+          flowerysong.hvault.auth_method:
+            path: approle
+            type: approle
+
+        - name: Create s3_datastore policy
+          flowerysong.hvault.policy:
+            name: s3_datastore
+            policy:
+              aws/sts/s3_datastore: [read, update, list]
+
+        - name: Create dnsbl AppRole role
+          flowerysong.hvault.approle_role:
+            name: dnsbl
+            bind_secret_id: false
+            token_policies: s3_datastore
+            token_type: batch
+            token_ttl: 900
+            token_max_ttl: 900
+            secret_id_bound_cidrs: "{{ rbldnsd_updater | map('regex_replace', '$', '/32') }}"
+            # Vault treats these two values differently, because variety is the
+            # spice of life and the spice must flow.
+            token_bound_cidrs: "{{ rbldnsd_updater }}"
+
+        - name: Mount aws/
+          flowerysong.hvault.engine:
+            path: aws
+            type: aws
+
+        - name: Create AWS s3_datastore role
+          flowerysong.hvault.aws_secret_role_sts:
+            name: s3_datastore
+            role_arns: arn:aws:iam::{{ aws_account }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_S3_ds
+
 - hosts: localhost
+  tags:
+    - never
   tasks:
     - when: aws_region == aws_primary_region
       become: false

@@ -1,9 +1,0 @@
-{
-  "allow_host_certificates": true,
-  "allow_subdomains": true,
-  "allowed_domains": "mail.umich.edu",
-  "key_type": "ca",
-  "algorithm_signer": "rsa-sha2-512",
-  "max_ttl": 315360000,
-  "ttl": 315360000
-}
