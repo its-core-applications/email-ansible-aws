@@ -1,5 +1,5 @@
 Name:    hyperscan
-Version: 5.2.1
+Version: 5.4.0
 Release: 1%{?dist}
 Summary: High-performance regular expression matching library
 
@@ -77,7 +77,7 @@ needed for developing Hyperscan applications.
 
 %build
 %cmake -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_STATIC_AND_SHARED:BOOL=ON \
-       -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true .
+       -DBUILD_AVX512=on -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true .
 
 make %{?_smp_mflags}
 

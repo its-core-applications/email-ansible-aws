@@ -5,7 +5,7 @@
 
 Name:           rspamd
 Version:        2.7
-Release:        1
+Release:        2
 Summary:        Rapid spam filtering system
 License:        BSD2c
 URL:            https://rspamd.com
