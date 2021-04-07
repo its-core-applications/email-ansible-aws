@@ -1,12 +1,17 @@
 - hosts: Status_spundown
   gather_facts: false
   tasks:
-    - name: Destroy host
-      become: false
-      delegate_to: localhost
-      ec2_instance:
-        region: "{{ region }}"
-        profile: "{{ aws_profile_ec2 }}"
-        instance_ids: "{{ instance_id }}"
-        state: absent
-        wait: false
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: sensu_spindown
+
+        - name: Destroy host
+          become: false
+          delegate_to: localhost
+          ec2_instance:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            instance_ids: "{{ instance_id }}"
+            state: absent
+            wait: false
