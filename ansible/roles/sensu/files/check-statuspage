@@ -19,7 +19,7 @@ except Exception as e:
     sys.exit(3)
 
 if not res.ok:
-    print('Failed to fetch incident feed for {}: HTTP {}'.format(domain, response.status_code))
+    print('Failed to fetch incident feed for {}: HTTP {}'.format(domain, res.status_code))
     sys.exit(3)
 
 incidents = res.json()['incidents']
