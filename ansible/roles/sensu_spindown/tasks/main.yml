@@ -6,6 +6,7 @@
         name: sensu-agent
         state: stopped
       ignore_errors: true
+      ignore_unreachable: true
 
     - name: Remove entity from sensu
       flowerysong.sensu_go.sensu_go_entity:
