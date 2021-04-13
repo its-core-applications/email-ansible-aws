@@ -1,18 +1,9 @@
-- hosts: Class_covid_relay:&Status_production
+- hosts: Class_covid_relay
+  serial: 1
+  gather_facts: false
   tasks:
-    - when: region == aws_region
-      block:
-        - name: Set status to spindown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spindown
-
-        - meta: refresh_inventory
+    - import_role:
+        name: ec2_mark_oldest
 
 - import_playbook: setup_lb_covid_relay.yml
 
