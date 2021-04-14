@@ -154,7 +154,7 @@ bastion_hostnames:
     us-west-2: mogo
     us-east-2: ego
 
-rbldnsd_master:
+rbldnsd_updater:
   - 141.211.21.71
   - 141.211.7.108
 
