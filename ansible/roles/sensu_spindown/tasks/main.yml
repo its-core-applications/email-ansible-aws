@@ -1,6 +1,13 @@
 - tags:
     - sensu
   block:
+    - name: Check connection
+      wait_for_connection:
+        connect_timeout: 2
+        timeout: 5
+      ignore_errors: true
+      register: result
+
     - name: Stop sensu
       systemd:
         name: sensu-agent
@@ -8,6 +15,7 @@
       ignore_errors: true
       ignore_unreachable: true
       failed_when: false
+      when: result is success
 
     - name: Remove entity from sensu
       flowerysong.sensu_go.sensu_go_entity:
@@ -16,3 +24,5 @@
         url: http://{{ sensu_server }}:4567/
         password: "{{ sensu_password }}"
       delegate_to: localhost
+      async: 60
+      poll: 0
