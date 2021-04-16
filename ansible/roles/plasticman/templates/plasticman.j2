@@ -53,6 +53,7 @@ checkcount() {
     # instances that were just put in production might not be counted immediately
     [[ $1 = 'scale-up' ]] && sleep 1m
     getcount
+    outlog "new count: $count"
     if [[ $count -eq $oldcount ]]; then
         retval=2
         sendresult "host count did not change after scaling event" $1
@@ -63,7 +64,7 @@ checkcount() {
 }
 
 scaledown() {
-    outlog "scaling down"
+    outlog "scaling down from $count"
     sendmetric scale-down start
     ansible-playbook ~/ansible-aws/ansible/spindown_${class}.yml
     sendmetric scale-down end
@@ -72,7 +73,7 @@ scaledown() {
 }
 
 scaleup() {
-    outlog "scaling up"
+    outlog "scaling up from $count"
     sendmetric scale-up start
     ansible-playbook ~/ansible-aws/ansible/spinup_${class}.yml
     sendmetric scale-up end
