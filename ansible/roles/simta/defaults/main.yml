@@ -53,5 +53,7 @@ simta_tls_domains:
   - yahoo.com
 
 simta_mrcpts_domains:
+  - domain: go.mail.umich.edu
+    max_rcpts: 1000
   - domain: med.umich.edu
     max_rcpts: 50
