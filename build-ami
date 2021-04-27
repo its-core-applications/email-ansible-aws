@@ -54,18 +54,6 @@ fi
 
 base=$(echo "$base" | jq -r '.Images | sort_by(.CreationDate) | last(.[]).ImageId')
 
-python -c '
-import sys, json, yaml
-with open(sys.argv[1]) as f:
-   print(json.dumps(yaml.safe_load(f), indent=2))
-' packer/template.yml >| packer/template.json
-
-# Quick and dirty elision of unnecessary encryption step
-if [[ $class != 'base' ]] && [[ $class != 'vdc_relay' ]]; then
-    jq 'del(.builders[0].encrypt_boot)' <packer/template.json >packer/munged
-    mv -f packer/munged packer/template.json
-fi
-
 subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=public' | jq -r '.Subnets[].SubnetId' | shuf | head -n 1)
 
-packer build -var "aws_region=$AWS_DEFAULT_REGION" -var "image_os=$os" -var "image_type=$class" -var "base_ami=$base" -var "root_device=$root" -var "subnet_id=$subnet_id" packer/template.json
+packer build -var "aws_region=$AWS_DEFAULT_REGION" -var "image_os=$os" -var "image_type=$class" -var "base_ami=$base" -var "root_device=$root" -var "subnet_id=$subnet_id" packer/template.pkr.hcl
