@@ -7,24 +7,23 @@
         name: ec2_ami_cleanup
       vars:
         bad_classes:
-          - junk
           - ctools_mx
+          - junk
           - odm
           - rbl
+        good_classes:
+          - authn_relay
+          - authz_relay
+          - base
+          - covid_relay
+          - dnsbl
+          - egress
+          - jail
+          - mx
+          - relay
+          - relay_egress
         image_retain: "{{ (image_type in bad_classes) | ternary(0, 4) }}"
-      loop:
-        - authn_relay
-        - authz_relay
-        - base
-        - covid_relay
-        - dnsbl
-        - egress
-        - jail
-        - junk
-        - mx
-        - rbl
-        - relay
-        - relay_egress
+      loop: "{{ good_classes | union(bad_classes) }}"
       loop_control:
         loop_var: image_type
 
