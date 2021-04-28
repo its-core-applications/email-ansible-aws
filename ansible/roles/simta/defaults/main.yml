@@ -39,6 +39,7 @@ simta_tls_domains:
   - engin.umd.umich.edu
   - gmail.com
   - go.itd.umich.edu
+  - go.mail.umich.edu
   - hotmail.com
   - mac.com
   - me.com

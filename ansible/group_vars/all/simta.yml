@@ -30,6 +30,7 @@ simta_ldap_domains:
 
 simta_important_domains:
   - go.itd.umich.edu
+  - go.mail.umich.edu
   - gmail.com
 
 simta_ldap_domains_mapped:
