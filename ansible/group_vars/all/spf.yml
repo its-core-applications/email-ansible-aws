@@ -176,6 +176,12 @@ spf_thirdparty:
       - lit-ae-mysql
     record: ip4:134.68.0.0/16
 
+  # 2021-05-13: dbla / Student Life / TDx 886803
+  # Student Life / Zendesk
+  - names:
+      -  hsg-hio-desk
+    record: include:mail.zendesk.com
+
   # 2017-02-21: Law Library
   - names:
       - lawlibnotices

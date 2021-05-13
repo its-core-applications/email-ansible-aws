@@ -1,0 +1,15 @@
+- hosts: Class_mx:&Status_production
+  gather_facts: false
+  tasks:
+    - command: ls -lh /etc/simta.conf
+      register: result
+
+    - set_fact:
+        simta_conf:
+          hash: "{{ result.stdout }}"
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - debug:
+        msg: "{{ groups.Class_mx | map('extract', hostvars) | map(attribute='simta_conf') | groupby('hash') | map(attribute='list') | map('length') | list }}"
