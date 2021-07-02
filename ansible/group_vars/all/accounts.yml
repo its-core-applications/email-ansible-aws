@@ -38,6 +38,11 @@ user_accounts:
     uid: 620307
     full_sudo: true
 
+  - name: aesse
+    comment: Drew Esse
+    uid: 114282582
+    sudo_collaborate: true
+
   - name: alleycat
     comment: Ali Wilkes
     uid: 517118
