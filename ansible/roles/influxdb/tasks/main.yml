@@ -25,6 +25,7 @@
       pip:
         name: influxdb
         state: latest
+        executable: pip3
 
     - name: Fix file permissions
       file:
