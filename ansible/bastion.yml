@@ -55,21 +55,6 @@
             name: ammit
 
         - import_role:
-            name: google_gam
-
-        - import_role:
-            name: collab_admin_kit
-
-        - import_role:
-            name: google_gyb
-
-        - import_role:
-            name: box_bam
-
-        - import_role:
-            name: box_examscan
-
-        - import_role:
             name: gitlab_gitlab_cli
 
         - import_role:

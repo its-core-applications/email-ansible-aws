@@ -1,2 +1,0 @@
-googled: "{{ ( aws_status == 'prod' ) | ternary('umich.edu', 'collab.its.umich.edu') }}"
-discussionsd: "{{ ( aws_status == 'prod' ) | ternary('discussions.umich.edu', 'discussions-dev.its.umich.edu') }}"
