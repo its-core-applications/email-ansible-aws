@@ -4,7 +4,7 @@
 cd $(readlink -fn $(dirname "$BASH_SOURCE"))
 
 if [[ $1 ]]; then
-    class=$1
+    class=${1//-/_/}
 else
     class=base
 fi
