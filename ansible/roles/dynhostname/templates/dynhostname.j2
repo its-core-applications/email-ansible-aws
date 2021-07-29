@@ -10,7 +10,6 @@ ttl=60
 region=$(curl -fs http://169.254.169.254/latest/meta-data/placement/availability-zone)
 region=${region::-1}
 instanceid=$(curl -fs http://169.254.169.254/latest/meta-data/instance-id)
-zoneid=$(aws --profile dynhostname route53 list-hosted-zones --query "HostedZones[?Name=='{{ subd }}.'].Id" --output text)
 publicname=$(curl -fs http://169.254.169.254/latest/meta-data/public-hostname)
 
 # Fall back to the private name
@@ -52,6 +51,12 @@ route53update() {
     echo OK
 }
 
+try=0
+while [[ $try -le 10 ]] && [[ -z $zoneid ]]; do
+    zoneid=$(aws --profile dynhostname route53 list-hosted-zones --query "HostedZones[?Name=='{{ subd }}.'].Id" --output text)
+    (( try++ ))
+    [[ -z $zoneid ]] && sleep 1
+done
 if [[ -z $zoneid ]]; then
     echo "Failed to fetch zone ID, not setting hostname"
     exit 1
