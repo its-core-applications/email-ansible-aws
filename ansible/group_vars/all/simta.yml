@@ -82,6 +82,8 @@ simta_ldap_domains_mapped:
     prefix: probabilitynetwork
   - domain: smartgirl.org
     prefix: smartgirl
+  - domain: spirelearn.com
+    prefix: spirelearn
   - domain: ssdan.net
     prefix: ssdan
   - domain: statisticalcomputing.org
