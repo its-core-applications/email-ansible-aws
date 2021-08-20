@@ -127,6 +127,7 @@ aws_region_layout:
       dev:
         autokill: true
         autocycle: false
+        size: t3.large
       dnsbl:
         count: 2
       egress:
