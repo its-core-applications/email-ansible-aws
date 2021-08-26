@@ -292,6 +292,8 @@
       vars:
         build_name: rspamd
         build_deps:
+          - gcc10
+          - gcc10-c++
           - cmake3
           - fann-devel
           - file-devel
@@ -303,6 +305,7 @@
           - libsodium-devel
           - luajit-devel
           - openssl-devel
+          - pcre2-devel
           - perl-Digest-MD5
           - ragel-6.10
           - sqlite-devel

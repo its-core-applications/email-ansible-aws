@@ -4,8 +4,8 @@
 %define rspamd_confdir   %{_sysconfdir}/rspamd
 
 Name:           rspamd
-Version:        2.7
-Release:        2
+Version:        3.2
+Release:        1
 Summary:        Rapid spam filtering system
 License:        BSD2c
 URL:            https://rspamd.com
@@ -34,7 +34,7 @@ Rspamd is a rapid, modular and lightweight spam filter. It is designed to work
 %autosetup -p 1 -n %{name}-%{version}
 
 %build
-cmake3 \
+CC=gcc10-gcc CXX=gcc10-c++ cmake3 \
     -DCMAKE_C_OPT_FLAGS="%{optflags}" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCONFDIR=%{_sysconfdir}/rspamd \
@@ -45,9 +45,7 @@ cmake3 \
     -DWANT_SYSTEMD_UNITS=ON \
     -DSYSTEMDDIR=%{_unitdir} \
     -DENABLE_LUAJIT=ON \
-    -DENABLE_HIREDIS=ON \
     -DLOGDIR=%{_localstatedir}/log/rspamd \
-    -DEXAMPLESDIR=%{_datadir}/examples/rspamd \
     -DPLUGINSDIR=%{_datadir}/rspamd \
     -DLIBDIR=%{_libdir}/rspamd/ \
     -DINCLUDEDIR=%{_includedir} \

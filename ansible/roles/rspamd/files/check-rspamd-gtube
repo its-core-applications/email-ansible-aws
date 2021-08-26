@@ -15,7 +15,7 @@ How exciting.
 EOF
 2>/dev/null)
 
-spamres=$(printf '%s' "$spamout" | sed '1d' | jq -r '@text "\(.action) score=\(.score)"')
+spamres=$(printf '%s' "$spamout" | jq -r '@text "\(.action) score=\(.score)"')
 if [[ $? -ne 0 ]]; then
     echo "Unable to parse returned data"
     printf '%s' "$spamout"
