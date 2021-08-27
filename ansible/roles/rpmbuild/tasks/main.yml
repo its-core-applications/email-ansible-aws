@@ -20,25 +20,23 @@
           - setup
         state: present
 
-    # FIXME: this is an ugly hack to prevent an error while installing fpm
-    - name: Install ffi
-      gem:
-        name: ffi
-        version: 1.12.2
-        user_install: false
+    - name: Clone fpm
+      git:
+        repo: https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/forks/fpm.git
+        dest: /var/cache/fpm
 
-    # FIXME: ibid.
-    - name: Install git gem
-      gem:
-        name: git
-        version: 1.6.0
-        user_install: false
+    - name: Build fpm gem
+      command:
+        cmd: gem build fpm.gemspec
+        chdir: /var/cache/fpm
+      register: result
 
     - name: Install fpm
       gem:
         name: fpm
+        gem_source: /var/cache/fpm/{{ result.stdout_lines[-1].split()[-1] }}
         user_install: false
-        state: latest
+        state: present
 
     - name: Set up rpmbuild tree
       become: false
