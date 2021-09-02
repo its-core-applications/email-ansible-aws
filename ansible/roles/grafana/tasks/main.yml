@@ -84,8 +84,8 @@
       when: result.stat.exists
       block:
         - name: Restore grafana.db
-          command: cp /home/email/grafana.db /var/lib/grafana
-          args:
+          command:
+            cmd: cp /home/email/grafana.db /var/lib/grafana
             creates: /var/lib/grafana/grafana.db
           notify: Restart grafana
 

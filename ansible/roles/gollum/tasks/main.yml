@@ -46,8 +46,8 @@
             update: true
 
         - name: Build Ruby 2.6.5
-          command: ~/ruby-build/bin/ruby-build 2.6.5 ~/ruby
-          args:
+          command:
+            cmd: ~/ruby-build/bin/ruby-build 2.6.5 ~/ruby
             creates: ~/ruby/bin/ruby
           environment:
             RUBY_CONFIGURE_OPTS: "--disable-install-doc"

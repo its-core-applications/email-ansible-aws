@@ -27,8 +27,8 @@
       register: result
 
     - name: Create {{ build_name }} RPM using fpm
-      command: "fpm -t rpm -s dir -n {{ build_name }} -v {{ build_version }} {{ build_executables | map(attribute='path') | map('regex_replace', '$', '=/usr/bin/') | join(' ') }}"
-      args:
+      command:
+        cmd: "fpm -t rpm -s dir -n {{ build_name }} -v {{ build_version }} {{ build_executables | map(attribute='path') | map('regex_replace', '$', '=/usr/bin/') | join(' ') }}"
         chdir: ~/rpmbuild/RPMS/x86_64
       register: result
       failed_when:

@@ -19,13 +19,13 @@
             force: true
 
         - name: Build {{ build_name }} RPM (autoreconf)
-          command: autoreconf -fiv
-          args:
+          command:
+            cmd: autoreconf -fiv
             chdir: ~/{{ build_name }}
 
         - name: Build {{ build_name }} RPM (configure)
-          command: ./configure
-          args:
+          command:
+            cmd: ./configure
             chdir: ~/{{ build_name }}
 
         - name: Build {{ build_name }} RPM (make rpm)

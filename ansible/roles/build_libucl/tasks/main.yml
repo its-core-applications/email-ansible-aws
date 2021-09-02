@@ -13,13 +13,13 @@
             version: "{{ libucl_version }}"
 
         - name: Build libucl tarball (autogen.sh)
-          command: ./autogen.sh
-          args:
+          command:
+            cmd: ./autogen.sh
             chdir: ~/libucl
 
         - name: Build libucl tarball (configure)
-          command: ./configure
-          args:
+          command:
+            cmd: ./configure
             chdir: ~/libucl
 
         - name: Build libucl tarball (make dist)

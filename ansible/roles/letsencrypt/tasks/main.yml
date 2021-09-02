@@ -11,21 +11,21 @@
         state: directory
 
     - name: Create account key
-      command: openssl genrsa -out /etc/pki/collab/private/letsencrypt_account.key 4096
-      args:
+      command:
+        cmd: openssl genrsa -out /etc/pki/collab/private/letsencrypt_account.key 4096
         creates: /etc/pki/collab/private/letsencrypt_account.key
 
     - name: Create RSA certificate key for {{ certificate }}
-      command: openssl genrsa -out /etc/pki/collab/private/{{ certificate }}.key 4096
-      args:
+      command:
+        cmd: openssl genrsa -out /etc/pki/collab/private/{{ certificate }}.key 4096
         creates: /etc/pki/collab/private/{{ certificate }}.key
       register: rsa_key_result
       # FIXME
       when: false
 
     - name: Create EC certificate key for {{ certificate }}
-      command: openssl ecparam -genkey -name prime256v1 -out /etc/pki/collab/private/{{ certificate }}.key
-      args:
+      command:
+        cmd: openssl ecparam -genkey -name prime256v1 -out /etc/pki/collab/private/{{ certificate }}.key
         creates: /etc/pki/collab/private/{{ certificate }}.key
       register: ec_key_result
 

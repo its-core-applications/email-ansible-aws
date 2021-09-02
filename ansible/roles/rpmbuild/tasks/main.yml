@@ -40,8 +40,8 @@
 
     - name: Set up rpmbuild tree
       become: false
-      command: rpmdev-setuptree
-      args:
+      command:
+        cmd: rpmdev-setuptree
         creates: ~/rpmbuild/RPMS
 
     - name: Also make sure we have a subdir to dump RPMs into

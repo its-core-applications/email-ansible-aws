@@ -2,8 +2,8 @@
     - ssh
   block:
     - name: Sign SSH host keys
-      shell: cat {{ item }}.pub | vault write -field=signed_key ssh-host-signer/sign/host public_key=- cert_type=host valid_principals={{ inventory_hostname }} > {{ item }}-cert.pub
-      args:
+      shell:
+        cmd: cat {{ item }}.pub | vault write -field=signed_key ssh-host-signer/sign/host public_key=- cert_type=host valid_principals={{ inventory_hostname }} > {{ item }}-cert.pub
         creates: "{{ item }}-cert.pub"
       environment:
         VAULT_ADDR: "{{ lookup('env', 'VAULT_ADDR') }}"
