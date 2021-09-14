@@ -85,6 +85,16 @@ if [[ $(awk '$9 && $3 == "myself,master"' $tmpfile) ]]; then
         sleep 1
         redis-cli -h $1 CLUSTER NODES > $tmpfile
     done
+elif grep -q "myself,slave" $tmpfile && grep -q "slave $myid" $tmpfile; then
+    # We have a replica but aren't a primary. This is weird, but happens.
+    # Tell it to replicate directly.
+    outlog "$1 is a replica and has a replica"
+    primary=$(awk '/myself/{print $4}' $tmpfile)
+    for repl in $(grep "slave $myid" $tmpfile | sed -n -e 's/:.*//;s/.* //;p'); do
+        outlog "Telling $repl to replicate $primary"
+        redis-cli -h $repl CLUSTER REPLICATE $primary
+    done
+    redis-cli -h $1 CLUSTER NODES > $tmpfile
 fi
 
 
