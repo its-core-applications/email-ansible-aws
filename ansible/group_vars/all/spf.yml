@@ -201,6 +201,13 @@ spf_thirdparty:
       - merchantcreditcard
     record: include:quikpayasp.com
 
+  # 2021-09-29: sfcarrol / Office of VP Student Life / TDx 1152765
+  - names:
+      - michiganhillel
+      - sfcarrol
+      - tillys
+    record: include:spf.constantcontact.com
+
   # 2017-02-17: Learning Management Services
   # MLearning
   - names:
