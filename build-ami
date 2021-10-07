@@ -26,7 +26,7 @@ else
     os=amzn2
 fi
 
-echo "Building $class image for $os"
+echo "Building $class image for $os in $AWS_STATUS $AWS_DEFAULT_REGION"
 
 case $os in
     centos7)
