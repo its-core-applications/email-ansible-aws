@@ -8,7 +8,6 @@
     - name: Install sensu and dependencies
       yum:
         name:
-          - dbus-python
           - redis
           - sensu-agent
           - sensu-system-profile-linux
@@ -20,8 +19,13 @@
       vars:
         venv_name: sensu
         venv_py3: true
+        venv_build_deps:
+          - dbus-devel
+          - glib2-devel
+          - python3-devel
         venv_packages:
           - boto3
+          - dbus-python
           - python-dateutil
           - pyyaml
           - requests

@@ -1,11 +1,13 @@
-#!/usr/bin/env python
-import boto3
-import dbus
+#!/usr/local/venv/sensu/bin/python3
+
 import hashlib
-import yaml
 import re
 import sys
-import urllib2
+
+import boto3
+import dbus
+import requests
+import yaml
 
 conf_file = '/etc/sensu/agent.yml'
 
@@ -16,8 +18,8 @@ reject_tags = [
 ]
 
 # Fetch the region and ID from the AWS metadata service
-region =  urllib2.urlopen('http://169.254.169.254/latest/meta-data/placement/availability-zone').read()[:-1]
-iid = urllib2.urlopen('http://169.254.169.254/latest/meta-data/instance-id').read()
+region = requests.get('http://169.254.169.254/latest/meta-data/placement/availability-zone').text[:-1]
+iid = requests.get('http://169.254.169.254/latest/meta-data/instance-id').text
 
 client = boto3.resource('ec2', region_name=region)
 instance = client.Instance(iid)
@@ -61,14 +63,14 @@ with open(conf_file, 'rb') as f:
 newconf = yaml.dump(config, indent=2, default_flow_style=False)
 
 hash2 = hashlib.sha512()
-hash2.update(newconf)
+hash2.update(newconf.encode('utf-8'))
 
 if hash1.digest() != hash2.digest():
     try:
-      with open(conf_file, 'w') as f:
+      with open(conf_file, 'w', encoding='utf-8') as f:
         f.write(newconf)
     except IOError:
-        print 'Failed to write subscription file'
+        print('Failed to write subscription file')
         sys.exit(1)
 
     systemd = dbus.Interface(dbus.SystemBus().get_object('org.freedesktop.systemd1', '/org/freedesktop/systemd1'), 'org.freedesktop.systemd1.Manager')

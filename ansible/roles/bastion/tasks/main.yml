@@ -6,11 +6,6 @@
         name:
           - gitolite3
           - opendkim
-          - openldap-clients
-          - python-ldap
-          - python-netaddr
-          - python-virtualenv
-          - unzip
         state: latest
 
     - name: Install pipenv

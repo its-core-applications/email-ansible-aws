@@ -49,15 +49,13 @@
           - pam_krb5
           - procmail  # Not used directly, but formail is sometimes useful
           - pv
-          - python-boto
-          - python-pip
-          - python2-boto3
           - python3
           - python3-pip
           - strace
           - sysstat
           - telnet
           - tmux
+          - unzip
           - vim
           - wget
           - whois

@@ -14,9 +14,13 @@
           - pyyaml
           - requests
 
+    - gather_facts:
+
     - name: Disable SELinux
       selinux:
         state: disabled
+      vars:
+        ansible_python_interpreter: /usr/bin/python
 
     - import_role:
         name: base_packages

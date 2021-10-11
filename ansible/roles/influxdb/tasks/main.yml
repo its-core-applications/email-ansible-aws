@@ -21,12 +21,6 @@
         state: latest
       notify: Restart influxdb
 
-    - name: Install InfluxDB Python library
-      pip:
-        name: influxdb
-        state: latest
-        executable: pip3
-
     - name: Fix file permissions
       file:
         dest: /var/lib/influxdb

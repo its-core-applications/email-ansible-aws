@@ -240,8 +240,6 @@
       influxdb_database:
         database_name: sensu
         state: present
-      vars:
-        ansible_python_interpreter: /bin/python3
 
     - name: Set the default InfluxDB retention policy
       influxdb_retention_policy:
@@ -250,8 +248,6 @@
         duration: 21d
         replication: 1
         default: true
-      vars:
-        ansible_python_interpreter: /bin/python3
 
     - name: Create Agent 47
       sensu.sensu_go.pipe_handler:
