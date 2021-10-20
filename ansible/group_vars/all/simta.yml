@@ -49,6 +49,8 @@ simta_ldap_domains_mapped:
     prefix: datasifter
   - domain: elmuseodelnorte.org
     prefix: elmuseodelnorte
+  - domain: empower-at-home.com
+    prefix: empower-at-home
   - domain: entertainmewell.com
     prefix: entertainmewell
   - domain: environmentreport.org
