@@ -2,7 +2,6 @@ Name:           libucl
 Version:        {{ libucl_version }}
 Release:        1%{?dist}
 Summary:        Parser for UCL (universal configuration language)
-Group:          System Environment/Libraries
 License:        BSD
 URL:            https://github.com/vstakhov/libucl
 Source0:        %{name}-%{version}.tar.xz
@@ -14,17 +13,23 @@ Libucl is a parser and C API to parse and generate ucl objects.
 %package devel
 Summary:        Development files for %{name}
 Requires:       %{name} = %{version}-%{release}
-Group:          Development/Libraries
+
+%package utils
+Summary:        Utilities for %{name}
+Requires:       %{name} = %{version}-%{release}
 
 %description devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
+%description utils
+The %{name}-utils package contains command line utilities for %{name}.
+
 %prep
 %setup -q
 
 %build
-%configure --disable-static
+%configure --enable-utils --disable-static
 
 make %{?_smp_mflags}
 
@@ -39,6 +44,12 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_libdir}/libucl.so.*
+
+%files utils
+%defattr(-,root,root,-)
+%{_bindir}/ucl_chargen
+%{_bindir}/ucl_objdump
+%{_bindir}/ucl_tool
 
 %files devel
 %defattr(-,root,root,-)
