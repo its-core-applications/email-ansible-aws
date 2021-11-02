@@ -57,6 +57,8 @@ simta_ldap_domains_mapped:
     prefix: environmentreport
   - domain: glrc.org
     prefix: glrc
+  - domain: greatlakesicorps.org
+    prefix: greatlakesicorps
   - domain: icart-bukavu.org
     prefix: icart-bukavu
   - domain: iracda2019.com
