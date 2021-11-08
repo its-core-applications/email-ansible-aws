@@ -1,0 +1,19 @@
+#!/bin/dash
+
+skiplist=/etc/mail/box.rcpt
+
+from_domain=${SIMTA_SMTP_MAIL_FROM##*@}
+if [ "x$from_domain" = 'xbox.com' ] || [ "x${from_domain#*.}" = 'xbox.com' ]; then
+    ret=1
+    if [ -s $skiplist ] && check_tfile ; then
+        match=$(grep ^R $SIMTA_TFILE | fgrep -if $skiplist 2>/dev/null)
+        ret=$?
+    fi
+
+    if [ $ret -eq 0 ]; then
+        log "15_box_retirement: matched exception $match"
+    else
+        log "15_box_retirement: dropping message from $from_domain"
+        filter_exit $MESSAGE_DELETE
+    fi
+fi
