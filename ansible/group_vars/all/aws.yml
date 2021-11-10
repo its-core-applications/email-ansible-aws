@@ -65,7 +65,7 @@ aws_region_layout:
         count: 3
         size: m5.xlarge
       authz-static:
-        size: t3.small
+        size: t3.medium
       covid-relay:
         count: 2
         size: t3.medium
@@ -90,7 +90,7 @@ aws_region_layout:
         size: m5.xlarge
       vdc-relay:
         count: 2
-        size: t3.small
+        size: t3.medium
     us-west-2:
       builder:
         autokill: true
