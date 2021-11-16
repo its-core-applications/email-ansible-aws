@@ -1,0 +1,15 @@
+[Unit]
+Description=The Prometheus monitoring server.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+ExecStart=/usr/bin/prometheus --config.file=/etc/prometheus/prometheus.yml
+Restart=always
+WorkingDirectory=/var/lib/prometheus
+
+[Install]
+WantedBy=multi-user.target

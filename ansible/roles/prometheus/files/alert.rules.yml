@@ -1,0 +1,29 @@
+groups:
+  - name: system
+    rules:
+      - alert: instance_down
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          subject: Instance {{ $labels.instance }} is down
+          message: Failed to scrape {{ $labels.job }} on {{ $labels.instance }}
+
+      - alert: disk_usage
+        expr: node_filesystem_free_bytes / node_filesystem_size_bytes * 100 < 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          subject: Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is almost full
+          message: Free space is down to {{ $value }}%
+
+      - alert: disk_usage_predictive
+        expr: predict_linear(node_filesystem_free_bytes{fstype!~"tmpfs"}[1h], 3600) <= 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          subject: Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is filling up
+          message: Sampling predicts that the free space will be {{ $value }} in one hour.

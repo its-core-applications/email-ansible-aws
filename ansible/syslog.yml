@@ -18,6 +18,12 @@
             name: splunk_forwarder
 
         - import_role:
+            name: prometheus
+
+        - import_role:
+            name: prometheus_alertmanager
+
+        - import_role:
             name: sensu_backend
 
         - import_role:

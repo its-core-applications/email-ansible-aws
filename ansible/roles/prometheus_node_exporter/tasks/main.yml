@@ -1,0 +1,29 @@
+- tags:
+    - node_exporter
+    - prometheus
+  block:
+    - name: Install node_exporter
+      yum:
+        name: node_exporter
+        state: latest
+      notify: Restart node_exporter
+
+    - name: Install node_exporter unit
+      copy:
+        src: node_exporter.service
+        dest: /etc/systemd/system/node_exporter.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart node_exporter
+
+    - name: Enable node_exporter
+      systemd:
+        name: node_exporter
+        enabled: true
+
+    - name: Start node_exporter
+      systemd:
+        name: node_exporter
+        state: started
+        daemon_reload: true

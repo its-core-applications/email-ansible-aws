@@ -1,0 +1,55 @@
+- tags:
+    - prometheus
+  block:
+    - name: Install prometheus
+      yum:
+        name: prometheus
+        state: latest
+      notify: Restart prometheus
+
+    - name: Install prometheus unit
+      copy:
+        src: prometheus.service
+        dest: /etc/systemd/system/prometheus.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart prometheus
+
+    - name: Create /etc/prometheus
+      file:
+        dest: /etc/prometheus
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Configure prometheus
+      copy:
+        src: prometheus.yml
+        dest: /etc/prometheus/prometheus.yml
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart prometheus
+
+    - name: Configure prometheus alerts
+      copy:
+        src: alert.rules.yml
+        dest: /etc/prometheus/alert.rules.yml
+        owner: root
+        group: root
+        mode: "0644"
+        validate: promtool check rules %s
+      notify: Restart prometheus
+
+    - name: Enable prometheus
+      systemd:
+        name: prometheus
+        enabled: true
+
+    - name: Start prometheus
+      systemd:
+        name: prometheus
+        state: started
+        daemon_reload: true
