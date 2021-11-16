@@ -123,10 +123,10 @@ ec2_sg:
     rules:
       - proto: udp
         ports: 53
-        cidr_ip: "{{ ec2_sg_local_ips }}"
+        cidr_ip: "{{ ec2_sg_trusted_ips }}"
       - proto: tcp
         ports: 873
-        cidr_ip: "{{ ec2_sg_local_ips }}"
+        cidr_ip: "{{ ec2_sg_trusted_ips }}"
 
   redis:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
