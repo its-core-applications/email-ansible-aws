@@ -1,20 +1,32 @@
+ec2_sg_trusted_ips: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
+ec2_sg_local_ips: "{{ (ec2_subnets_public[ec2sg_region] + ec2_subnets_vpn[ec2sg_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+ec2sg_profile: "{{ aws_profiles[aws_status][ec2sg_region] }}"
 ec2_sg:
   public-default:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
     description: default VPC security group
     rules:
+      # ping
       - proto: icmp
         ports: -1
         cidr_ip: 0.0.0.0/0
+      # SSH and HTTP
       - proto: tcp
         ports:
           - 22
           - 80
           - 443
         cidr_ip: 0.0.0.0/0
+      # mosh
       - proto: udp
         ports: 60000-61000
         cidr_ip: 0.0.0.0/0
+      # Prometheus
+      - proto: tcp
+        ports:
+          - 9090
+          - 9100
+        cidr_ip: "{{ ec2_sg_trusted_ips }}"
     rules_egress:
       - proto: all
         cidr_ip: 0.0.0.0/0
@@ -22,15 +34,24 @@ ec2_sg:
     vpc_id: "{{ ec2_subnets_vpn[ec2sg_region].0.vpc_id }}"
     description: default VPC security group
     rules:
+      # ping
       - proto: icmp
         ports: -1
         cidr_ip: 0.0.0.0/0
+      # SSH
       - proto: tcp
         ports: 22
         cidr_ip: 0.0.0.0/0
+      # mosh
       - proto: udp
         ports: 60000-61000
         cidr_ip: 0.0.0.0/0
+      # Prometheus
+      - proto: tcp
+        ports:
+          - 9090
+          - 9100
+        cidr_ip: "{{ ec2_sg_trusted_ips }}"
     rules_egress:
       - proto: all
         cidr_ip: 0.0.0.0/0
@@ -63,7 +84,7 @@ ec2_sg:
     rules:
       - proto: tcp
         ports: 25
-        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
+        cidr_ip: "{{ ec2_sg_trusted_ips }}"
 
   vdc-relay:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
@@ -94,7 +115,7 @@ ec2_sg:
         ports:
           - 2514 # Remote syslog using RELP
           - 8086 # InfluxDB
-        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
+        cidr_ip: "{{ ec2_sg_trusted_ips }}"
 
   rbldnsd:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
@@ -102,10 +123,10 @@ ec2_sg:
     rules:
       - proto: udp
         ports: 53
-        cidr_ip: "{{ (ec2_subnets_public[ec2sg_region] + ec2_subnets_vpn[ec2sg_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ ec2_sg_local_ips }}"
       - proto: tcp
         ports: 873
-        cidr_ip: "{{ (ec2_subnets_public[ec2sg_region] + ec2_subnets_vpn[ec2sg_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ ec2_sg_local_ips }}"
 
   redis:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
@@ -115,7 +136,7 @@ ec2_sg:
         ports:
           - 6379  # Redis
           - 16379 # Redis cluster
-        cidr_ip: "{{ (ec2_subnets_public[ec2sg_region] + ec2_subnets_vpn[ec2sg_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ ec2_sg_local_ips }}"
 
   vault:
     vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
@@ -133,7 +154,7 @@ ec2_sg:
         ports:
           - 3000 # sensu dashboard
           - 8081 # sensu backend transport
-        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
+        cidr_ip: "{{ ec2_sg_trusted_ips }}"
       - proto: tcp
         ports:
           - 4567 # sensu API
@@ -146,5 +167,3 @@ ec2_sg:
       - proto: tcp
         ports: 2049
         cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | map(attribute='cidr_block') | cidr_merge }}"
-
-ec2sg_profile: "{{ aws_profiles[aws_status][ec2sg_region] }}"
