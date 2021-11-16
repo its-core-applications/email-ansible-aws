@@ -62,7 +62,7 @@ forward-zone:
     forward-addr: 169.254.169.253
 
 {% endfor %}
-forward-zone: 
+forward-zone:
     name: "amazonaws.com"
     forward-addr: 169.254.169.253
 
@@ -72,9 +72,12 @@ forward-zone:
 
 stub-zone:
     name: "dnsbl"
-    stub-host: rbldnsd.{{ aws_region }}.{{ subd }}
+{% for region in aws_region_layout[aws_status] %}
+    stub-host: rbldnsd.{{ region }}.{{ subd }}
+{% endfor %}
 
 stub-zone:
     name: "dnsal"
-    stub-host: rbldnsd.{{ aws_region }}.{{ subd }}
-
+{% for region in aws_region_layout[aws_status] %}
+    stub-host: rbldnsd.{{ region }}.{{ subd }}
+{% endfor %}
