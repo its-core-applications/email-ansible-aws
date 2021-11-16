@@ -1,0 +1,26 @@
+global:
+  smtp_from: '"Prometheus" <prometheus@syslog.x.mail.umich.edu>'
+
+route:
+  receiver: default_receiver
+  group_wait: 1m
+  group_interval: 5m
+  repeat_interval: 30m
+  group_by:
+    - instance_class
+    - location
+    - severity
+
+receivers:
+  - name: default_receiver
+    slack_configs:
+      - send_resolved: true
+        api_url: https://hooks.slack.com/services/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
+        channel: '#root'
+        username: prometheus@syslog.x.mail.umich.edu
+
+inhibit_rules:
+  - target_matchers:
+      - alertname = "disk_usage_predictive"
+    source_matchers:
+      - alertname = "disk_usage"

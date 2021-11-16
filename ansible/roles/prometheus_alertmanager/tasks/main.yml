@@ -1,0 +1,46 @@
+- tags:
+    - alertmanager
+    - prometheus
+  block:
+    - name: Install alertmanager
+      ansible.builtin.dnf:
+        name: alertmanager
+        state: latest
+      notify: Restart alertmanager
+
+    - name: Install alertmanager unit
+      copy:
+        src: alertmanager.service
+        dest: /etc/systemd/system/alertmanager.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart alertmanager
+
+    - name: Create /etc/prometheus
+      file:
+        dest: /etc/prometheus
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Configure alertmanager
+      copy:
+        src: alertmanager.yml
+        dest: /etc/prometheus/alertmanager.yml
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart alertmanager
+
+    - name: Enable alertmanager
+      systemd:
+        name: alertmanager
+        enabled: true
+
+    - name: Start alertmanager
+      systemd:
+        name: alertmanager
+        state: started
+        daemon_reload: true

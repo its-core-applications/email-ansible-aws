@@ -1,0 +1,14 @@
+[Unit]
+Description=The Prometheus node exporter.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+ExecStart=/usr/bin/node_exporter --collector.textfile.directory /var/lib/prometheus/node_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

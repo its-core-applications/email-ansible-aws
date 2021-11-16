@@ -13,6 +13,17 @@
       tags: always
 
     - ansible.builtin.import_role:
+        name: build_rpm_archive
+      tags:
+        - prometheus
+      vars:
+        build_name: alertmanager
+        build_version: 0.23.0
+        archive_url: https://github.com/prometheus/{{ build_name }}/releases/download/v{{ build_version }}/{{ build_name }}-{{ build_version }}.linux-amd64.tar.gz
+        archive_file: "{{ build_name }}-{{ build_version }}.linux-amd64.tar.gz"
+        archive_checksum: sha256:77793c4d9bb92be98f7525f8bc50cb8adb8c5de2e944d5500e90ab13918771fc
+
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
         - amazon-ec2-utils
@@ -50,6 +61,28 @@
         build_repo: https://github.com/simta/denser.git
         build_deps:
           - openssl-devel
+
+    - ansible.builtin.import_role:
+        name: build_rpm_archive
+      tags:
+        - prometheus
+      vars:
+        build_name: node_exporter
+        build_version: 1.2.2
+        archive_url: https://github.com/prometheus/{{ build_name }}/releases/download/v{{ build_version }}/{{ build_name }}-{{ build_version }}.linux-amd64.tar.gz
+        archive_file: "{{ build_name }}-{{ build_version }}.linux-amd64.tar.gz"
+        archive_checksum: sha256:344bd4c0bbd66ff78f14486ec48b89c248139cdd485e992583ea30e89e0e5390
+
+    - ansible.builtin.import_role:
+        name: build_rpm_archive
+      tags:
+        - prometheus
+      vars:
+        build_name: prometheus
+        build_version: 2.30.3
+        archive_url: https://github.com/prometheus/{{ build_name }}/releases/download/v{{ build_version }}/{{ build_name }}-{{ build_version }}.linux-amd64.tar.gz
+        archive_file: "{{ build_name }}-{{ build_version }}.linux-amd64.tar.gz"
+        archive_checksum: sha256:1ccd386d05f73a98b69aa5e0ed31fffac95cd9dadf7df1540daf2f182c5287e2
 
     - ansible.builtin.import_role:
         name: build_rpm_git

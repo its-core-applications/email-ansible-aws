@@ -256,3 +256,7 @@
       vars:
         firewall_services:
           - mosh
+
+    - ansible.builtin.import_role:
+        name: prometheus_node_exporter
+      when: not bootstrap

@@ -1,0 +1,76 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    business_owner: its core infrastructure and automation
+
+rule_files:
+  - /etc/prometheus/*.rules.yml
+
+scrape_configs:
+  - job_name: prometheus
+    ec2_sd_configs:
+      - profile: umcollab_standard
+        region: us-east-2
+        port: 9090
+        filters:
+          - name: instance-state-name
+            values:
+              - running
+          - name: 'tag:Class'
+            values:
+              - syslog
+
+    relabel_configs:
+      - source_labels:
+          - __meta_ec2_tag_CustomDNSName
+        target_label: instance
+        action: replace
+
+  - job_name: node_exporter
+    ec2_sd_configs:
+      - profile: umcollab_standard
+        region: us-east-2
+        port: 9100
+        filters:
+          - name: instance-state-name
+            values:
+              - running
+
+    relabel_configs:
+      # Don't monitor unnamed instances
+      - source_labels:
+          - __meta_ec2_tag_CustomDNSName
+        regex: .+
+        action: keep
+
+      # Use the pretty name
+      - source_labels:
+          - __meta_ec2_tag_CustomDNSName
+        target_label: instance
+        action: replace
+
+      # Class is immutable
+      - source_labels:
+          - __meta_ec2_tag_Class
+        target_label: instance_class
+        action: replace
+
+      # Location, location, location
+      - source_labels:
+          - __meta_ec2_availability_zone_id
+        target_label: location
+        regex: (.+)-(.+)
+        replacement: aws_${1}_${2}
+        action: replace
+      - source_labels:
+          - __meta_ec2_availability_zone
+        target_label: location_friendly
+        regex: (.+)-(.+)-(.+)
+        replacement: aws_${1}_${2}_${3}
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 127.0.0.1:9093

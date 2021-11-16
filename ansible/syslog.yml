@@ -18,6 +18,12 @@
             name: splunk_forwarder
 
         - ansible.builtin.import_role:
+            name: prometheus
+
+        - ansible.builtin.import_role:
+            name: prometheus_alertmanager
+
+        - ansible.builtin.import_role:
             name: sensu_backend
 
         - ansible.builtin.import_role:
