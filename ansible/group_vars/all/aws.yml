@@ -70,7 +70,7 @@ aws_region_layout:
         count: 2
         size: t3.medium
       dnsbl:
-        count: 3
+        count: 4
         size: c5n.large
       egress:
         count: 3
@@ -99,7 +99,7 @@ aws_region_layout:
         autokill: true
         autocycle: false
       dnsbl:
-        count: 3
+        count: 4
         size: c5n.large
       egress:
         count: 3
