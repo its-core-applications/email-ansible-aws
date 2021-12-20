@@ -33,6 +33,7 @@
           - gdbm-devel
           - groff
           - krb5-devel
+          - lmdb-devel
           - openssl-devel
           - pam-devel
           - zlib-devel
@@ -73,10 +74,13 @@
           - openssl-devel
 
     - import_role:
-        name: build_libucl
+        name: build_rpm_spec
       tags:
         - libucl
+        - simta
         - simvacation
+      vars:
+        build_name: libucl
 
     - import_role:
         name: build_rpm_git
@@ -312,16 +316,14 @@
         build_deps:
           - denser-devel
           - jemalloc-devel
-          - libidn-devel
           - libidn2-devel
           - libopenarc-devel
           - libopendkim-devel
           - libsnet-devel
+          - libucl-devel
           - lmdb-devel
           - openldap-devel
           - openssl-devel
-          - procmail
-          - sendmail-devel
           - tcp_wrappers-devel
 
     - import_role:

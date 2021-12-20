@@ -1,0 +1,8 @@
+"{{ item }}" {
+    rule {
+        type = alias;
+        alias {
+            path = /etc/mail/aliases-{{ item }};
+        }
+    }
+}

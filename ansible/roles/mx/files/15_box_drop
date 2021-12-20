@@ -6,7 +6,7 @@ from_domain=${SIMTA_SMTP_MAIL_FROM##*@}
 if [ "x$from_domain" = 'xbox.com' ] || [ "x${from_domain#*.}" = 'xbox.com' ]; then
     ret=1
     if [ -s $skiplist ] && check_tfile ; then
-        match=$(grep ^R $SIMTA_TFILE | fgrep -if $skiplist 2>/dev/null)
+        match=$(jq -r .recipients[] $SIMTA_TFILE | fgrep -ixf $skiplist 2>/dev/null)
         ret=$?
     fi
 

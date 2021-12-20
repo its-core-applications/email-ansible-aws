@@ -58,6 +58,13 @@ for queue in ${workdir}/inbound/${class}/* ; do
             retval=1
             cleanup
         fi
+        # FIXME: remove this once simta 2.0 rollout is complete
+        for msg in $(sed -e 's/D/E/' ${tmpdir}/msglist); do
+            if [[ $(head -n1 $msg) != 'V5' ]]; then
+                # Downgrade new-fangled Efiles to old-style
+                simta-downgrade-efile $msg
+            fi
+        done
         echo "Requeuing $(wc -l ${tmpdir}/msglist | awk '{print $1}') messages from $(basename $queue)" >> $tmpfile
         split -a1 -d -n l/${#qhosts[@]} ${tmpdir}/msglist ${tmpdir}/msglist-
         for i in "${!qhosts[@]}"; do

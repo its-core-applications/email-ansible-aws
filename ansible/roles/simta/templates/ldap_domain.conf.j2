@@ -1,0 +1,49 @@
+{% set _tld = tld if item.tld is not defined else item.tld %}
+"{{ [item.slug, _tld] | select('defined') | join('.') }}" {
+    expand {
+        permit_subdomains: true;
+    }
+{%  if simta_srs and (item.srs | default(false)) %}
+    rule {
+        type = srs;
+        srs {
+            secret = "{{ simta_srs_secret }}";
+        }
+    }
+{%  endif %}
+    rule {
+        type = ldap;
+        ldap {
+            search {
+{%  if item.subdomain | default(true) %}
+                uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?(&(uid=%25s)(associatedDomain={{ item.slug }}.{{ _tld }})(!(disabledDomain={{ item.slug }}.{{ _tld }})))";
+{%  else %}
+                uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?uid=%25s";
+{%  endif %}
+                rdnpref = false;
+                type = user;
+            }
+            search {
+{%  if item.subdomain | default(true) %}
+                uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?(&(cn=%25s)(associatedDomain={{ item.slug }}.{{ _tld }})(!(disabledDomain={{ item.slug }}.{{ _tld }})))";
+{%  else %}
+                uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?cn=%25s";
+{%  endif %}
+                rdnpref = false;
+                type = user;
+            }
+{%  if item.subdomain | default(true) %}
+            search {
+                uri = "ldap:///ou={{ item.slug }},ou=subdomain%20groups,ou=groups,dc=umich,dc=edu?*?sub?(&(cn=%25s)(!(umichEntryDisabled=TRUE)))";
+            }
+{%  else %}
+            search {
+                uri = "ldap:///ou=System%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?cn=%25s";
+            }
+            search {
+                uri = "ldap:///ou=user%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn=%25s)(!(umichEntryDisabled=TRUE)))";
+            }
+{%  endif %}
+        }
+    }
+}

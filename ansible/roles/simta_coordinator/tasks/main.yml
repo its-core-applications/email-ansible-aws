@@ -10,6 +10,14 @@
         group: root
         mode: "0755"
 
+    - name: Install simta-downgrade-efile
+      copy:
+        dest: /usr/local/sbin/simta-downgrade-efile
+        src: simta-downgrade-efile
+        owner: root
+        group: root
+        mode: "0755"
+
     - name: Schedule requeuing
       cron:
         name: simta-requeue-{{ item }}

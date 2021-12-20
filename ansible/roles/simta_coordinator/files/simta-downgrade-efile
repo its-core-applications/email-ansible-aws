@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+
+import json
+import sys
+
+with open(sys.argv[1], 'r') as f:
+    raw = json.load(f)
+
+with open(sys.argv[1], 'w') as f:
+    f.write('V5\n')
+    f.write('E{}\n'.format(raw['envelope_id']))
+    f.write('I{}\n'.format(raw['body_inode']))
+    f.write('X{}\n'.format(raw['expansion_level']))
+    f.write('J{}\n'.format('2' if raw['jailed'] else '0'))
+    f.write('H{}\n'.format(raw.get('hostname') or ''))
+    #define ENV_ATTR_ARCHIVE_ONLY (1 << 0)
+    #define ENV_ATTR_8BITMIME (1 << 1)
+    attrs = 0
+    if raw['archive_only']:
+        attrs |= 1 << 0
+    if raw['8bitmime']:
+        attrs |= 1 << 1
+    f.write('D{}\n'.format(attrs))
+    f.write('F{}\n'.format(raw['sender']))
+    for rcpt in raw['recipients']:
+        f.write('R{}\n'.format(rcpt))

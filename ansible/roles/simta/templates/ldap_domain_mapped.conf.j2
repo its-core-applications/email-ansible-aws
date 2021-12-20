@@ -1,0 +1,14 @@
+"{{ item.domain }}" {
+    rule {
+        type = ldap;
+        # The canonical location for these groups is the main domain, not
+        # the mapped domain.
+        associated_domain = {{ tld }};
+        ldap {
+            search {
+                uri = "ldap:///ou=User%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn={{ item.prefix }} %25s)(!(umichEntryDisabled=TRUE)))";
+                type = all;
+            }
+        }
+    }
+}

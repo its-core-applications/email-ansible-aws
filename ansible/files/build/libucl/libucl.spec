@@ -1,11 +1,13 @@
+%global commit0 45997ade65d18806f52e3a2f5b8ca2c3e3283554
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+
 Name:           libucl
-Version:        {{ libucl_version }}
-Release:        1%{?dist}
+Version:        0.8.2
+Release:        0.1.20220110.%{shortcommit0}%{?dist}
 Summary:        Parser for UCL (universal configuration language)
 License:        BSD
 URL:            https://github.com/vstakhov/libucl
-Source0:        %{name}-%{version}.tar.xz
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Source0:        https://github.com/vstakhov/%{name}/archive/%{commit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
 
 %description
 Libucl is a parser and C API to parse and generate ucl objects.
@@ -26,9 +28,10 @@ developing applications that use %{name}.
 The %{name}-utils package contains command line utilities for %{name}.
 
 %prep
-%setup -q
+%autosetup -p 1 -n %{name}-%{commit0}
 
 %build
+autoreconf -fi
 %configure --enable-utils --disable-static
 
 make %{?_smp_mflags}

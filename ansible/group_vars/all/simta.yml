@@ -15,6 +15,8 @@ simta_queue_type: egress
 simta_jail_host: "jail.{{ aws_region }}.{{ subd }}"
 
 simta_ldap_domains:
+  - subdomain: false
+    srs: true
   - slug: alumni.engin
   - slug: biop.lsa
   - slug: bus

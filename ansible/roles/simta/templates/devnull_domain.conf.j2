@@ -1,0 +1,17 @@
+"{{ item }}" {
+    rule {
+        type = accept;
+        expand {
+            enabled = false;
+        }
+    }
+    deliver {
+        local {
+            enabled = true;
+            agent = /bin/true;
+        }
+        punt {
+            enabled = false;
+        }
+    }
+}

@@ -1,0 +1,29 @@
+"{{ item }}" {
+    rule {
+        expand {
+            enabled = false;
+        }
+        type = ldap;
+        ldap {
+            search {
+                uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?uid=%25s";
+                rdnpref = false;
+                type = user;
+            }
+            search {
+                uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?cn=%25s";
+                rdnpref = false;
+                type = user;
+            }
+        }
+    }
+    deliver {
+        local {
+            enabled = true;
+            agent = /usr/bin/simvacation -f $S $R;
+        }
+        punt {
+            enabled = false;
+        }
+    }
+}

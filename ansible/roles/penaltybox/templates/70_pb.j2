@@ -5,7 +5,7 @@ PENALTYBOX_PASS=1
 penaltybox_bin='/usr/bin/penaltybox'
 penaltybox_args='-h {{ simta_redis_host }}'
 
-if check_tfile && grep -iq '^Rpenaltybox@' $SIMTA_TFILE ; then
+if check_tfile && jq -r .recipients[] $SIMTA_TFILE | grep -iq '^penaltybox@' ; then
     reason='testing'
 elif ! simrbl -q -l penaltybox-skip-domains.dnsal -t "$SIMTA_DMARC_DOMAIN" ; then
     PENALTYBOX_PASS=0

@@ -13,7 +13,7 @@
 Summary: The Cyrus SASL library
 Name: cyrus-sasl
 Version: 2.1.28
-Release: 0.1.20200303.%{shortcommit0}%{?dist}
+Release: 0.1.20220207.%{shortcommit0}%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
@@ -99,8 +99,8 @@ echo "$LDFLAGS"
         --enable-gssapi${krb5_prefix:+=${krb5_prefix}} \
         --with-gss_impl=mit \
         --with-rc4 \
-        --with-dblib=none \
-        --with-saslauthd=/run/saslauthd --without-pwcheck \
+        --with-dblib=lmdb \
+        --with-saslauthd=/run/saslauthd \
         --without-ldap \
         --with-devrandom=/dev/urandom \
         --disable-anon \
@@ -173,6 +173,8 @@ getent passwd %{username} >/dev/null || useradd -r -g %{username} -d %{homedir} 
 %{_mandir}/man8/*
 %{_sbindir}/pluginviewer
 %{_sbindir}/saslauthd
+%{_sbindir}/sasldblistusers2
+%{_sbindir}/saslpasswd2
 %{_sbindir}/testsaslauthd
 %config(noreplace) /etc/sysconfig/saslauthd
 %{_unitdir}/saslauthd.service

@@ -1,0 +1,270 @@
+# simta.conf for {{ simta_config }}
+
+{% if simta_bitbucket %}
+defaults red deliver bitbucket {
+    enabled = true;
+    delay = 0.05s;
+}
+{% endif %}{# simta_bitbucket #}
+receive {
+{% if simta_msa %}
+    ports = [ 25, 587 ];
+    smtp {
+        mode = msa;
+    }
+{% else %}{# not simta_msa #}
+    ports = [ 25 ];
+{% endif %}{# simta_msa #}
+{% if simta_tls %}
+    tls {
+        enabled = true;
+        certificate = /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.crt;
+        key = /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.key;
+{%  if simta_msa %}
+        ports = [ 465 ]
+{%  endif %}
+    }
+{% endif %}{# simta_tls #}
+{% if simta_relay %}
+    mode = global_relay;
+    connection {
+        rdns {
+            check = chillaxed;
+        }
+{%  if not simta_egress %}
+        dns_list {
+            action = trust;
+            list = relay-trust.dnsal;
+        }
+        dns_list {
+            action = accept;
+            list = relay-accept.dnsal;
+        }
+        dns_list {
+            action = block;
+            list = relay-deny.dnsbl;
+            message = {{ simta_spambusters }};
+        }
+{%  endif %}{# not simta_egress #}
+    }
+    spf {
+        enabled = false;
+    }
+    dkim {
+        enabled = false;
+{%  if simta_dkim_level == 'ALWAYS' %}
+        sign = true;
+{%  endif %}
+    }
+    dmarc {
+        enabled = false;
+    }
+{%  if simta_egress or simta_jail %}
+    auth results {
+        enabled = false;
+    }
+{%  endif %}
+{%  if simta_authn %}
+    auth {
+        authn {
+            enabled = true;
+            sasl {
+                mech_list = GSSAPI PLAIN LOGIN;
+            }
+        }
+        authz {
+            dns_list {
+                action = block;
+                list = ubl.dnsbl;
+            }
+        }
+    }
+{%  endif %}{# simta_authn #}
+{% else %}{# not simta_relay #}
+    mode = normal;
+    dmarc {
+        public_suffix_file = /etc/mail/public_suffix_list.dat;
+    }
+    auth authn {
+        enabled = true;
+        honeypot = true;
+    }
+    connection {
+        banner {
+            delay = 1s;
+            punish_writes = true;
+        }
+        dns_list {
+            action = trust;
+            list = mx-trust.dnsal;
+        }
+        dns_list {
+            action = accept;
+            list = mx-accept.dnsal;
+        }
+        dns_list {
+            action = block;
+            list = mx-deny.dnsbl;
+            message = {{ simta_spambusters }};
+        }
+{% if not simta_ldap %}
+{% for dnsbl in simta_dnsbls %}
+        dns_list {
+            action = block;
+            list = {{ dnsbl }};
+            message = {{ simta_spambusters }};
+        }
+{% endfor %}
+{%  endif %}
+    }
+    mail_from {
+        max_failures = 3;
+        dns_list {
+            action = block;
+            list = deny-from.dnsbl;
+        }
+        dns_list {
+            action = block;
+            list = deny-from.dnsbl;
+            domain_only = true;
+        }
+    }
+    rcpt_to {
+        max_failures = 3;
+{%  if simta_ldap %}
+{% for dnsbl in simta_dnsbls %}
+        dns_list {
+            action = block;
+            list = {{ dnsbl }};
+            message = {{ simta_spambusters }};
+        }
+{% endfor %}
+{%  endif %}
+    }
+{%  if simta_dkim_level == 'ALWAYS' %}
+    dkim {
+        sign = true;
+    }
+{%  endif %}
+{% endif %}{# simta_relay #}
+{% if simta_arc %}
+    arc {
+        enabled = true;
+        domain = {{ tld }};
+        selector = {{ simta_arc_selector }};
+        key = /etc/pki/collab/private/{{ simta_arc_selector }}._domainkey.{{ tld }}.key;
+    }
+{% endif %}{# simta_arc #}
+{% if simta_srs %}
+    srs {
+        enabled = true;
+        rewrite = foreign;
+        domain = {{ simta_srs_domain }};
+        secret = {{ simta_srs_secret }};
+    }
+{% endif %}{# simta_srs #}
+    data {
+{% if simta_egress %}
+        limits {
+            received_headers = 100;
+        }
+{% endif %}{# simta_egress #}
+{% if simta_filters %}
+        content_filter {
+            enabled = true;
+            path = /usr/sbin/simta-mscan;
+        }
+{% endif %}{# simta_filters #}
+    }
+{% if simta_jail %}
+    queue {
+        strategy = jail;
+    }
+{% endif %}{# simta_jail #}
+}
+
+deliver {
+{% if simta_dkim %}
+    dkim {
+        enabled = true;
+        domain = {{ tld }};
+        selector = {{ simta_dkim_selector }};
+        key = /etc/pki/collab/private/{{ simta_dkim_selector }}._domainkey.{{ tld }}.key;
+    }
+{% endif %}{# simta_dkim #}
+{% if simta_jail_mail %}
+    jail {
+        host = {{ simta_jail_host }};
+    }
+{% endif %}{# simta_jail_mail #}
+}
+defaults {
+{% if simta_egress %}
+    red {
+        deliver {
+            connection {
+                max_messages = 50;
+            queue {
+                strategy = shuffle;
+            }
+        }
+{% else %}{# not simta_egress #}
+    red {
+        deliver {
+            tls {
+                required = true;
+            }
+            punt {
+                enabled = true;
+                always = true;
+                host = {{ simta_punt | default((simta_relay | ternary('relay-egress', 'egress'), aws_region, subd) | join('.')) }};
+            }
+        }
+    }
+{% endif %}{# simta_egress #}
+{% if simta_ldap %}
+    red_rule {
+{%  if simta_ldap_red == "E" %}
+        receive {
+            enabled = false;
+        }
+{%  endif %}{# simta_ldap_red #}
+        ldap {
+            uri = "ldap://{{ simta_ldap_host }}/";
+            tls {
+                enabled = true;
+                required = true;
+            }
+            bind {
+                dn = "{{ simta_ldap_user }}";
+                password = {{ simta_ldap_password }};
+            }
+            attributes {
+                forwarding = mailforwardingaddress;
+                vacation = onvacation;
+            }
+            vacation {
+                host = {{ simta_vacationhost }};
+            }
+        }
+    }
+{% endif %}{# simta_ldap #}
+}
+
+domain {
+{% if simta_egress %}
+{% for domain in simta_important_domains | default([]) %}
+    "{{ domain }}" deliver queue wait { max = 5min; }
+{% endfor %}
+# Require TLS for pre-tested high-ish volume domains
+{% for domain in simta_tls_domains | default([]) %}
+    "{{ domain }}" deliver tls { required = true; }
+{% endfor %}
+# Limit # of recipients per delivery attempt
+{% for domain in simta_mrcpts_domains | default([]) %}
+    "{{ domain }}" deliver connection max_rcpts = {{ domain.max_rcpts }}; }
+{% endfor %}
+{% endif %}{# simta_egress #}
+}{# "domain" #}
+
+.include(glob=true; try=true; key=domain) /etc/simta.conf.d/domain/*.conf

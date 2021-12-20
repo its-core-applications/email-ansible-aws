@@ -143,7 +143,7 @@ SUBADDRESS_SEPARATOR    +
 
 {% if simta_ldap %}
 @{{ tld.ljust( 30 ) }} {{ simta_ldap_red }} LDAP    /etc/mail/ldap/{{ tld }}
-{% for domain in simta_ldap_domains %}
+{% for domain in simta_ldap_domains[1:] %}
 {% set _tld = tld if domain.tld is not defined else domain.tld %}
 @{{ ([ domain.slug, '.', _tld ]|join).ljust( 30 ) }} {{ simta_ldap_red }} LDAP    /etc/mail/ldap/{{ domain.slug }}.{{ _tld }}
 {% endfor %}
@@ -158,7 +158,7 @@ SUBADDRESS_SEPARATOR    +
 {% if simta_autoreply_domains is defined %}
 {% for domain in simta_autoreply_domains %}
 @{{ domain.ljust( 30 ) }} R  LDAP    /etc/mail/ldap/{{ tld }}
-@{{ domain.ljust( 30 ) }} D  MAILER  /usr/bin/simvacation -r 3 -f $S $R
+@{{ domain.ljust( 30 ) }} D  MAILER  /usr/bin/simvacation -f $S $R
 {% endfor %}
 
 {% endif %}
