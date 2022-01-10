@@ -236,6 +236,11 @@ spf_thirdparty:
       - a:mx1.aievolution.com
       - a:mx2.aievolution.com
 
+  # 2022-01-10: gmoney / School of Nursing / TDx1417701
+  - names:
+      - onlinenursing
+    record: ip4:156.70.46.187
+  
   # 2017-02-13: Printing Services
   - names:
       - printingservices
