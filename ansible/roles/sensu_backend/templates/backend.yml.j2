@@ -1,4 +1,4 @@
-log-level: {{ (aws_status == 'prod') | ternary('info', 'debug') }}
+log-level: info
 
 state-dir: /var/lib/sensu/sensu-backend
 
