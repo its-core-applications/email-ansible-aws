@@ -10,6 +10,7 @@ import requests
 ICON_MAP = {
     'sensu': 'https://cdn-images-1.medium.com/1*qC5lFfMvQd_zci2MBXZZpg.png',
     'ansible': 'https://www.ansible.com/favicon.ico',
+    'nagios': 'https://a.slack-edge.com/80588/img/services/nagios_512.png',
 }
 
 def handler(event, context):
@@ -21,7 +22,7 @@ def handler(event, context):
 
     if 'WARNING' in sns['Subject']:
         color = 'warning'
-    elif any(x in sns['Subject'] for x in ['CRITICAL', 'FAILED']):
+    elif any(x in sns['Subject'] for x in ['CRITICAL', 'FAILED', 'DOWN']):
         color = 'danger'
     else:
         color = 'good'
