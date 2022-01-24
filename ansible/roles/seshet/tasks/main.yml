@@ -39,3 +39,11 @@
         name: seshet
         minute: "*/5"
         job: seshet -H pink.{{ aws_region }}.{{ subd }}
+
+    - name: Install simta-authn-log-filter
+      copy:
+        src: simta-authn-log-filter
+        dest: /usr/local/bin/simta-authn-log-filter
+        owner: root
+        group: root
+        mode: "0755"

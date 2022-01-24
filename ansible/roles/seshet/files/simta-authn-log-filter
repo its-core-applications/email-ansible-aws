@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+
+
+sys.stdin.reconfigure(errors='ignore')
+
+re_pid = re.compile(r'(?P<ts>.+) .+\.umich\.edu simta\[(?P<pid>[\.0-9]+)\]:')
+re_ut = re.compile(r'.+: mscan: userthrottle: (?P<kv>.+)')
+re_subj = re.compile(r'.+: Subject: (?P<subj>.+)')
+
+if len(sys.argv) > 1:
+    re_filter = re.compile(sys.argv[1])
+else:
+    re_filter = re.compile('')
+
+subj = {}
+for line in sys.stdin:
+    m = re_subj.match(line)
+    if m:
+        pid = re_pid.match(line).group('pid')
+        subj[pid] = m.group('subj')
+        continue
+
+    m = re_ut.match(line)
+    if m:
+        pid = re_pid.match(line).group('pid')
+        try:
+            parsed = dict([x.split('=', 1) for x in m.group('kv').split()])
+        except ValueError:
+            # partial/corrupt line?
+            continue
+        s = subj.pop(pid, '')
+        if parsed.get('ual') != 'true' and re_filter.match(s):
+            print('{:8s} {}'.format(parsed.get('simta_auth_id'), s))
