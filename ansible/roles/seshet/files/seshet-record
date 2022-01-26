@@ -5,14 +5,31 @@ import sys
 
 from datetime import date
 
+import maxminddb
 import netaddr
 from rediscluster import RedisCluster
 
 
+def record_ip(ip_str):
+    ip = netaddr.IPAddress(ip_str)
+    subnet = netaddr.IPNetwork(ip)
+    if ip.version == 6:
+        subnet.prefixlen = 48
+    else:
+        subnet.prefixlen = 24
+
+    subkey = 'seshet:subnet:{0}/{1}'.format(str(subnet[0]), subnet.prefixlen)
+    print('Recording {0} to {1}'.format(str(ip), subkey))
+
+    red.hset(subkey, str(ip), today.strftime('%F'))
+    red.expire(subkey, 60 * 60 * 24 * 30 * 6)   # approximately six months
+
+    # FIXME: log things instead of just printing
+    print(red.hgetall(subkey))
+
 today = date.today()
 
 parser = argparse.ArgumentParser()
-parser.add_argument('ip')
 parser.add_argument('-H', '--host', default='localhost')
 parser.add_argument('-P', '--port', default='6379')
 args = parser.parse_args()
@@ -27,18 +44,10 @@ red = RedisCluster(
     decode_responses = True,
 )
 
-ip = netaddr.IPAddress(args.ip)
-subnet = netaddr.IPNetwork(ip)
-if ip.version == 6:
-    subnet.prefixlen = 48
-else:
-    subnet.prefixlen = 24
+mmdb = maxminddb.open_database('/usr/share/GeoIP/GeoLite2-Country.mmdb')
 
-subkey = 'seshet:subnet:{0}/{1}'.format(str(subnet[0]), subnet.prefixlen)
-print('Recording {0} to {1}'.format(str(ip), subkey))
-
-red.hset(subkey, str(ip), today.strftime('%F'))
-red.expire(subkey, 60 * 60 * 24 * 30 * 6)   # approximately six months
-
-# FIXME: log things instead of just printing
-print(red.hgetall(subkey))
+for ip in sys.stdin:
+    ip = ip.rstrip()
+    cc = mmdb.get(ip).get('country', {}).get('iso_code', 'US')
+    if cc != 'US':
+        record_ip(ip)

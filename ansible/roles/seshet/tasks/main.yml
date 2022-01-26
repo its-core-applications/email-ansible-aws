@@ -10,6 +10,7 @@
         venv_name: seshet
         venv_py3: true
         venv_packages:
+          - maxminddb
           - netaddr
           - redis-py-cluster
         venv_wrappers:
