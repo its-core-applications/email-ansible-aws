@@ -93,6 +93,10 @@ spf_thirdparty:
       # Terra Dotta, sends as many addresses
       - ip4:216.248.199.106
 
+      # 2022-01-26: slora / COE I-Corps Program / TDx 1746054
+      # Zoho CRM, sends as many addresses
+      - include:transmail.net
+
   # 2017-05-30: Dentistry
   - names:
       - bldawson
