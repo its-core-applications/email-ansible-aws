@@ -19,13 +19,19 @@ subj = {}
 for line in sys.stdin:
     m = re_subj.match(line)
     if m:
-        pid = re_pid.match(line).group('pid')
+        try:
+            pid = re_pid.match(line).group('pid')
+        except AttributeError:
+            continue
         subj[pid] = m.group('subj')
         continue
 
     m = re_ut.match(line)
     if m:
-        pid = re_pid.match(line).group('pid')
+        try:
+            pid = re_pid.match(line).group('pid')
+        except AttributeError:
+            continue
         try:
             parsed = dict([x.split('=', 1) for x in m.group('kv').split()])
         except ValueError:
