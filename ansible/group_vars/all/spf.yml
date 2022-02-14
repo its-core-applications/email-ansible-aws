@@ -92,6 +92,7 @@ spf_thirdparty:
       # 2021-01-04: hdoyle / Global Engagement / TDx 490173
       # Terra Dotta, sends as many addresses
       - ip4:216.248.199.106
+      - ip4:199.231.134.73
 
       # 2022-01-26: slora / COE I-Corps Program / TDx 1746054
       # Zoho CRM, sends as many addresses
