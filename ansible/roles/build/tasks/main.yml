@@ -63,16 +63,6 @@
     - import_role:
         name: build_rpm_git
       tags:
-        - quickxorhash
-      vars:
-        build_name: quickxorhash
-        build_repo: https://github.com/flowerysong/quickxorhash.git
-        build_deps:
-          - openssl-devel
-
-    - import_role:
-        name: build_rpm_git
-      tags:
         - libsnet
         - simta
       vars:
@@ -374,34 +364,6 @@
       tags: sshguard
       vars:
         build_name: sshguard
-
-    - import_role:
-        name: build_rpm_python
-      tags:
-        - google
-        - gak_utils
-      vars:
-        build_name: umich_gak_utils
-        build_repo: https://bitbucket.org/its-application-delivery/google-admin-kit-utilities.git
-
-    - import_role:
-        name: build_rpm_python
-      tags:
-        - mcommunity
-      vars:
-        build_name: umich_mcomm
-        build_repo: https://gitlab.umich.edu/carleski/python-mcommunity.git
-        build_deps:
-          - python3
-        python_version: 3
-
-    - import_role:
-        name: build_rpm_python
-      tags:
-        - box
-      vars:
-        build_name: umich_box_utils
-        build_repo: https://bitbucket.org/its-application-delivery/box-utilities/
 
     - import_role:
         name: build_rpm_spec
