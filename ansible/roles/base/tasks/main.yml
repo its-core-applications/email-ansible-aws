@@ -1,6 +1,19 @@
 - tags:
     - base
   block:
+    - include_role:
+        name: python_venv
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+        venv_name: system
+        venv_py3: true
+        venv_packages:
+          - boto3
+          - cryptography
+          - influxdb
+          - pyyaml
+          - requests
+
     - name: Disable SELinux
       selinux:
         state: disabled
