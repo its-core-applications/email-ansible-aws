@@ -52,8 +52,8 @@ receive {
     }
     dkim {
         enabled = false;
-{%  if simta_dkim_level == 'ALWAYS' %}
-        sign = true;
+{%  if simta_dkim_level != 'ALWAYS' %}
+        sign = false;
 {%  endif %}
     }
     dmarc {
@@ -141,9 +141,9 @@ receive {
 {% endfor %}
 {%  endif %}
     }
-{%  if simta_dkim_level == 'ALWAYS' %}
+{%  if simta_dkim_level != 'ALWAYS' %}
     dkim {
-        sign = true;
+        sign = false;
     }
 {%  endif %}
 {% endif %}{# simta_relay #}
