@@ -303,6 +303,9 @@
         - name: area1security.com
           subscriptions:
             - Status_production
+        - name: github.com
+          subscriptions:
+            - Status_production
 
     - name: Register Sensu proxy entities for loadbalancers
       sensu.sensu_go.entity:
@@ -343,6 +346,20 @@
         handlers:
           - default
         proxy_entity_name: area1security.com
+        <<: *sensu_auth
+      when: aws_region == aws_primary_region
+
+    - name: Monitor GitHub
+      sensu.sensu_go_check:
+        name: github-statuspage
+        command: check-statuspage -d www.githubstatus.com
+        interval: 300
+        publish: true
+        subscriptions:
+          - Class_syslog
+        handlers:
+          - default
+        proxy_entity_name: github.com
         <<: *sensu_auth
       when: aws_region == aws_primary_region
 
