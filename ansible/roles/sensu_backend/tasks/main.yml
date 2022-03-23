@@ -304,8 +304,7 @@
           subscriptions:
             - Status_production
         - name: github.com
-          subscriptions:
-            - Status_production
+          subscriptions: []
 
     - name: Register Sensu proxy entities for loadbalancers
       sensu.sensu_go.entity:
@@ -350,7 +349,7 @@
       when: aws_region == aws_primary_region
 
     - name: Monitor GitHub
-      sensu.sensu_go_check:
+      sensu.sensu_go.check:
         name: github-statuspage
         command: check-statuspage -d www.githubstatus.com
         interval: 300
