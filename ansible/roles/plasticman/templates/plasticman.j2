@@ -27,7 +27,7 @@ sendresult() {
     jq -n -r \
     --arg duration $duration \
     --arg name "plasticman-$class-heartbeat" \
-    '{ name: $name, ttl: 300, duration: $duration | tonumber, status: 0, output: "plasticman ran to completion", handlers: ["default"] }' > /dev/tcp/localhost/3030
+    '{ check: { metadata: { name: $name }, ttl: 300, duration: $duration | tonumber, status: 0, output: "plasticman ran to completion", handlers: ["default"] }}' | curl -X POST -H 'Content-Type: application/json' -d @- http://127.0.0.1:3031/events
 
     # Send actual result if something happened
     if [[ $2 ]]; then
@@ -36,7 +36,7 @@ sendresult() {
         --arg duration $duration \
         --arg msg "$1" \
         --arg name "plasticman-$class-$2" \
-        '{ name: $name, metadata: { labels: { occurrences: "2" }}, duration: $duration | tonumber, status: $status | tonumber, output: $msg, handlers: ["default"] }' > /dev/tcp/localhost/3030
+        '{ check: { metadata: { name: $name, annotations: { "fatigue_check/occurrences": "2" }}, duration: $duration | tonumber, status: $status | tonumber, output: $msg, handlers: ["default"] }}' | curl -X POST -H 'Content-Type: application/json' -d @- http://127.0.0.1:3031/events
     fi
 }
 
