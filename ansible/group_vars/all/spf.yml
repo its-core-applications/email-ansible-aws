@@ -146,8 +146,10 @@ spf_thirdparty:
     record: ip4:198.100.45.34
 
   # 2020-01-14: jmchris / CoE Office of Advancement / INC1882190
+  # 2022-04-08: agbloom / Alumni Association / TDx 2143853
   - names:
       - coethanks
+      - alumni
     record: include:spf.mandrillapp.com
 
   # 2018-09-10: cfz / William Davidson Institute / INC1454054, INC1826705
