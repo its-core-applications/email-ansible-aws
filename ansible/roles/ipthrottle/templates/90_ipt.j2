@@ -1,6 +1,6 @@
 #!/bin/dash
 
-if check_tfile && SIMTA_NRCPTS=$(grep -h -c '^R' $SIMTA_TFILE) ; then
+if check_tfile && SIMTA_NRCPTS=$(jq -r '.recipients | length' $SIMTA_TFILE) ; then
     export SIMTA_NRCPTS
 
     if simrbl -q -l relay-accept.dnsal $SIMTA_REMOTE_IP; then
