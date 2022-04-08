@@ -137,13 +137,20 @@
       register: result
 
     - name: Submit sensu event
-      shell: printf %s {{ sensu_payload | to_json | quote }} | ncat localhost 3030
-      vars:
-        sensu_payload:
-          name: clamav-sync
-          ttl: 2700
-          status: 0
-          output: "{{ result is changed | ternary('signatures updated', 'signatures unchanged') }}"
+      uri:
+        url: http://127.0.0.1:3031/events
+        method: POST
+        body:
+          check:
+            metadata:
+              name: clamav-sync
+            ttl: 2700
+            status: 0
+            output: "{{ result is changed | ternary('signatures updated', 'signatures unchanged') }}"
+            handlers:
+              - default
+        body_format: json
+        status_code: 202
       changed_when: false
 
     - name: Schedule signature updates

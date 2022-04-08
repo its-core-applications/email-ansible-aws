@@ -16,12 +16,11 @@ cleanup() {
     duration=$(( $(date +%s) - startts ))
     msg=$(cat $tmpfile)
     jq -n -r \
-        --arg source $(hostname) \
         --arg status $retval \
         --arg duration $duration \
         --arg msg "$msg" \
         --arg name $name
-        '{ name: $name, source: $source, ttl: 900, duration: $duration | tonumber, status: $status | tonumber, output: $msg }' | ncat localhost 3030
+        '{ check: { metadata: { name: $name }, ttl: 900, duration: $duration | tonumber, status: $status | tonumber, output: $msg }}' | curl -X POST -H 'Content-Type: application/json' -d @- http://127.0.0.1:3031/events
     rm -rf $tmpdir
     rm -f $lockfile
     exit $retval
