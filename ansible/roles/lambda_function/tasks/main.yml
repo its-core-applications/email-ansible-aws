@@ -86,7 +86,7 @@
             description: "{{ lambda_description }}"
             role: "{{ aws_resource_prefix }}_lambda_basic"
             src: "{{ lambda_cache_dir }}/{{ lambda_name }}.zip"
-            runtime: python3.6
+            runtime: python3.9
             timeout: "{{ lambda_timeout }}"
             handler: "{{ lambda_handler }}"
             environment_variables: "{{ lambda_env | default(omit, True) }}"
