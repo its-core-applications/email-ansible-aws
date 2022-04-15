@@ -107,6 +107,17 @@ ec2_sg:
           - 587
         cidr_ip: 0.0.0.0/0
 
+  vpn-smtp:
+    vpc_id: "{{ ec2_subnets_vpn[ec2sg_region].0.vpc_id }}"
+    description: SMTP
+    rules:
+      - proto: tcp
+        ports:
+          - 25
+          - 465
+          - 587
+        cidr_ip: 0.0.0.0/0
+
   rsyslog:
     vpc_id: "{{ ec2_subnets_vpn[ec2sg_region].0.vpc_id }}"
     description: rsyslog hosts

@@ -1,0 +1,29 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: ec2_launch
+      vars:
+        launch_class: mx-test
+        launch_ami_class: base
+        launch_subnet: "{{ ec2_subnets_vpn_sorted[aws_region].0 }}"
+        launch_subnet_type: vpn
+        launch_public_ip: false
+        launch_groups:
+          - vpn-smtp
+        launch_tags:
+          Status: production
+
+- import_playbook: mx_test.yml
+
+- hosts: localhost
+  become: false
+  tasks:
+    - include_role:
+        name: ec2_nlb
+      vars:
+        nlb_name: mx-test
+        tg_group: Class_mx_test
+        nlb_ports:
+         - 25
+        nlb_dns_name: mx-test.{{ subd }}
