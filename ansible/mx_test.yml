@@ -31,3 +31,22 @@
 
         - import_role:
             name: localrepo
+
+        - import_role:
+            name: build_rpm_git
+          tags: simta
+          vars:
+            build_name: simta
+            build_repo: https://github.com/flowerysong/simta.git
+            build_deps:
+              - denser-devel
+              - jemalloc-devel
+              - libidn2-devel
+              - libopenarc-devel
+              - libopendkim-devel
+              - libsnet-devel
+              - libucl-devel
+              - lmdb-devel
+              - openldap-devel
+              - openssl-devel
+              - tcp_wrappers-devel
