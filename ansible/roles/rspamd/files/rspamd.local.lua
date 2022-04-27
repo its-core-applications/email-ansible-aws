@@ -1,10 +1,18 @@
 local google_from = 'From=/\\@[a-z\\.]+\\.google\\.com\\b/iH'
 local umich_from = 'From=/\\@(umich\\.edu|.+\\.umich\\.edu)\\b/iH'
 local suspicious_from = 'From=/[^=]umich\\.edu\\S*\\@/iH'
+local umich_replyto = 'reply-to=/\\@(umich\\.edu|.+\\.umich\\.edu)\\b/iH'
+local suspicious_replyto = 'reply-to=/[^=]umich\\.edu\\S*\\@/iH'
 config['regexp']['UMICH_FROM_SUSPICIOUS_UMICH_EDU'] = {
     re = string.format('(%s) & !(%s) & !(%s)', suspicious_from, umich_from, google_from),
     score = 12,
     description = 'Non-UM From header contains umich.edu',
+}
+
+config['regexp']['UMICH_REPLYTO_SUSPICIOUS_UMICH_EDU'] = {
+    re = string.format('(%s) & !(%s)', suspicious_replyto, umich_replyto),
+    score = 0.1,
+    description = 'Non-UM reply-to header contains umich.edu',
 }
 
 config['regexp']['UMICH_HAS_BITCOIN_ADDRESS'] = {
