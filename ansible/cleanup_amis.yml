@@ -7,6 +7,7 @@
         name: ec2_ami_cleanup
       vars:
         bad_classes:
+          - covid_relay
           - ctools_mx
           - junk
           - odm
@@ -15,7 +16,6 @@
           - authn_relay
           - authz_relay
           - base
-          - covid_relay
           - dnsbl
           - egress
           - jail

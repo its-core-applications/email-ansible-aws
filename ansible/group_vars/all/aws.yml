@@ -66,9 +66,6 @@ aws_region_layout:
         size: m5.xlarge
       authz-static:
         size: t3.medium
-      covid-relay:
-        count: 2
-        size: t3.medium
       dnsbl:
         count: 4
         size: c5n.large
@@ -125,8 +122,6 @@ aws_region_layout:
         size: t3.medium
       authz-static:
         size: t3.medium
-      covid-relay:
-        count: 1
       builder:
         autokill: true
         autocycle: false

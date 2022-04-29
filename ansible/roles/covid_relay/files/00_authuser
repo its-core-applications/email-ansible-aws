@@ -1,5 +1,0 @@
-#!/bin/dash
-# Reject mail not sent by an authorized address.
-if [ "$SIMTA_AUTH_ID" != "mi-symptom-app" ]; then
-   filter_exit $MESSAGE_REJECT
-fi

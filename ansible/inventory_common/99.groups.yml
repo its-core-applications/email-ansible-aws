@@ -6,7 +6,6 @@ all:
     Class_authz_static: {}
     Class_bastion: {}
     Class_builder: {}
-    Class_covid_relay: {}
     Class_dev: {}
     Class_dnsbl: {}
     Class_egress: {}

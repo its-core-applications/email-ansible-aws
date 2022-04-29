@@ -481,7 +481,6 @@
           - Class_authn_relay
           - Class_authz_relay
           - Class_authz_static
-          - Class_covid_relay
           - Class_egress
           - Class_jail
           - Class_mx
@@ -546,7 +545,6 @@
           SMTP_PASSWORD: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
         subscriptions:
           - Class_authn_relay
-          - Class_covid_relay
         handlers:
           - influxdb_event
         <<: *sensu_auth
@@ -560,7 +558,6 @@
         publish: true
         subscriptions:
           - Class_egress
-          - Class_covid_relay
           - Class_relay_egress
         handlers:
           - default
@@ -573,7 +570,6 @@
           - Class_authn_relay
           - Class_authz_relay
           - Class_authz_static
-          - Class_covid_relay
           - Class_mx
           - Class_vdc_relay
       block:
