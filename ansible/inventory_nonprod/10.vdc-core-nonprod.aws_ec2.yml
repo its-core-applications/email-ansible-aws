@@ -9,4 +9,4 @@ regions:
 hostnames:
   - 'tag:CustomDNSName'
   - dns-name
-
+  - private-dns-name
