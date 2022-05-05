@@ -237,17 +237,17 @@ spf_thirdparty:
     record: ip4:72.3.208.43
 
   # 2019-02-25: ceagl / MiCME / INC1609152
+  # 2022-05005: jnaveen / MiCME / TDx 2258407
   - names:
       - ocme-ll.support
     record:
-      - a:mx1.aievolution.com
-      - a:mx2.aievolution.com
+      - include:spf.aievolution.com
 
   # 2022-01-10: gmoney / School of Nursing / TDx1417701
   - names:
       - onlinenursing
     record: ip4:156.70.46.187
-  
+
   # 2017-02-13: Printing Services
   - names:
       - printingservices
