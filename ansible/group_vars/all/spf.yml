@@ -237,7 +237,7 @@ spf_thirdparty:
     record: ip4:72.3.208.43
 
   # 2019-02-25: ceagl / MiCME / INC1609152
-  # 2022-05005: jnaveen / MiCME / TDx 2258407
+  # 2022-05-05: jnaveen / MiCME / TDx 2258407
   - names:
       - ocme-ll.support
     record:
