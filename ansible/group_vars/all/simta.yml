@@ -7,7 +7,7 @@ mx_names:
     - mx2
 
 simta_version: 1.5.0
-simta2_version: 2.0.2.4
+simta2_version: 2.0.3
 simta_dkim_selector: mx-2017-01-03
 simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
 simta_ldap_host: 'ldap-mail.itd.umich.edu'
