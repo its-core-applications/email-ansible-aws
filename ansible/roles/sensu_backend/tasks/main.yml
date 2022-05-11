@@ -356,7 +356,7 @@
         subscriptions:
           - Class_syslog
         handlers:
-          - default
+          - fyi
         proxy_entity_name: github.com
         <<: *sensu_auth
       when: aws_region == aws_primary_region
