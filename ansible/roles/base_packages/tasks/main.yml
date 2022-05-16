@@ -47,6 +47,7 @@
           - nc
           - openldap-clients
           - pam_krb5
+          - procmail  # Not used directly, but formail is sometimes useful
           - pv
           - python-boto
           - python-pip
