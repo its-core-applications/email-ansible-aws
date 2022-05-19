@@ -187,6 +187,12 @@
             - fatigue_check(event)
           runtime_assets:
             - fatigue_check_filter
+        - name: better_sleep
+          action: deny
+          expressions:
+            - "event.entity.subscriptions.filter(function(s) { return s == 'Class_jail' }).length > 0"
+            - hour(event.timestamp) > 4   # 00:00 EDT, 23:00 EST/CDT, 22:00 CST
+            - hour(event.timestamp) < 12  # 08:00 EDT, 07:00 EST/CDT, 06:00 CST
 
     - name: Create the SNS handlers
       sensu.sensu_go.pipe_handler:
@@ -213,6 +219,7 @@
           filters:
             - is_incident
             - occurrences
+            - better_sleep
             - production
             - critical
 
@@ -516,13 +523,14 @@
         handlers:
           - default
         output_metric_format: "{{ ('metrics' in item.name) | ternary('influxdb_line', omit) }}"
-        annotations: "{{ ('occurrences' in item) | ternary({'fatigue_check/occurrences': item.occurrences}, omit) }}"
+        annotations: "{{ item.annotations | default(omit) }}"
         check_hooks: "{{ item.hooks | default(omit) }}"
         <<: *sensu_auth
       loop:
         - name: simta
           command: check-process -p simta
-          occurrences: 5
+          annotations:
+            fatigue_check/occurrences: 5
         - name: simta-queue-dead
           command: /usr/libexec/simta-admin/check-simta-queue -q dead -c 0
         - name: simta-queue-fast
@@ -533,7 +541,8 @@
           command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q slow -w {{ .labels.simta_slowqwarn | default "100" }}  -c {{ .labels.simta_slowqmax | default "200" }}
         - name: simta-queue-fast-age
           command: /usr/libexec/simta-admin/check-simta-queue-age -q fast -a 60 -c 0
-          occurrences: 5
+          annotations:
+            fatigue_check/occurrences: 5
           hooks:
             critical:
               - restart_simta
