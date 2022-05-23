@@ -1,4 +1,3 @@
-simta_version: "{{ simta2_version }}"
 simta_config: jail.{{ subd | replace('.' ~ tld, '') }}
 simta_jail: true
 simta_relay: true
