@@ -1,11 +1,5 @@
 # simta.conf for {{ simta_config }}
 
-{% if simta_bitbucket %}
-defaults red deliver bitbucket {
-    enabled = true;
-    delay = 0.05s;
-}
-{% endif %}{# simta_bitbucket #}
 receive {
 {% if simta_msa %}
     ports = [ 25, 587 ];
@@ -202,12 +196,20 @@ defaults {
 {% if simta_egress %}
     red {
         deliver {
+{% if simta_bitbucket %}
+            bitbucket {
+                enabled = true;
+                delay = 0.05s;
+            }
+{% endif %}
             connection {
                 max_messages = 50;
+            }
             queue {
                 strategy = shuffle;
             }
         }
+    }
 {% else %}{# not simta_egress #}
     red {
         deliver {
@@ -250,21 +252,5 @@ defaults {
     }
 {% endif %}{# simta_ldap #}
 }
-
-domain {
-{% if simta_egress %}
-{% for domain in simta_important_domains | default([]) %}
-    "{{ domain }}" deliver queue wait { max = 5min; }
-{% endfor %}
-# Require TLS for pre-tested high-ish volume domains
-{% for domain in simta_tls_domains | default([]) %}
-    "{{ domain }}" deliver tls { required = true; }
-{% endfor %}
-# Limit # of recipients per delivery attempt
-{% for domain in simta_mrcpts_domains | default([]) %}
-    "{{ domain }}" deliver connection max_rcpts = {{ domain.max_rcpts }}; }
-{% endfor %}
-{% endif %}{# simta_egress #}
-}{# "domain" #}
 
 .include(glob=true; try=true; key=domain) /etc/simta.conf.d/domain/*.conf

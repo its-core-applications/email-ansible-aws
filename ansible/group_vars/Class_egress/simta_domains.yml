@@ -1,0 +1,48 @@
+simta_deliver_domains:
+  - name: adsroot.itcs.umich.edu
+    tls: true
+  - name: aol.com
+    tls: true
+  - name: aon.ca
+    tls: true
+  - name: aon.com
+    tls: true
+  - name: comcast.net
+    tls: true
+  - name: gmail.com
+    important: true
+    tls: true
+  - name: go.itd.umich.edu
+    important: true
+    tls: true
+  - name: go.mail.umich.edu
+    important: true
+    max_rcpts: 1000
+    tls: true
+  - name: hotmail.com
+    tls: true
+  - name: mac.com
+    tls: true
+  - name: me.com
+    tls: true
+  - name: med.umich.edu
+    important: true
+    tls: true
+    max_rcpts: 50
+  - name: msn.com
+    tls: true
+  - name: msu.edu
+    tls: true
+  - name: staywell.com
+    tls: true
+  - name: verizon.net
+    tls: true
+  - name: wayne.edu
+    tls: true
+  - name: yahoo.com
+    tls: true
+
+# FIXME: remove after transition to simta 2.x
+simta_tls_domains: "{{ simta_deliver_domains | selectattr('tls', 'defined') | selectattr('tls') | map(attribute='name') }}"
+simta_mrcpts_domains: "{{ simta_deliver_domains | selectattr('max_rcpts', 'defined') }}"
+simta_important_domains: "{{ simta_deliver_domains | selectattr('important', 'defined') | selectattr('important') | map(attribute='name') }}"

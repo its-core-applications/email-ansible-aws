@@ -199,6 +199,15 @@
           loop: "{{ simta_devnull_domains | default([]) }}"
           notify: Restart simta
 
+        - name: Configure delivery domains
+          template:
+            dest: /etc/simta.conf.d/domain/{{ item }}.conf
+            src: delivery_domain.conf.js
+            owner: root
+            group: root
+            mode: "0644"
+          loop: "{{ simta_delivery_domains | default([]) }}"
+
     - name: Configure simta 1.x
       when: simta_version is version('2.0', '<')
       block:

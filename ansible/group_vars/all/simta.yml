@@ -30,12 +30,6 @@ simta_ldap_domains:
   - slug: umflint
     tld: edu
 
-simta_important_domains:
-  - go.itd.umich.edu
-  - go.mail.umich.edu
-  - gmail.com
-  - med.umich.edu
-
 simta_ldap_domains_mapped:
   - domain: affmichlaw.org
     prefix: affmichlaw
