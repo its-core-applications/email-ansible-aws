@@ -10,16 +10,21 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-u', '--username', required=True)
 parser.add_argument('-H', '--host', default='127.0.0.1')
 parser.add_argument('-P', '--port', default=25)
+parser.add_argument('-t', '--tls', action='store_true')
 args = parser.parse_args()
 
 try:
-    server = smtplib.SMTP('{}:{}'.format(args.host, args.port))
-    server.starttls()
+    dest = '{}:{}'.format(args.host, args.port)
+    if args.tls:
+        server = smtplib.SMTP_SSL(dest)
+    else:
+        server = smtplib.SMTP(dest)
+        server.starttls()
     server.login(args.username, os.environ.get('SMTP_PASSWORD'))
     server.quit()
     print('Authentication Successful')
     sys.exit(0)
-except smtplib.SMTPAuthenticationError as e:
+except (smtplib.SMTPAuthenticationError, smtplib.SMTPNotSupportedError) as e:
     print('Authentication Failed')
     print(e)
     sys.exit(2)

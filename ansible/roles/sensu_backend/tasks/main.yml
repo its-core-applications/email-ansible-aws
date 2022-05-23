@@ -549,6 +549,21 @@
           - influxdb_event
         <<: *sensu_auth
 
+    - name: Monitor simta authentication on port 465
+      sensu.sensu_go.check:
+        name: simta-smtp-auth-465
+        command: check-smtp-auth -u simta --tls --port 465
+        interval: 60
+        publish: true
+        env_vars:
+          SMTP_PASSWORD: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
+        subscriptions:
+          - Class_authn_relay
+        handlers:
+          - influxdb_event
+        <<: *sensu_auth
+
+
     - name: Monitor IP reputation
       sensu.sensu_go.check:
         name: dnsbl
@@ -618,8 +633,8 @@
 
     - name: Monitor simta auth aggregate
       sensu.sensu_go.check:
-        name: simta-smtp-auth-aggregate
-        command: check-aggregate -H {{ influxdb_server }} --check simta-smtp-auth
+        name: "{{ item }}-aggregate"
+        command: check-aggregate -H {{ influxdb_server }} --check {{ item }}
         stdin: true
         interval: 60
         publish: true
@@ -632,6 +647,9 @@
           dashboard_host: dashboard.{{ aws_region }}.{{ subd }}
           fatigue_check/occurrences: 2
         <<: *sensu_auth
+      loop:
+        - simta-smtp-auth
+        - simta-smtp-auth-465
       when: "'authn-relay' in aws_region_layout[aws_status][aws_region]"
 
     - name: Monitor rbldnsd
