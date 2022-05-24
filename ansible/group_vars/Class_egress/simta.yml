@@ -1,4 +1,3 @@
-simta_version: 1.5.0
 simta_config: egress.{{ subd | replace('.' ~ tld, '') }}
 simta_relay: true
 simta_egress: true

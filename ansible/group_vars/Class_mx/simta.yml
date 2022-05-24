@@ -1,3 +1,4 @@
+simta_version: "{{ simta2_version }}"
 simta_config: mx.{{ subd | replace('.' ~ tld, '') }}
 simta_arc: true
 simta_arc_selector: arc-2017-08-04

@@ -1,4 +1,3 @@
-simta_version: 1.5.0
 simta_queue_type: relay-egress
 simta_config: egress.{{ subd | replace('.' ~ tld, '') }}
 simta_relay: true
