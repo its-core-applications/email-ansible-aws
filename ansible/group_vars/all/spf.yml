@@ -145,6 +145,13 @@ spf_thirdparty:
       - umhsdev-web
     record: ip4:198.100.45.34
 
+  # 2022-06-02: jnaveen / MiCME / TDx 2342663
+  - names:
+      - cme-mitigator
+    record:
+      - ip4:68.169.15.105
+      - ip4:68.169.15.106
+  
   # 2020-01-14: jmchris / CoE Office of Advancement / INC1882190
   # 2022-04-08: agbloom / Alumni Association / TDx 2143853
   - names:
