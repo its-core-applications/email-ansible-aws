@@ -1,8 +1,0 @@
-#!/bin/dash
-
-if [ "x${SIMTA_HEADER_FROM##no-reply@*}" = 'x' ] && check_dfile; then
-    if grep -Fq "This notification is a result of a data migration. #DropboxDataMigration" $SIMTA_DFILE; then
-        log "15_dropbox_migration: matched magic string"
-        filter_exit $MESSAGE_DELETE
-    fi
-fi
