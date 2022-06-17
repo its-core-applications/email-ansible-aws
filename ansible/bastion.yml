@@ -58,6 +58,9 @@
             name: gitlab_gitlab_cli
 
         - import_role:
+            name: google_gam
+
+        - import_role:
             name: kerberos_client
 
         - import_role:

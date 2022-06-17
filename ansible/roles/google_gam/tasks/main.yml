@@ -1,0 +1,131 @@
+- tags:
+    - google
+    - collab_admin_kit
+    - gam
+  block:
+    - import_role:
+        name: python_venv
+      vars:
+        venv_name: gam
+        venv_py3: true
+        venv_packages:
+          - python-dateutil
+          - google-api-python-client
+          - google-auth
+          - google-auth-httplib2
+          - google-auth-oauthlib==0.4.0
+          - httplib2
+          - passlib
+        venv_sudo_user: collaborate
+        venv_wrappers:
+          - name: gam
+            target: python
+            extra_args: /home/collaborate/GAM/src/gam.py
+            wrapper_environment:
+              - name: GAMUSERCONFIGDIR
+                value: /home/collaborate/gam-config/{{ googled }}
+              - name: GAM_THREADS
+                value: 3
+          - name: gam-discussions
+            target: python
+            extra_args: /home/collaborate/GAM/src/gam.py
+            wrapper_environment:
+              - name: GAMUSERCONFIGDIR
+                value: /home/collaborate/gam-config/{{ discussionsd }}
+              - name: GAM_THREADS
+                value: 3
+
+    - name: Install GAM
+      become_user: collaborate
+      git:
+        repo: https://github.com/jay0lee/GAM.git
+        dest: ~/GAM
+        version: v4.94
+
+    - name: Create GAM config directories
+      file:
+        dest: /home/collaborate/gam-config/{{ item }}
+        state: directory
+        owner: collaborate
+        group: collaborate
+      loop:
+        - "{{ googled }}"
+        - "{{ discussionsd }}"
+
+    - name: Configure primary GAM
+      file:
+        dest: /home/collaborate/gam-config/{{ googled }}/{{ item }}
+        state: touch
+        owner: collaborate
+        group: collaborate
+      loop:
+        - noupdatecheck.txt
+        - nobrowser.txt
+
+    - name: Copy over primary GAM credentials
+      copy:
+        dest: "/home/collaborate/gam-config/{{ googled }}/{{ item.value }}.b64"
+        content: "{{ lookup('flowerysong.hvault.kv', 'google/gam/primary/' ~ item.name).value }}"
+        owner: collaborate
+        group: root
+        mode: "0640"
+      loop:
+        - name: clientsecrets
+          value: client_secrets.json
+        - name: oauth2service
+          value: oauth2service.json
+
+    - name: Decode primary GAM credentials
+      shell: "base64 -d /home/collaborate/gam-config/{{ googled }}/{{ item }}.b64 > /home/collaborate/gam-config/{{ googled }}/{{ item }}"
+      loop:
+        - client_secrets.json
+        - oauth2service.json
+
+    - name: Set permissions on primary GAM credentials
+      file:
+        dest: "/home/collaborate/gam-config/{{ googled }}/{{ item }}"
+        owner: collaborate
+        group: collaborate
+        mode: "0640"
+      loop:
+        - client_secrets.json
+        - oauth2service.json
+
+    - name: Configure discussions GAM
+      file:
+        dest: /home/collaborate/gam-config/{{ discussionsd }}/{{ item }}
+        state: touch
+        owner: collaborate
+        group: collaborate
+      loop:
+        - noupdatecheck.txt
+        - nobrowser.txt
+
+    - name: Copy over discussions GAM credentials
+      copy:
+        dest: "/home/collaborate/gam-config/{{ discussionsd }}/{{ item.value }}.b64"
+        content: "{{ lookup('flowerysong.hvault.kv', 'google/gam/discussions/' ~ item.name).value }}"
+        owner: collaborate
+        group: root
+        mode: "0640"
+      loop:
+        - name: clientsecrets
+          value: client_secrets.json
+        - name: oauth2service
+          value: oauth2service.json
+
+    - name: Decode discussions GAM credentials
+      shell: "base64 -d /home/collaborate/gam-config/{{ discussionsd }}/{{ item }}.b64 > /home/collaborate/gam-config/{{ discussionsd }}/{{ item }}"
+      loop:
+        - client_secrets.json
+        - oauth2service.json
+
+    - name: Set permissions on discussions GAM credentials
+      file:
+        dest: "/home/collaborate/gam-config/{{ discussionsd }}/{{ item }}"
+        owner: collaborate
+        group: collaborate
+        mode: "0640"
+      loop:
+        - client_secrets.json
+        - oauth2service.json
