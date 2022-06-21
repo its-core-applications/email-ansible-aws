@@ -16,9 +16,9 @@
         - mod_auth_openidc
       vars:
         build_name: cjose
-        rpm: cjose-0.6.1.5-1.el7.x86_64.rpm
+        rpm: cjose-0.6.1.5-2.el7.x86_64.rpm
         rpm_url: https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.4.0/{{ rpm }}
-        rpm_checksum: sha512:90976903743de60e0a233af0b312e9a793607d6f93e8c76f28c9a3f7c2e2ed6e612b7283257a7734c44eef9f01200cb61751ea61500b006d8840bea33c9b9d20
+        rpm_checksum: sha512:244ca9640ef0068275a4a9c3dfd936a5fef985789e0b92b86d90b305853ff788c15bce1811234fc432a78f615e335f80b21307c98b10a8ef66e4bbe6a972fdd2
 
     - import_role:
         name: build_rpm_spec
