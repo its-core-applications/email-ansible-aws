@@ -133,7 +133,6 @@
         exclude:
           - "*.raw"
           - mirrors.dat
-        delete: true
       register: result
 
     - name: Submit sensu event
