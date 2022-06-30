@@ -13,13 +13,13 @@
         src: /dev/xvdf
         fstype: xfs
         state: mounted
-      notify: Restart influxd
+      notify: Restart influxdb
 
     - name: Install InfluxDB
       yum:
         name: influxdb
         state: latest
-      notify: Restart influxd
+      notify: Restart influxdb
 
     - name: Install InfluxDB Python library
       pip:
@@ -35,33 +35,33 @@
         group: influxdb
         recurse: true
 
-    - name: Configure influxd
+    - name: Configure influxdb
       copy:
         dest: /etc/influxdb/influxdb.conf
         src: influxdb.conf
         owner: root
         group: root
         mode: "0644"
-      notify: Restart influxd
+      notify: Restart influxdb
 
-    # The InfluxDB RPM installs an init script? Furrfu.
-    - name: Create influxd service
+    # The InfluxDB RPM installs a broken service? Furrfu.
+    - name: Create influxdb service
       copy:
-        dest: /etc/systemd/system/influxd.service
-        src: influxd.service
+        dest: /etc/systemd/system/influxdb.service
+        src: influxdb.service
         owner: root
         group: root
         mode: "0644"
-      notify: Restart influxd
+      notify: Restart influxdb
 
-    - name: Enable influxd
+    - name: Enable influxdb
       systemd:
-        name: influxd
+        name: influxdb
         daemon_reload: true
         enabled: true
-      notify: Restart influxd
+      notify: Restart influxdb
 
-    - name: Start influxd
+    - name: Start influxdb
       systemd:
-        name: influxd
+        name: influxdb
         state: started

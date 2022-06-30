@@ -1,5 +1,5 @@
-- name: Restart influxd
+- name: Restart influxdb
   systemd:
-    name: influxd
+    name: influxdb
     daemon_reload: true
     state: restarted
