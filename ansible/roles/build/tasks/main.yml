@@ -309,7 +309,9 @@
 
     - import_role:
         name: build_rpm_git
-      tags: simta
+      tags:
+        - simta
+        - justsimta
       vars:
         build_name: simta
         build_repo: https://github.com/simta/simta.git
