@@ -84,7 +84,7 @@
         group: root
         mode: "0644"
         force: true
-      when: simta_localmail == false
+      when: not simta_localmail
       notify: Restart simta
 
     - name: Configure OpenLDAP defaults
@@ -126,7 +126,7 @@
         - name: Configure simta
           template:
             dest: /etc/simta.conf
-            src: simta-2.0.conf.j2
+            src: "{{ simta_localmail | ternary('simta.conf-localmail.j2', 'simta-2.0.conf.j2') }}"
             owner: root
             group: root
             mode: "0644"

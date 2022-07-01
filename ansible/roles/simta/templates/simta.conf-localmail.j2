@@ -1,0 +1,11 @@
+# simta.conf for local mail
+
+core tls {
+    ca_file = /etc/pki/tls/certs/ca-bundle.crt;
+}
+
+defaults red deliver punt {
+    enabled = true;
+    always = true;
+    host = egress.{{ aws_region }}.{{ subd }};
+}

@@ -1,5 +1,11 @@
 # simta.conf for {{ simta_config }}
 
+core {
+    tls {
+        ca_file = /etc/pki/tls/certs/ca-bundle.crt;
+    }
+}
+
 receive {
 {% if simta_msa %}
     ports = [ 25, 587 ];
