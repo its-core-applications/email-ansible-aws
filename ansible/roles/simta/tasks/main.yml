@@ -120,154 +120,90 @@
         name: saslauthd
       when: simta_authn
 
-    - name: Configure simta 2.x
-      when: simta_version is version('2.0', '>=')
+    - name: Configure simta
+      template:
+        dest: /etc/simta.conf
+        src: "{{ simta_localmail | ternary('simta.conf-localmail.j2', 'simta.conf.j2') }}"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart simta
+
+    - name: Create config directories
+      file:
+        dest: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - /etc/simta.conf.d
+        - /etc/simta.conf.d/domain
+
+    - when: simta_ldap
       block:
-        - name: Configure simta
+        - name: Configure LDAP domains
           template:
-            dest: /etc/simta.conf
-            src: "{{ simta_localmail | ternary('simta.conf-localmail.j2', 'simta-2.0.conf.j2') }}"
+            dest: /etc/simta.conf.d/domain/{{ [item.slug, item.tld | default(tld)] | select('defined') | join('.') }}.conf
+            src: ldap_domain.conf.j2
             owner: root
             group: root
             mode: "0644"
+          loop: "{{ simta_ldap_domains | default([]) }}"
+          loop_control:
+            label: "{{ item.slug | default(item.tld | default(tld)) }}"
           notify: Restart simta
 
-        - name: Create config directories
-          file:
-            dest: "{{ item }}"
-            state: directory
-            owner: root
-            group: root
-            mode: "0755"
-          loop:
-            - /etc/simta.conf.d
-            - /etc/simta.conf.d/domain
-
-        - when: simta_ldap
-          block:
-            - name: Configure LDAP domains
-              template:
-                dest: /etc/simta.conf.d/domain/{{ [item.slug, item.tld | default(tld)] | select('defined') | join('.') }}.conf
-                src: ldap_domain.conf.j2
-                owner: root
-                group: root
-                mode: "0644"
-              loop: "{{ simta_ldap_domains | default([]) }}"
-              loop_control:
-                label: "{{ item.slug | default(item.tld | default(tld)) }}"
-              notify: Restart simta
-
-            - name: Configure mapped LDAP domains
-              template:
-                dest: /etc/simta.conf.d/domain/{{ item.domain }}.conf
-                src: ldap_domain_mapped.conf.j2
-                owner: root
-                group: root
-                mode: "0644"
-              loop: "{{ simta_ldap_domains_mapped | default([]) }}"
-              loop_control:
-                label: "{{ item.domain }}"
-              notify: Restart simta
-
-        - name: Configure autoreply domains
+        - name: Configure mapped LDAP domains
           template:
-            dest: /etc/simta.conf.d/domain/{{ item }}.conf
-            src: autoreply_domain.conf.j2
+            dest: /etc/simta.conf.d/domain/{{ item.domain }}.conf
+            src: ldap_domain_mapped.conf.j2
             owner: root
             group: root
             mode: "0644"
-          loop: "{{ simta_autoreply_domains | default([]) }}"
+          loop: "{{ simta_ldap_domains_mapped | default([]) }}"
+          loop_control:
+            label: "{{ item.domain }}"
           notify: Restart simta
 
-        - name: Configure alias domains
-          template:
-            dest: /etc/simta.conf.d/domain/{{ item }}.conf
-            src: alias_domain.conf.j2
-            owner: root
-            group: root
-            mode: "0644"
-          loop: "{{ simta_alias_domains | default([]) }}"
-          notify: Restart simta
+    - name: Configure autoreply domains
+      template:
+        dest: /etc/simta.conf.d/domain/{{ item }}.conf
+        src: autoreply_domain.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ simta_autoreply_domains | default([]) }}"
+      notify: Restart simta
 
-        - name: Configure devnull domains
-          template:
-            dest: /etc/simta.conf.d/domain/{{ item }}.conf
-            src: devnull_domain.conf.j2
-            owner: root
-            group: root
-            mode: "0644"
-          loop: "{{ simta_devnull_domains | default([]) }}"
-          notify: Restart simta
+    - name: Configure alias domains
+      template:
+        dest: /etc/simta.conf.d/domain/{{ item }}.conf
+        src: alias_domain.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ simta_alias_domains | default([]) }}"
+      notify: Restart simta
 
-        - name: Configure delivery domains
-          template:
-            dest: /etc/simta.conf.d/domain/{{ item }}.conf
-            src: delivery_domain.conf.js
-            owner: root
-            group: root
-            mode: "0644"
-          loop: "{{ simta_delivery_domains | default([]) }}"
+    - name: Configure devnull domains
+      template:
+        dest: /etc/simta.conf.d/domain/{{ item }}.conf
+        src: devnull_domain.conf.j2
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ simta_devnull_domains | default([]) }}"
+      notify: Restart simta
 
-    - name: Configure simta 1.x
-      when: simta_version is version('2.0', '<')
-      block:
-        - name: Configure simta
-          template:
-            dest: /etc/simta.conf
-            src: simta.conf.j2
-            owner: root
-            group: root
-            mode: "0644"
-          notify: Restart simta
-
-        - when: simta_ldap
-          block:
-            - name: Create /etc/mail/ldap
-              file:
-                dest: /etc/mail/ldap
-                state: directory
-                owner: root
-                group: root
-                mode: "0755"
-
-            - name: Install LDAP config file for {{ tld }}
-              template:
-                dest: /etc/mail/ldap/{{ tld }}
-                src: ldap/tld.j2
-                owner: root
-                group: root
-                mode: "0644"
-              notify: Restart simta
-
-            - name: Install LDAP config files for subdomains
-              template:
-                dest: /etc/mail/ldap/{{ item.slug }}.{{ item.tld | default(tld) }}
-                src: ldap/subdomain.j2
-                owner: root
-                group: root
-                mode: "0644"
-              loop: "{{ simta_ldap_domains[1:] }}"
-              notify: Restart simta
-
-            - name: Install LDAP config files for mapped domains
-              template:
-                dest: /etc/mail/ldap/{{ item.domain }}
-                src: ldap/mapped_domain.j2
-                owner: root
-                group: root
-                mode: "0644"
-              notify: Restart simta
-              loop: "{{ simta_ldap_domains_mapped | default([]) }}"
-
-        - name: Install SASL config file
-          copy:
-            dest: /etc/sasl2/simta.conf
-            src: simta.sasl2
-            owner: root
-            group: root
-            mode: "0644"
-          when: simta_authn
-          notify: Restart simta
+    - name: Configure delivery domains
+      template:
+        dest: /etc/simta.conf.d/domain/{{ item }}.conf
+        src: delivery_domain.conf.js
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ simta_delivery_domains | default([]) }}"
 
     - import_role:
         name: certificate
