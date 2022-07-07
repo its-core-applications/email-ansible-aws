@@ -12,9 +12,10 @@
         name:
           - denser-utils
           - libucl-utils
-          - simta-admin {{ (simta_version is version('1.9', '<')) | ternary('<', '>=') }} 3.0
+          - simta-admin
           - simta-mscan
           - simvacation
+          - socat
         state: latest
 
     - name: Create directories
@@ -46,10 +47,7 @@
         mode: "0755"
       loop:
         - 15_trust
-        - 21_domain
-        - 21_to
         - 21_ubl
-        - 30_nsrecord
         - 40_string
       when:
         - simta_localmail == false
