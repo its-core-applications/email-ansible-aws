@@ -14,6 +14,7 @@ if check_dfile; then
     log "80_rspamd: $spamres symbols={$spamsymbols}"
     case "$spamaction" in
     reject)
+        echo "mscan.reject.rspamd:1|c" | socat -ly -t 0 STDIN UDP:localhost:8125 >/dev/null 2>&1
         filter_exit $MESSAGE_REJECT
         ;;
     greylist)
@@ -25,6 +26,7 @@ if check_dfile; then
                 log "80_rspamd: $logmsg"
             fi
             if [ $pbret -eq $MESSAGE_TEMPFAIL ]; then
+                echo "mscan.tempfail.rspamd:1|c" | socat -ly -t 0 STDIN UDP:localhost:8125 >/dev/null 2>&1
                 filter_exit $MESSAGE_TEMPFAIL
             fi
             PENALTYBOX_PASS=0
