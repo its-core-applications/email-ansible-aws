@@ -51,6 +51,8 @@ simta_ldap_domains_mapped:
     prefix: entertainmewell
   - domain: environmentreport.org
     prefix: environmentreport
+  - domain: giftstudy.org
+    prefix: giftstudy
   - domain: glrc.org
     prefix: glrc
   - domain: greatlakesicorps.org
