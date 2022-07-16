@@ -511,7 +511,7 @@
             critical:
               - restart_simta
         - name: simta-queue-slow-age
-          command: !unsafe /usr/libexec/simta-admin/check-simta-queue-age -q fast -a {{ .labels.simta_slowqage | default "7200" }} -c 0
+          command: !unsafe /usr/libexec/simta-admin/check-simta-queue-age -q slow -a {{ .labels.simta_slowqage | default "7200" }} -c 0
         - name: simta-queue-ownership
           command: /usr/libexec/simta-admin/check-simta-queue-ownership
         - name: simta-queue-slow-jailed
