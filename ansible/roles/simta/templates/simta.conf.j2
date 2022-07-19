@@ -251,13 +251,31 @@ defaults {
                 dn = "{{ simta_ldap_user }}";
                 password = {{ simta_ldap_password }};
             }
-            attributes {
-                forwarding = mailforwardingaddress;
-                vacation = onvacation;
-            }
-            vacation {
+            autoreply {
                 host = {{ simta_vacationhost }};
             }
+            moderation_preface = <<EOD
+You received this message because the settings for this MCommunity group
+(https://mcommunity.umich.edu/group/$n)
+do not permit messages from this sender to be distributed to members.
+
+You may wish to:
+
+1. Forward the message to the group, if you want members to receive the message
+and are a permitted sender. If you are not a permitted sender for the group,
+have someone who is permitted resend the message.
+
+2. Choose not to have the message received by members.
+
+3. Communicate with the sender ($S)
+to explain what you have done.
+
+4. If the group has multiple people designated to receive unpermitted
+messages, coordinate your actions with them.
+
+If you believe you received this message in error, please contact the
+MCommunity group owners: $O
+EOD
         }
     }
 {% endif %}{# simta_ldap #}

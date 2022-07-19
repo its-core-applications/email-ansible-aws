@@ -1,0 +1,40 @@
+- hosts: localhost
+  gather_facts: false
+  vars:
+    classes:
+      - Class_authn_relay
+      - Class_authz_relay
+      - Class_authz_static
+      - Class_egress
+      - Class_jail
+      - Class_mx
+      - Class_relay_egress
+      - Class_vdc_relay
+  tasks:
+    - add_host:
+        groups: targets
+        name: "{{ item }}"
+      loop: "{{ groups['region_' ~ (aws_region | replace('-', '_'))] }}"
+      when: hostvars[item]['group_names'] | intersect(classes)
+
+- hosts: targets
+  gather_facts: false
+  tasks:
+    - command: simta -V
+      register: result
+
+    - set_fact:
+        outdated_simta: "{{ result.stdout }}"
+        my_class: "{{ group_names | select('match', 'Class_') | first | replace('Class_', '') }}"
+      when: result.stdout is version(simta_version, '<>')
+
+- hosts: localhost
+  gather_facts: false
+  vars:
+    outdated_hosts: "{{ groups.targets | map('extract', hostvars) | selectattr('outdated_simta', 'defined') | map(attribute='inventory_hostname') }}"
+  tasks:
+    - assert:
+        that: not outdated_hosts
+        fail_msg: "Classes with outdated hosts: {{ grouped_oh | map(attribute=0) | zip(grouped_oh | map(attribute=1) | map('length')) | map('join', ': ') | join(',') }}"
+      vars:
+        grouped_oh: "{{ outdated_hosts | map('extract', hostvars) | groupby('my_class') }}"
