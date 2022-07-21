@@ -128,6 +128,10 @@ receive {
             list = deny-from.dnsbl;
             domain_only = true;
         }
+        dns_list {
+            action = block;
+            list = iia-deny-from.dnsbl;
+        }
     }
     rcpt_to {
         max_failures = 3;
