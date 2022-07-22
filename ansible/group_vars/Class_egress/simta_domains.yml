@@ -41,8 +41,3 @@ simta_deliver_domains:
     tls: true
   - name: yahoo.com
     tls: true
-
-# FIXME: remove after transition to simta 2.x
-simta_tls_domains: "{{ simta_deliver_domains | selectattr('tls', 'defined') | selectattr('tls') | map(attribute='name') }}"
-simta_mrcpts_domains: "{{ simta_deliver_domains | selectattr('max_rcpts', 'defined') }}"
-simta_important_domains: "{{ simta_deliver_domains | selectattr('important', 'defined') | selectattr('important') | map(attribute='name') }}"
