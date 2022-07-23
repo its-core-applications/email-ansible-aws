@@ -45,8 +45,9 @@
         - import_role:
             name: duo
 
-        - import_role:
-            name: aws_saml_login
+# FIXME: dependency issue
+#        - import_role:
+#            name: aws_saml_login
 
         - import_role:
             name: email_dnsbl-update
