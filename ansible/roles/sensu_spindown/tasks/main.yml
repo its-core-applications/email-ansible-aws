@@ -27,3 +27,4 @@
       delegate_to: localhost
       async: 60
       poll: 0
+      ignore_errors: true
