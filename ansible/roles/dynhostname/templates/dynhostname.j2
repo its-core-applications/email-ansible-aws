@@ -16,6 +16,10 @@ publicname=$(curl -fs http://169.254.169.254/latest/meta-data/public-hostname)
 if [[ -z $publicname ]]; then
     publicname=$(curl -fs http://169.254.169.254/latest/meta-data/local-ipv4)
     rectype=A
+elif [[ ! $publicname =~ 'ec2-' ]]; then
+    # Badly formed response from the metadata API, bail.
+    echo "Failed to fetch AWS hostname from metadata, not setting hostname"
+    exit 1
 fi
 
 sethostname() {
