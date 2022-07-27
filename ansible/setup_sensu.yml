@@ -1,4 +1,0 @@
-- hosts: localhost
-  tasks:
-    - import_role:
-        name: sensu_monitor_health
