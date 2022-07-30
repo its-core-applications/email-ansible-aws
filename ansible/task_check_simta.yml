@@ -15,7 +15,9 @@
         groups: targets
         name: "{{ item }}"
       loop: "{{ groups['region_' ~ (aws_region | replace('-', '_'))] }}"
-      when: hostvars[item]['group_names'] | intersect(classes)
+      when:
+        - hostvars[item]['group_names'] | intersect(classes)
+        - "'Status_production' in hostvars[item]['group_names']"
 
 - hosts: targets
   gather_facts: false
