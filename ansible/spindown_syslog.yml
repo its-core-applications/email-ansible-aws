@@ -13,6 +13,9 @@
             tags:
               Status: spundown
 
+        - import_role:
+            name: aws_get_accountinfo
+
         - name: Disable Sensu health check
           delegate_to: localhost
           become: false
