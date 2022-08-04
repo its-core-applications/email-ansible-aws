@@ -1,4 +1,4 @@
-simta_deliver_domains:
+simta_delivery_domains:
   - name: adsroot.itcs.umich.edu
     tls: true
   - name: aol.com

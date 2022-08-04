@@ -1,17 +1,17 @@
-"{{ domain.name }}" deliver {
-{% if domain.important | default(false) %}
+"{{ item.name }}" deliver {
+{% if item.important | default(false) %}
     queue wait {
         max = 5min;
     }
 {% endif %}
-{% if domain.tls | default(false) %}
+{% if item.tls | default(false) %}
     tls {
         required = true;
     }
 {% endif %}
-{% if domain.max_rcpts is defined %}
+{% if item.max_rcpts is defined %}
     connection {
-        max_rcpts = {{ domain.max_rcpts }};
+        max_rcpts = {{ item.max_rcpts }};
     }
 {% endif %}
 }

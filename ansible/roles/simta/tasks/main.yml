@@ -199,7 +199,7 @@
     - name: Configure delivery domains
       template:
         dest: /etc/simta.conf.d/domain/{{ item }}.conf
-        src: delivery_domain.conf.js
+        src: delivery_domain.conf.j2
         owner: root
         group: root
         mode: "0644"
