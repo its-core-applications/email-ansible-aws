@@ -198,7 +198,7 @@
 
     - name: Configure delivery domains
       template:
-        dest: /etc/simta.conf.d/domain/{{ item }}.conf
+        dest: /etc/simta.conf.d/domain/{{ item.name }}.conf
         src: delivery_domain.conf.j2
         owner: root
         group: root
