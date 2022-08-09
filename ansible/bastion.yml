@@ -34,6 +34,9 @@
           when: aws_region == aws_primary_region
 
         - import_role:
+            name: vault_backup
+
+        - import_role:
             name: packer
 
         - import_role:

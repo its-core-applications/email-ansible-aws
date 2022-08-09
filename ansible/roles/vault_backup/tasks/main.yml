@@ -1,0 +1,29 @@
+- tags:
+    - vault
+    - testing
+  block:
+    - name: Disable vault backup
+      cron:
+        name: ansible-backup-vault
+        user: "{{ ansible_user }}"
+        state: absent
+      when: region == aws_primary_region
+
+    - when: region != aws_primary_region
+      block:
+        - name: Create /home/vault
+          file:
+            dest: /home/vault
+            state: directory
+            owner: root
+            group: root
+            mode: 0755
+
+        - name: Schedule cron job to back up vault from primary
+          cron:
+            name: ansible-backup-vault
+            user: "{{ ansible_user }}"
+            minute: 43
+            hour: 12
+            job: ssh {{ bastion_hostnames[aws_status][aws_primary_region] }}.{{ subd }} 'sudo tar -C /home/vault -cf - .' | sudo tar -C /home/vault -x --unlink-first --recursive-unlink
+          when: region != aws_primary_region
