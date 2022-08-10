@@ -1,8 +1,0 @@
-[global]
-default = umgitlab
-timeout = 5
-ssl_verify = true
-
-[umgitlab]
-url = https://gitlab.umich.edu
-private_token = {{ lookup('flowerysong.hvault.kv', 'gitlab/api').token }}

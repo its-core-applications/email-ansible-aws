@@ -59,9 +59,6 @@
             name: ammit
 
         - import_role:
-            name: gitlab_gitlab_cli
-
-        - import_role:
             name: google_gam
 
         - import_role:
