@@ -7,7 +7,7 @@
         venv_py3: true
         venv_name: ealert
         venv_packages:
-          - git+https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/mail-routing/ealert.git
+          - git+https://github.com/its-core-applications/email-ealert
         venv_wrappers:
           - name: ealert-getmids
           - name: ealert-processlogs
