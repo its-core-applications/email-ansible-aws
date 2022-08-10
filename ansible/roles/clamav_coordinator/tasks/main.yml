@@ -101,7 +101,7 @@
 
     - name: Clone test messages
       git:
-        repo: https://gitlab.umich.edu/its/inf/collaboration-services/umich-test-mail-data
+        repo: https://github.com/its-core-applications/email-test-data.git
         dest: "{{ clamav_msgdir }}"
 
     - name: Check for false positives
