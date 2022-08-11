@@ -19,7 +19,7 @@ filters = [{'Name': 'instance-state-name', 'Values': ['running']}]
 for res in pager.paginate(Filters=filters).build_full_result()['Reservations']:
     for instance in res['Instances']:
         cooked = []
-        for tag in instance['Tags']:
+        for tag in instance.get('Tags', []):
             if tag['Key'] not in reject_tags and tag['Value'] != 'no':
                 if tag['Value'] == 'yes':
                     cooked.append('flag={}'.format(tag['Key']))
