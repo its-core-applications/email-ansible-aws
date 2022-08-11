@@ -102,11 +102,11 @@
         - packer
       vars:
         build_name: packer
-        build_version: 1.7.2
+        build_version: 1.8.3
         build_bindir: /usr/sbin
         archive_url: https://releases.hashicorp.com/packer/{{ build_version }}/packer_{{ build_version }}_linux_amd64.zip
         archive_file: packer_{{ build_version }}_linux_amd64.zip
-        archive_checksum: sha256:9429c3a6f80b406dbddb9b30a4e468aeac59ab6ae4d09618c8d70c4f4188442e
+        archive_checksum: sha256:0587f7815ed79589cd9c2b754c82115731c8d0b8fd3b746fe40055d969facba5
 
     - tags:
         - sensu
