@@ -11,9 +11,7 @@
                 type = user;
             }
             search {
-                uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?cn=%25s";
-                rdnpref = false;
-                type = user;
+                uri = "ldap:///ou=user%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn=%25s)(!(umichEntryDisabled=TRUE)))";
             }
         }
     }
