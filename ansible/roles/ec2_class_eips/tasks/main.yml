@@ -12,16 +12,7 @@
           "tag:Class": "{{ eip_class }}"
       register: result
 
-    - name: Create new EIPs for {{ eip_class }}
-      ec2_eip:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
-        in_vpc: true
-        state: present
-      loop: "{{ range(aws_region_layout[aws_status][aws_region][eip_class].count | default(1) - (result.addresses | length)) }}"
-      register: result
-
-    - name: Tag new EIPs
+    - name: Fix tags on existing EIPs
       ec2_tag:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
@@ -29,7 +20,19 @@
         tags:
           Class: "{{ eip_class }}"
           Name: "{{ eip_class }}"
-      loop: "{{ result.results }}"
+      loop: "{{ result.addresses }}"
+
+    - name: Create new EIPs for {{ eip_class }}
+      ec2_eip:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        in_vpc: true
+        tags:
+          Class: "{{ eip_class }}"
+          Name: "{{ eip_class }}"
+        state: present
+      loop: "{{ range(aws_region_layout[aws_status][aws_region][eip_class].count | default(1) - (result.addresses | length)) }}"
+      register: result
 
     - name: Re-fetch {{ eip_class }} EIPs
       ec2_eip_info:
@@ -49,3 +52,9 @@
         type: A
         ttl: 60
         value: "{{ result.addresses | map(attribute='public_ip') }}"
+
+    - name: Set up reverse DNS for EIPs
+      flowerysong.melange.ec2_eip_attribute:
+        allocation_id: "{{ item.allocation_id }}"
+        domain_name: "{{ eip_host }}"
+      loop: "{{ result.addresses }}"
