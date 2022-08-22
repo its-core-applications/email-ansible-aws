@@ -4,7 +4,7 @@ spf_main:
   - name: _umich
     record:
       # 2016-11-15: AWS egress
-      - a:egress-host.a.mail.umich.edu
+      - a:egress-host.us-west-2.a.mail.umich.edu
       # 2018-05-11: AWS egress
       - a:egress-host.us-east-2.a.mail.umich.edu
       # 2018-05-11: AWS egress
