@@ -98,6 +98,10 @@ spf_thirdparty:
       # Zoho CRM, sends as many addresses
       - include:transmail.net
 
+      # 2022-08-25: mladair / Bentley Historical Library / TDx 2995675
+      # SpringShare, sends as many addresses
+      - include:libanswers.com
+
   # 2017-05-30: Dentistry
   - names:
       - bldawson
