@@ -43,6 +43,11 @@ user_accounts:
     uid: 114282582
     sudo_collaborate: true
 
+  - name: aliberry
+    comment: Ali Berry
+    uid: 99402273
+    full_sudo: true
+
   - name: alleycat
     comment: Ali Wilkes
     uid: 517118
