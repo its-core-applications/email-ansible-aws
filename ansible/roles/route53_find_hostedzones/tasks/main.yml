@@ -13,4 +13,4 @@
 
     - name: Set zoneid fact for {{ subd }}
       set_fact:
-        aws_zone_subd: "{{ (result.HostedZones | selectattr('Name', 'equalto', subd ~ '.') | first).Id }}"
+        aws_zone_subd: "{{ (result.hosted_zones | selectattr('name', 'equalto', subd ~ '.') | first).id }}"

@@ -2,7 +2,7 @@
   route53_info:
     profile: "{{ aws_profile_subd }}"
     query: record_sets
-    hosted_zone_id: "{{ subd_zone.Id }}"
+    hosted_zone_id: "{{ subd_zone_id }}"
   register: r53_rrs
 
 - name: Delete stale CNAMEs
@@ -10,34 +10,34 @@
     profile: "{{ aws_profile_subd }}"
     command: delete
     zone: "{{ subd }}"
-    record: "{{ item.Name }}"
+    record: "{{ item.name }}"
     type: CNAME
-    ttl: "{{ item.TTL }}"
-    value: "{{ item.ResourceRecords.0.Value }}"
-  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'CNAME') }}"
+    ttl: "{{ item.ttl }}"
+    value: "{{ item.resource_records.0.value }}"
+  loop: "{{ r53_rrs.resource_record_sets | selectattr('type', 'equalto', 'CNAME') }}"
   loop_control:
-    label: "{{ item.Name }}"
+    label: "{{ item.name }}"
   when:
-    - item.ResourceRecords.0.Value is match('.+\.compute\.amazonaws\.com')
-    - item.ResourceRecords.0.Value not in hostvars
-    - item.Name[:-1] not in hostvars
+    - item.resource_records.0.value is match('.+\.compute\.amazonaws\.com')
+    - item.resource_records.0.value not in hostvars
+    - item.name[:-1] not in hostvars
 
 - name: Delete stale A records
   route53:
     profile: "{{ aws_profile_subd }}"
     command: delete
     zone: "{{ subd }}"
-    record: "{{ item.Name }}"
+    record: "{{ item.name }}"
     type: A
-    ttl: "{{ item.TTL }}"
-    value: "{{ item.ResourceRecords.0.Value }}"
-  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'A') }}"
+    ttl: "{{ item.ttl }}"
+    value: "{{ item.resource_records.0.value }}"
+  loop: "{{ r53_rrs.resource_record_sets | selectattr('type', 'equalto', 'A') }}"
   loop_control:
-    label: "{{ item.Name }}"
+    label: "{{ item.name }}"
   when:
-    - item.ResourceRecords | default([]) | length == 1
-    - item.Name[:-1] not in hostvars
-    - item.Name is match('[a-z]+-[a-z]+\.[a-z-]+\.' ~ subd ~ '\.')
+    - item.resource_records | default([]) | length == 1
+    - item.name[:-1] not in hostvars
+    - item.name is match('[a-z]+-[a-z]+\.[a-z-]+\.' ~ subd ~ '\.')
 
 - name: Delete ACME authorizations
   route53:
@@ -47,8 +47,8 @@
     record: "{{ item.Name }}"
     type: TXT
     ttl: "{{ item.TTL }}"
-    value: "'{{ item.ResourceRecords.0.Value }}'"
-  loop: "{{ r53_rrs.ResourceRecordSets | selectattr('Type', 'equalto', 'TXT') | selectattr('Name', 'match', '^_acme-challenge\\.') }}"
+    value: "'{{ item.resource_records.0.Value }}'"
+  loop: "{{ r53_rrs.resource_record_sets | selectattr('type', 'equalto', 'TXT') | selectattr('name', 'match', '^_acme-challenge\\.') }}"
   loop_control:
-    label: "{{ item.Name }}"
-  when: item.Name[16:-1] not in hostvars
+    label: "{{ item.name }}"
+  when: item.name[16:-1] not in hostvars

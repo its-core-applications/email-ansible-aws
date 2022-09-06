@@ -11,4 +11,4 @@
     - include_role:
         name: route53_dns_cleanup
       vars:
-        subd_zone: "{{ r53_zones.HostedZones | selectattr('Name', 'equalto', subd ~ '.') | first }}"
+        subd_zone_id: "{{ (r53_zones.hosted_zones | selectattr('name', 'equalto', subd ~ '.') | first).id }}"
