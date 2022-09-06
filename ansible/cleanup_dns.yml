@@ -12,6 +12,3 @@
         name: route53_dns_cleanup
       vars:
         subd_zone: "{{ r53_zones.HostedZones | selectattr('Name', 'equalto', subd ~ '.') | first }}"
-      loop: "{{ range(0, ((subd_zone.ResourceRecordSetCount / 25) | int)) }}"
-      loop_control:
-        loop_var: include_iteration
