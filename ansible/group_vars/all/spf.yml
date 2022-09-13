@@ -290,11 +290,6 @@ spf_thirdparty:
       - rosscareerservices
     record: include:mbafocus.com
 
-  # 2021-09-17: tomshort / Global Engagement / TDx 1291854
-  - names:
-      - travel.registry
-    record: ip4:199.255.192.0/22 ip4:199.127.232.0/22 ip4:54.240.0.0/18
-
   # 2022-02-15: rpward / U-M Dearborn / TDx 1922558
   - names:
       - umd-ask-ofa
