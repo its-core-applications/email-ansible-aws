@@ -44,10 +44,10 @@
     profile: "{{ aws_profile_subd }}"
     command: delete
     zone: "{{ subd }}"
-    record: "{{ item.Name }}"
+    record: "{{ item.name }}"
     type: TXT
-    ttl: "{{ item.TTL }}"
-    value: "'{{ item.resource_records.0.Value }}'"
+    ttl: "{{ item.ttl }}"
+    value: "'{{ item.resource_records.0.value }}'"
   loop: "{{ r53_rrs.resource_record_sets | selectattr('type', 'equalto', 'TXT') | selectattr('name', 'match', '^_acme-challenge\\.') }}"
   loop_control:
     label: "{{ item.name }}"
