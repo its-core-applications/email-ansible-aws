@@ -3,6 +3,8 @@
     - dns
     - route53
   become: false
+  vars:
+    spf_names: "{{ (spf_main | map(attribute='name')) | union(spf_thirdparty | map(attribute='names') | flatten | map('regex_replace', '$', '._ext')) }}"
   block:
     - name: Create main SPF records
       route53:
@@ -19,8 +21,6 @@
     - name: Make sure there are no duplicate names
       assert:
         that: (spf_names | length) == (spf_names | unique | length)
-      vars:
-        spf_names: "{{ spf_thirdparty | map(attribute='names') | flatten }}"
 
     - name: Create third-party SPF records
       route53:
@@ -35,3 +35,33 @@
       loop: "{{ query('subelements', spf_thirdparty, 'names') }}"
       loop_control:
         label: "{{ item.1 }}"
+
+    - name: Fetch zone list
+      route53_info:
+        profile: "{{ aws_profile_spfd }}"
+        query: hosted_zone
+      register: result
+
+    - name: Fetch list of records
+      route53_info:
+        profile: "{{ aws_profile_spfd }}"
+        query: record_sets
+        hosted_zone_id: "{{ (result.hosted_zones | selectattr('name', '==', spfd ~ '.')).0.id }}"
+      register: result
+
+    - name: Delete stale SPF records
+      route53:
+        profile: "{{ aws_profile_spfd }}"
+        command: delete
+        zone: "{{ spfd }}"
+        record: "{{ rr_real_name }}"
+        type: TXT
+        ttl: "{{ item.ttl }}"
+        value: "'{{ item.resource_records.0.value }}'"
+      loop: "{{ result.resource_record_sets | selectattr('type', '==', 'TXT') }}"
+      loop_control:
+        label: "{{ rr_real_name }}"
+      vars:
+        rr_real_name: "{{ item.name | flowerysong.melange.route53_unescape }}"
+      when:
+        - (rr_real_name | replace('.' ~ spfd ~ '.', '')) not in spf_names
