@@ -7,6 +7,9 @@
 
 - hosts: localhost
   tasks:
+    - gather_facts:
+      when: ansible_facts.date_time is not defined
+
     - set_fact:
         destdir: ~/ealert/{{ ansible_facts.date_time.iso8601[:-4] }}
 

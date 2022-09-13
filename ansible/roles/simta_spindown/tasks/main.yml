@@ -1,6 +1,9 @@
 - tags:
     - simta
   block:
+    - gather_facts:
+      when: ansible_facts.date_time is not defined
+
     - name: Wait for active connections to finish
       wait_for:
         host: 0.0.0.0

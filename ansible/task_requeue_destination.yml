@@ -6,6 +6,9 @@
 
 - hosts: Class_egress:Class_relay_egress:&Status_production
   tasks:
+    - gather_facts:
+      when: ansible_facts.date_time is not defined
+
     - name: Check for limit
       assert:
         that: ansible_limit is defined

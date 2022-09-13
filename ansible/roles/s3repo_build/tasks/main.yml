@@ -3,6 +3,9 @@
   vars:
     cache_root: /var/cache/{{ yum_hostname }}
   block:
+    - gather_facts:
+      when: ansible_facts.distribution is not defined
+
     - name: Install createrepo
       yum:
         name: createrepo

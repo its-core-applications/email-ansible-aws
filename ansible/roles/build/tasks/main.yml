@@ -1,6 +1,9 @@
 - tags:
     - build
   block:
+    - gather_facts:
+      when: ansible_facts.date_time is not defined
+
     - import_role:
         name: rpmbuild
       tags: always

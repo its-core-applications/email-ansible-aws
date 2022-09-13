@@ -2,6 +2,9 @@
     - base
     - base_packages
   block:
+    - gather_facts:
+      when: ansible_facts.distribution is not defined
+
     - import_role:
         name: s3repo
 
