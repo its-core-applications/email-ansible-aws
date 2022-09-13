@@ -80,10 +80,6 @@ aws_region_layout:
         count: 6
         size: m5.xlarge
         cycle_method: spinup
-      mx-test:
-        count: 1
-        size: t3.medium
-        autocycle: false
       relay-egress:
         count: 3
       syslog:
