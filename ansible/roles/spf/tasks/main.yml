@@ -4,7 +4,7 @@
     - route53
   become: false
   vars:
-    spf_names: "{{ (spf_main | map(attribute='name')) | union(spf_thirdparty | map(attribute='names') | flatten | map('regex_replace', '$', '._ext')) }}"
+    spf_names: "{{ (spf_main | map(attribute='name')) + (spf_thirdparty | map(attribute='names') | flatten | map('regex_replace', '$', '._ext')) }}"
   block:
     - name: Create main SPF records
       route53:
