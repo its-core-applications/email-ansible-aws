@@ -291,7 +291,9 @@ spf_thirdparty:
     record: include:mbafocus.com
 
   # 2022-02-15: rpward / U-M Dearborn / TDx 1922558
+  # 2022-09-19: brobson / The Office of Enrollment Management / TDx 3113381
   - names:
+      - financial.aid
       - umd-ask-ofa
     record: include:verifymyfafsa.com
 
