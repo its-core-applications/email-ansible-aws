@@ -83,6 +83,8 @@ simta_ldap_domains_mapped:
     prefix: predictive
   - domain: probabilitynetwork.org
     prefix: probabilitynetwork
+  - domain: psfmobile.org
+    prefix: psfmobile
   - domain: smartgirl.org
     prefix: smartgirl
   - domain: smart.nursing.umich.edu
