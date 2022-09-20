@@ -55,6 +55,8 @@
 
     - name: Set up reverse DNS for EIPs
       flowerysong.melange.ec2_eip_attribute:
+        profile: "{{ aws_profile }}"
+        region: "{{ aws_region }}"
         allocation_id: "{{ item.allocation_id }}"
         domain_name: "{{ eip_host }}"
       loop: "{{ result.addresses }}"
