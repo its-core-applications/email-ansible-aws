@@ -1,0 +1,4 @@
+export AWS_DEFAULT_REGION=us-east-2
+if [[ -d /home/ara ]]; then
+    export ARA_BASE_URL=https://ara.${AWS_DEFAULT_REGION}.a.mail.umich.edu/
+fi
