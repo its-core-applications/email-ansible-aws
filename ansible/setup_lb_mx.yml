@@ -8,6 +8,6 @@
         nlb_ports:
          - 25
         nlb_dns_name: "{{ nlb_name }}.{{ subd }}"
-      loop: "{{ mx_names[aws_region] }}"
+      loop: "{{ aws_layout[aws_status][aws_profile].mx_names }}"
       loop_control:
         loop_var: nlb_name

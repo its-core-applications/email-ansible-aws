@@ -2,13 +2,10 @@
     - hostcertificate
   block:
     - import_role:
-        name: aws_get_accountinfo
-
-    - import_role:
         name: ec2_instance_profile
       vars:
         ec2_profile: acme
-        ec2_profile_role: arn:aws:iam::{{ aws_account_subd }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_{{ subd }}
+        ec2_profile_role: arn:aws:iam::{{ aws_layout[aws_status][aws_profile_subd].account }}:role/{{ aws_resource_prefix }}_{{ subd }}
         ec2_profile_user: root
 
     - name: Install acme_tiny

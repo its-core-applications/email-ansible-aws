@@ -1,5 +1,4 @@
-export AWS_DEFAULT_REGION=us-east-2
+export AWS_DEFAULT_PROFILE=vdc-nonprod
 export AWS_STATUS=nonprod
-export VAULT_ADDR="https://vault.x.mail.umich.edu:8200"
-export ARA_BASE_URL=https://ara.${AWS_DEFAULT_REGION}.x.mail.umich.edu/
-export SQS_REGION=us-east-2
+export VAULT_ADDR=https://vault.x.mail.umich.edu:8200
+export ARA_BASE_URL=https://ara.us-east-2.x.mail.umich.edu/

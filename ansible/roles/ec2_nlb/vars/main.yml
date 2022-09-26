@@ -1,4 +1,4 @@
-nlb_subnets: "{{ ec2_subnets_public[aws_region] | map(attribute='id') }}"
+nlb_subnets: "{{ ec2_subnets_public[aws_profile] | map(attribute='id') }}"
 nlb_scheme: internet-facing
 nlb_ports:
   - 25

@@ -9,11 +9,9 @@
         - import_role:
             name: build
 
-- hosts: Class_bastion
+- hosts: "{{ groups.Class_bastion.0 | default(groups.Class_builder.0) }}"
   tasks:
-    - when: region == aws_primary_region
-      block:
-        - import_role:
-            name: s3repo_build
-          tags:
-            - always
+    - import_role:
+        name: s3repo_build
+      tags:
+        - always

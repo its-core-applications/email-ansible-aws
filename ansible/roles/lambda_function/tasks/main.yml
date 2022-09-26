@@ -3,9 +3,6 @@
   delegate_to: localhost
   become: true
   block:
-    - import_role:
-        name: aws_get_accountinfo
-
     - name: Create cache dir
       file:
         dest: "{{ lambda_cache_dir }}/pkg"
@@ -48,48 +45,18 @@
         path: "{{ lambda_cache_dir }}/pkg/"
         format: zip
 
-    - import_role:
-        name: iam_profiles
-
-    - become: false
-      block:
-        - name: Create IAM role for Lambda
-          iam_role:
-            profile: "{{ lambda_profile }}"
-            name: "{{ aws_resource_prefix }}_lambda_basic"
-            description: Basic execution role for Lambda
-            assume_role_policy_document:
-              Version: "2012-10-17"
-              Statement:
-                - Action: sts:AssumeRole
-                  Effect: Allow
-                  Principal:
-                    Service: lambda.amazonaws.com
-            managed_policies:
-              - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-              - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-              - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
-              - arn:aws:iam::{{ lookup('vars', 'aws_account_' ~ (lambda_profile | replace('-', '_'))) }}:policy/{{ aws_resource_prefix }}_SNSPublish_XAccount
-            purge_policies: true
-          register: result
-
-        - name: Wait for the role to be usable
-          pause:
-            seconds: 60
-          when: result is changed
-
-        - name: Create Lambda function
-          lambda:
-            region: "{{ lambda_region }}"
-            profile: "{{ lambda_profile }}"
-            name: "{{ aws_resource_prefix }}_{{ lambda_name }}"
-            description: "{{ lambda_description }}"
-            role: "{{ aws_resource_prefix }}_lambda_basic"
-            src: "{{ lambda_cache_dir }}/{{ lambda_name }}.zip"
-            runtime: python3.9
-            timeout: "{{ lambda_timeout }}"
-            handler: "{{ lambda_handler }}"
-            environment_variables: "{{ lambda_env | default(omit, True) }}"
-            vpc_subnet_ids: "{{ lambda_subnets | default(omit) }}"
-            vpc_security_group_ids: "{{ lambda_sg | default(omit) }}"
-          register: result
+    - name: Create Lambda function
+      lambda:
+        region: "{{ lambda_region }}"
+        profile: "{{ lambda_profile }}"
+        name: "{{ aws_resource_prefix }}_{{ lambda_name }}"
+        description: "{{ lambda_description }}"
+        role: "{{ aws_resource_prefix }}_lambda_basic"
+        src: "{{ lambda_cache_dir }}/{{ lambda_name }}.zip"
+        runtime: python3.9
+        timeout: "{{ lambda_timeout }}"
+        handler: "{{ lambda_handler }}"
+        environment_variables: "{{ lambda_env | default(omit, True) }}"
+        vpc_subnet_ids: "{{ lambda_subnets | default(omit) }}"
+        vpc_security_group_ids: "{{ lambda_sg | default(omit) }}"
+      become: false

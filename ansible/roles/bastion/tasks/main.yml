@@ -44,6 +44,11 @@
             name: /var/tmp/home
             state: absent
 
+    - name: Fetch authorized_keys for {{ ansible_user }}
+      slurp:
+        src: "~{{ ansible_user }}/.ssh/authorized_keys"
+      register: slurped_keys
+
     - name: Mount /home
       mount:
         name: /home
@@ -51,59 +56,37 @@
         fstype: xfs
         state: mounted
 
-    - tags:
-        - dlm
+    - name: Update authorized_keys for {{ ansible_user }}
+      copy:
+        dest: "~{{ ansible_user }}/.ssh/authorized_keys"
+        content: "{{ slurped_keys.content | b64decode }}\n"
+        mode: "0600"
+
+    - name: Enable automatic snapshots of the home volume
+      flowerysong.melange.aws_data_lifecycle_manager:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        role: "arn:aws:iam::{{ aws_layout[aws_status][aws_profile].account }}:role/{{ aws_resource_prefix }}_AWS_DLM"
+        description: Snapshot home on bastion
+        target_tags:
+          Name: bastion_home
+        copy_tags: true
+        retain: 60
       become: false
       delegate_to: localhost
-      block:
-        - name: Create IAM policy for DLM
-          iam_managed_policy:
-            region: "{{ aws_region }}"
-            profile: "{{ aws_profile }}"
-            state: present
-            policy_name: "{{ aws_resource_prefix }}_AWS_DLM"
-            policy_description: Create and manage snapshots from instances or volumes
-            policy:
-              Version: "2012-10-17"
-              Statement:
-                - Action:
-                    - ec2:CreateSnapshot
-                    - ec2:CreateSnapshots
-                    - ec2:DeleteSnapshot
-                    - ec2:DescribeVolumes
-                    - ec2:DescribeInstances
-                    - ec2:DescribeSnapshots
-                  Effect: Allow
-                  Resource: "*"
-                - Action: ec2:CreateTags
-                  Effect: Allow
-                  Resource: arn:aws:ec2:*::snapshot/*
-          register: dlm_policy
 
-        - name: Create IAM role for DLM
-          iam_role:
-            profile: "{{ aws_profile }}"
-            name: "{{ aws_resource_prefix }}_AWS_DLM"
-            description: Role for DLM automated snapshots
-            assume_role_policy_document:
-              Version: "2012-10-17"
-              Statement:
-                - Action: sts:AssumeRole
-                  Effect: Allow
-                  Principal:
-                    Service: dlm.amazonaws.com
-            create_instance_profile: false
-            managed_policy: "{{ dlm_policy.policy.arn }}"
-            purge_policies: true
-          register: dlm_role
+    - name: Create ~/.aws
+      file:
+        dest: "~{{ ansible_user }}/.aws"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0770"
 
-        - name: Enable automatic snapshots of the home volume
-          flowerysong.melange.aws_data_lifecycle_manager:
-            region: "{{ aws_region }}"
-            profile: "{{ aws_profile }}"
-            role: "{{ dlm_role.iam_role.arn }}"
-            description: Snapshot home on bastion
-            target_tags:
-              Name: bastion_home
-            copy_tags: true
-            retain: 60
+    - name: Configure AWS profiles
+      template:
+        src: aws_config.j2
+        dest: "~{{ ansible_user }}/.aws/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0770"

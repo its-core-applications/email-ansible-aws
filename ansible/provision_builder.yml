@@ -4,7 +4,7 @@
     - import_role:
         name: ec2_launch
       vars:
-        aws_region: "{{ (aws_status == 'prod') | ternary(yum_aws_region, aws_primary_region) }}"
+        aws_profile: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.classes', 'contains', 'builder')).0.key  }}"
         launch_class: builder
         launch_ami_class: base
         launch_profile: builder

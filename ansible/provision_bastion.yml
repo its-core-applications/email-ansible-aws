@@ -1,6 +1,8 @@
 - hosts: localhost
   become: false
   gather_facts: false
+  vars:
+    bastion_hostname: "{{ aws_layout[aws_status][aws_profile].bastion }}.{{ subd }}"
   tasks:
     - import_role:
         name: ec2_find_subnets
@@ -16,14 +18,13 @@
         launch_class: bastion
         launch_ami_class: base
         launch_profile: bastion
-        launch_subnet: "{{ ec2_subnets_public_sorted[aws_region].0 }}"
+        launch_subnet: "{{ ec2_subnets_public_sorted[aws_profile].0 }}"
         launch_groups:
           - vault
         launch_tags:
           CustomDNSName: "{{ bastion_hostname }}"
         launch_count: "{{ (bastion_hostname in hostvars) | ternary(0, 1) }}"
         launch_wait: false
-        aws_ssh_key: "{{ aws_resource_prefix }} {{ (aws_status == 'prod') | ternary('31d2b0', 'cb8c7a') }}"
         bootstrap: true
 
     - name: Set CNAMEs for vhosts
@@ -40,7 +41,7 @@
         - graphs
         - vault
         - wiki
-      when: aws_region == aws_primary_region
+      when: item in aws_layout[aws_status][aws_profile_ec2].services
       tags:
         - dns
 
@@ -80,6 +81,8 @@
 - hosts: localhost
   become: false
   gather_facts: false
+  vars:
+    bastion_hostname: "{{ aws_layout[aws_status][aws_profile].bastion }}.{{ subd }}"
   tasks:
     - name: Attach EBS home volume
       ec2_vol:

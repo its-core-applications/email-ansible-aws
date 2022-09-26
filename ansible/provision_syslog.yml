@@ -9,7 +9,7 @@
       vars:
         launch_class: syslog
         launch_ami_class: base
-        launch_subnet: "{{ ec2_subnets_vpn_sorted[aws_region].0 }}"
+        launch_subnet: "{{ ec2_subnets_vpn_sorted[aws_profile].0 }}"
         launch_subnet_type: vpn
         launch_public_ip: false
         launch_groups:

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+hacking_dir=$(readlink -fn $(dirname "$BASH_SOURCE"))
+
+for i in $(ANSIBLE_STDOUT_CALLBACK=json ansible localhost --playbook-dir $hacking_dir/ansible -m debug -a 'msg={{ aws_layout[aws_status][aws_profile].classes | list | union(aws_layout[aws_status] | dict2items | selectattr("value.controller", "defined") | selectattr("value.controller", "==", aws_profile) | map(attribute="value.classes") | map("list") | flatten) }}' | jq -r '.plays[0].tasks[0].hosts.localhost.msg[]' | tr '-' '_'); do
+    [[ $i = 'bastion' ]] && continue
+    [[ $i = 'builder' ]] && continue
+    if [[ -e $hacking_dir/ansible/spinup_$i.yml ]]; then
+        ansible-playbook $hacking_dir/ansible/spinup_$i.yml &
+    else
+        ansible-playbook $hacking_dir/ansible/provision_$i.yml &
+    fi
+done
+
+wait

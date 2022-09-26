@@ -1,9 +1,9 @@
-ec2_sg_trusted_ips: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_region_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | union(ec2_subnets_vdc_core) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
-ec2_sg_local_ips: "{{ (ec2_subnets_public[ec2sg_region] + ec2_subnets_vpn[ec2sg_region] + ec2_subnets_vdc_core) | map(attribute='cidr_block') | cidr_merge }}"
-ec2sg_profile: "{{ aws_profiles[aws_status][ec2sg_region] }}"
+ec2_sg_trusted_ips: "{{ aws_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | union(aws_layout[aws_status] | map('extract', ec2_subnets_vpn) | flatten) | map(attribute='cidr_block') | union(trusted_external_ips) | cidr_merge }}"
+ec2sg_profile: "{{ aws_profile }}"
+ec2sg_region: "{{ aws_layout[aws_status][ec2sg_profile].region }}"
 ec2_sg:
   public-default:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: default VPC security group
     rules:
       # ping
@@ -31,7 +31,7 @@ ec2_sg:
       - proto: all
         cidr_ip: 0.0.0.0/0
   vpn-default:
-    vpc_id: "{{ ec2_subnets_vpn[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_vpn[ec2sg_profile].0.vpc_id }}"
     description: default VPC security group
     rules:
       # ping
@@ -57,7 +57,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   mx-elb:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: mx ELB
     rules:
       - proto: tcp
@@ -71,7 +71,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   mx:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: mx hosts
     rules:
       - proto: tcp
@@ -79,7 +79,7 @@ ec2_sg:
         group_id: sg-12854969
 
   egress:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: egress hosts
     rules:
       - proto: tcp
@@ -87,7 +87,7 @@ ec2_sg:
         cidr_ip: "{{ ec2_sg_trusted_ips }}"
 
   vdc-relay:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: vdc relay hosts
     rules:
       - proto: tcp
@@ -97,7 +97,7 @@ ec2_sg:
         cidr_ip: 10.0.0.0/8
 
   smtp:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: auth SMTP
     rules:
       - proto: tcp
@@ -108,7 +108,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   vpn-smtp:
-    vpc_id: "{{ ec2_subnets_vpn[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_vpn[ec2sg_profile].0.vpc_id }}"
     description: SMTP
     rules:
       - proto: tcp
@@ -119,7 +119,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   rsyslog:
-    vpc_id: "{{ ec2_subnets_vpn[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_vpn[ec2sg_profile].0.vpc_id }}"
     description: rsyslog hosts
     rules:
       - proto: tcp
@@ -129,7 +129,7 @@ ec2_sg:
         cidr_ip: "{{ ec2_sg_trusted_ips }}"
 
   rbldnsd:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: rbldnsd hosts
     rules:
       - proto: udp
@@ -140,17 +140,17 @@ ec2_sg:
         cidr_ip: "{{ ec2_sg_trusted_ips }}"
 
   redis:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: redis hosts
     rules:
       - proto: tcp
         ports:
           - 6379  # Redis
           - 16379 # Redis cluster
-        cidr_ip: "{{ ec2_sg_local_ips }}"
+        cidr_ip: "{{ ec2_sg_trusted_ips }}"
 
   vault:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: vault hosts
     rules:
       - proto: tcp
@@ -158,7 +158,7 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   sensu:
-    vpc_id: "{{ ec2_subnets_vpn[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_vpn[ec2sg_profile].0.vpc_id }}"
     description: sensu hosts
     rules:
       - proto: tcp
@@ -172,9 +172,9 @@ ec2_sg:
         cidr_ip: 0.0.0.0/0
 
   efs:
-    vpc_id: "{{ ec2_subnets_public[ec2sg_region].0.vpc_id }}"
+    vpc_id: "{{ ec2_subnets_public[ec2sg_profile].0.vpc_id }}"
     description: allow NFS
     rules:
       - proto: tcp
         ports: 2049
-        cidr_ip: "{{ aws_region_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | map(attribute='cidr_block') | cidr_merge }}"
+        cidr_ip: "{{ aws_layout[aws_status] | map('extract', ec2_subnets_public) | flatten | map(attribute='cidr_block') | cidr_merge }}"

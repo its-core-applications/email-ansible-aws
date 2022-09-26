@@ -1,159 +1,174 @@
-tld: "{{ lookup( 'env', 'TLD' ) }}"
+tld: umich.edu
 subd: "{{ [( aws_status == 'prod' ) | ternary('a', 'x'), 'mail', tld ] | join('.') }}"
-
-aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
-aws_region_group: "{{ groups['region_' ~ aws_region | replace('-', '_')] | default([]) }}"
-aws_status: "{{ lookup('env', 'AWS_STATUS') }}"
 aws_resource_prefix: umcollab
 aws_resource_owner: its core infrastructure and automation
-aws_primary_regions:
-  prod: us-west-2
-  nonprod: us-east-2
-aws_primary_region: "{{ aws_primary_regions[aws_status] }}"
-aws_region_vdc_core: us-east-2
 
-aws_profiles:
+aws_profile: "{{ lookup('env', 'AWS_DEFAULT_PROFILE') }}"
+aws_status: "{{ lookup('env', 'AWS_STATUS') }}"
+ansible_ssh_private_key_file: "{{ playbook_dir }}/../id_ed25519.{{ ansible_user }}{{ '' if key_name is not defined else ('.' ~ (key_name | split | last)) }}"
+
+aws_layout:
   prod:
-    efs: vdc-prod
-    lambda: vdc-prod
-    s3: umcollab
-    sns: umcollab
-    sqs: vdc-prod
-    spfd: umcollab
-    subd: umcollab
-    us-east-2: vdc-prod
-    us-west-2: umcollab
-    vdc-core: vdc-core
+    umcollab:
+      region: us-west-2
+      account: '236262816615'
+      bastion: mogo
+      default_instance: m5.large
+      mx_names:
+        - mx1
+      services:
+        - autoreply
+        - clamav
+        - cloud_monitoring
+        - graphs
+        - route53_spfd
+        - route53_subd
+        - s3
+        - sns
+        - vault
+        - wiki
+      classes:
+        builder:
+          autokill: true
+          autocycle: false
+        dev:
+          autokill: true
+          autocycle: false
+        dnsbl:
+          count: 4
+          size: c5n.large
+        egress:
+          count: 3
+          size: m5.2xlarge
+        bastion:
+          autocycle: false
+        mx:
+          count: 6
+          size: m5.xlarge
+          cycle_method: spinup
+        syslog:
+          autocycle: false
+          size: m5.xlarge
+
+    vdc-prod:
+      region: us-east-2
+      account: '023382427380'
+      bastion: ego
+      default_instance: m5.large
+      mx_names:
+        - mx2
+      services:
+        - efs
+        - lambda
+      classes:
+        authn-relay:
+          count: 3
+        authz-relay:
+          count: 3
+          size: m5.xlarge
+        authz-static:
+          size: t3.medium
+        dnsbl:
+          count: 4
+          size: c5n.large
+        egress:
+          count: 3
+          size: m5.2xlarge
+        jail:
+          size: t3.large
+        bastion:
+          autocycle: false
+        mx:
+          count: 6
+          size: m5.xlarge
+          cycle_method: spinup
+        relay-egress:
+          count: 3
+        syslog:
+          autocycle: false
+          size: m5.xlarge
+
+    vdc-core:
+      region: us-east-2
+      account: '690035594210'
+      controller: vdc-prod
+      default_instance: t3.medium
+      classes:
+        vdc-relay:
+          count: 2
+
   nonprod:
-    efs: vdc-nonprod
-    lambda: vdc-nonprod
-    s3: vdc-nonprod
-    sns: vdc-nonprod
-    sqs: vdc-nonprod
-    spfd: vdc-nonprod
-    subd: vdc-nonprod
-    us-east-2: vdc-nonprod
-    vdc-core: vdc-core-nonprod
+    vdc-nonprod:
+      region: us-east-2
+      account: '440653842962'
+      bastion: pandora
+      default_instance: t3.small
+      mx_names:
+        - mx1
+      services:
+        - autoreply
+        - clamav
+        - cloud_monitoring
+        - efs
+        - graphs
+        - lambda
+        - route53_spfd
+        - route53_subd
+        - s3
+        - sns
+        - vault
+        - wiki
+      classes:
+        authn-relay:
+          size: t3.medium
+        authz-relay:
+          size: t3.medium
+        authz-static:
+          size: t3.medium
+        builder:
+          autokill: true
+          autocycle: false
+          size: t3.large
+        dev:
+          autokill: true
+          autocycle: false
+          size: t3.large
+        dnsbl:
+          count: 2
+        egress:
+          count: 2
+        jail: {}
+        bastion:
+          autocycle: false
+          size: t3.large
+        mx:
+          count: 3
+          size: t3.medium
+          cycle_method: spinup
+        relay-egress: {}
+        syslog: {}
 
-aws_profile: "{{ aws_profiles[aws_status][aws_region] }}"
-aws_profile_ec2: "{{ aws_profiles[aws_status][region] }}"
-aws_profile_s3: "{{ aws_profiles[aws_status].s3 }}"
-aws_profile_subd: "{{ aws_profiles[aws_status].subd }}"
-aws_profile_spfd: "{{ aws_profiles[aws_status].spfd }}"
-aws_profile_sns: "{{ aws_profiles[aws_status].sns }}"
-aws_profile_sqs: "{{ aws_profiles[aws_status].sqs }}"
-aws_profile_efs: "{{ aws_profiles[aws_status].efs }}"
+    vdc-core-nonprod:
+      region: us-east-2
+      account: '407225036496'
+      controller: vdc-nonprod
+      default_instance: t3.medium
+      classes:
+        vdc-relay:
+          size: t3.medium
 
-vdc_core: false
+aws_region: "{{ aws_layout[aws_status][aws_profile].region }}"
+aws_region_group: "{{ groups['region_' ~ aws_region | replace('-', '_')] | default([]) }}"
 
-sns_region: "{{ lookup('env', 'SNS_REGION') }}"
-sqs_region: "{{ lookup('env', 'SQS_REGION') }}"
-efs_region: us-east-2
-ec2sg_region: "{{ aws_region }}"
-yum_aws_region: us-west-2
-
-aws_instance_default:
-  prod: m5.large
-  nonprod: t3.small
-
-aws_region_layout:
-  prod:
-    us-east-2:
-      authn-relay:
-        count: 3
-      authz-relay:
-        count: 3
-        size: m5.xlarge
-      authz-static:
-        size: t3.medium
-      dnsbl:
-        count: 4
-        size: c5n.large
-      egress:
-        count: 3
-        size: m5.2xlarge
-      jail:
-        size: t3.large
-      bastion:
-        autocycle: false
-      mx:
-        count: 6
-        size: m5.xlarge
-        cycle_method: spinup
-      relay-egress:
-        count: 3
-      syslog:
-        autocycle: false
-        size: m5.xlarge
-      vdc-relay:
-        count: 2
-        size: t3.medium
-    us-west-2:
-      builder:
-        autokill: true
-        autocycle: false
-      dev:
-        autokill: true
-        autocycle: false
-      dnsbl:
-        count: 4
-        size: c5n.large
-      egress:
-        count: 3
-        size: m5.2xlarge
-      bastion:
-        autocycle: false
-      mx:
-        count: 6
-        size: m5.xlarge
-        cycle_method: spinup
-      syslog:
-        autocycle: false
-        size: m5.xlarge
-  nonprod:
-    us-east-2:
-      authn-relay:
-        size: t3.medium
-      authz-relay:
-        size: t3.medium
-      authz-static:
-        size: t3.medium
-      builder:
-        autokill: true
-        autocycle: false
-        size: t3.large
-      dev:
-        autokill: true
-        autocycle: false
-        size: t3.large
-      dnsbl:
-        count: 2
-      egress:
-        count: 2
-      jail: {}
-      bastion:
-        autocycle: false
-        size: t3.large
-      mx:
-        count: 3
-        size: t3.medium
-        cycle_method: spinup
-      relay-egress: {}
-      syslog: {}
-      vdc-relay:
-        size: t3.medium
+aws_profile_ec2: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.account', '==', (owner_id | default(aws_layout[aws_status][aws_profile].account))) | selectattr('value.region', '==', (region | default(aws_region)))).0.key }}"
+aws_profile_s3: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.services', 'defined') | selectattr('value.services', 'contains', 's3')).0.key }}"
+aws_profile_subd: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.services', 'defined') | selectattr('value.services', 'contains', 'route53_subd')).0.key }}"
+aws_profile_spfd: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.services', 'defined') | selectattr('value.services', 'contains', 'route53_spfd')).0.key }}"
+aws_profile_sns: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.services', 'defined') | selectattr('value.services', 'contains', 'sns')).0.key }}"
+aws_profile_efs: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.services', 'defined') | selectattr('value.services', 'contains', 'efs')).0.key }}"
 
 yum_hostname: yum.{{ subd }}
 yum_repo_path: "{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distribution_major_version }}"
-
-bastion_hostname: "{{ bastion_hostnames[aws_status][aws_region] }}.{{ subd }}"
-
-bastion_hostnames:
-  nonprod:
-    us-east-2: pandora
-  prod:
-    us-west-2: mogo
-    us-east-2: ego
 
 rbldnsd_updater:
   - 141.211.21.71

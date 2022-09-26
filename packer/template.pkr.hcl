@@ -18,6 +18,11 @@ variable "image_type" {
   default = "base"
 }
 
+variable "instance_profile" {
+  type = string
+  default = "umcollab_standard"
+}
+
 variable "root_device" {
   type = string
   default = "/dev/xvda"
@@ -50,6 +55,7 @@ source "amazon-ebs" "host" {
     os = "${var.image_os}"
   }
   user_data_file = "packer/userdata"
+  iam_instance_profile = "${var.instance_profile}"
 }
 
 build {
@@ -64,8 +70,6 @@ build {
     host_alias = "${var.image_type}"
     playbook_file = "ansible/${var.image_type}.yml"
     use_proxy = false
-# To bootstrap without an existing custom yum repo.
-#    extra_arguments = ["--extra-vars", "{ bootstrap: yes }"]
   }
 
   provisioner "shell" {

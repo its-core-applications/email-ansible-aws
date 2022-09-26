@@ -1,0 +1,5 @@
+- hosts: localhost
+  become: false
+  tasks:
+    - import_role:
+        name: iam_profiles

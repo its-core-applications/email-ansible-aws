@@ -72,7 +72,7 @@
         - name: Build dashboards
           command: jsonnet -J /var/cache/grafonnet --ext-code regions -o {{ item.dest[:-3] }} {{ item.dest }}
           environment:
-            regions: "{{ aws_region_layout[aws_status] | list | to_json }}"
+            regions: "{{ aws_layout[aws_status] | dict2items | rejectattr('value.controller', 'defined') | map(attribute='value.region') | list | to_json }}"
           loop: "{{ result.results }}"
 
     - name: See if we have a database backup

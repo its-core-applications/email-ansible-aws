@@ -15,7 +15,7 @@ autoreply_domains:
   - vacation.mail.umich.edu
   - autoreply.mail.umich.edu
 
-simta_autoreply_domains: "{{ (aws_region == aws_primary_region) | ternary(autoreply_domains, []) }}"
+simta_autoreply_domains: "{{ ('autoreply' in aws_layout[aws_status][aws_profile_ec2].services) | ternary(autoreply_domains, []) }}"
 
 simta_devnull_domains:
   - devnull.mail.umich.edu

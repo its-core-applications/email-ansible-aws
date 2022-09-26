@@ -19,10 +19,10 @@ sensu_sns:
       nonprod:
         - endpoint: "{{ ops_rootmail }}"
           protocol: email
-        - endpoint: arn:aws:lambda:{{ sns_region }}:{{ aws_account_sns }}:function:{{ aws_resource_prefix }}_sns2slack
+        - endpoint: arn:aws:lambda:{{ aws_layout[aws_status][aws_profile_sns].region }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:function:{{ aws_resource_prefix }}_sns2slack
           protocol: lambda
       prod:
         - endpoint: "{{ ops_rootmail }}"
           protocol: email
-        - endpoint: arn:aws:lambda:{{ sns_region }}:{{ aws_account_sns }}:function:{{ aws_resource_prefix }}_sns2slack
+        - endpoint: arn:aws:lambda:{{ aws_layout[aws_status][aws_profile_sns].account }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:function:{{ aws_resource_prefix }}_sns2slack
           protocol: lambda

@@ -6,11 +6,9 @@
   block:
     - include_role:
         name: ec2_find_subnets
-      vars:
-        subnet_region: "{{ bastion_region }}"
-      loop: "{{ aws_region_layout[aws_status] | list }}"
+      loop: "{{ aws_layout[aws_status] | list }}"
       loop_control:
-        loop_var: bastion_region
+        loop_var: subnet_profile
 
     - name: Create security groups
       ec2_group:

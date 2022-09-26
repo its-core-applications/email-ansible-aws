@@ -7,9 +7,9 @@
         name: ansible-backup-vault
         user: "{{ ansible_user }}"
         state: absent
-      when: region == aws_primary_region
+      when: "'vault' in aws_layout[aws_status][aws_profile_ec2].services"
 
-    - when: region != aws_primary_region
+    - when: "'vault' not in aws_layout[aws_status][aws_profile_ec2].services"
       block:
         - name: Create /home/vault
           file:
@@ -25,5 +25,4 @@
             user: "{{ ansible_user }}"
             minute: 43
             hour: 12
-            job: ssh {{ bastion_hostnames[aws_status][aws_primary_region] }}.{{ subd }} 'sudo tar -C /home/vault -cf - .' | sudo tar -C /home/vault -x --unlink-first --recursive-unlink
-          when: region != aws_primary_region
+            job: ssh {{ (aws_layout[aws_status] | dict2items | selectattr('value.services', 'defined') | selectattr('value.services', 'contains', 'vault')).0.value.bastion }}.{{ subd }} 'sudo tar -C /home/vault -cf - .' | sudo tar -C /home/vault -x --unlink-first --recursive-unlink

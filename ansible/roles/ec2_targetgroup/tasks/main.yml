@@ -12,7 +12,7 @@
         name: "{{ aws_resource_prefix }}-tg-{{ tg_name }}"
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
-        vpc_id: "{{ ec2_subnets_public[aws_region].0.vpc_id }}"
+        vpc_id: "{{ ec2_subnets_public[aws_profile].0.vpc_id }}"
         tags:
           BusinessOwner: "{{ aws_resource_owner }}"
         state: present

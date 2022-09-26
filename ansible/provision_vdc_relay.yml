@@ -4,10 +4,7 @@
     - import_role:
         name: ec2_launch
       vars:
-        vdc_core: true
-        aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
-        ec2sg_profile: "{{ aws_profile }}"
-        subnet_profile: "{{ aws_profile }}"
+        aws_profile: "{{ (aws_layout[status] | dict2items | selectattr('value.classes', 'contains', 'vdc-relay')).0.key }}"
         launch_class: vdc-relay
         launch_tags:
           Status: production

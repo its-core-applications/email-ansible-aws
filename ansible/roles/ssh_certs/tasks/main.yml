@@ -1,11 +1,39 @@
 - tags:
     - ssh
   block:
-    - name: Sign SSH host keys
-      shell:
-        cmd: cat {{ item }}.pub | vault write -field=signed_key ssh-host-signer/sign/host public_key=- cert_type=host valid_principals={{ inventory_hostname }} > {{ item }}-cert.pub
-        creates: "{{ item }}-cert.pub"
-      environment:
-        VAULT_ADDR: "{{ lookup('env', 'VAULT_ADDR') }}"
-        VAULT_TOKEN: "{{ lookup('file', '~/.vault-token') }}"
-      loop: "{{ query('fileglob', '/etc/ssh/ssh_host_*_key') }}"
+    - name: Find SSH host keys
+      find:
+        paths: /etc/ssh
+        patterns: ssh_host_*_key.pub
+      register: result
+
+    - name: Fetch public keys
+      slurp:
+        src: "{{ item }}"
+      loop: "{{ result.files | map(attribute='path') }}"
+      register: result
+
+    - name: Sign host keys
+      flowerysong.hvault.write:
+        vault_addr: "{{ lookup('env', 'VAULT_ADDR') }}"
+        token: "{{ ansible_hvault_token }}"
+        path: ssh-host-signer/sign/host
+        data:
+          public_key: "{{ item.content | b64decode }}"
+          cert_type: host
+          valid_principals: "{{ inventory_hostname }}"
+      loop: "{{ result.results }}"
+      loop_control:
+        label: "{{ item.source }}"
+      register: result
+
+    - name: Write out certificates
+      copy:
+        dest: "{{ item.item.source | regex_replace('.pub$', '-cert.pub') }}"
+        content: "{{ item.result.data.signed_key }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ result.results }}"
+      loop_control:
+        label: "{{ item.item.source }}"

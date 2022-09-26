@@ -28,7 +28,7 @@
 
         - import_role:
             name: vault
-          when: aws_region == aws_primary_region
+          when: "'vault' in aws_layout[aws_status][aws_profile_ec2].services"
 
         - import_role:
             name: vault_backup
@@ -77,22 +77,18 @@
 
         - import_role:
             name: grafana
-          when: aws_region == aws_primary_region
+          when: "'graphs' in aws_layout[aws_status][aws_profile_ec2].services"
 
         - import_role:
             name: clamav_coordinator
-          when: aws_region == aws_primary_region
+          when: "'clamav' in aws_layout[aws_status][aws_profile_ec2].services"
 
         - import_role:
             name: ara
 
         - import_role:
-            name: s3repo_build
-          when: aws_region == aws_primary_region
-
-        - import_role:
             name: wiki
-          when: aws_region == aws_primary_region
+          when: "'wiki' in aws_layout[aws_status][aws_profile_ec2].services"
 
         - import_role:
             name: ealert

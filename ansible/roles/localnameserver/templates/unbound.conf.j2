@@ -72,12 +72,12 @@ forward-zone:
 
 stub-zone:
     name: "dnsbl"
-{% for region in aws_region_layout[aws_status] %}
+{% for region in (aws_layout[aws_status] | dict2items | rejectattr('value.controller', 'defined') | map(attribute='value.region')) %}
     stub-host: rbldnsd.{{ region }}.{{ subd }}
 {% endfor %}
 
 stub-zone:
     name: "dnsal"
-{% for region in aws_region_layout[aws_status] %}
+{% for region in (aws_layout[aws_status] | dict2items | rejectattr('value.controller', 'defined') | map(attribute='value.region')) %}
     stub-host: rbldnsd.{{ region }}.{{ subd }}
 {% endfor %}

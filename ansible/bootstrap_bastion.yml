@@ -12,7 +12,7 @@
 
         - import_role:
             name: vault
-          when: aws_region == aws_primary_region
+          when: "'vault' in aws_layout[aws_status][aws_profile_ec2].services"
 
         - name: Set status to production
           delegate_to: localhost

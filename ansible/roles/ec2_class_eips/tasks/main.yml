@@ -31,7 +31,7 @@
           Class: "{{ eip_class }}"
           Name: "{{ eip_class }}"
         state: present
-      loop: "{{ range(aws_region_layout[aws_status][aws_region][eip_class].count | default(1) - (result.addresses | length)) }}"
+      loop: "{{ range(aws_layout[aws_status][aws_profile]['classes'][eip_class].count | default(1) - (result.addresses | length)) }}"
       register: result
 
     - name: Re-fetch {{ eip_class }} EIPs

@@ -19,7 +19,7 @@
         - (spindown_count_az | int) < (target_spindown_az | int)
         - launch_time in ((groups.Class_mx | intersect(groups['az_' ~ placement.availability_zone | replace('-', '_')]) | map('extract', hostvars, 'launch_time') | sort)[:(target_spindown_az | int)])
       vars:
-        target_min: "{{ aws_region_layout[aws_status][aws_region].mx.count }}"
+        target_min: "{{ aws_layout[aws_status][aws_profile].classes.mx.count }}"
         target_spindown: 3
         # This is a tangled web, but it makes the conditionals more readable
         # (modulo the lack of native type propagation in templated vars). We

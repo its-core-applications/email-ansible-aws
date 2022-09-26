@@ -6,7 +6,7 @@
       vars:
         launch_class: authz-static
         launch_ami_class: authz-relay
-        launch_subnet: "{{ ec2_subnets_public_sorted[aws_region].2 }}"
+        launch_subnet: "{{ ec2_subnets_public_sorted[aws_profile].2 }}"
         launch_groups:
           - smtp
 
@@ -42,5 +42,5 @@
         eni_name: authz-static
         eni_security_groups:
           - smtp
-        eni_subnet: "{{ ec2_subnets_vpn_sorted[aws_region].2 }}"
+        eni_subnet: "{{ ec2_subnets_vpn_sorted[aws_profile].2 }}"
         eni_ip_index: 5

@@ -1,2 +1,2 @@
-subnet_region: "{{ aws_region }}"
-subnet_profile: "{{ aws_profiles[aws_status][subnet_region] }}"
+subnet_region: "{{ aws_layout[aws_status][subnet_profile].region }}"
+subnet_profile: "{{ aws_profile }}"

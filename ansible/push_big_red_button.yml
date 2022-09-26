@@ -7,7 +7,7 @@
     - name: Terminate all non-bastion instances
       delegate_to: localhost
       become: false
-      ec2_instance:
+      amazon.aws.ec2_instance:
         region: "{{ region }}"
         profile: "{{ aws_profile_ec2 }}"
         instance_ids: "{{ instance_id }}"
@@ -24,23 +24,28 @@
           - BURNTHEWORLD | default(false)
         msg: Sarah Connor?
 
-    # FIXME: use elb_network_lb_facts once it exists
+    - name: Find LBs
+      community.aws.elb_application_lb_info:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+      register: result
+
     - name: Destroy LBs
-      elb_network_lb:
+      community.aws.elb_network_lb:
         name: "{{ item }}"
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         state: absent
-      loop: "{{ mx_names[aws_region] }}"
+      loop: "{{ result.load_balancers | map(attribute='load_balancer_name') }}"
 
     - name: Find TGs
-      elb_target_group_info:
+      community.aws.elb_target_group_info:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
       register: result
 
     - name: Delete TGs
-      elb_target_group:
+      community.aws.elb_target_group:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         name: "{{ item.target_group_name }}"
@@ -48,17 +53,31 @@
       loop: "{{ result.target_groups }}"
 
     - name: Find AMIs
-      ec2_ami_info:
+      amazon.aws.ec2_ami_info:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         owners: self
       register: result
 
     - name: Delete AMIs
-      ec2_ami:
+      amazon.aws.ec2_ami:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         image_id: "{{ item.image_id }}"
         state: absent
         delete_snapshot: true
       loop: "{{ result.images }}"
+
+    - name: Find EFS filesystems
+      community.aws.efs_info:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+      register: result
+
+    - name: Delete EFS filesystems
+      community.aws.efs:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        id: "{{ item.file_system_id }}"
+        state: absent
+      loop: "{{ result.efs }}"

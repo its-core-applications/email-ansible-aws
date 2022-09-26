@@ -30,6 +30,8 @@
     - include_role:
         name: ec2_ami_cleanup
       vars:
-        aws_profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
         image_type: vdc_relay
         image_retain: 2
+      loop: "{{ aws_layout[aws_status] | dict2items | selectattr('value.controller', 'defined') | selectattr('value.controller', '==', aws_profile) | map(attribute='key') }}"
+      loop_control:
+        loop_var: aws_profile

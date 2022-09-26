@@ -1,5 +1,7 @@
 - tags:
     - ammit
+  vars:
+    efs_region: "{{ aws_layout[aws_status][aws_profile_efs].region }}"
   block:
     - import_role:
         name: ec2_find_subnets
@@ -9,7 +11,7 @@
       vars:
         ec2sg_groups:
           - efs
-        ec2sg_region: us-east-2
+        ec2sg_region: "{{ efs_region }}"
 
     - become: false
       delegate_to: localhost
@@ -19,7 +21,7 @@
             profile: "{{ aws_profile_efs }}"
             region: "{{ efs_region }}"
             filters:
-              vpc-id: "{{ ec2_subnets_public[efs_region].0.vpc_id }}"
+              vpc-id: "{{ ec2_subnets_public[aws_profile_efs].0.vpc_id }}"
               group-name: "{{ aws_resource_prefix }} efs"
           register: efs_sg
 
@@ -31,7 +33,7 @@
             name: ammit
             tags:
               Name: ammit
-            targets: "{{ ec2_subnets_public[efs_region] | json_query(target_query) }}"
+            targets: "{{ ec2_subnets_public[aws_profile_efs] | json_query(target_query) }}"
             wait: yes
           vars:
             target_query: "[*].{subnet_id: id, security_groups: ['{{ efs_sg.security_groups.0.group_id }}']}"

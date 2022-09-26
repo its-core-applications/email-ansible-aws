@@ -13,9 +13,6 @@
             tags:
               Status: spundown
 
-        - import_role:
-            name: aws_get_accountinfo
-
         - name: Disable Sensu health check
           delegate_to: localhost
           become: false
@@ -27,5 +24,5 @@
             description: Monitor Sensu health
             targets:
               - id: sensu_health_target
-                arn: arn:aws:lambda:{{ aws_region }}:{{ aws_account }}:function:{{ aws_resource_prefix }}_sensu_monitor_health
+                arn: arn:aws:lambda:{{ aws_region }}:{{ aws_layout[aws_status][aws_profile].account }}:function:{{ aws_resource_prefix }}_sensu_monitor_health
             state: disabled

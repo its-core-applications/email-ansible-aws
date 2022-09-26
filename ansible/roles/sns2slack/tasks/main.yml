@@ -4,9 +4,6 @@
   delegate_to: localhost
   block:
     - import_role:
-        name: aws_get_accountinfo
-
-    - import_role:
         name: lambda_function
       vars:
         lambda_name: sns2slack
@@ -18,11 +15,11 @@
 
     - name: Create Lambda policy for SNS
       lambda_policy:
-        region: "{{ sns_region }}"
+        region: "{{ aws_layout[aws_status][aws_profile_sns].region }}"
         profile: "{{ aws_profile_sns }}"
         function_name: "{{ aws_resource_prefix }}_sns2slack"
         statement_id: sns2slack-invoke-from-SNS
         action: lambda:InvokeFunction
         principal: sns.amazonaws.com
-        source_arn: arn:aws:sns:us-west-2:{{ aws_account_sns }}:rootmail
+        source_arn: arn:aws:sns:{{ aws_layout[aws_status][aws_profile_sns].region }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:rootmail
       become: false

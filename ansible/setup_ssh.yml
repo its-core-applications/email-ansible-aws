@@ -1,0 +1,46 @@
+- hosts: localhost
+  become: false
+  vars:
+    key_file: "{{ playbook_dir }}/../id_ed25519.{{ ansible_user }}"
+  tasks:
+    - command:
+        cmd: ssh-keygen -N '' -t ed25519 -f {{ key_file }}
+        creates: "{{ key_file }}"
+
+    - vars:
+        public_key: "{{ lookup('file', key_file ~ '.pub') }}"
+        private_key: "{{ lookup('file', key_file) }}"
+        public_key_hash: "{{ ((public_key | split)[0:2] | join(' ') | hash('sha1'))[:6] }}"
+      block:
+        - name: Copy private key to canonical name
+          copy:
+            dest: "{{ key_file }}.{{ public_key_hash }}"
+            content: "{{ private_key }}\n"
+            mode: "0400"
+
+        - name: Copy public key to canonical name
+          copy:
+            dest: "{{ key_file }}.{{ public_key_hash }}.pub"
+            content: "{{ public_key }}\n"
+
+        - name: Upload public key to AWS
+          amazon.aws.ec2_key:
+            region: "{{ item.value.region }}"
+            profile: "{{ item.key }}"
+            name: "{{ aws_resource_prefix }} {{ public_key_hash }}"
+            key_material: "{{ public_key }}"
+            force: true
+          loop: "{{ aws_layout[aws_status] | dict2items }}"
+          loop_control:
+            label: "{{ item.key }}"
+
+        - name: Save key to Vault
+          flowerysong.hvault.kv:
+            vault_addr: "{{ lookup('env', 'VAULT_ADDR') }}"
+            token: "{{ ansible_hvault_token }}"
+            key: ssh/ec2-user.{{ public_key_hash }}
+            value:
+              public: "{{ public_key }}"
+              value: "{{ private_key }}"
+            timeout: 5
+          tags: vault

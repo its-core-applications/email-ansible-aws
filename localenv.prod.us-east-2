@@ -1,4 +1,4 @@
-export AWS_DEFAULT_REGION=us-east-2
+export AWS_DEFAULT_PROFILE=vdc-prod
 if [[ -d /home/ara ]]; then
-    export ARA_BASE_URL=https://ara.${AWS_DEFAULT_REGION}.a.mail.umich.edu/
+    export ARA_BASE_URL=https://ara.us-east-2.a.mail.umich.edu/
 fi

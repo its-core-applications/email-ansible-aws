@@ -3,7 +3,9 @@ Host gitlab.umich.edu
     User git
 
 Host *.{{ subd }}
-    IdentityFile ~/.ssh/id_rsa.ec2
+{% for keypair in query('flowerysong.hvault.list', 'secret/ssh/') | select('match', ansible_user) %}
+    IdentityFile ~/.ssh/id_ed25519.{{ keypair }}
+{% endfor %}
     User {{ ansible_user }}
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null

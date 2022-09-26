@@ -15,10 +15,10 @@ if [[ ! -f ansible/${class}.yml ]]; then
 fi
 
 if [[ $class = 'vdc_relay' ]]; then
-    export AWS_PROFILE=$(ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ aws_profiles[aws_status]["vdc-core"] }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
-else
-    export AWS_PROFILE=$(ANSIBLE_STDOUT_CALLBACK=json ansible localhost --playbook-dir ansible -m debug -a 'msg={{ aws_profile }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
+    export AWS_DEFAULT_PROFILE=$(ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ aws_profile_vdc_relay }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
 fi
+
+export AWS_DEFAULT_REGION=$(ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ aws_layout[aws_status][aws_profile].region }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
 
 if [[ $2 ]]; then
     os=$2

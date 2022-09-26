@@ -35,4 +35,4 @@
         user: "{{ ansible_user }}"
         minute: 23,53
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/setup_spf.yml
-      when: aws_region == aws_primary_region
+      when: "'route53_spfd' in aws_layout[aws_status][aws_profile_ec2].services"

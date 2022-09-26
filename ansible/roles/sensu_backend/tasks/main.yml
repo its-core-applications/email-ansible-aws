@@ -33,16 +33,13 @@
         mode: "0644"
 
     - import_role:
-        name: aws_get_accountinfo
-
-    - import_role:
         name: sns2slack
 
     - name: Create SNS topics
       delegate_to: localhost
       become: false
       sns_topic:
-        region: "{{ sns_region }}"
+        region: "{{ aws_layout[aws_status][aws_profile_sns].region }}"
         profile: "{{ aws_profile_sns }}"
         name: "{{ item.name }}"
         display_name: "{{ item.display_name }}"
@@ -56,7 +53,7 @@
       vars:
         ec2_profile_user: sensu
         ec2_profile: snspublish
-        ec2_profile_role: arn:aws:iam::{{ aws_account_sns }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_SNS
+        ec2_profile_role: arn:aws:iam::{{ aws_layout[aws_status][aws_profile_sns].account }}:role/{{ aws_resource_prefix }}_SNS
 
     - name: Install custom plugins
       copy:
@@ -186,7 +183,7 @@
     - name: Create the SNS handlers
       sensu.sensu_go.pipe_handler:
         name: "{{ item.name }}"
-        command: handler-sns -r {{ sns_region }} -t {{ item.topic }} -d {{ aws_status }}/{{ aws_region }} -u https://dashboard.{{ aws_region }}.{{ subd }}
+        command: handler-sns -r {{ aws_layout[aws_status][aws_profile_sns].region }} -t {{ item.topic }} -d {{ aws_status }}/{{ aws_region }} -u https://dashboard.{{ aws_region }}.{{ subd }}
         filters: "{{ item.filters | union(default_filters) }}"
         <<: *sensu_auth
       vars:
@@ -314,9 +311,9 @@
         <<: *sensu_auth
       loop: "{{ mx_lbs | union(authn_lbs) | union(authz_lbs) }}"
       vars:
-        mx_lbs: "{{ mx_names[aws_region] | map('regex_replace', '$', '.' ~ subd) }}"
-        authn_lbs: "{{ ('authn-relay' in aws_region_layout[aws_status][aws_region]) | ternary(['authn-relay' ~ elbd, 'authn-relay-vpn' ~ elbd], []) }}"
-        authz_lbs: "{{ ('authz-relay' in aws_region_layout[aws_status][aws_region]) | ternary(['authz-relay' ~ elbd, 'authz-relay-vpn' ~ elbd], []) }}"
+        mx_lbs: "{{ aws_layout[aws_status][aws_profile_ec2].mx_names | map('regex_replace', '$', '.' ~ subd) }}"
+        authn_lbs: "{{ ('authn-relay' in aws_layout[aws_status][aws_profile_ec2].classes) | ternary(['authn-relay' ~ elbd, 'authn-relay-vpn' ~ elbd], []) }}"
+        authz_lbs: "{{ ('authz-relay' in aws_layout[aws_status][aws_profile_ec2].classes) | ternary(['authz-relay' ~ elbd, 'authz-relay-vpn' ~ elbd], []) }}"
         elbd: ".{{ aws_region }}.{{ subd }}"
 
     - name: Monitor Sensu metrics
@@ -344,7 +341,7 @@
           - default
         proxy_entity_name: area1security.com
         <<: *sensu_auth
-      when: aws_region == aws_primary_region
+      when: "'cloud_monitoring' in aws_layout[aws_status][aws_profile_ec2].services"
 
     - name: Monitor GitHub
       sensu.sensu_go.check:
@@ -358,7 +355,7 @@
           - fyi
         proxy_entity_name: github.com
         <<: *sensu_auth
-      when: aws_region == aws_primary_region
+      when: "'cloud_monitoring' in aws_layout[aws_status][aws_profile_ec2].services"
 
     - name: Monitor EC2 instance counts
       sensu.sensu_go.check:
@@ -415,7 +412,7 @@
         handlers:
           - default
         <<: *sensu_auth
-      when: aws_region == aws_primary_region
+      when: "'vault' in aws_layout[aws_status][aws_profile_ec2].services"
 
     - name: Monitor redis
       sensu.sensu_go.check:
@@ -640,7 +637,7 @@
       loop:
         - simta-smtp-auth
         - simta-smtp-auth-465
-      when: "'authn-relay' in aws_region_layout[aws_status][aws_region]"
+      when: "'authn-relay' in aws_layout[aws_status][aws_profile_ec2].classes"
 
     - name: Monitor rbldnsd
       sensu.sensu_go.check:

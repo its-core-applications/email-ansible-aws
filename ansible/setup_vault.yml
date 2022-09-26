@@ -2,7 +2,7 @@
   environment:
     VAULT_ADDR: "{{ lookup('env', 'VAULT_ADDR') }}"
   tasks:
-    - when: aws_region == aws_primary_region
+    - when: "'vault' in aws_layout[aws_status][aws_profile].services"
       become: false
       block:
         - name: Mount secret/
@@ -117,7 +117,8 @@
             policy:
               identity/*: [read, list]
               identity: [list]
-              secret/*: [create, read, update, delete, list]
+              secret/*: [read, list]
+              secret/ssh/*: [create, read, update, delete, list]
               secret: [list]
               ssh-client-signer/*: [list]
               ssh-client-signer/sign/ec2-user: [read, update, list]
@@ -130,14 +131,10 @@
               ssh-host-signer/*: [list]
               ssh-host-signer/sign/host: [read, update, list]
 
-        - import_role:
-            name: aws_get_accountinfo
-
-        # FIXME: what about cross-account access?
         - name: Create AWS auth roles
           flowerysong.hvault.aws_auth_role:
             name: "{{ aws_resource_prefix }}_{{ item.name }}"
-            bound_iam_principal_arn: arn:aws:iam::{{ aws_account }}:role/{{ aws_resource_prefix }}_{{ item.name }}
+            bound_iam_principal_arn: "{{ aws_layout[aws_status] | dict2items | map(attribute='value.account') | unique | map('regex_replace', '^', 'arn:aws:iam::') | map('regex_replace', '$', ':role/' + aws_resource_prefix + '_' + item.name) }}"
             resolve_aws_unique_ids: false
             token_policies: "{{ item.policies }}"
           loop:
@@ -158,7 +155,8 @@
             name: s3_datastore
             policy:
               aws/sts/s3_datastore: [read, update, list]
-              secret/cif/ir-svcacct: [read]
+              secret/cif/*: [read]
+              secret/mysql/*: [read]
 
         - name: Create dnsbl AppRole role
           flowerysong.hvault.approle_role:
@@ -181,20 +179,18 @@
         - name: Create AWS s3_datastore role
           flowerysong.hvault.aws_secret_role_sts:
             name: s3_datastore
-            role_arns: arn:aws:iam::{{ aws_account }}:role/{{ aws_resource_prefix }}_{{ aws_account }}_S3_ds
+            role_arns: arn:aws:iam::{{ aws_layout[aws_status][aws_profile].account }}:role/{{ aws_resource_prefix }}_S3_ds
 
 - hosts: localhost
   tags:
     - never
+  become: false
   tasks:
-    - when: aws_region == aws_primary_region
-      become: false
-      block:
-        - name: Store the Vault unseal key
-          aws_secret:
-            profile: "{{ aws_profile }}"
-            region: "{{ aws_region }}"
-            name: vault_unseal
-            state: present
-            secret_type: string
-            secret: "{{ vault_unseal_key }}"
+    - name: Store the Vault unseal key
+      aws_secret:
+        profile: "{{ aws_profile }}"
+        region: "{{ aws_region }}"
+        name: vault_unseal
+        state: present
+        secret_type: string
+        secret: "{{ vault_unseal_key }}"

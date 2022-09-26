@@ -1,0 +1,1 @@
+ansible_hvault_token: "{{ lookup('flowerysong.hvault.auth_aws', aws_resource_prefix + '_bastion') }}"

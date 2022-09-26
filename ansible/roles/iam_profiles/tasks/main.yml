@@ -4,15 +4,12 @@
   become: false
   block:
     - import_role:
-        name: aws_get_accountinfo
-
-    - import_role:
         name: route53_find_hostedzones
 
-    - name: Create IAM policy for EC2 tagging
+    - name: Create IAM policies for EC2 tagging
       iam_managed_policy:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
+        region: "{{ item.value.region }}"
+        profile: "{{ item.key }}"
         state: present
         policy_name: "{{ aws_resource_prefix }}_EC2UpdateTags"
         policy_description: Read and update tags for EC2 resources
@@ -28,7 +25,10 @@
             - Action: ec2:DeleteTags
               Effect: Allow
               Resource: '*'
-      register: tagpolicy
+      loop: "{{ aws_layout[aws_status] | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: tagpolicies
 
     - name: Create IAM policy for {{ subd }}
       iam_managed_policy:
@@ -56,23 +56,19 @@
     - name: Create IAM role for {{ subd }}
       iam_role:
         profile: "{{ aws_profile_subd }}"
-        name: "{{ aws_resource_prefix }}_{{ aws_account }}_{{ subd }}"
-        description: Cross-account access to Route53 for {{ aws_profile }}
+        name: "{{ aws_resource_prefix }}_{{ subd }}"
+        description: Cross-account access to Route53
         assume_role_policy_document:
           Version: "2012-10-17"
-          Statement:
-            - Action: sts:AssumeRole
-              Effect: Allow
-              Principal:
-                AWS: arn:aws:iam::{{ aws_account }}:root
+          Statement: "{{ (['AWS'] | product(aws_layout[aws_status] | dict2items | map(attribute='value.account'))) | map('flowerysong.melange.sts_allow') }}"
         managed_policies:
           - "{{ result.policy.arn }}"
         purge_policies: true
       register: result
 
-    - name: Create local IAM policy for {{ subd }}
+    - name: Create local IAM policies for {{ subd }}
       iam_managed_policy:
-        profile: "{{ aws_profile }}"
+        profile: "{{ item }}"
         state: present
         policy_name: "{{ aws_resource_prefix }}_Route53Update_{{ subd }}_XAccount"
         policy_description: Update {{ subd }}
@@ -83,7 +79,8 @@
               Effect: Allow
               Resource:
                 - "{{ result.iam_role.arn }}"
-      register: subdpolicy
+      loop: "{{ aws_layout[aws_status] | list }}"
+      register: subdpolicies
 
     - name: Create IAM policy for SNS
       iam_managed_policy:
@@ -104,23 +101,19 @@
     - name: Create IAM role for SNS
       iam_role:
         profile: "{{ aws_profile_sns }}"
-        name: "{{ aws_resource_prefix }}_{{ aws_account }}_SNS"
-        description: Cross-account access to SNS for {{ aws_profile }}
+        name: "{{ aws_resource_prefix }}_SNS"
+        description: Cross-account access to SNS
         assume_role_policy_document:
           Version: "2012-10-17"
-          Statement:
-            - Action: sts:AssumeRole
-              Effect: Allow
-              Principal:
-                AWS: arn:aws:iam::{{ aws_account }}:root
+          Statement: "{{ (['AWS'] | product(aws_layout[aws_status] | dict2items | map(attribute='value.account'))) | map('flowerysong.melange.sts_allow') }}"
         managed_policies:
           - "{{ result.policy.arn }}"
         purge_policies: true
       register: result
 
-    - name: Create local IAM policy for SNS
+    - name: Create local IAM policies for SNS
       iam_managed_policy:
-        profile: "{{ aws_profile }}"
+        profile: "{{ item }}"
         state: present
         policy_name: "{{ aws_resource_prefix }}_SNSPublish_XAccount"
         policy_description: Publish to SNS
@@ -131,7 +124,8 @@
               Effect: Allow
               Resource:
                 - "{{ result.iam_role.arn }}"
-      register: snspolicy
+      loop: "{{ aws_layout[aws_status] | list }}"
+      register: snspolicies
 
     - name: Create IAM policy for S3 datastore
       iam_managed_policy:
@@ -164,23 +158,19 @@
     - name: Create IAM role for S3 datastore
       iam_role:
         profile: "{{ aws_profile_s3 }}"
-        name: "{{ aws_resource_prefix }}_{{ aws_account }}_S3_ds"
-        description: Cross-account access to S3 datastore for {{ aws_profile }}
+        name: "{{ aws_resource_prefix }}_S3_ds"
+        description: Cross-account access to S3 datastore
         assume_role_policy_document:
           Version: "2012-10-17"
-          Statement:
-            - Action: sts:AssumeRole
-              Effect: Allow
-              Principal:
-                AWS: arn:aws:iam::{{ aws_account }}:root
+          Statement: "{{ (['AWS'] | product(aws_layout[aws_status] | dict2items | map(attribute='value.account'))) | map('flowerysong.melange.sts_allow') }}"
         managed_policies:
           - "{{ result.policy.arn }}"
         purge_policies: true
       register: result
 
-    - name: Create local IAM policy for S3 datastore
+    - name: Create local IAM policies for S3 datastore
       iam_managed_policy:
-        profile: "{{ aws_profile }}"
+        profile: "{{ item }}"
         state: present
         policy_name: "{{ aws_resource_prefix }}_S3_ds_XAccount"
         policy_description: Access to S3 datastore
@@ -191,12 +181,13 @@
               Effect: Allow
               Resource:
                 - "{{ result.iam_role.arn }}"
-      register: s3dspolicy
+      loop: "{{ aws_layout[aws_status] | list }}"
+      register: s3dspolicies
 
     - name: Create builder role
       iam_role:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
+        region: "{{ item.value.region }}"
+        profile: "{{ item.key }}"
         name: "{{ aws_resource_prefix }}_builder"
         state: present
         assume_role_policy_document:
@@ -208,39 +199,83 @@
                 Service: ec2.amazonaws.com
         managed_policies:
           - arn:aws:iam::aws:policy/AmazonS3FullAccess
-          - "{{ subdpolicy.policy.arn }}"
-          - "{{ tagpolicy.policy.arn }}"
+          - "{{ (subdpolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}"
+          - "{{ (tagpolicies.results | selectattr('item.key', '==', item.key)).0.policy.arn }}"
         purge_policies: true
+      loop: "{{ aws_layout[aws_status] | dict2items | selectattr('value.classes', 'contains', 'builder') }}"
+      loop_control:
+        label: "{{ item.key }}"
 
-    - name: Create bastion role
+    - name: Create local IAM policies for bastion roles
+      iam_managed_policy:
+        profile: "{{ item.key }}"
+        state: present
+        policy_name: "{{ aws_resource_prefix }}_bastion_extras"
+        policy_description: do bastion things
+        policy:
+          Version: "2012-10-17"
+          Statement:
+            # Assume bastion role in any linked account
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Resource:
+                - "arn:aws:iam::*:role/{{ aws_resource_prefix }}_bastion"
+            # Pass roles when creating resources
+            - Effect: Allow
+              Action:
+                - iam:GetRole
+                - iam:PassRole
+              Resource: arn:aws:iam::{{ item.value.account }}:role/{{ aws_resource_prefix }}*
+            # Manage EFS
+            - Effect: Allow
+              Action: elasticfilesystem:*
+              Resource: '*'
+            # Manage DLM
+            - Effect: Allow
+              Action: dlm:*
+              Resource: '*'
+            # Manage SNS
+            - Effect: Allow
+              Action: SNS:*
+              Resource: '*'
+            # Manage CloudWatch Events
+            - Effect: Allow
+              Action: events:*
+              Resource: '*'
+      loop: "{{ aws_layout[aws_status] | dict2items }}"
+      register: bastion_policies
+
+    - name: Create bastion roles
       iam_role:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
+        region: "{{ item.value.region }}"
+        profile: "{{ item.key }}"
         name: "{{ aws_resource_prefix }}_bastion"
         state: present
         assume_role_policy_document:
           Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action: sts:AssumeRole
-              Principal:
-                Service: ec2.amazonaws.com
+          # The bastion role allows cross-account access, in addition to being an
+          # EC2 machine role.
+          Statement: "{{ ([['Service', 'ec2.amazonaws.com']] | union(['AWS'] | product(aws_layout[aws_status] | dict2items | map(attribute='value.account')))) | map('flowerysong.melange.sts_allow') }}"
         managed_policies:
           - arn:aws:iam::aws:policy/AmazonS3FullAccess
-          - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+          - arn:aws:iam::aws:policy/AmazonEC2FullAccess
           - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+          - arn:aws:iam::aws:policy/AWSLambda_FullAccess
           - arn:aws:iam::aws:policy/IAMReadOnlyAccess
           - arn:aws:iam::aws:policy/SecretsManagerReadWrite
-          - "{{ subdpolicy.policy.arn }}"
-          - "{{ tagpolicy.policy.arn }}"
-          - "{{ snspolicy.policy.arn }}"
-          - "{{ s3dspolicy.policy.arn }}" # Used by Vault to issue creds
+          - "{{ (subdpolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}"
+          - "{{ (snspolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}"
+          - "{{ (s3dspolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}" # Used by Vault to issue creds
+          - "{{ (bastion_policies.results | selectattr('item.key', '==', item.key)).0.policy.arn }}"
         purge_policies: true
+      loop: "{{ aws_layout[aws_status] | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
 
-    - name: Create standard role
+    - name: Create standard roles
       iam_role:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
+        region: "{{ item.value.region }}"
+        profile: "{{ item.key }}"
         name: "{{ aws_resource_prefix }}_standard"
         state: present
         assume_role_policy_document:
@@ -252,7 +287,78 @@
                 Service: ec2.amazonaws.com
         managed_policies:
           - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
-          - "{{ subdpolicy.policy.arn }}"
-          - "{{ tagpolicy.policy.arn }}"
-          - "{{ snspolicy.policy.arn }}"
+          - "{{ (subdpolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}"
+          - "{{ (tagpolicies.results | selectattr('item.key', '==', item.key)).0.policy.arn }}"
+          - "{{ (snspolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}"
         purge_policies: true
+      loop: "{{ aws_layout[aws_status] | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+
+    - name: Create IAM role for Lambda
+      iam_role:
+        profile: "{{ item.key }}"
+        name: "{{ aws_resource_prefix }}_lambda_basic"
+        description: Basic execution role for Lambda
+        assume_role_policy_document:
+          Version: "2012-10-17"
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+        managed_policies:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+          - arn:aws:iam::{{ item.value.account }}:policy/{{ aws_resource_prefix }}_SNSPublish_XAccount
+        purge_policies: true
+      loop: "{{ aws_layout[aws_status] | dict2items | rejectattr('value.controller', 'defined') }}"
+      loop_control:
+        label: "{{ item.key }}"
+
+    - name: Create IAM policies for DLM
+      iam_managed_policy:
+        region: "{{ item.value.region }}"
+        profile: "{{ item.key }}"
+        state: present
+        policy_name: "{{ aws_resource_prefix }}_AWS_DLM"
+        policy_description: Create and manage snapshots from instances or volumes
+        policy:
+          Version: "2012-10-17"
+          Statement:
+            - Action:
+                - ec2:CreateSnapshot
+                - ec2:CreateSnapshots
+                - ec2:DeleteSnapshot
+                - ec2:DescribeVolumes
+                - ec2:DescribeInstances
+                - ec2:DescribeSnapshots
+              Effect: Allow
+              Resource: "*"
+            - Action: ec2:CreateTags
+              Effect: Allow
+              Resource: arn:aws:ec2:*::snapshot/*
+      loop: "{{ aws_layout[aws_status] | dict2items | selectattr('value.bastion', 'defined') }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: result
+
+    - name: Create IAM roles for DLM
+      iam_role:
+        profile: "{{ item.item.key }}"
+        name: "{{ aws_resource_prefix }}_AWS_DLM"
+        description: Role for DLM automated snapshots
+        assume_role_policy_document:
+          Version: "2012-10-17"
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Principal:
+                Service: dlm.amazonaws.com
+        create_instance_profile: false
+        managed_policy: "{{ item.policy.arn }}"
+        purge_policies: true
+      loop: "{{ result.results }}"
+      loop_control:
+        label: "{{ item.item.key }}"

@@ -10,7 +10,7 @@
         hour: "{{ ansible_loop.index0 % 3 }}"
         weekday: "{{ (item.value.count | default(1) | int == 1) | ternary(0, '*') }}"
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item.value.cycle_method | default('replace') }}_{{ item.key | replace('-', '_') }}.yml &>/dev/null
-      loop: "{{ aws_region_layout[aws_status][aws_region] | dict2items }}"
+      loop: "{{ aws_layout[aws_status][aws_profile].classes | dict2items }}"
       loop_control:
         extended: true
       when: item.value.autocycle | default(true)
@@ -23,7 +23,7 @@
         hour: 12
         weekday: 6
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/spindown_{{ item.key }}.yml &>/dev/null
-      loop: "{{ aws_region_layout[aws_status][aws_region] | dict2items | selectattr('value.autokill', 'defined') | selectattr('value.autokill') }}"
+      loop: "{{ aws_layout[aws_status][aws_profile].classes | dict2items | selectattr('value.autokill', 'defined') | selectattr('value.autokill') }}"
 
     - name: Schedule deprovisioning of spundown hosts
       cron:
@@ -48,4 +48,4 @@
         minute: 17
         hour: 17
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/cleanup_{{ item }}.yml &>/dev/null
-      loop: "{{ (aws_region == aws_primary_region) | ternary(['amis', 'dns'], ['amis']) }}"
+      loop: "{{ ('route53_subd' in aws_layout[aws_status][aws_profile_ec2].services) | ternary(['amis', 'dns'], ['amis']) }}"

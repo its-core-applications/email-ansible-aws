@@ -1,6 +1,6 @@
 - delegate_to: localhost
   become: false
-  when: (ec2_subnets_public is not defined) or (subnet_region not in ec2_subnets_public)
+  when: (ec2_subnets_public is not defined) or (subnet_profile not in ec2_subnets_public)
   block:
     - name: Gather VPC subnet facts
       ec2_vpc_subnet_info:
@@ -29,16 +29,9 @@
         profile: "{{ subnet_profile }}"
       register: ec2_subnet_facts
 
-    - name: Gather VDC core VPC subnet facts
-      ec2_vpc_subnet_info:
-        region: "{{ aws_region_vdc_core }}"
-        profile: "{{ aws_profiles[aws_status]['vdc-core'] }}"
-      register: ec2_subnet_facts_vdc
-
     - name: Shuffle and sort subnets
       set_fact:
-        ec2_subnets_public: "{{ ec2_subnets_public | default({}) | combine({ subnet_region: ec2_subnet_facts.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'public') | shuffle }) }}"
-        ec2_subnets_public_sorted: "{{ ec2_subnets_public_sorted | default({}) | combine({ subnet_region: ec2_subnet_facts.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }) }}"
-        ec2_subnets_vpn: "{{ ec2_subnets_vpn | default({}) | combine({ subnet_region: ec2_subnet_facts.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'vpn') | shuffle }) }}"
-        ec2_subnets_vpn_sorted: "{{ ec2_subnets_vpn_sorted | default({}) | combine({ subnet_region: ec2_subnet_facts.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'vpn') | sort(attribute='availability_zone') }) }}"
-        ec2_subnets_vdc_core: "{{ ec2_subnet_facts_vdc.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }}"
+        ec2_subnets_public: "{{ ec2_subnets_public | default({}) | combine({ subnet_profile: ec2_subnet_facts.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'public') | shuffle }) }}"
+        ec2_subnets_public_sorted: "{{ ec2_subnets_public_sorted | default({}) | combine({ subnet_profile: ec2_subnet_facts.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'public') | sort(attribute='availability_zone') }) }}"
+        ec2_subnets_vpn: "{{ ec2_subnets_vpn | default({}) | combine({ subnet_profile: ec2_subnet_facts.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'vpn') | shuffle }) }}"
+        ec2_subnets_vpn_sorted: "{{ ec2_subnets_vpn_sorted | default({}) | combine({ subnet_profile: ec2_subnet_facts.subnets | selectattr('tags.Class', 'defined') | selectattr('tags.Class', 'equalto', 'vpn') | sort(attribute='availability_zone') }) }}"

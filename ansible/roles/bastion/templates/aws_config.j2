@@ -1,0 +1,6 @@
+{% for profile in aws_layout[aws_status] | dict2items %}
+[profile {{ profile.key }}]
+credential_source = Ec2InstanceMetadata
+role_arn = arn:aws:iam::{{ profile.value.account }}:role/{{ aws_resource_prefix }}_bastion
+
+{% endfor %}

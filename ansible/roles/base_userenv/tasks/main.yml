@@ -40,15 +40,30 @@
         src: ssh_config.j2
         dest: ~/.ssh/config
         mode: "0600"
+      when: not bootstrap
 
-    - name: Install ssh private key
-      copy:
-        content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ ansible_user).value }}"
-        dest: ~/.ssh/id_rsa.ec2
-        mode: "0400"
-      when:
-        - bootstrap == false
+    - when:
         - "'Class_bastion' in group_names"
+        - not bootstrap
+      vars:
+        ssh_keys_vault: "{{ [] if bootstrap else (query('flowerysong.hvault.list', 'secret/ssh/') | select('match', ansible_user)) }}"
+        ssh_key_dirs:
+          - ~/.ssh
+          - ~/ansible-aws
+      block:
+        - name: Install SSH private keys
+          copy:
+            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ item.1).value }}\n"
+            dest: "{{ item.0 }}/id_ed25519.{{ item.1 }}"
+            mode: "0400"
+          loop: "{{ ssh_key_dirs | product(ssh_keys_vault) }}"
+
+        - name: Install SSH public keys
+          copy:
+            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ item.1).public }}\n"
+            dest: "{{ item.0 }}/id_ed25519.{{ item.1 }}.pub"
+            mode: "0644"
+          loop: "{{ ssh_key_dirs | product(ssh_keys_vault) }}"
 
     - name: Configure git
       copy:

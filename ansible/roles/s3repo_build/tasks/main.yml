@@ -23,7 +23,7 @@
       flowerysong.melange.s3_sync:
         direction: pull
         bucket: "{{ yum_hostname }}"
-        region: "{{ yum_aws_region }}"
+        region: "{{ aws_layout[aws_status][aws_profile_s3].region }}"
         prefix: "{{ yum_repo_path }}"
         path: "{{ cache_root }}"
         overwrite: different
@@ -36,7 +36,7 @@
     - name: Upload metadata to S3
       flowerysong.melange.s3_sync:
         bucket: "{{ yum_hostname }}"
-        region: "{{ yum_aws_region }}"
+        region: "{{ aws_layout[aws_status][aws_profile_s3].region }}"
         direction: push
         overwrite: always
         path: "{{ cache_root }}/repodata"
