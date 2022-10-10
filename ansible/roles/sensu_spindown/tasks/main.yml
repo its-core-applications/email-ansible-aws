@@ -28,3 +28,4 @@
       async: 60
       poll: 0
       ignore_errors: true
+      when: not bootstrap
