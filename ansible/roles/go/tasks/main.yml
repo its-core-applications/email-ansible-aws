@@ -10,7 +10,7 @@
     - become: false
       block:
         - name: Get real Go
-          command: go get golang.org/dl/go{{ go_version }}
+          command: go install golang.org/dl/go{{ go_version }}@latest
 
         - name: Download real Go
           command: "{{ go_cmd }} download"
