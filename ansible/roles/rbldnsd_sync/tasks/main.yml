@@ -2,9 +2,6 @@
     - rbldnsd
     - rbldnsd_sync
   block:
-    - import_role:
-        name: comint
-
     - name: Install SSH private key
       copy:
         dest: /root/.ssh/id_rsa.rbldnsd

@@ -21,9 +21,6 @@
             simta_tls: false
 
         - import_role:
-            name: comint
-
-        - import_role:
             name: localnameserver
 
         - import_role:

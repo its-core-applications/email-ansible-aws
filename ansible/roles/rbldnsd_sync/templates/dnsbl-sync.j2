@@ -1,14 +1,14 @@
 #!/bin/bash
 
 name=dnsbl-sync
-confdir={{ comint_base }}/dispatch
+tmpdir=$(mktemp -d --tmpdir ${name}.XXXXXXXX)
+tmpfile=${tmpdir}/output
 
 updatehost=collaborate@rbldnsd-updater.{{ subd }}
 srcdir=/usr/local/collaboration/rbldnsd
 destdir=/var/lib/rbldnsd
 sshkey=/root/.ssh/id_rsa.rbldnsd
 
-. /usr/libexec/comint/setup
 (
     flock -n 9 || exit 1
 
@@ -49,7 +49,7 @@ sshkey=/root/.ssh/id_rsa.rbldnsd
 ) 9>>/var/run/dnsbl-sync.lock
 retval=$?
 
-cleanup
+rm -rf $tmpdir
 
 if [[ $RETURN_RC -ne 0 ]]; then
     exit $retval

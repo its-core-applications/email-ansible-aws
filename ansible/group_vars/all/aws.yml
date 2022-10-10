@@ -166,3 +166,6 @@ trusted_external_ips:
 ops_email: blackops@{{ tld }}
 ops_rootmail: blackops.{{ (aws_status == 'prod') | ternary('root', 'nonprod') }}@{{ tld }}
 
+syslog_server: syslog.{{ aws_region }}.{{ subd }}
+influxdb_server: influxdb.{{ aws_region }}.{{ subd }}
+sensu_server: sensu.{{ aws_region }}.{{ subd }}

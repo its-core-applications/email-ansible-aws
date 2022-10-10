@@ -1,7 +1,0 @@
-#!/bin/bash
-# generic setup for urgent alerts
-
-notify_date=$(date '+%F %T')
-
-notifycmd_error=${notifycmd_page/_TAG_/CRITICAL/}
-notifywho_error="arn:aws:sns:us-west-2:236262816615:On-Call"
