@@ -1,6 +1,11 @@
 - tags:
     - aws
   block:
+    - name: Set up Node repo
+      yum:
+        name: https://rpm.nodesource.com/pub_16.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
+        state: present
+
     # https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md
     - name: Install dependencies
       yum:
@@ -51,7 +56,7 @@
     - name: Configure alias
       copy:
         dest: /etc/profile.d/99_aws-saml-login.sh
-        content: alias aws-saml-login='node {{ install_root }}/aws-saml-login-archaic.js'
+        content: alias aws-saml-login='node {{ install_root }}/aws-saml-login.js'
         owner: root
         group: root
         mode: "0644"
