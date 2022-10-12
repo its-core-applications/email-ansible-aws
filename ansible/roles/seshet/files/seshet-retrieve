@@ -2,6 +2,8 @@
 
 import argparse
 
+import netaddr
+
 from rediscluster import RedisCluster
 
 
@@ -21,12 +23,24 @@ red = RedisCluster(
     decode_responses = True,
 )
 
+ips = netaddr.IPSet()
 for subkey in red.scan_iter(match='seshet:subnet:*', count=1000):
     subres = red.hgetall(subkey)
 
     if len(subres) > args.threshold:
-        print(subkey.replace('seshet:subnet:', ''))
+        ips.add(subkey.replace('seshet:subnet:', ''))
         continue
 
     for key in subres.keys():
-        print(key)
+        ips.add(key)
+
+print('# IPs automatically banned from relay services')
+print(':127.0.0.3:Blocked due to suspicious activity')
+print('127.0.0.2   test')
+print()
+
+for cidr in ips.iter_cidrs():
+    if cidr.size == 1:
+        print(cidr.ip)
+    else:
+        print(cidr)
