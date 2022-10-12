@@ -41,10 +41,14 @@ def main():
     else:
         spf = [ 'v=spf1' ]
         for ip in merged_ip_list:
-            if ip.version == 6:
-                spf.append('ip6:' + str(ip.cidr).replace('/128', ''))
+            if ip.cidr.size == 1:
+                str_ip = str(ip.cidr.ip)
             else:
-                spf.append('ip4:' + str(ip.cidr).replace('/32', ''))
+                str_ip = str(ip.cidr)
+            if ip.version == 6:
+                spf.append('ip6:' + str_ip)
+            else:
+                spf.append('ip4:' + str_ip)
         if args.unresolvable:
             spf.extend(unresolvable_mechs)
         spf.append('~all')
