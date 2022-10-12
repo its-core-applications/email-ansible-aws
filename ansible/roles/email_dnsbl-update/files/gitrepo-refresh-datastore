@@ -1,0 +1,18 @@
+#!/bin/bash
+
+PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+
+while getopts d: opt; do
+    case $opt in
+    d)  datastore_args="$OPTARG"
+        ;;
+    esac
+done
+shift $((OPTIND-1))
+
+cd $1
+git fetch
+git reset --hard origin/main
+for i in *; do
+    datastore-upload --refresh $datastore_args $i $2/$i
+done

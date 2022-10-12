@@ -171,8 +171,9 @@ yum_hostname: yum.{{ subd }}
 yum_repo_path: "{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distribution_major_version }}"
 
 rbldnsd_updater:
-  - 141.211.21.71
-  - 141.211.7.108
+  - 141.211.21.71 # bluebeetle.dsc.umich.edu
+  - 141.211.7.108 # boostergold.dsc.umich.edu
+  - 141.211.4.56  # gotham.dsc.umich.edu
 
 trusted_external_ips:
   - 141.211.12.0/24

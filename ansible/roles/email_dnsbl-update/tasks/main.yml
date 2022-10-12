@@ -10,10 +10,17 @@
         mode: "0400"
       no_log: true
 
+    - import_role:
+        name: ec2_instance_profile
+      vars:
+        ec2_profile: datastore
+        ec2_profile_role: arn:aws:iam::{{ aws_layout[aws_status][aws_profile_s3].account }}:role/{{ aws_resource_prefix }}_S3_ds
+        ec2_profile_user: email
+
     - name: Install dnsbl-update script
-      template:
+      copy:
         dest: /usr/bin/dnsbl-update
-        src: dnsbl-update.j2
+        src: dnsbl-update
         owner: root
         group: root
         mode: "0755"
@@ -45,9 +52,29 @@
           - add
           - remove
 
-    - name: Clone DNSBL repo
+    - name: Clone DNS list repo for email user
       git:
-        name: git@gitlab.umich.edu:ITS/inf/core-infrastructure-and-automation/mail-routing/umich-dnsbls.git
+        name: git@github.com:its-core-applications/email-dns-lists.git
         dest: /home/email/umich-dnsbls.git
         accept_hostkey: true
       become_user: email
+
+    - name: Clone DNS list repo for system
+      git:
+        name: https://github.com/its-core-applications/email-dns-lists.git
+        dest: /var/cache/email-dns-lists.git
+
+    - name: Install git refresh script
+      copy:
+        src: gitrepo-refresh-datastore
+        dest: /usr/local/bin/gitrepo-refresh-datastore
+        mode: "0755"
+        owner: root
+        group: root
+
+    - name: Schedule refreshes
+      cron:
+        name: dnsl-datastore-refresh
+        user: root
+        job: /usr/local/bin/gitrepo-refresh-datastore -d '--heartbeat bastion --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}' /var/cache/email-dns-lists.git dnsl/umich &>/dev/null
+        minute: '3-59/5'

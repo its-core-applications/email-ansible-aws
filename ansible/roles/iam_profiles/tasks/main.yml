@@ -290,6 +290,7 @@
           - "{{ (subdpolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}"
           - "{{ (tagpolicies.results | selectattr('item.key', '==', item.key)).0.policy.arn }}"
           - "{{ (snspolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}"
+          - "{{ (s3dspolicies.results | selectattr('item', '==', item.key)).0.policy.arn }}"
         purge_policies: true
       loop: "{{ aws_layout[aws_status] | dict2items }}"
       loop_control:

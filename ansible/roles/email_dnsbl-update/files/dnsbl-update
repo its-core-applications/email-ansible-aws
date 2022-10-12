@@ -2,14 +2,23 @@
 
 workdir=/home/email/umich-dnsbls.git
 
+while getopts d:w: opt; do
+    case $opt in
+    d)  datastore_args="$OPTARG"
+        ;;
+    w)  workdir="$OPTARG"
+        ;;
+    esac
+done
+shift $((OPTIND-1))
+
 action=$2
 file=$1
 name="$file-$action"
-
 shift 2
 
-if [[ $SUDO_USER && $SUDO_USER != 'root' && $SUDO_USER != '{{ ansible_user }}' ]]; then
-    export GIT_AUTHOR_EMAIL="${SUDO_USER}@{{ tld }}"
+if [[ $SUDO_USER && $SUDO_USER != 'root' && $SUDO_USER != 'ec2-user' ]]; then
+    export GIT_AUTHOR_EMAIL="${SUDO_USER}@umich.edu"
     export GIT_AUTHOR_NAME=$(grep "^${SUDO_USER}:" /etc/passwd | cut -d: -f5)
     export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
     export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
@@ -22,12 +31,14 @@ echo "Running $action against $file"
 
 cd $workdir
 
-git pull
+git pull --rebase
 
 if [[ ! -s $file ]]; then
     echo "${workdir}/$file is empty or nonexistent, exiting"
     exit 1
 fi
+
+datastore-fetch $datastore_args dnsl/umich/$file $file
 
 if [[ -n $(git status --porcelain $file) ]]; then
     echo "$file failed 'git status', exiting"
@@ -77,6 +88,7 @@ if [[ -n $(git status --porcelain $file) ]]; then
         echo "Aborted commit, reverting file changes."
         git checkout -- $file
     else
+        datastore-upload $datastore_args $file dnsl/umich/$file
         git push
     fi
 else

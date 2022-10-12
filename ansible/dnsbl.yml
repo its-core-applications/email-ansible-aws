@@ -18,7 +18,4 @@
             name: rbldnsd
 
         - import_role:
-            name: rbldnsd_sync
-
-        - import_role:
             name: sensu

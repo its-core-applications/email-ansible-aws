@@ -15,7 +15,8 @@
       block:
         - name: Sync DNSBLs
           import_role:
-            name: rbldnsd_sync
+            name: rbldnsd
+            tasks_from: sync.yml
 
         - name: Set status to production
           delegate_to: localhost

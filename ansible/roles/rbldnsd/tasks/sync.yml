@@ -1,0 +1,5 @@
+- tags:
+    - rbldnsd
+  block:
+    - name: Sync DNS lists
+      command: datastore-fetch -r --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }} dnsl /var/lib/rbldnsd

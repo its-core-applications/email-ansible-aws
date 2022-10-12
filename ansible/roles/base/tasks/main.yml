@@ -13,6 +13,10 @@
           - influxdb
           - pyyaml
           - requests
+          - git+https://github.com/its-core-applications/s3_datastore
+        venv_wrappers:
+          - name: datastore-fetch
+          - name: datastore-upload
 
     - gather_facts:
 
@@ -175,3 +179,10 @@
 
     - import_role:
         name: dynhostname
+
+    - import_role:
+        name: ec2_instance_profile
+      vars:
+        ec2_profile: datastore
+        ec2_profile_role: arn:aws:iam::{{ aws_layout[aws_status][aws_profile_s3].account }}:role/{{ aws_resource_prefix }}_S3_ds
+        ec2_profile_user: root

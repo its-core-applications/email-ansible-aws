@@ -1,5 +1,5 @@
 {% for list in dnsbls %}
 {% for action in actions %}
-alias {{ list }}-{{ action }}='sudo -u email dnsbl-update {{ list }} {{ action }}'
+alias {{ list }}-{{ action }}='sudo -u email dnsbl-update -d "--s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}" {{ list }} {{ action }}'
 {% endfor %}
 {% endfor %}

@@ -36,21 +36,6 @@
         - name: net.core.rmem_default
           value: 26214400
 
-    - name: Configure rsyncd
-      copy:
-        dest: /etc/rsyncd.conf
-        src: rsyncd.conf
-        owner: root
-        group: root
-        mode: "0644"
-      notify: Restart rsyncd
-
-    - name: Enable rsyncd
-      systemd:
-        name: rsyncd
-        enabled: true
-      notify: Restart rsyncd
-
     - name: Install custom monitoring script
       copy:
         dest: /usr/local/bin/metrics-rbldnsd
@@ -58,3 +43,12 @@
         owner: root
         group: root
         mode: "0755"
+
+    - import_tasks: sync.yml
+
+    - name: Schedule DNS list syncing
+      cron:
+        name: rbldnsd-sync
+        user: root
+        state: present
+        job: /usr/local/bin/datastore-fetch -r --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }} dnsl /var/lib/rbldnsd &>/dev/null

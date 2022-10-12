@@ -32,14 +32,3 @@
         profile: "{{ aws_profile_spfd }}"
         zone: "{{ spfd }}"
         state: present
-
-    - name: Create rbldnsd-updater.{{ subd }}
-      route53:
-        profile: "{{ aws_profile_subd }}"
-        command: create
-        overwrite: true
-        zone: "{{ subd }}"
-        record: rbldnsd-updater.{{ subd }}
-        type: A
-        ttl: 300
-        value: "{{ rbldnsd_updater }}"

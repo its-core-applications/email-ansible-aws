@@ -15,9 +15,3 @@
     name: rbldnsd-single
     daemon_reload: true
     state: restarted
-
-- name: Restart rsyncd
-  systemd:
-    name: rsyncd
-    daemon_reload: true
-    state: restarted

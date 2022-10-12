@@ -1,17 +1,6 @@
 - tags:
     - tcpd_update
   block:
-    - import_role:
-        name: datastore_fetch
-
-    - name: Install SSH private key
-      copy:
-        dest: /root/.ssh/id_rsa.rbldnsd
-        content: "{{ lookup('flowerysong.hvault.kv', 'ssh/rbldnsd').value }}"
-        owner: root
-        group: root
-        mode: "0400"
-
     - name: Install sync script
       copy:
         dest: /usr/local/sbin/tcpd-update
@@ -31,7 +20,7 @@
         mode: "0664"
 
     - name: Sync /etc/hosts.allow
-      command: /usr/local/sbin/tcpd-update -d http://datastore.{{ subd }}
+      command: /usr/local/sbin/tcpd-update -d datastore.{{ subd }} -r {{ aws_layout[aws_status][aws_profile_s3].region }}
       environment:
         RETURN_RC: 1
       register: result
