@@ -12,6 +12,7 @@
         ec2sg_groups:
           - efs
         ec2sg_region: "{{ efs_region }}"
+        ec2sg_profile: "{{ aws_profile_efs }}"
 
     - become: false
       delegate_to: localhost
