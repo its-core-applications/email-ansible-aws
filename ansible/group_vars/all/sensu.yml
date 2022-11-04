@@ -24,5 +24,5 @@ sensu_sns:
       prod:
         - endpoint: "{{ ops_rootmail }}"
           protocol: email
-        - endpoint: arn:aws:lambda:{{ aws_layout[aws_status][aws_profile_sns].account }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:function:{{ aws_resource_prefix }}_sns2slack
+        - endpoint: arn:aws:lambda:{{ aws_layout[aws_status][aws_profile_sns].region }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:function:{{ aws_resource_prefix }}_sns2slack
           protocol: lambda
