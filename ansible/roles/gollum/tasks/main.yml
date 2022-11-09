@@ -72,7 +72,7 @@
           git:
             dest: ~/gollum
             repo: https://github.com/gollum/gollum.git
-            version: b32dcfa8dd4aba7ebefcb535643e8a96715169ff
+            version: 9c2f8dfeba37367f28353f119e2d895d528eb9f3
             force: true
             update: true
 
