@@ -33,9 +33,9 @@
           SENSU_BACKEND: http://{{ sensu_server}}:4567/
           SENSU_REGION: "{{ aws_region }}"
           SENSU_STATUS: "{{ aws_status }}"
-          SNS_ARNS: arn:aws:sns:{{ aws_layout[aws_status][aws_profile_sns].account }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:oncall,arn:aws:sns:{{ aws_layout[aws_status][aws_profile_sns].region }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:rootmail
+          SNS_ARNS: arn:aws:sns:{{ aws_layout[aws_status][aws_profile_sns].region }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:oncall,arn:aws:sns:{{ aws_layout[aws_status][aws_profile_sns].region }}:{{ aws_layout[aws_status][aws_profile_sns].account }}:rootmail
           SNS_REGION: "{{ aws_layout[aws_status][aws_profile_sns].region }}"
-          SNS_ROLE: arn:aws:iam::{{ aws_layout[aws_status][aws_profile_sns].account }}:role/{{ aws_resource_prefix }}_{{ aws_layout[aws_status][aws_profile].account }}_SNS
+          SNS_ROLE: arn:aws:iam::{{ aws_layout[aws_status][aws_profile_sns].account }}:role/{{ aws_resource_prefix }}_SNS
 
     - name: Create Lambda policy for CloudWatch
       lambda_policy:
