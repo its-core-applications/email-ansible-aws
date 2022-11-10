@@ -138,6 +138,14 @@
           - readonly
         <<: *sensu_auth
 
+    - name: Install OpsGenie handler
+      sensu.sensu_go.asset:
+        name: sensu-opsgenie-handler
+        builds:
+          - url: https://github.com/nixwiz/sensu-opsgenie-handler/releases/download/0.9.0/sensu-opsgenie-handler_0.9.0_linux_amd64.tar.gz
+            sha512: 1f91856476817d4fe561c2491ed18a7651ac7738bd3e9370c3c08462322235d6ade09c8a4a55147e9d5f9b6f43077519d8574dac2316b63449a60997e61a7938
+        <<: *sensu_auth
+
     - name: Install fatigue filter
       sensu.sensu_go.asset:
         name: fatigue_check_filter
@@ -257,6 +265,23 @@
           - bad_hostname
         <<: *sensu_auth
 
+    - name: Create the OpsGenie handler
+      sensu.sensu_go.pipe_handler:
+        name: opsgenie
+        command: sensu-opsgenie-handler --withLabels
+        env_vars:
+          OPSGENIE_AUTHTOKEN: "{{ lookup('flowerysong.hvault.kv', 'opsgenie/sensu').apikey }}"
+          OPSGENIE_TEAM: ITS DISC - Core Applications
+          OPSGENIE_APIURL: https://api.opsgenie.com
+        runtime_assets:
+          - sensu-opsgenie-handler
+        filters:
+          - is_incident
+          - occurrences
+          - production
+          - critical
+        <<: *sensu_auth
+
     - name: Create the default handler set
       sensu.sensu_go.handler_set:
         name: default
@@ -266,6 +291,7 @@
           - influxdb
           - influxdb_event
           - kill_bad_clients
+          - opsgenie
         <<: *sensu_auth
 
     # Sensu Go hardcodes the handler name for keepalive events
