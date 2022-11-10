@@ -285,14 +285,19 @@
     - name: Create the default handler set
       sensu.sensu_go.handler_set:
         name: default
-        handlers:
+        handlers: "{{ base_handlers | union(extra_handlers[aws_status]) }}"
+        <<: *sensu_auth
+      vars:
+        base_handlers:
           - page
           - email
           - influxdb
           - influxdb_event
           - kill_bad_clients
-          - opsgenie
-        <<: *sensu_auth
+        extra_handlers:
+          prod:
+            - opsgenie
+          nonprod: []
 
     # Sensu Go hardcodes the handler name for keepalive events
     - name: Handle keepalive timeouts
