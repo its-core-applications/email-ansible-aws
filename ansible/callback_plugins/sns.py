@@ -160,6 +160,7 @@ class CallbackModule(CallbackBase):
             })
         }
 
+        boto3.setup_default_session(profile_name='sns')
         client = boto3.client('sns', region_name=self.sns_region)
         if ':' in self.sns_topic:
             arn = self.sns_topic

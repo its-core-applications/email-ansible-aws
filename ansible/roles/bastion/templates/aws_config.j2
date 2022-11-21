@@ -4,3 +4,6 @@ credential_source = Ec2InstanceMetadata
 role_arn = arn:aws:iam::{{ profile.value.account }}:role/{{ aws_resource_prefix }}_bastion
 
 {% endfor %}
+[profile sns]
+credential_source = Ec2InstanceMetadata
+role_arn = arn:aws:iam::{{ aws_layout[aws_status][aws_profile_sns].account }}:role/{{ aws_resource_prefix }}_SNS
