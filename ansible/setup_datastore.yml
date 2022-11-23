@@ -1,5 +1,4 @@
 - hosts: localhost
-  gather_facts: false
   tasks:
     - import_role:
         name: s3_website

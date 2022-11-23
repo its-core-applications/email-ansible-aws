@@ -1,5 +1,4 @@
 - hosts: Class_jail:&Status_production
-  gather_facts: false
   tasks:
     - when: region == aws_region
       block:

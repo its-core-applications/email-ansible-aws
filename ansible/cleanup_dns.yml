@@ -1,5 +1,4 @@
 - hosts: localhost
-  gather_facts: false
   become: false
   tasks:
     - name: Fetch zone list

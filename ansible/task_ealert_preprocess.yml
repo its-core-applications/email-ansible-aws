@@ -14,7 +14,6 @@
         destdir: ~/ealert/{{ ansible_facts.date_time.iso8601[:-4] }}
 
 - hosts: Class_syslog
-  gather_facts: false
   vars:
     logname: mail
   tasks:

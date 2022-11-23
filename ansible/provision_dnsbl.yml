@@ -9,7 +9,6 @@
           - rbldnsd
 
 - hosts: Class_dnsbl:&Status_spinup
-  gather_facts: false
   tasks:
     - when: region == aws_region
       block:

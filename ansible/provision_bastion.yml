@@ -1,6 +1,5 @@
 - hosts: localhost
   become: false
-  gather_facts: false
   vars:
     bastion_hostname: "{{ aws_layout[aws_status][aws_profile].bastion }}.{{ subd }}"
   tasks:
@@ -69,7 +68,6 @@
     - meta: refresh_inventory
 
 - hosts: Class_bastion:&Status_spinup
-  gather_facts: false
   tasks:
     - import_role:
         name: ec2_eip
@@ -80,7 +78,6 @@
 
 - hosts: localhost
   become: false
-  gather_facts: false
   vars:
     bastion_hostname: "{{ aws_layout[aws_status][aws_profile].bastion }}.{{ subd }}"
   tasks:

@@ -1,5 +1,4 @@
 - hosts: Class_vdc_relay
-  gather_facts: false
   tasks:
     - when: region == aws_region
       block:

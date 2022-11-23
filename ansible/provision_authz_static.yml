@@ -11,7 +11,6 @@
           - smtp
 
 - hosts: Class_authz_static:&Status_spinup
-  gather_facts: false
   tasks:
     - when: region == aws_region
       block:

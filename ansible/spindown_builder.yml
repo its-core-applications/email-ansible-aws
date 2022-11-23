@@ -1,5 +1,4 @@
 - hosts: Class_builder:!Status_spundown
-  gather_facts: false
   tasks:
     - when: region == aws_region
       block:

@@ -1,5 +1,4 @@
 - hosts: localhost
-  gather_facts: false
   vars:
     classes:
       - Class_authn_relay
@@ -20,7 +19,6 @@
         - "'Status_production' in hostvars[item]['group_names']"
 
 - hosts: targets
-  gather_facts: false
   tasks:
     - command: simta -V
       register: result
@@ -31,7 +29,6 @@
       when: result.stdout is version(simta_version, '<>')
 
 - hosts: localhost
-  gather_facts: false
   vars:
     outdated_hosts: "{{ groups.targets | map('extract', hostvars) | selectattr('outdated_simta', 'defined') | map(attribute='inventory_hostname') }}"
   tasks:

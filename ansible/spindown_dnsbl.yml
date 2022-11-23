@@ -1,5 +1,4 @@
 - hosts: Class_dnsbl
-  gather_facts: false
   serial: 1
   tasks:
     - import_role:

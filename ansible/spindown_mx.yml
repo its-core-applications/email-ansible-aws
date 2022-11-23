@@ -1,6 +1,5 @@
 - hosts: Class_mx:&Status_production
   serial: 1
-  gather_facts: false
   tasks:
     - name: Set status on oldest hosts to spindown
       delegate_to: localhost

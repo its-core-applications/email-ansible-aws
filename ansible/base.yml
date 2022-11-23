@@ -1,5 +1,4 @@
 - hosts: all:!Status_spindown:!Status_spundown:!miserver
-  gather_facts: false
   tasks:
     - import_role:
         name: base

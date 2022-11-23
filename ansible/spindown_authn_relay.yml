@@ -1,6 +1,5 @@
 - hosts: Class_authn_relay
   serial: 1
-  gather_facts: false
   tasks:
     - import_role:
         name: ec2_mark_oldest
