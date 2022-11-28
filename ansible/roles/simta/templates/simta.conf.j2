@@ -32,15 +32,15 @@ receive {
             check = chillaxed;
         }
 {%  if not simta_egress %}
-        dns_list {
+        acl {
             action = trust;
             list = relay-trust.dnsal;
         }
-        dns_list {
+        acl {
             action = accept;
             list = relay-accept.dnsal;
         }
-        dns_list {
+        acl {
             action = block;
             list = relay-deny.dnsbl;
             message = {{ simta_spambusters }};
@@ -73,7 +73,7 @@ receive {
             }
         }
         authz {
-            dns_list {
+            acl {
                 action = block;
                 list = ubl.dnsbl;
             }
@@ -94,22 +94,22 @@ receive {
             delay = 1s;
             punish_writes = true;
         }
-        dns_list {
+        acl {
             action = trust;
             list = mx-trust.dnsal;
         }
-        dns_list {
+        acl {
             action = accept;
             list = mx-accept.dnsal;
         }
-        dns_list {
+        acl {
             action = block;
             list = mx-deny.dnsbl;
             message = {{ simta_spambusters }};
         }
 {% if not simta_ldap %}
 {% for dnsbl in simta_dnsbls %}
-        dns_list {
+        acl {
             action = block;
             list = {{ dnsbl }};
             message = {{ simta_spambusters }};
@@ -119,16 +119,16 @@ receive {
     }
     mail_from {
         max_failures = 3;
-        dns_list {
+        acl {
             action = block;
             list = deny-from.dnsbl;
         }
-        dns_list {
+        acl {
             action = block;
             list = deny-from.dnsbl;
             domain_only = true;
         }
-        dns_list {
+        acl {
             action = block;
             list = iia-deny-from.dnsbl;
         }
@@ -137,7 +137,7 @@ receive {
         max_failures = 3;
 {%  if simta_ldap %}
 {% for dnsbl in simta_dnsbls %}
-        dns_list {
+        acl {
             action = block;
             list = {{ dnsbl }};
             message = {{ simta_spambusters }};
