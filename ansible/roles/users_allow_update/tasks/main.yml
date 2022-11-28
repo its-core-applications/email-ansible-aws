@@ -1,0 +1,27 @@
+- tags:
+    - users_allow_update
+  block:
+    - name: Install sync script
+      copy:
+        dest: /usr/local/sbin/users-allow-update
+        src: users-allow-update
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Sync /etc/mail/users.allow
+      command: /usr/local/sbin/users-allow-update -d datastore.{{ subd }} -r {{ aws_layout[aws_status][aws_profile_s3].region }}
+      environment:
+        RETURN_RC: 1
+      register: result
+      until: result is success
+      retries: 30
+      delay: 10
+
+    - name: Schedule syncing
+      template:
+        dest: /etc/cron.d/users-allow-update
+        src: users-allow-update.cron.j2
+        owner: root
+        group: root
+        mode: "0644"

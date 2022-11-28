@@ -7,7 +7,24 @@
         launch_class: authn-relay
         launch_groups:
           - smtp
-        launch_tags:
-          Status: production
+
+- hosts: Class_authn_relay:&Status_spinup
+  tasks:
+    - when: region == aws_region
+      block:
+        - import_role:
+            name: users_allow_update
+
+        - name: Set status to production
+          delegate_to: localhost
+          become: false
+          ec2_tag:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            resource: "{{ instance_id }}"
+            tags:
+              Status: production
+
+        - meta: refresh_inventory
 
 - import_playbook: setup_lb_authn_relay.yml

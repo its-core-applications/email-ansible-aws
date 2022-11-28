@@ -1,0 +1,2 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+8,23,38,53 * * * * root /usr/local/sbin/users-allow-update -d datastore.{{ subd }} -r {{ aws_layout[aws_status][aws_profile_s3].region }}

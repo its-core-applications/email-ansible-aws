@@ -4,3 +4,6 @@
       block:
         - import_role:
             name: relay
+
+        - import_role:
+            name: users_allow_update

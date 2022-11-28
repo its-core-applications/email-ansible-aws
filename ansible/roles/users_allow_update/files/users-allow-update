@@ -1,6 +1,6 @@
 #!/bin/bash
 
-destfile=/etc/hosts.allow
+destfile=/etc/mail/users.allow
 
 while getopts d:f:r: opt; do
     case $opt in
@@ -25,11 +25,11 @@ done
     tmpdest=$(mktemp $destfile.XXXXXXXX)
     cp $destfile $tmpdest
 
-    msg=$(datastore-fetch --s3-bucket ${datastore} --s3-region ${region} hosts.allow/relay.mail.umich.edu $tmpdest)
+    msg=$(datastore-fetch --s3-bucket ${datastore} --s3-region ${region} users.allow/smtp.mail.umich.edu $tmpdest)
     if [[ $? -eq 0 ]]; then
         diff -q $tmpdest $destfile &>/dev/null
         if [[ $? -eq 1 ]]; then
-            msg='Allowed host data updated'
+            msg='Allowed user data updated'
             oldcount=$(wc -l $destfile | awk '{print $1}')
             newcount=$(wc -l $tmpdest | awk '{print $1}')
             if [[ $oldcount -gt 100 ]] && [[ $newcount -lt $(( oldcount / 2 )) ]]; then
@@ -54,10 +54,10 @@ done
         --arg status $retval \
         --arg duration $(( duration / 1000000000 )).$(( duration % 1000000000 / 1000000 )) \
         --arg msg "$msg" \
-        '{ check: { metadata: { name: "tcpd-update", annotations: { "fatigue_check/occurrences": "3" }}, ttl: 3600, duration: $duration | tonumber, status: $status | tonumber, output: $msg }}' | curl -X POST -H 'Content-Type: application/json' -d @- http://127.0.0.1:3031/events
+        '{ check: { metadata: { name: "users-allow-update", annotations: { "fatigue_check/occurrences": "3" }}, ttl: 3600, duration: $duration | tonumber, status: $status | tonumber, output: $msg }}' | curl -X POST -H 'Content-Type: application/json' -d @- http://127.0.0.1:3031/events
 
     exit $retval
-) 9>>/var/run/tcpd-update.lock
+) 9>>/var/run/users-allow-update.lock
 retval=$?
 
 if [[ $RETURN_RC -ne 0 ]]; then

@@ -73,9 +73,15 @@ receive {
             }
         }
         authz {
+            default = block;
             acl {
                 action = block;
                 list = ubl.dnsbl;
+            }
+            acl {
+                action = accept;
+                type = file;
+                list = /etc/mail/users.allow;
             }
         }
     }
