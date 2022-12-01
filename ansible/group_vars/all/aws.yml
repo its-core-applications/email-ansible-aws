@@ -69,7 +69,7 @@ aws_layout:
         authz-static:
           size: t3.medium
         dnsbl:
-          count: 4
+          count: 5
           size: c5n.large
         egress:
           count: 3
