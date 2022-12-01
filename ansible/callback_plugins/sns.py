@@ -132,7 +132,7 @@ class CallbackModule(CallbackBase):
 
         subject = '{}/{} - ALERT - {} FAILED'.format(
             os.environ.get('AWS_STATUS', 'prod'),
-            os.environ.get('AWS_DEFAULT_REGION', 'unknown'),
+            os.environ.get('AWS_DEFAULT_PROFILE', 'unknown'),
             self.playbook_name,
         )
 
