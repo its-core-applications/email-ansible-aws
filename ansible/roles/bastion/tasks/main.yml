@@ -90,3 +90,11 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: "0770"
+
+    - name: Install offcall script
+      copy:
+        src: offcall.py
+        dest: /usr/local/bin/offcall
+        owner: root
+        group: root
+        mode: "0755"
