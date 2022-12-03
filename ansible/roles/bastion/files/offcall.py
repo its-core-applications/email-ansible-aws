@@ -78,9 +78,8 @@ for alert in reversed(alerts):
     # Grab potential output fields in order of preference
     output = ''
     for key in ['output', 'service_output', 'host_output']:
-        if key in alert_details['details']:
-            output = alert_details['details'][key]
-            break
+        if not output:
+            output = alert_details['details'].get(key, '')
     output = output.splitlines()[0]
 
     print(f'{alert_start} {alert_duration} - {alert["alias"]} - {output}')
