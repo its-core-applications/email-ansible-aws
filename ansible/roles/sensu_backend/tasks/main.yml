@@ -705,6 +705,8 @@
           - Class_mx
         handlers:
           - default
+        annotations:
+          fatigue_check/occurrences: 3
         <<: *sensu_auth
       loop:
         - name: rspamd
