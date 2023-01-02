@@ -20,10 +20,10 @@
         fail_msg: Missing destination. Try something like `-e target_destination=hotmail.com`
 
     - name: Select messages to requeue
-      command: simqclean -e -s H{{ target_destination }}
+      command: "simqclean -e -s '\"hostname\": \"{{ target_destination }}\"'"
 
     - find:
-        path: /var/tmp/simqclean/H{{ target_destination }}
+        path: /var/tmp/simqclean/_hostname____{{ target_destination }}_
         file_type: directory
       register: result
 
@@ -59,7 +59,7 @@
           loop: "{{ result.files }}"
 
         - name: Remove remote directories from consideration
-          command: mv /var/tmp/simqclean/H{{ target_destination }} /var/tmp/{{ target_destination }}.requeued.{{ ansible_facts.date_time.iso8601 }}
+          command: mv /var/tmp/simqclean/_hostname____{{ target_destination }}_ /var/tmp/{{ target_destination }}.requeued.{{ ansible_facts.date_time.iso8601 }}
 
         - name: Remove lockfile
           delegate_to: localhost
