@@ -59,6 +59,7 @@ def main():
     parser.add_argument('--api-host', default='https://api.opsgenie.com')
     parser.add_argument('--api-key')
     parser.add_argument('--days', default=7, type=int)
+    parser.add_argument('--include-empty-periods', action='store_true')
     parser.add_argument('--schedule')
     args = parser.parse_args()
 
@@ -147,6 +148,9 @@ def main():
         time.sleep(0.1)
 
     for period in periods:
+        if len(period['alerts']) == 0 and not args.include_empty_periods:
+            continue
+
         interval = period['start_time'].strftime('%A, %B %d')
         interval_end = period['end_time'].strftime('%A, %B %d')
         if interval != interval_end:
