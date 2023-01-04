@@ -56,11 +56,30 @@ def get_vaulted_api_key():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--api-host', default='https://api.opsgenie.com')
-    parser.add_argument('--api-key')
-    parser.add_argument('--days', default=7, type=int)
-    parser.add_argument('--include-empty-periods', action='store_true')
-    parser.add_argument('--schedule')
+    parser.add_argument(
+        '--api-host',
+        default='https://api.opsgenie.com',
+        help='OpsGenie API endpoint',
+    )
+    parser.add_argument(
+        '--api-key',
+        help='OpsGenie API key',
+    )
+    parser.add_argument(
+        '--days',
+        default=7,
+        type=int,
+        help='Number of days of alerts to retrieve',
+    )
+    parser.add_argument(
+        '--include-empty-periods',
+        action='store_true',
+        help='Include scheduled oncall periods with no alerts in the output',
+    )
+    parser.add_argument(
+        '--schedule',
+        help='Schedule ID to use when mapping alerts to oncall periods (default: first found)'
+    )
     args = parser.parse_args()
 
     api_key = args.api_key
@@ -74,11 +93,10 @@ def main():
         print('--api-key is required if Vault is not available', file=sys.stderr)
         sys.exit(1)
 
-    # Build the list of alerts
     opsgenie = requests.Session()
     opsgenie.headers.update({'Authorization': f'GenieKey {api_key}'})
 
-    alerts = []
+    # Build the list of alerts
     start_time = int((datetime.now() - timedelta(days=args.days)).timestamp() * 1000)
     res = opsgenie.get(
         f'{args.api_host}/v2/alerts',
@@ -87,7 +105,7 @@ def main():
             'limit': 100,
         },
     ).json()
-    alerts.extend(res['data'])
+    alerts = res['data']
     while 'next' in res['paging']:
         res = opsgenie.get(res['paging']['next']).json()
         alerts.extend(res['data'])
@@ -144,6 +162,7 @@ def main():
         output = output.splitlines()[0]
 
         period['alerts'].append(f'{alert_start} {alert_duration} - {alert["alias"]} - {output}')
+
         # Crude request rate throttling
         time.sleep(0.1)
 
