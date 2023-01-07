@@ -65,6 +65,16 @@
           - libxslt
 
     - import_role:
+        name: build_rpm_spec
+      tags:
+        - libmaxminddb
+      vars:
+        build_name: libmaxminddb
+        build_deps:
+          - perl-IPC-Run3
+          - perl-Test-Output
+
+    - import_role:
         name: build_rpm_git
       tags:
         - libsnet
