@@ -102,8 +102,7 @@
         - simta
       vars:
         build_name: openarc
-        build_repo: https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/forks/openarc.git
-    #      build_repo: https://github.com/mskucherawy/OpenARC.git
+        build_repo: https://github.com/its-core-applications/OpenARC.git
         build_deps:
           - libbsd-devel
           - openssl-devel
@@ -139,7 +138,7 @@
           vars:
             build_name: sensuctl
       vars:
-        build_repo: https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/forks/sensu-go.git
+        build_repo: https://github.com/its-core-applications/sensu-go.git
         build_path: github.com/sensu/sensu-go
         build_flags: '-ldflags ''-X "github.com/sensu/sensu-go/version.Version={{ build_version }}" -X "github.com/sensu/sensu-go/version.BuildDate={{ ansible_facts.date_time.date }}"'''
         build_version: 5.20.1.1

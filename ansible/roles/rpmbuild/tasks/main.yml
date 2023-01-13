@@ -22,7 +22,7 @@
 
     - name: Clone fpm
       git:
-        repo: https://gitlab.umich.edu/ITS/inf/core-infrastructure-and-automation/forks/fpm.git
+        repo: https://github.com/its-core-applications/fpm.git
         dest: /var/cache/fpm
 
     - name: Build fpm gem
