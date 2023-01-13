@@ -12,7 +12,7 @@
         venv_packages:
           - maxminddb
           - netaddr
-          - redis-py-cluster
+          - redis
         venv_wrappers:
           - name: seshet
             target: seshet
@@ -39,7 +39,7 @@
       cron:
         name: seshet
         minute: "*/5"
-        job: seshet -H pink.{{ aws_region }}.{{ subd }}
+        job: seshet -H pink.{{ aws_region }}.{{ subd }} -d '--heartbeat syslog --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
 
     - name: Install simta-authn-log-filter
       copy:

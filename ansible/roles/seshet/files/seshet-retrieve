@@ -4,7 +4,7 @@ import argparse
 
 import netaddr
 
-from rediscluster import RedisCluster
+from redis import RedisCluster
 
 
 parser = argparse.ArgumentParser()
@@ -14,13 +14,9 @@ parser.add_argument('-t', '--threshold', type=int, default=15)
 args = parser.parse_args()
 
 red = RedisCluster(
-    startup_nodes = [
-        {
-            'host': args.host,
-            'port': args.port,
-        },
-    ],
-    decode_responses = True,
+    host=args.host,
+    port=args.port,
+    decode_responses=True,
 )
 
 ips = netaddr.IPSet()
