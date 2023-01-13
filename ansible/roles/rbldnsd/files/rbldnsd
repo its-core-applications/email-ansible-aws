@@ -12,7 +12,7 @@ RBLDNSD="- -w /var/lib/rbldnsd -q -a -s +/var/log/rbldnsd/stats -t 300:300:600 -
         iia-deny-urls.dnsbl:dnset:iia/deny-urls \
         iia-deny-from.dnsbl:dnset:iia/deny-from \
         mx-deny.dnsbl:ip4set:umich/mx-deny \
-        relay-deny.dnsbl:ip4set:umich/relay-deny \
+        relay-deny.dnsbl:ip4set:umich/relay-deny,umich/seshet \
         spamassassin-reject.dnsbl:ip4set:umich/spamassassin-reject \
         ual.dnsal:dnset:umich/ual \
         ubl.dnsbl:dnset:umich/ubl,umich/ubl-preemptive \
