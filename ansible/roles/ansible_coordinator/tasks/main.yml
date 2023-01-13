@@ -10,9 +10,12 @@
         hour: "{{ ansible_loop.index0 % 3 }}"
         weekday: "{{ (item.value.count | default(1) | int == 1) | ternary(0, '*') }}"
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/{{ item.value.cycle_method | default('replace') }}_{{ item.key | replace('-', '_') }}.yml &>/dev/null
-      loop: "{{ aws_layout[aws_status][aws_profile].classes | dict2items }}"
+      loop: "{{ aws_layout[aws_status][aws_profile].classes | dict2items | union(controlled_classes) }}"
       loop_control:
         extended: true
+        label: "{{ item.key }}"
+      vars:
+        controlled_classes: "{{ aws_layout[aws_status] | dict2items | selectattr('value.controller', 'defined') | selectattr('value.controller', '==', aws_profile) | map(attribute='value.classes') | map('dict2items') | flatten }}"
       when: item.value.autocycle | default(true)
 
     - name: Schedule spindown of ephemeral tool hosts
@@ -24,6 +27,8 @@
         weekday: 6
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/spindown_{{ item.key }}.yml &>/dev/null
       loop: "{{ aws_layout[aws_status][aws_profile].classes | dict2items | selectattr('value.autokill', 'defined') | selectattr('value.autokill') }}"
+      loop_control:
+        label: "{{ item.key }}"
 
     - name: Schedule deprovisioning of spundown hosts
       cron:

@@ -4,7 +4,7 @@
     - import_role:
         name: ec2_launch
       vars:
-        aws_profile: "{{ (aws_layout[status] | dict2items | selectattr('value.classes', 'contains', 'vdc-relay')).0.key }}"
+        aws_profile: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.classes', 'contains', 'vdc-relay')).0.key }}"
         launch_class: vdc-relay
         launch_tags:
           Status: production
