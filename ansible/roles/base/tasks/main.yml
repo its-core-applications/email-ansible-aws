@@ -1,6 +1,7 @@
 - tags:
     - base
   block:
+    # using import_role leaks ansible_python_interpreter, which we don't want
     - include_role:
         name: python_venv
       vars:
@@ -12,6 +13,7 @@
           - cryptography
           - influxdb
           - pyyaml
+          - redis
           - requests
           - git+https://github.com/its-core-applications/s3_datastore
         venv_wrappers:

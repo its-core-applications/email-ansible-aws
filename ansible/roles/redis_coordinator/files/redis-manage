@@ -1,111 +1,245 @@
-#!/bin/bash
+#!/usr/local/venv/system/bin/python3
 
-name=redis-manage
+import json
+import logging
+import logging.handlers
+import os
+import sys
+import time
 
-EX_OK=0
-EX_NOCHANGE=1
-EX_ERROR=2
+from redis import Redis, RedisError
 
-rhosts=("$@")
-goodhosts=()
-badhosts=()
 
-retval=$EX_NOCHANGE
+def refresh_cluster(cluster):
+    logger = logging.getLogger(__name__)
+    for host in list(cluster.keys()):
+        cluster[host]['state'] = 'good'
 
-outlog() {
-    logger -p user.info -t "$name[$$]" "$1"
-    echo "$1"
-}
+        try:
+            cinfo = cluster[host]['client'].execute_command('CLUSTER INFO')
+        except RedisError:
+            logger.exception(f'{host} went down')
+            cluster.pop(host)
+            continue
 
-for rhost in "${rhosts[@]}"; do
-    if [[ $(redis-cli -h $rhost PING) != 'PONG' ]]; then
-        outlog "$rhost is down"
-        downhosts+=( $rhost )
-    else
-        redis-cli -h $rhost CLUSTER INFO | grep -wq 'cluster_known_nodes:1'
-        if [[ $? -eq 0 ]]; then
-            outlog "$rhost is lonesome"
-            badhosts+=( $rhost )
-        else
-            if [[ $(redis-cli -h $rhost CLUSTER NODES | awk '! $9 && $3 == "myself,master"') ]]; then
-                outlog "$rhost is a clustered primary with no slots"
-                badhosts+=( $rhost )
-            else
-                outlog "$rhost is good"
-                goodhosts+=( $rhost )
-            fi
-        fi
-    fi
-done
+        cluster[host]['info'] = cinfo
+        if cinfo['cluster_known_nodes'] == '1':
+            cluster[host]['state'] = 'lonely'
+            continue
 
-if [[ ${#goodhosts[@]} -eq 0 ]]; then
-    # No existing cluster, we need to create one.
-    if [[ ${#badhosts[@]} -lt 3 ]]; then
-        outlog "Insufficient hosts available to create a cluster!" >&2
-        exit $EX_ERROR
-    fi
-    outlog "Creating a new cluster using ${badhosts[@]:0:3}"
-    # redis-cli --cluster always requires a port
-    /bin/yes yes | redis-cli --cluster create $(for i in ${badhosts[@]:0:3}; do echo $i:6379; done)
-    retval=$EX_OK
-    goodhosts=(${badhosts[@]:0:3})
-    badhosts=(${badhosts[@]:3})
-fi
+        try:
+            cnodes = cluster[host]['client'].execute_command('CLUSTER NODES')
+        except RedisError:
+            logger.exception(f'{host} went down')
+            cluster.pop(host)
+            continue
 
-for rhost in ${goodhosts[@]}; do
-    # Make sure the cluster knows about itself
-    redis-cli -h ${goodhosts[0]} CLUSTER MEET $rhost 6379
-done
+        cluster[host]['nodes'] = cnodes
+        for node, conf in cnodes.items():
+            if conf['flags'] == 'myself,master' and not conf['slots']:
+                cluster[host]['state'] = 'empty primary'
 
-ghost=${goodhosts[0]}
-for rhost in ${badhosts[@]}; do
-    outlog "Adding $rhost to the cluster using $ghost"
-    loser=$(redis-cli -h $ghost CLUSTER NODES | awk '/slave [a-f0-9]{40}/{ primary[$4]++ } $9 && /master -/{ primary[$1]++ } END{ x=99; for (id in primary) if( primary[id] < x ) { x=primary[id]; loser=id }; print loser }')
-    redis-cli -h $ghost CLUSTER MEET $rhost 6379
-    try=0
-    until redis-cli -h $rhost CLUSTER NODES | grep -q "^$loser"; do
-        if [[ $(( try++ )) -gt 30 ]]; then
-            outlog "$rhost still doesn't know about $loser"
-            retval=$EX_ERROR
-            break
-        fi
-        outlog "Waiting for $rhost to know about $loser"
-        sleep 1
-    done
-    outlog "Making $rhost a replica of $loser"
-    redis-cli -h $rhost CLUSTER REPLICATE $loser
-    try=0
-    until redis-cli -h $rhost CLUSTER NODES | grep -q 'myself,slave' ; do
-        if [[ $(( try++ )) -gt 30 ]]; then
-            outlog "$rhost still isn't a replica"
-            retval=$EX_ERROR
-            break
-        fi
-        outlog "Waiting for $rhost to be a replica..."
-        sleep 1
-    done
-    [[ $retval -eq $EX_NOCHANGE ]] && retval=$EX_OK
-    [[ $retval -eq $EX_OK ]] && ghost=$rhost
-done
 
-for rhost in "${goodhosts[@]}"; do
-    redis-cli -h $rhost CLUSTER NODES | while read nid nip flags junk; do
-        nip=${nip%:*}
-        if [[ $nip ]]; then
-            echo "${rhosts[@]}" | fgrep -wq $nip
-            if [[ $? -eq 1 ]]; then
-                if [[ $flags = 'master' ]]; then
-                    outlog "found unknown primary $nip, no more forgetting"
-                    exit $retval
-                fi
-                outlog "forgetting $nip on $rhost"
-                redis-cli -h $rhost CLUSTER FORGET $nid
-            fi
-        else
-            outlog "forgetting noaddr $nid on $rhost"
-            redis-cli -h $rhost CLUSTER FORGET $nid
-        fi
-    done
-done
+def get_cluster(hosts):
+    logger = logging.getLogger(__name__)
+    res = {}
 
-exit $retval
+    for host in hosts:
+        try:
+            client = Redis(host=host, decode_responses=True)
+            client.ping()
+        except RedisError:
+            logger.info(f'{host} is down')
+            continue
+
+        res[host] = {
+            'client': client,
+        }
+
+    refresh_cluster(res)
+    return res
+
+
+def find_loser(nodes):
+    replicas = {}
+    for node, details in nodes.items():
+        primary = details['master_id']
+        if primary == '-' and 'master' in details['flags']:
+            primary = details['node_id']
+
+        try:
+            primary_details = [v for k, v in nodes.items() if v['node_id'] == primary][0]
+        except IndexError:
+            continue
+
+        # Make sure it's a real primary node before we count it
+        if primary_details['slots'] and 'master' in primary_details['flags'].split(','):
+            if primary not in replicas:
+                replicas[primary] = 0
+            replicas[primary] += 1
+
+    loser = None
+    for node, count in replicas.items():
+        if not loser:
+            loser = node
+
+        if count < replicas[loser]:
+            loser = node
+
+    return loser
+
+
+def main():
+    logger = logging.getLogger()
+    handler = logging.handlers.SysLogHandler(address='/dev/log')
+    handler.ident = f'redis-manage[{os.getpid()}]: '
+    logger.addHandler(handler)
+    handler = logging.StreamHandler()
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+    retval = 0
+
+    cluster = get_cluster(sys.argv[1:])
+
+    good_hosts = []
+    for node, details in cluster.items():
+        logger.info(f'{node} is {details["state"]}')
+        if details['state'] == 'good':
+            good_hosts.append(node)
+
+    if len(good_hosts) == 0:
+        if len(cluster) < 3:
+            logger.critical('Insufficient hosts available to create a cluster!')
+            sys.exit(2)
+
+        boot = list(cluster.keys())[:3]
+        logger.info(f'Creating a new cluster using {" ".join(boot)}')
+        # Assign slots to nodes
+        slots = [0, 5461, 10923, 16384]
+        idx = 0
+        for host in boot:
+            cluster[host]['client'].execute_command('CLUSTER ADDSLOTS', *[str(x) for x in range(slots[idx], slots[idx + 1])])
+            idx += 1
+
+        good_hosts = boot
+
+    # make sure the cluster knows about itself
+    control_host = good_hosts[0]
+    for host in good_hosts[1:]:
+        try:
+            cluster[control_host]['client'].execute_command('CLUSTER MEET', host, '6379')
+        except RedisError:
+            pass
+
+    time.sleep(1)
+    refresh_cluster(cluster)
+    good_hosts = [k for k, v in cluster.items() if v['state'] == 'good']
+
+    # Verify that we're in a good state before making changes
+    if len(good_hosts) < 3:
+        logger.critical('Bad cluster state!')
+        sys.exit(2)
+
+    for host in cluster.keys():
+        if cluster[host]['state'] == 'good':
+            continue
+
+        try:
+            nodes = cluster[control_host]['client'].execute_command('CLUSTER NODES')
+        except RedisError:
+            retval = 1
+            logger.exception(f'Error fetching node list from {control_host}')
+            continue
+
+        loser = find_loser(nodes)
+        if not loser:
+            retval = 1
+            logger.error(f'Unable to determine loser from {json.dumps(nodes)}')
+            continue
+
+        logger.info(f'Adding {host} to the cluster using {control_host}')
+        try:
+            cluster[control_host]['client'].execute_command('CLUSTER MEET', host, '6379')
+        except RedisError:
+            retval = 1
+            logger.exception(f'Error adding {host}')
+            continue
+
+        attempt = 0
+        while True:
+            attempt += 1
+            if attempt > 30:
+                logger.error(f'{host} still does not know about {loser}')
+                retval = 1
+                break
+            if attempt > 1:
+                logger.info(f'Waiting for {host} to know about {loser}...')
+                time.sleep(1)
+            try:
+                res = cluster[host]['client'].execute_command('CLUSTER NODES')
+            except RedisError:
+                logger.exception('Failed to fetch cluster info')
+                continue
+            if any([x['node_id'] == loser for x in res.values()]):
+                break
+
+        logger.info(f'Making {host} a replica of {loser}')
+        try:
+            cluster[host]['client'].execute_command('CLUSTER REPLICATE', loser)
+        except RedisError:
+            logger.exception('Replication request failed')
+            pass
+
+        attempt = 0
+        while True:
+            attempt += 1
+            if attempt > 30:
+                logger.error(f'{host} is still not a replica')
+                retval = 1
+                break
+            if attempt > 1:
+                logger.info(f'Waiting for {host} to be a replica...')
+                time.sleep(1)
+            try:
+                res = cluster[host]['client'].execute_command('CLUSTER NODES')
+            except RedisError:
+                logger.exception('Failed to fetch cluster info')
+                continue
+            if res[f'{host}:6379']['flags'] == 'myself,slave':
+                break
+
+    # Forget stale nodes
+    for host in good_hosts:
+        try:
+            nodes = cluster[host]['client'].execute_command('CLUSTER NODES')
+        except RedisError:
+            continue
+
+        for node, details in nodes.items():
+            if node.startswith(':'):
+                # nodes with no address should be forgotten
+                logger.info(f'Forgetting noaddr {details["node_id"]} on {host}')
+                try:
+                    cluster[host]['client'].execute_command('CLUSTER FORGET', details['node_id'])
+                except RedisError:
+                    logger.exception(f'Error forgetting {details["node_id"]}')
+                    pass
+                continue
+
+            if node.split(':')[0] not in sys.argv[1:]:
+                if 'master' in details['flags'] and details['slots']:
+                    logger.error(f'Found unknown primary {node}, no more forgetting')
+                    sys.exit(retval)
+                logger.info(f'Forgetting {node} on {host}')
+                try:
+                    cluster[host]['client'].execute_command('CLUSTER FORGET', details['node_id'])
+                except RedisError:
+                    logger.exception(f'Error forgetting {details["node_id"]}')
+                    pass
+
+    sys.exit(retval)
+
+
+if __name__ == '__main__':
+    main()
