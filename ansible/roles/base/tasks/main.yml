@@ -17,6 +17,8 @@
         venv_wrappers:
           - name: datastore-fetch
           - name: datastore-upload
+      tags:
+        - python
 
     - gather_facts:
 
