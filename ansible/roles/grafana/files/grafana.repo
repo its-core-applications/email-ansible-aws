@@ -4,7 +4,6 @@ baseurl=https://rpm.grafana.com
 repo_gpgcheck=1
 enabled=1
 gpgcheck=1
-# FIXME: use undated file once that's usable
-gpgkey=https://rpm.grafana.com/gpg-2023-01-12.key
+gpgkey=https://rpm.grafana.com/gpg.key
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
