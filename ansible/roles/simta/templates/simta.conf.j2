@@ -122,15 +122,18 @@ receive {
         acl {
             action = block;
             list = deny-from.dnsbl;
+            algorithm = sha1;
         }
         acl {
             action = block;
             list = deny-from.dnsbl;
             domain_only = true;
+            algorithm = sha1;
         }
         acl {
             action = block;
             list = iia-deny-from.dnsbl;
+            algorithm = sha1;
         }
     }
     rcpt_to {
