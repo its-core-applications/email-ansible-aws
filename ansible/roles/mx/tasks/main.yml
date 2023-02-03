@@ -15,7 +15,6 @@
         - deny.string
         - deny.to
         - trust.rcpt
-        - box.rcpt
       tags: mutable
 
     - name: Install ingress-specific filters
@@ -26,7 +25,6 @@
         group: root
         mode: "0755"
       loop:
-        - 15_box_drop
         - 21_drop_from
         - 35_recipient
 
