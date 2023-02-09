@@ -17,7 +17,7 @@
       become_user: gollum
       git:
         dest: ~/cia-documentation
-        repo: git@gitlab.umich.edu:ITS/inf/core-infrastructure-and-automation/documentation.git
+        repo: git@github.com:its-core-applications/documentation.git
         accept_hostkey: true
         update: true
 

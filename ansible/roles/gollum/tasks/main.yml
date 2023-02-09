@@ -1,6 +1,9 @@
 - tags:
     - gollum
   block:
+    - name: Install Amazon Linux extras
+      command: amazon-linux-extras install -y ruby3.0
+
     - name: Install required packages
       yum:
         name:
@@ -13,16 +16,21 @@
           - ncurses-devel
           - openssl-devel
           - readline-devel
+          - ruby-devel
           - zlib-devel
         state: latest
 
     - become_user: gollum
       block:
-        - name: Create .ssh directory
+        - name: Create directories
           file:
-            dest: ~/.ssh
+            dest: "{{ item }}"
             state: directory
             mode: "0755"
+          loop:
+            - ~/bin
+            - ~/.ssh
+            - ~/.bundle
 
         - name: Install SSH private key
           copy:
@@ -34,37 +42,20 @@
         - name: Clone documentation
           git:
             dest: ~/cia-documentation
-            repo: git@gitlab.umich.edu:ITS/inf/core-infrastructure-and-automation/documentation.git
+            repo: git@github.com:its-core-applications/documentation.git
             accept_hostkey: true
             update: true
-
-        - name: Clone ruby-build
-          git:
-            dest: ~/ruby-build
-            repo: https://github.com/rbenv/ruby-build
-            force: true
-            update: true
-
-        - name: Build Ruby 2.6.5
-          command:
-            cmd: ~/ruby-build/bin/ruby-build 2.6.5 ~/ruby
-            creates: ~/ruby/bin/ruby
-          environment:
-            RUBY_CONFIGURE_OPTS: "--disable-install-doc"
 
         - name: Disable documentation for gems
           copy:
             dest: ~/.gemrc
             content: "gem: --no-document"
 
-        - name: Update RubyGem
-          command: ~/ruby/bin/gem update
-
         # rugged requires cmake >= 3.5.1, but doesn't support calling it by
         # an alternate name.
         - name: Link cmake to cmake3
           file:
-            dest: ~/ruby/bin/cmake
+            dest: ~/bin/cmake
             state: link
             src: /usr/bin/cmake3
 
@@ -76,9 +67,20 @@
             force: true
             update: true
 
-        - name: Install gollum
-          bundler:
-            executable: ~/ruby/bin/bundler
+        - name: Create Gemfile.lock
+          command:
+            cmd: bundle lock
             chdir: ~/gollum
+            creates: ~/gollum/Gemfile.lock
+
+        - name: Enable deployment mode for bundler
+          copy:
+            dest: ~/.bundle/config
+            src: bundle.config
+
+        - name: Install gollum
+          community.general.bundler:
+            chdir: ~/gollum
+            binstub_directory: ~/bin
           environment:
-            PATH: /var/lib/gollum/ruby/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
+            PATH: /var/lib/gollum/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
