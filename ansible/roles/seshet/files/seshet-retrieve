@@ -32,7 +32,6 @@ for subkey in red.scan_iter(match='seshet:subnet:*', count=1000):
 
 print('# IPs automatically banned from relay services')
 print(':127.0.0.3:Blocked due to suspicious activity')
-print('127.0.0.2   test')
 print()
 
 for cidr in ips.iter_cidrs():
