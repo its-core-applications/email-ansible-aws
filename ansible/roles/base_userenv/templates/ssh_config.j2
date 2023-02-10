@@ -2,6 +2,13 @@ Host gitlab.umich.edu
     IdentityFile ~/.ssh/id_ed25519.git
     User git
 
+{% for deploykey in query('flowerysong.hvault.list', 'secret/ssh/') | select('match', 'github.') %}
+Host {{ deploykey | split('.') | last }}.github.com
+    HostName github.com
+    IdentityFile ~/.ssh/id_ed25519.{{ deploykey }}
+    User git
+
+{% endfor %}
 Host *.{{ subd }}
 {% for keypair in query('flowerysong.hvault.list', 'secret/ssh/') | select('match', ansible_user) %}
     IdentityFile ~/.ssh/id_ed25519.{{ keypair }}
@@ -14,11 +21,3 @@ Host *.{{ subd }}
 Host *.dsc.umich.edu
     IdentityFile ~/.ssh/id_rsa.{{ tld }}
     User collaborate
-
-Host *.{{ tld }}
-    IdentityFile ~/.ssh/id_rsa.{{ tld }}
-    User root
-
-Host bitbucket.org
-    IdentityFile ~/.ssh/id_ed25519.git
-    User git

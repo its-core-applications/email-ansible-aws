@@ -65,6 +65,13 @@
             mode: "0644"
           loop: "{{ ssh_key_dirs | product(ssh_keys_vault) }}"
 
+        - name: Install GitHub deploy keys
+          copy:
+            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ item).value }}\n"
+            dest: ~/.ssh/id_ed25519.{{ item }}
+            mode: "0400"
+          loop: "{{ [] if bootstrap else (query('flowerysong.hvault.list', 'secret/ssh/') | select('match', 'github.')) }}"
+
     - name: Configure git
       copy:
         src: gitconfig
