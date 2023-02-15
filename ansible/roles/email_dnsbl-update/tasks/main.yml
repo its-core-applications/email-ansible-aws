@@ -61,8 +61,9 @@
 
     - name: Clone DNS list repo for system
       git:
-        name: https://github.com/its-core-applications/email-dns-lists.git
+        name: email-dns-lists.github.com:its-core-applications/email-dns-lists.git
         dest: /var/cache/email-dns-lists.git
+        accept_hostkey: true
 
     - name: Install git refresh script
       copy:

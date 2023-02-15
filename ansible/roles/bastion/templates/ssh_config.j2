@@ -1,0 +1,7 @@
+{% for deploykey in query('flowerysong.hvault.list', 'secret/ssh/') | select('match', 'github.') %}
+Host {{ deploykey | split('.') | last }}.github.com
+    HostName github.com
+    IdentityFile ~/.ssh/id_ed25519.{{ deploykey }}
+    User git
+
+{% endfor %}
