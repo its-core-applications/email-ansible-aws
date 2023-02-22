@@ -13,7 +13,7 @@
         mode: "0644"
       loop:
         - deny.string
-        - trust.rcpt
+        - rcpt.trust
       tags: mutable
 
     - name: Install ingress-specific filters
@@ -25,7 +25,6 @@
         mode: "0755"
       loop:
         - 21_drop_from
-        - 35_recipient
 
     - name: Install ingress-specific templated filters
       template:

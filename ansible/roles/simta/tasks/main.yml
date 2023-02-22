@@ -47,8 +47,8 @@
         mode: "0755"
       loop:
         - 15_trust
-        - 21_recipient
         - 21_ubl
+        - 35_recipient
         - 40_string
       when:
         - simta_localmail == false
