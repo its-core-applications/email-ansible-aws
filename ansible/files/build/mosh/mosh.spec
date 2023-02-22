@@ -1,12 +1,12 @@
 Name:		mosh
-Version:	1.3.2
+Version:	1.4.0
 Release:	1%{?dist}
 Summary:	Mobile shell that supports roaming and intelligent local echo
 
 License:	GPLv3+
 Group:		Applications/Internet
-URL:		https://mosh.mit.edu/
-Source0:	https://mosh.mit.edu/mosh-%{version}.tar.gz
+URL:		https://mosh.org/
+Source0:	https://mosh.org/mosh-%{version}.tar.gz
 
 BuildRequires:	perl-generators
 BuildRequires:	protobuf-compiler
