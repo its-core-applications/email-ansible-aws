@@ -45,7 +45,6 @@
           - spamassassin-reject
           - ual
           - ubl
-          - ubl-preemptive
           - deny-from
           - drop-from
         actions:

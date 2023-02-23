@@ -15,7 +15,7 @@ RBLDNSD="- -w /var/lib/rbldnsd -q -a -s +/var/log/rbldnsd/stats -t 300:300:600 -
         relay-deny.dnsbl:ip4set:umich/relay-deny,umich/seshet \
         spamassassin-reject.dnsbl:ip4set:umich/spamassassin-reject \
         ual.dnsal:dnset:umich/ual \
-        ubl.dnsbl:dnset:umich/ubl,umich/ubl-preemptive \
+        ubl.dnsbl:dnset:umich/ubl \
         deny-from.dnsbl:dnset:umich/deny-from \
         drop-from.dnsbl:dnset:umich/drop-from \
         test1.dnsbl:ip4set:umich/testrbl1 \
