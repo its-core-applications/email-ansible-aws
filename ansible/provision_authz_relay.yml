@@ -15,6 +15,11 @@
         - import_role:
             name: tcpd_update
 
+        - name: Sync filter data
+          import_role:
+            name: simta
+            tasks_from: sync.yml
+
         - name: Set status to production
           delegate_to: localhost
           become: false

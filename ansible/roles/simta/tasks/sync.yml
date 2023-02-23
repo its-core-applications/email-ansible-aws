@@ -1,0 +1,5 @@
+- tags:
+    - simta
+  block:
+    - name: Sync filter data
+      command: datastore-fetch -r --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }} filter_data/{{ 'relay' if simta_relay else 'mx' }} /etc/mail

@@ -52,6 +52,9 @@
             name: email_dnsbl-update
 
         - import_role:
+            name: email_filter_data_update
+
+        - import_role:
             name: ammit
 
         - import_role:

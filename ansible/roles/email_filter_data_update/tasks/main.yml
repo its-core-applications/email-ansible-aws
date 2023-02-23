@@ -1,0 +1,20 @@
+- tags:
+    - email
+  block:
+    - name: Clone filter data repo
+      git:
+        name: email-filter-data.github.com:its-core-applications/email-filter-data.git
+        dest: /var/cache/email-filter-data.git
+        accept_hostkey: true
+
+    - name: Schedule refreshes
+      cron:
+        name: filter-data-datastore-refresh-{{ item }}
+        user: root
+        job: /usr/local/bin/gitrepo-refresh-datastore -d '--heartbeat bastion --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}' /var/cache/email-filter-data.git/{{ item }} filter_data/{{ item }} &>/dev/null
+        minute: "{{ ansible_loop.index }}-59/5"
+      loop:
+        - mx
+        - relay
+      loop_control:
+        extended: true

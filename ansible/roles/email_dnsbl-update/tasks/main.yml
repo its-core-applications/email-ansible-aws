@@ -64,14 +64,6 @@
         dest: /var/cache/email-dns-lists.git
         accept_hostkey: true
 
-    - name: Install git refresh script
-      copy:
-        src: gitrepo-refresh-datastore
-        dest: /usr/local/bin/gitrepo-refresh-datastore
-        mode: "0755"
-        owner: root
-        group: root
-
     - name: Schedule refreshes
       cron:
         name: dnsl-datastore-refresh

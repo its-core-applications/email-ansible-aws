@@ -38,21 +38,31 @@
         group: root
         mode: "0644"
 
-    - name: Install standard filters
-      copy:
-        dest: /etc/mail/filters/{{ item }}
-        src: filters/{{ item }}
-        owner: root
-        group: root
-        mode: "0755"
-      loop:
-        - 15_trust
-        - 21_ubl
-        - 35_recipient
-        - 40_string
-      when:
-        - simta_localmail == false
-        - simta_filters == true
+    - when:
+        - simta_filters
+        - not simta_localmail
+      block:
+        - name: Install standard filters
+          copy:
+            dest: /etc/mail/filters/{{ item }}
+            src: filters/{{ item }}
+            owner: root
+            group: root
+            mode: "0755"
+          loop:
+            - 15_trust
+            - 21_ubl
+            - 35_recipient
+            - 40_string
+
+        - import_tasks: sync.yml
+
+        - name: Schedule filter data syncing
+          cron:
+            name: filter-data-sync
+            user: root
+            state: present
+            job: /usr/local/bin/datastore-fetch -r --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }} filter_data/{{ 'relay' if simta_relay else 'mx' }} /etc/mail &>/dev/null
 
     - name: Install /etc/mail/aliases
       copy:

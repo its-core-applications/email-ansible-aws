@@ -4,18 +4,6 @@
     - import_role:
         name: penaltybox
 
-    - name: Install filter data files
-      copy:
-        dest: /etc/mail/{{ item }}
-        src: "{{ item }}"
-        owner: root
-        group: root
-        mode: "0644"
-      loop:
-        - deny.string
-        - rcpt.trust
-      tags: mutable
-
     - name: Install ingress-specific filters
       copy:
         dest: /etc/mail/filters/{{ item }}

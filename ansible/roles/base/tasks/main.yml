@@ -188,3 +188,11 @@
         ec2_profile: datastore
         ec2_profile_role: arn:aws:iam::{{ aws_layout[aws_status][aws_profile_s3].account }}:role/{{ aws_resource_prefix }}_S3_ds
         ec2_profile_user: root
+
+    - name: Install git refresh script
+      copy:
+        src: gitrepo-refresh-datastore
+        dest: /usr/local/bin/gitrepo-refresh-datastore
+        mode: "0755"
+        owner: root
+        group: root

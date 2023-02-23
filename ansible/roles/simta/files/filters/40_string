@@ -1,7 +1,7 @@
 #!/bin/dash
 # deny based on string in message
 
-deny=/etc/mail/deny.string
+deny=/etc/mail/string.deny
 
 if [ -s $deny ] && check_dfile; then
     str=$(fgrep -o -f $deny $SIMTA_DFILE)
