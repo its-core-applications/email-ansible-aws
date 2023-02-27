@@ -502,7 +502,7 @@
       sensu.sensu_go.check:
         name: "{{ item.name }}"
         command: "{{ item.command }}"
-        interval: 60
+        interval: "{{ item.interval | default(60) }}"
         publish: true
         subscriptions:
           - Class_authn_relay
@@ -534,6 +534,7 @@
         - name: simta-queue-fast-age
           command: /usr/libexec/simta-admin/check-simta-queue-age -q fast -a 60 -c 0
           occurrences: 5
+          interval: 300
           hooks:
             critical:
               - restart_simta
