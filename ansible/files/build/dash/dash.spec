@@ -1,5 +1,5 @@
 Name:           dash
-Version:        0.5.10
+Version:        0.5.12
 Release:        1%{?dist}
 Summary:        Small and fast POSIX-compliant shell
 Group:          System Environment/Shells
@@ -10,7 +10,6 @@ Group:          System Environment/Shells
 License:        BSD and GPLv2+ and Public Domain and Copyright only
 URL:            http://gondor.apana.org.au/~herbert/%{name}/
 Source0:        http://gondor.apana.org.au/~herbert/%{name}/files/%{name}-%{version}.tar.gz
-Patch0:         %{name}-0.5.7-format-security.patch
 
 %description
 DASH is a POSIX-compliant implementation of /bin/sh that aims to be as small as
@@ -19,7 +18,6 @@ significantly faster than bash (the GNU Bourne-Again SHell) for most tasks.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure --bindir=/bin
