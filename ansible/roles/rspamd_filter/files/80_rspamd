@@ -1,6 +1,6 @@
 #!/bin/dash
 
-if check_dfile; then
+if [ $SIMTA_DFILE ]; then
     spamout=$(rspamc --json --timeout=20 --ip="$SIMTA_REMOTE_IP" --from="<$SIMTA_SMTP_MAIL_FROM>" --helo="$SIMTA_SMTP_HELO" --hostname="$SIMTA_REMOTE_HOSTNAME" $SIMTA_DFILE 2>/dev/null)
 
     # Use jq to format the JSON into the bits we want

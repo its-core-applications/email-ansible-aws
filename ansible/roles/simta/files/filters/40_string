@@ -3,7 +3,7 @@
 
 deny=/etc/mail/string.deny
 
-if [ -s $deny ] && check_dfile; then
+if [ -s $deny ] && [ $SIMTA_DFILE ]; then
     str=$(fgrep -o -f $deny $SIMTA_DFILE)
     if [ $? -eq 0 ]; then
         log "40_string: $deny matched $str"

@@ -15,7 +15,7 @@ CLAMERR=${CLAMTMP}/stderr
 CLAMDSCAN=/usr/bin/clamdscan
 CLAMDSCAN_FLAGS="--config-file /etc/clamd.conf --quiet --no-summary --wait -l ${CLAMOUT}"
 
-if check_dfile; then
+if [ $SIMTA_DFILE ]; then
     # read from fast queue
     ${CLAMDSCAN} ${CLAMDSCAN_FLAGS} ${SIMTA_DFILE} 2>|${CLAMERR}
     CLAMRET=$?

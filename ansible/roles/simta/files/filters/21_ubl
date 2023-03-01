@@ -1,7 +1,7 @@
 #!/bin/dash
 # deny based on UBL filter
 
-if check_env \$SIMTA_AUTH_ID ; then
+if [ $SIMTA_AUTH_ID ] ; then
     ubl=$(simrbl -l ubl.dnsbl -t $SIMTA_AUTH_ID)
     if [ $? -eq 1 ]; then
 	log "21_ubl: $SIMTA_AUTH_ID on ${ubl##* }"

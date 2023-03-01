@@ -3,7 +3,7 @@
 acceptlist=/etc/mail/recipient.trust
 rejectlist=/etc/mail/recipient.deny
 
-if check_tfile; then
+if [ $SIMTA_TFILE ]; then
     if [ -s $acceptlist ]; then
         match=$(jq -r .recipients[] $SIMTA_TFILE | fgrep -ixf $acceptlist 2>/dev/null)
         ret=$?
