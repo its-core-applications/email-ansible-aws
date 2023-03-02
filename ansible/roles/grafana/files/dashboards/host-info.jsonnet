@@ -42,6 +42,7 @@ grafana.dashboard.new(
     'Network traffic',
     datasource='$INFLUX_DS',
     legend_show=false,
+    format='bytes',
   ).addTarget(
     grafana.influxdb.target(
       'SELECT difference(max(/eth0.*bytes/)) FROM "net" WHERE ("sensu_entity_name" = \'$entity\') AND $timeFilter GROUP BY time($__interval) fill(none)',
