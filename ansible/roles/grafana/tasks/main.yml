@@ -11,7 +11,8 @@
 
     - name: Install grafana
       yum:
-        name: grafana
+        # >=9.4.0 breaks InfluxDB sources
+        name: grafana < 9.4.0
         state: latest
       notify: Restart grafana
 

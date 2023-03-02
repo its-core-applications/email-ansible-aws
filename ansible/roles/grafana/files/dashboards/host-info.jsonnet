@@ -29,6 +29,7 @@ grafana.dashboard.new(
     min=0,
     max=100,
     decimals=1,
+    format='percent',
   ).addTarget(
     grafana.influxdb.target(
       'SELECT (mean("memavailable") / mean("memtotal") * 100) AS "available", (mean("memfree") / mean("memtotal") * 100) AS "free" FROM "memory" WHERE ("sensu_entity_name" = \'$entity\') AND $timeFilter GROUP BY time($__interval) fill(linear)',
@@ -81,6 +82,7 @@ grafana.dashboard.new(
     min=0,
     max=100,
     decimals=0,
+    format='percent',
   ).addTarget(
     grafana.influxdb.target(
       'SELECT max("pct_used") FROM disk_usage WHERE ("sensu_entity_name" = \'$entity\') AND $timeFilter GROUP BY time($__interval), mountpoint fill(none)',
