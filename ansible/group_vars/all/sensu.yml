@@ -8,8 +8,6 @@ sensu_sns:
         - endpoint: "{{ ops_rootmail }}"
           protocol: email
       prod:
-        - endpoint: "{{ lookup('flowerysong.hvault.kv', 'phone/pager').value | string }}"
-          protocol: sms
         - endpoint: cia.pager.archive@umich.edu
           protocol: email-json
 

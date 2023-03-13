@@ -289,7 +289,6 @@
         <<: *sensu_auth
       vars:
         base_handlers:
-          - page
           - email
           - influxdb
           - influxdb_event
