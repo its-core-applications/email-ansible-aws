@@ -525,7 +525,7 @@
         - name: simta-queue-dead
           command: /usr/libexec/simta-admin/check-simta-queue -q dead -c 0
         - name: simta-queue-fast
-          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q fast -w {{ .labels.simta_fastqwarn | default "1000" }}  -c {{ .labels.simta_fastqmax | default "2000" }}
+          command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q fast -w {{ .labels.simta_fastqwarn | default "2000" }}  -c {{ .labels.simta_fastqmax | default "3000" }}
         - name: simta-queue-local
           command: !unsafe /usr/libexec/simta-admin/check-simta-queue -q local -w {{ .labels.simta_localqwarn | default "10" }}  -c {{ .labels.simta_localqmax | default "20" }}
         - name: simta-queue-slow
