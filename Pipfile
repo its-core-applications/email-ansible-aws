@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-ara = {git = "https://github.com/ansible-community/ara",ref = "master"}
+ara = {git = "https://github.com/ansible-community/ara",ref = "025a54a07af684e7cda9f02fb0373a5e8cbf2f1b"}
 awscli = "*"
 boto = "*"
 boto3 = "*"
@@ -18,7 +18,7 @@ paramiko = "*"
 PyYAML = "*"
 Jinja2 = "*"
 PrettyTable = "*"
-ansible-core = "*"
+ansible-core = "<2.14"  # 2.14 requires Python 3.9
 
 [requires]
 python_version = "3.8"
