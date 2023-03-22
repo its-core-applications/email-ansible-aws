@@ -27,7 +27,7 @@ fi
 
 export ANSIBLE_INVENTORY=$hacking_dir/ansible/inventory_${AWS_STATUS}
 
-export SNS_REGION=$(ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir $hacking_dir/ansible localhost -m debug -a 'msg={{ aws_layout[aws_status][aws_profile_sns].region }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
+export SNS_REGION=$(ANSIBLE_CALLBACK_PLUGINS= ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir $hacking_dir/ansible localhost -m debug -a 'msg={{ aws_layout[aws_status][aws_profile_sns].region }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
 
 # Set up Git
 if [[ $SUDO_USER ]]; then
