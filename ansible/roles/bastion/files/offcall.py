@@ -32,7 +32,11 @@ def get_vaulted_api_key():
     boto_client = botocore.session.get_session().create_client('sts')
     boto_endpoint = boto_client._endpoint
     boto_operation_model = boto_client._service_model.operation_model('GetCallerIdentity')
-    boto_request_dict = boto_client._convert_to_request_dict({}, boto_operation_model)
+    try:
+        boto_request_dict = boto_client._convert_to_request_dict({}, boto_operation_model, endpoint_url=boto_endpoint.host)
+    except TypeError:
+        # Older versions of botocore don't require the endpoint_url
+        boto_request_dict = boto_client._convert_to_request_dict({}, boto_operation_model)
     sts_request = boto_endpoint.create_request(boto_request_dict, boto_operation_model)
 
     vault_login = {
