@@ -64,7 +64,7 @@
       cron:
         name: ara-cleanup
         user: "{{ ansible_user }}"
-        hour: *
+        hour: '*'
         minute: 15
         job: env ARA_SETTINGS=/home/ara/settings.yml /usr/local/venv/ara_server/bin/ara playbook prune --days 20 --limit 2000 --confirm
 
