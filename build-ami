@@ -15,10 +15,10 @@ if [[ ! -f ansible/${class}.yml ]]; then
 fi
 
 if [[ $class = 'vdc_relay' ]]; then
-    export AWS_DEFAULT_PROFILE=$(ANSIBLE_CALLBACK_PLUGINS= ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ (aws_layout[aws_status] | dict2items | selectattr("value.classes", "contains", "vdc-relay")).0.key }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
+    export AWS_DEFAULT_PROFILE=$(env -u ANSIBLE_CALLBACK_PLUGINS ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ (aws_layout[aws_status] | dict2items | selectattr("value.classes", "contains", "vdc-relay")).0.key }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
 fi
 
-export AWS_DEFAULT_REGION=$(ANSIBLE_CALLBACK_PLUGINS= ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ aws_layout[aws_status][aws_profile].region }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
+export AWS_DEFAULT_REGION=$(env -u ANSIBLE_CALLBACK_PLUGINS ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ aws_layout[aws_status][aws_profile].region }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
 
 if [[ $2 ]]; then
     os=$2
