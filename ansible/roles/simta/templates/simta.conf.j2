@@ -194,6 +194,11 @@ receive {
         strategy = jail;
     }
 {% endif %}{# simta_jail #}
+{% if simta_egress %}
+    queue {
+        aggression = 5;
+    }
+{% endif %}{# simta_egress #}
 }
 
 deliver {
@@ -232,6 +237,9 @@ defaults {
 {% else %}{# not simta_egress #}
     red {
         deliver {
+            connection {
+                max_messages = 25;
+            }
             tls {
                 required = true;
             }
