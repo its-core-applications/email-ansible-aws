@@ -3,4 +3,4 @@
 {% for var in (item.wrapper_environment | default([])) %}
 export {{ var.name }}={{ var.value }}
 {% endfor %}
-/usr/local/venv/{{ venv_name }}/bin/{{ item.target | default(item.name) }} {{ item.extra_args | default('') }} "$@"
+{{ venv_user.home }}/{{ venv_name }}/bin/{{ item.target | default(item.name) }} {{ item.extra_args | default('') }} "$@"

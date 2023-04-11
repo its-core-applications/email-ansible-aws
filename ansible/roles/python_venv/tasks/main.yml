@@ -1,28 +1,58 @@
 - tags:
     - python
+  vars:
+    venv_user: "{{ nonperson_accounts | selectattr('name', '==', 'virtualenv') | first }}"
   block:
+    # We have to create these here instead of using the nonpeople role so that
+    # bootstrapping will work.
+    - name: Create group to own venvs
+      ansible.builtin.group:
+        name: "{{ venv_user.name }}"
+        gid: "{{ venv_user.uid }}"
+        state: present
+
+    - name: Create user to own venvs
+      ansible.builtin.user:
+        name: "{{ venv_user.name }}"
+        group: "{{ venv_user.name }}"
+        home: "{{ venv_user.home }}"
+        shell: /bin/sh
+        uid: "{{ venv_user.uid }}"
+        comment: "{{ venv_user.comment }}"
+        state: present
+
+    - name: Correct permissions for {{ venv_user.home }}
+      ansible.builtin.file:
+        dest: "{{ venv_user.home }}"
+        state: directory
+        owner: "{{ venv_user.name }}"
+        group: "{{ venv_user.name }}"
+        mode: "0755"
+
     - name: Install build dependencies
-      yum:
+      ansible.builtin.yum:
         name: "{{ venv_build_deps | union(venv_base_deps) }}"
         state: latest
 
-    - name: Create {{ venv_name }} virtualenv
-      pip:
-        name:
-          - pip
-          - setuptools
-        state: latest
-        virtualenv: /usr/local/venv/{{ venv_name }}
-        virtualenv_python: "{{ venv_py3 | ternary('python3', omit) }}"
+    - become_user: "{{ venv_user.name }}"
+      block:
+        - name: Create {{ venv_name }} virtualenv
+          ansible.builtin.pip:
+            name:
+              - pip
+              - setuptools
+            state: latest
+            virtualenv: "{{ venv_user.home }}/{{ venv_name }}"
+            virtualenv_python: "{{ venv_py3 | ternary('python3', omit) }}"
 
-    - name: Install extra packages for {{ venv_name }}
-      pip:
-        name: "{{ venv_packages }}"
-        state: latest
-        virtualenv: /usr/local/venv/{{ venv_name }}
+        - name: Install extra packages for {{ venv_name }}
+          ansible.builtin.pip:
+            name: "{{ venv_packages }}"
+            state: latest
+            virtualenv: "{{ venv_user.home }}/{{ venv_name }}"
 
     - name: Create wrapper scripts
-      template:
+      ansible.builtin.template:
         src: wrapper.sh.j2
         dest: /usr/local/bin/{{ item.name }}
         owner: root
@@ -31,7 +61,7 @@
       loop: "{{ venv_wrappers }}"
 
     - name: Set up aliases
-      template:
+      ansible.builtin.template:
         src: aliases.sh.j2
         dest: /etc/profile.d/99_venv_{{ venv_name }}.sh
         owner: root

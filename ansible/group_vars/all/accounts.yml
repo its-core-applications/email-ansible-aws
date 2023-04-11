@@ -32,6 +32,11 @@ nonperson_accounts:
     uid: 1008
     home: /var/lib/gollum
 
+  - name: virtualenv
+    comment: python
+    uid: 1010
+    home: /usr/local/venv
+
 user_accounts:
   - name: aafletch
     comment: Angel Fletcher
