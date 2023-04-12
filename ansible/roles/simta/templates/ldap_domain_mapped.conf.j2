@@ -7,6 +7,9 @@
         ldap {
             search {
                 uri = "ldap:///ou=User%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn={{ item.prefix }} %25s)(!(umichEntryDisabled=TRUE)))";
+{% if item.control_group is defined %}
+                subsearch = "ldap:///ou=User%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn={{ item.control_group }})(member=%25s))"
+{% endif %}
                 type = all;
             }
         }
