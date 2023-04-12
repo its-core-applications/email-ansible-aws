@@ -76,7 +76,7 @@ simta_ldap_domains_mapped:
     prefix: outsmarthpv
   - domain: police.umich.edu
     prefix: police
-    control_group: police subdomain groups
+    control_group: police subdomain group
   - domain: predictive.space
     prefix: predictive
   - domain: probabilitynetwork.org
