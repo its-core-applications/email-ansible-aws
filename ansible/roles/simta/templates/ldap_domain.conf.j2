@@ -20,7 +20,6 @@
 {%  else %}
                 uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?uid=%25s";
 {%  endif %}
-                rdnpref = false;
                 type = user;
             }
             search {
@@ -29,7 +28,6 @@
 {%  else %}
                 uri = "ldap:///ou=People,dc=umich,dc=edu?*?sub?cn=%25s";
 {%  endif %}
-                rdnpref = false;
                 type = user;
             }
 {%  if item.subdomain | default(true) %}
