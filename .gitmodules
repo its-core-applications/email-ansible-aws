@@ -25,3 +25,9 @@
 [submodule "ansible/collections/ansible_collections/flowerysong/hvault"]
 	path = ansible/collections/ansible_collections/flowerysong/hvault
 	url = https://github.com/flowerysong/ansible-flowerysong.hvault
+[submodule "ansible/collections/ansible_collections/community/zabbix"]
+	path = ansible/collections/ansible_collections/community/zabbix
+	url = https://github.com/ansible-collections/community.zabbix.git
+[submodule "ansible/collections/ansible_collections/ansible/utils"]
+	path = ansible/collections/ansible_collections/ansible/utils
+	url = https://github.com/ansible-collections/ansible.utils.git
