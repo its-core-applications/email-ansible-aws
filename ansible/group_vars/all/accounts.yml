@@ -38,11 +38,6 @@ nonperson_accounts:
     home: /usr/local/venv
 
 user_accounts:
-  - name: aafletch
-    comment: Angel Fletcher
-    uid: 620307
-    full_sudo: true
-
   - name: aesse
     comment: Drew Esse
     uid: 114282582
