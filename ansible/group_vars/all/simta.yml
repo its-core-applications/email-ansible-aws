@@ -77,6 +77,9 @@ simta_ldap_domains_mapped:
   - domain: police.umich.edu
     prefix: police
     control_group: police subdomain group
+  - domain: positivelysmokefree.org
+    prefix: positivelysmokefree
+    control_group: positivelysmokefree domain control group
   - domain: predictive.space
     prefix: predictive
   - domain: probabilitynetwork.org
