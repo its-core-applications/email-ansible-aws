@@ -18,7 +18,7 @@
     - when: region == aws_region
       block:
         - ansible.builtin.import_role:
-            name: sensu_spindown
+            name: monitoring_spindown
 
         - ansible.builtin.import_role:
             name: redis_spindown

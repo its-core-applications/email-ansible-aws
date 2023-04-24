@@ -258,5 +258,9 @@
           - mosh
 
     - ansible.builtin.import_role:
+        name: zabbix_agent
+      when: not bootstrap
+
+    - ansible.builtin.import_role:
         name: prometheus_node_exporter
       when: not bootstrap

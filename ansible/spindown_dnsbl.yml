@@ -15,7 +15,7 @@
             dns_group: Class_dnsbl
 
         - ansible.builtin.import_role:
-            name: sensu_spindown
+            name: monitoring_spindown
 
         - name: Set status to spundown
           delegate_to: localhost

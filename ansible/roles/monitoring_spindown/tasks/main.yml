@@ -1,0 +1,5 @@
+- ansible.builtin.import_role:
+    name: zabbix_spindown
+
+- ansible.builtin.import_role:
+    name: sensu_spindown
