@@ -1,0 +1,12 @@
+- tags:
+    - zabbix
+  block:
+    - name: Register with Zabbix
+      community.zabbix.zabbix_host:
+        host_name: "{{ inventory_hostname }}"
+        host_groups:
+          - ITS/DISC/CoreApps/Dev
+        link_templates:
+          - Linux by Zabbix agent active
+        proxy: syslog.{{ aws_region }}.{{ subd }}
+      delegate_to: "{{ groups.Class_zabbix.0 }}"

@@ -39,6 +39,9 @@
             tags:
               Status: production
 
+        - ansible.builtin.import_role:
+            name: monitoring_spinup
+
 - hosts: localhost
   become: false
   tasks:

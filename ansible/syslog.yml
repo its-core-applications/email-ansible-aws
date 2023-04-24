@@ -18,6 +18,9 @@
             name: splunk_forwarder
 
         - ansible.builtin.import_role:
+            name: zabbix_proxy
+
+        - ansible.builtin.import_role:
             name: sensu_backend
 
         - ansible.builtin.import_role:
