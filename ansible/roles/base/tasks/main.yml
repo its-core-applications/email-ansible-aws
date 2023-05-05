@@ -22,6 +22,14 @@
 
     - gather_facts:
 
+    - name: Correct permissions on /var/tmp
+      ansible.builtin.file:
+        dest: /var/tmp
+        state: directory
+        owner: root
+        group: root
+        mode: "1777"
+
     - name: Disable SELinux
       selinux:
         state: disabled

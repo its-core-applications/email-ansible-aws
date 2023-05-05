@@ -42,8 +42,14 @@ source "amazon-ebs" "host" {
   launch_block_device_mappings {
     delete_on_termination = true
     device_name = "${var.root_device}"
-    volume_size = 12
-    volume_type = "gp2"
+    volume_size = 13
+    volume_type = "gp3"
+  }
+  launch_block_device_mappings {
+    delete_on_termination = true
+    device_name = "/dev/xvdg"
+    volume_size = 3
+    volume_type = "gp3"
   }
   region = "${var.aws_region}"
   source_ami = "${var.base_ami}"
