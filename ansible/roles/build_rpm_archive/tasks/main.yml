@@ -37,3 +37,6 @@
       changed_when: result.rc == 0
       vars:
         build_executables: "{{ result.files | selectattr('mode', 'match', '^07') }}"
+
+    - import_role:
+        name: localrepo_update

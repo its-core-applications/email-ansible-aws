@@ -9,3 +9,6 @@
         timeout: 60
         checksum: "{{ rpm_checksum }}"
         mode: "0644"
+
+    - import_role:
+        name: localrepo_update
