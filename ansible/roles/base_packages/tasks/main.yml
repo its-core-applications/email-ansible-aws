@@ -46,7 +46,6 @@
           - lsof
           - man
           - man-pages
-          - mosh
           - nc
           - openldap-clients
           - pam_krb5
@@ -68,6 +67,7 @@
     - name: Install less-basic QoL packages
       yum:
         name:
+          - mosh
           - vault
         state: present
       when: bootstrap == false
