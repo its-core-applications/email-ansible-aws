@@ -2,4 +2,4 @@
 # update the custom DNS name.
 SHELL=/bin/bash
 
-* * * * * root [[ $(dig +short CNAME $(hostname)) != $(curl -fs http://169.254.169.254/latest/meta-data/public-hostname). && $(dig +short A $(hostname)) != $(curl -fs http://169.254.169.254/latest/meta-data/local-ipv4) ]] && systemctl reload dynhostname
+* * * * * root /usr/local/bin/check-hostname-consistency || systemctl reload dynhostname

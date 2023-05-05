@@ -32,6 +32,14 @@
         group: root
         mode: "0755"
 
+    - name: Install check script
+      ansible.builtin.copy:
+        dest: /usr/local/bin/check-hostname-consistency
+        src: check-hostname-consistency
+        owner: root
+        group: root
+        mode: "0755"
+
     - name: Install systemd unit
       ansible.builtin.copy:
         dest: /etc/systemd/system/dynhostname.service
