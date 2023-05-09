@@ -18,8 +18,10 @@ reject_tags = [
 ]
 
 # Fetch the region and ID from the AWS metadata service
-region = requests.get('http://169.254.169.254/latest/meta-data/placement/availability-zone').text[:-1]
-iid = requests.get('http://169.254.169.254/latest/meta-data/instance-id').text
+token = requests.put('http://169.254.169.254/latest/api/token', headers={'X-aws-ec2-metadata-token-ttl-seconds': '300'})
+imds_auth = {'X-aws-ec2-metadata-token': token.text}
+region = requests.get('http://169.254.169.254/latest/meta-data/placement/availability-zone', headers=imds_auth).text[:-1]
+iid = requests.get('http://169.254.169.254/latest/meta-data/instance-id', headers=imds_auth).text
 
 client = boto3.resource('ec2', region_name=region)
 instance = client.Instance(iid)

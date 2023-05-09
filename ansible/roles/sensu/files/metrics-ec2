@@ -9,7 +9,8 @@ reject_tags = [
     'CustomDNSName',
 ]
 
-region = requests.get('http://169.254.169.254/latest/meta-data/placement/availability-zone').text[:-1]
+token = requests.put('http://169.254.169.254/latest/api/token', headers={'X-aws-ec2-metadata-token-ttl-seconds': '300'})
+region = requests.get('http://169.254.169.254/latest/meta-data/placement/availability-zone', headers={'X-aws-ec2-metadata-token': token.text}).text[:-1]
 
 client = boto3.client('ec2', region_name=region)
 pager = client.get_paginator('describe_instances')
