@@ -1,6 +1,9 @@
 - tags:
     - s3repo
   block:
+    - gather_facts:
+      when: ansible_facts.distribution is not defined
+
     - name: Configure umcollab yum repo
       template:
         dest: /etc/yum.repos.d/umcollab.repo
