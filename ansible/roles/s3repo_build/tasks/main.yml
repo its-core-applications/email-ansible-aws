@@ -24,7 +24,7 @@
         direction: pull
         bucket: "{{ yum_hostname }}"
         region: "{{ aws_layout[aws_status][aws_profile_s3].region }}"
-        prefix: "{{ yum_repo_path }}"
+        prefix: "{{ yum_repo_path }}/"
         path: "{{ cache_root }}"
         overwrite: different
         pattern: '*.rpm'
