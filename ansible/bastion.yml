@@ -70,6 +70,10 @@
             name: simta_coordinator
 
         - import_role:
+            name: simta_reports
+          when: "'simta_reports' in aws_layout[aws_status][aws_profile_ec2].services"
+
+        - import_role:
             name: plasticman
 
         - import_role:

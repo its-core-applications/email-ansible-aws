@@ -60,6 +60,7 @@ aws_layout:
       services:
         - efs
         - lambda
+        - simta_reports
       classes:
         authn-relay:
           count: 3

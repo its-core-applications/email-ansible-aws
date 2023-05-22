@@ -1,0 +1,45 @@
+#!/usr/local/venv/system/bin/python3
+
+import datetime
+import smtplib
+import subprocess
+
+from email.mime.text import MIMEText
+
+
+sender = 'its.core.applications@umich.edu'
+dest = 'blackops.root@umich.edu'
+errors = ''
+
+for cls in [
+    'mx',
+    'authn-relay',
+    'authz-relay',
+    'authz-static',
+    'vdc-relay',
+    'egress',
+    'relay-egress',
+]:
+    report = subprocess.run(
+        ['/usr/local/bin/simta-report', cls],
+        capture_output=True,
+        text=True,
+    )
+
+    if report.returncode != 0:
+        errors += f'Errors from {cls}:'
+        errors += report.stderr;
+        continue
+
+    msg = MIMEText(report.stdout)
+    msg['Subject'] = f'{cls} simta report {(datetime.date.today() - datetime.timedelta(days=7)).isoformat()} to {(datetime.date.today() - datetime.timedelta(days=1)).isoformat()}'
+    msg['From'] = sender
+    msg['To'] = dest
+    smtplib.SMTP('vdc-relay.mail.umich.edu').sendmail(sender, dest, msg.as_string())
+
+if errors:
+    msg = MIMEText(errors)
+    msg['Subject'] = f'simta report errors {datetime.date.today().isoformat()}'
+    msg['From'] = sender
+    msg['To'] = 'ezekielh@umich.edu'
+    smtplib.SMTP('vdc-relay.mail.umich.edu').sendmail(sender, 'ezekielh@umich.edu', msg.as_string())

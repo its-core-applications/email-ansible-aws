@@ -1,0 +1,23 @@
+- tags:
+    - simta
+    - simta_reports
+  block:
+    - name: Install simta report scripts
+      copy:
+        src: "{{ item }}"
+        dest: /usr/local/bin/{{ item }}
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - simta-report
+        - run-simta-reports
+
+    - name: Schedule simta reports
+      cron:
+        name: simta-reports
+        user: "{{ ansible_user }}"
+        minute: 8
+        hour: 0
+        weekday: 1
+        job: /usr/local/bin/run-simta-reports
