@@ -32,6 +32,109 @@ def repl_steal(repl, primary_id):
         time.sleep(1)
 
 
+def failover(host, client):
+    logger = logging.getLogger()
+
+    nodes = client.execute_command('CLUSTER NODES')
+    node = nodes[f'{host}:6379']
+    replicas = [k.split(':')[0] for k, v in nodes.items() if v['master_id'] == node['node_id']]
+
+    if node['slots'] and 'master' in node['flags'].split(','):
+        if len(replicas) == 0:
+            logger.info('No current replica, choosing a random replica to steal...')
+            attempt = 0
+            while True:
+                attempt += 1
+                replicas = [k.split(':')[0] for k, v in nodes.items() if v['master_id'] not in ['-', node['node_id']]]
+                if replicas:
+                    try:
+                        repl_steal(replicas[0], node['node_id'])
+                    except (RedisError, TimeoutError):
+                        logger.exception('Steal failed')
+                        pass
+                    else:
+                        break
+
+                if attempt > 3:
+                    logger.error('No replica available to steal!')
+                    return False
+
+                time.sleep(5)
+                nodes = client.execute_command('CLUSTER NODES')
+
+        repl = replicas[0]
+        repl_client = Redis(host=repl, decode_responses=True)
+
+        logger.info(f'Promoting {repl} to primary')
+        attempt = 0
+        while True:
+            attempt += 1
+            if attempt > 30:
+                logger.error('Giving up on failover.')
+                return False
+            if attempt > 1:
+                logger.info(f'Waiting for {repl} to accept the failover...')
+                time.sleep(1)
+
+            try:
+                repl_client.execute_command('CLUSTER FAILOVER')
+            except RedisError:
+                logger.exception('Failover failed')
+
+            try:
+                res = repl_client.role()
+            except RedisError:
+                logger.exception('Role fetch failed')
+            else:
+                if res[0] == 'master':
+                    break
+
+        attempt = 0
+        while True:
+            attempt += 1
+            if attempt > 30:
+                logger.error(f'{host} is still primary, we cannot remove it')
+                return False
+            if attempt > 1:
+                logger.info(f'Waiting for {host} to stop being primary...')
+                time.sleep(1)
+
+            nodes = client.execute_command('CLUSTER NODES')
+            node = nodes[f'{host}:6379']
+            if 'slave' in node['flags'].split(','):
+                break
+
+    elif len(replicas) > 0:
+        # We have a replica but aren't a primary. This is weird, but happens.
+        # Tell them to replicate directly.
+        logger.warning(f'{host} is a replica and has a replica')
+        primary = node['master_id']
+        for repl in replicas:
+            logger.info(f'Telling mistaken replica {repl} to replicate {primary}')
+            repl_client = Redis(host=repl, decode_responses=True)
+            try:
+                repl_client.execute_command('CLUSTER REPLICATE', primary)
+            except RedisError:
+                logger.exception('Mistaken replica fix failed')
+                pass
+
+    attempt = 0
+    while True:
+        attempt += 1
+        if attempt > 30:
+            logger.error(f'{host} still has replicas, we cannot remove it.')
+            return False
+        if attempt > 1:
+            logger.info(f'Waiting for {host} to stop having replicas...')
+            time.sleep(1)
+
+        nodes = client.execute_command('CLUSTER NODES')
+        if not any([x['master_id'] == node['node_id'] for x in nodes.values()]):
+            break
+
+    return True
+
+
 def main():
     logger = logging.getLogger()
     handler = logging.handlers.SysLogHandler(address='/dev/log')
@@ -64,102 +167,20 @@ def main():
         else:
             break
 
-    nodes = client.execute_command('CLUSTER NODES')
-    node = nodes[f'{host}:6379']
-    replicas = [k.split(':')[0] for k, v in nodes.items() if v['master_id'] == node['node_id']]
-
-    if node['slots'] and 'master' in node['flags'].split(','):
-        if len(replicas) == 0:
-            logger.info('No current replica, choosing a random replica to steal...')
-            attempt = 0
-            while True:
-                attempt += 1
-                replicas = [k.split(':')[0] for k, v in nodes.items() if v['master_id'] not in ['-', node['node_id']]]
-                if replicas:
-                    try:
-                        repl_steal(replicas[0], node['node_id'])
-                    except (RedisError, TimeoutError):
-                        logger.exception('Steal failed')
-                        pass
-                    else:
-                        break
-
-                if attempt > 3:
-                    logger.error('No replica available to steal!')
-                    sys.exit(1)
-
-                time.sleep(5)
-                nodes = client.execute_command('CLUSTER NODES')
-
-        repl = replicas[0]
-        repl_client = Redis(host=repl, decode_responses=True)
-
-        logger.info(f'Promoting {repl} to primary')
-        attempt = 0
-        while True:
-            attempt += 1
-            if attempt > 30:
-                logger.error('Giving up on failover.')
-                sys.exit(1)
-            if attempt > 1:
-                logger.info(f'Waiting for {repl} to accept the failover...')
-                time.sleep(1)
-
-            try:
-                repl_client.execute_command('CLUSTER FAILOVER')
-            except RedisError:
-                logger.exception('Failover failed')
-
-            try:
-                res = repl_client.role()
-            except RedisError:
-                logger.exception('Role fetch failed')
-            else:
-                if res[0] == 'master':
-                    break
-
-        attempt = 0
-        while True:
-            attempt += 1
-            if attempt > 30:
-                logger.error(f'{host} is still primary, we cannot remove it')
-                sys.exit(1)
-            if attempt > 1:
-                logger.info(f'Waiting for {host} to stop being primary...')
-                time.sleep(1)
-
-            nodes = client.execute_command('CLUSTER NODES')
-            node = nodes[f'{host}:6379']
-            if 'slave' in node['flags'].split(','):
-                break
-
-    elif len(replicas) > 0:
-        # We have a replica but aren't a primary. This is weird, but happens.
-        # Tell them to replicate directly.
-        logger.warning(f'{host} is a replica and has a replica')
-        primary = node['master_id']
-        for repl in replicas:
-            logger.info(f'Telling mistaken replica {repl} to replicate {primary}')
-            repl_client = Redis(host=repl, decode_responses=True)
-            try:
-                repl_client.execute_command('CLUSTER REPLICATE', primary)
-            except RedisError:
-                logger.exception('Mistaken replica fix failed')
-                pass
-
     attempt = 0
     while True:
         attempt += 1
-        if attempt > 30:
-            logger.error(f'{host} still has replicas, we cannot remove it.')
-            sys.exit(1)
-        if attempt > 1:
-            logger.info(f'Waiting for {host} to stop having replicas...')
-            time.sleep(1)
-
-        nodes = client.execute_command('CLUSTER NODES')
-        if not any([x['master_id'] == node['node_id'] for x in nodes.values()]):
+        if not failover(host, client):
+            if attempt < 4:
+                logger.info('Retrying failover process.')
+            else:
+                logger.error('Failover appears to be impossible.')
+                sys.exit(1)
+        else:
             break
+
+    nodes = client.execute_command('CLUSTER NODES')
+    node = nodes[f'{host}:6379']
 
     logger.info(f'Shutting down {host}')
     client.config_set('appendonly', 'no')
@@ -168,8 +189,10 @@ def main():
     time.sleep(5)
 
     logger.info(f'Forgetting {host}...')
-    for neighbour in nodes.keys():
-        client = Redis(host=neighbour.split(':')[0], decode_responses=True)
+    for neighbour in [v.split(':')[0] for v in nodes.keys()]:
+        if neighbour == host:
+            continue
+        client = Redis(host=neighbour, decode_responses=True)
         logger.info(f'Forgetting from {neighbour}...')
         try:
             client.execute_command('CLUSTER FORGET', node['node_id'])
