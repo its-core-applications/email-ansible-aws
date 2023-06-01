@@ -4,7 +4,7 @@
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 Name:              redis
-Version:           6.0.18
+Version:           7.0.11
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 License:           BSD
@@ -129,7 +129,7 @@ exit 0
 %files
 %{!?_licensedir:%global license %%doc}
 %license COPYING
-%doc 00-RELEASENOTES BUGS CONTRIBUTING MANIFESTO README.md
+%doc 00-RELEASENOTES BUGS CODE_OF_CONDUCT.md CONTRIBUTING.md MANIFESTO README.md SECURITY.md
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %attr(0644, redis, root) %config(noreplace) %{_sysconfdir}/%{name}.conf
 %attr(0644, redis, root) %config(noreplace) %{_sysconfdir}/%{name}-sentinel.conf
