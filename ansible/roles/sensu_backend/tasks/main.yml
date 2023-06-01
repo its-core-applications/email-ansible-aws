@@ -632,8 +632,8 @@
 
     - name: Monitor simta aggregates
       sensu.sensu_go.check:
-        name: "{{ item }}-aggregate"
-        command: check-aggregate -H {{ influxdb_server }} --check {{ item }}
+        name: "{{ item.name }}-aggregate"
+        command: check-aggregate -H {{ influxdb_server }} --check {{ item.name }}
         stdin: true
         interval: 60
         publish: true
@@ -644,11 +644,13 @@
         proxy_entity_name: "{{ aws_region }}.{{ subd }}"
         annotations:
           dashboard_host: dashboard.{{ aws_region }}.{{ subd }}
-          fatigue_check/occurrences: 3
+          fatigue_check/occurrences: "{{ item.occurrences }}"
         <<: *sensu_auth
       loop:
-        - dnsl
-        - simta-expansion
+        - name: dnsl
+          occurrences: 10
+        - name: simta-expansion
+          occurrences: 3
 
     - name: Monitor simta auth aggregate
       sensu.sensu_go.check:
