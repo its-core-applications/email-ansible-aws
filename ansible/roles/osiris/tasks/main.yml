@@ -1,11 +1,11 @@
 - tags:
     - osiris
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ammit
 
     - name: Install osiris
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/sbin/osiris
         src: osiris
         owner: root

@@ -4,7 +4,7 @@
   delegate_to: localhost
   become: false
   block:
-    - include_role:
+    - ansible.builtin.include_role:
         name: ec2_find_subnets
       loop: "{{ aws_layout[aws_status] | list }}"
       loop_control:

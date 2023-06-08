@@ -3,7 +3,7 @@
   vars:
     ara_hostname: ara.{{ aws_region }}.{{ subd }}
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: httpd
 
     - name: Clone ARA repo
@@ -14,7 +14,7 @@
         update: true
         force: true
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: python_venv
       vars:
         venv_name: ara_server
@@ -31,7 +31,7 @@
           - mod_auth_openidc
         state: latest
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: letsencrypt
       vars:
         certificate: "{{ ara_hostname }}"
@@ -39,7 +39,7 @@
           - httpd
 
     - name: Create data storage area
-      file:
+      ansible.builtin.file:
         dest: /home/ara/
         state: directory
         owner: "{{ ansible_user }}"
@@ -47,7 +47,7 @@
         mode: "0755"
 
     - name: Configure ARA API
-      template:
+      ansible.builtin.template:
         dest: /home/ara/settings.yml
         src: settings.yml.j2
         owner: "{{ ansible_user }}"
@@ -69,7 +69,7 @@
         job: env ARA_SETTINGS=/home/ara/settings.yml /usr/local/venv/ara_server/bin/ara playbook prune --days 20 --limit 2000 --confirm
 
     - name: Configure gunicorn service
-      template:
+      ansible.builtin.template:
         dest: /etc/systemd/system/ara-api.service
         src: ara-api.service.j2
         owner: root
@@ -88,7 +88,7 @@
         state: restarted
 
     - name: Configure ARA vhost
-      template:
+      ansible.builtin.template:
         dest: /etc/httpd/conf.d/{{ ara_hostname }}.conf
         src: httpd.conf.j2
         owner: root

@@ -32,7 +32,7 @@
   vars:
     outdated_hosts: "{{ groups.targets | map('extract', hostvars) | selectattr('outdated_simta', 'defined') | map(attribute='inventory_hostname') }}"
   tasks:
-    - assert:
+    - ansible.builtin.assert:
         that: not outdated_hosts
         fail_msg: "Classes with outdated hosts: {{ grouped_oh | map(attribute=0) | zip(grouped_oh | map(attribute=1) | map('length')) | map('join', ': ') | join(',') }}"
       vars:

@@ -1,7 +1,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         launch_class: authn-relay
@@ -12,11 +12,11 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: users_allow_update
 
         - name: Sync filter data
-          import_role:
+          ansible.builtin.import_role:
             name: simta
             tasks_from: sync.yml
 
@@ -30,6 +30,6 @@
             tags:
               Status: production
 
-        - meta: refresh_inventory
+        - ansible.builtin.meta: refresh_inventory
 
 - import_playbook: setup_lb_authn_relay.yml

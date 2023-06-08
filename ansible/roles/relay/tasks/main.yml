@@ -1,32 +1,32 @@
 - tags:
     - relay
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: base
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: rsyslog_forward
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: localnameserver
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: simta
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: clamav_filter
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: sensu
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: userthrottle
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ipthrottle
 
     - name: Install relay-specific filters
-      copy:
+      ansible.builtin.copy:
         dest: /etc/mail/filters/{{ item }}
         src: "{{ item }}"
         owner: root

@@ -2,30 +2,30 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: base
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: rsyslog_aggregator
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta
           vars:
             simta_localmail: true
             simta_tls: false
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: splunk_forwarder
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: sensu_backend
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: sensu
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: ealert
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: seshet
           when: "'authn-relay' in aws_layout[aws_status][aws_profile].classes"

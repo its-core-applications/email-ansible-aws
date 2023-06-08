@@ -3,7 +3,7 @@
     - iam
   become: false
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_find_hostedzones
 
     - name: Create IAM policies for EC2 tagging

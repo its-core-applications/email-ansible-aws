@@ -3,15 +3,15 @@
     bootstrap: true
   tasks:
     - block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: base
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: build
 
 - hosts: "{{ groups.Class_bastion.0 | default(groups.Class_builder.0) }}"
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: s3repo_build
       tags:
         - always

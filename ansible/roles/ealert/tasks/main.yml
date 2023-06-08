@@ -1,7 +1,7 @@
 - tags:
     - ealert
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: python_venv
       vars:
         venv_py3: true
@@ -15,7 +15,7 @@
           - name: ealert-summarize
 
     - name: Install preprocessing script
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/bin/ealert-preprocess
         src: ealert-preprocess
         owner: root

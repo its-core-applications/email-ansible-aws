@@ -23,7 +23,7 @@
     - become_user: gollum
       block:
         - name: Create directories
-          file:
+          ansible.builtin.file:
             dest: "{{ item }}"
             state: directory
             mode: "0755"
@@ -33,7 +33,7 @@
             - ~/.bundle
 
         - name: Install SSH private key
-          copy:
+          ansible.builtin.copy:
             dest: ~/.ssh/id_ed25519
             content: "{{ lookup('flowerysong.hvault.kv', 'ssh/gollum').value }}"
             mode: "0400"
@@ -47,14 +47,14 @@
             update: true
 
         - name: Disable documentation for gems
-          copy:
+          ansible.builtin.copy:
             dest: ~/.gemrc
             content: "gem: --no-document"
 
         # rugged requires cmake >= 3.5.1, but doesn't support calling it by
         # an alternate name.
         - name: Link cmake to cmake3
-          file:
+          ansible.builtin.file:
             dest: ~/bin/cmake
             state: link
             src: /usr/bin/cmake3
@@ -74,7 +74,7 @@
             creates: ~/gollum/Gemfile.lock
 
         - name: Enable deployment mode for bundler
-          copy:
+          ansible.builtin.copy:
             dest: ~/.bundle/config
             src: bundle.config
 

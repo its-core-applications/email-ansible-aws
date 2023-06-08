@@ -11,9 +11,9 @@
         tags:
           redis: 'yes'
 
-    - meta: refresh_inventory
+    - ansible.builtin.meta: refresh_inventory
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: pink

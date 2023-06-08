@@ -1,10 +1,10 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_find_subnets
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         launch_class: syslog
@@ -59,7 +59,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: syslog

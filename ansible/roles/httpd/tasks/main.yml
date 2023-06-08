@@ -10,7 +10,7 @@
       notify: Restart httpd
 
     - name: Remove unwanted config files
-      file:
+      ansible.builtin.file:
         dest: "{{ item }}"
         state: absent
       loop:

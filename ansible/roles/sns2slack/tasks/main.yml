@@ -3,7 +3,7 @@
     - slack
   delegate_to: localhost
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: lambda_function
       vars:
         lambda_name: sns2slack

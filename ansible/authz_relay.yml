@@ -2,8 +2,8 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: relay
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: tcpd_update

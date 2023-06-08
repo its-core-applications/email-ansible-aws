@@ -2,7 +2,7 @@
     - base
   block:
     # using import_role leaks ansible_python_interpreter, which we don't want
-    - include_role:
+    - ansible.builtin.include_role:
         name: python_venv
       vars:
         ansible_python_interpreter: /usr/bin/python3
@@ -38,21 +38,21 @@
       vars:
         ansible_python_interpreter: /usr/bin/python
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: base_packages
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: base_userenv
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: nonpeople
       when: not bootstrap
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: rsyslog
 
     - name: Configure sshd
-      copy:
+      ansible.builtin.copy:
         dest: /etc/ssh/sshd_config
         src: sshd_config
         owner: root
@@ -61,7 +61,7 @@
       notify: Restart sshd
 
     - name: Install SSH client CA
-      copy:
+      ansible.builtin.copy:
         dest: /etc/ssh/ssh_client_ca.pub
         src: ssh_client_ca.pub
         owner: root
@@ -69,19 +69,19 @@
         mode: "0444"
 
     - name: Trust SSH server CA
-      copy:
+      ansible.builtin.copy:
         dest: /etc/ssh/ssh_known_hosts
         src: ssh_known_hosts
         owner: root
         group: root
         mode: "0444"
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: sshguard
       when: not bootstrap
 
     - name: Configure sudoers
-      template:
+      ansible.builtin.template:
         dest: /etc/sudoers
         src: sudoers.j2
         owner: root
@@ -90,7 +90,7 @@
         validate: visudo -cf %s
 
     - name: Configure cloud-init
-      template:
+      ansible.builtin.template:
         dest: /etc/cloud/cloud.cfg
         src: cloud.cfg.j2
         owner: root
@@ -99,7 +99,7 @@
 
     # Disable predictable network interface names
     - name: Configure grub
-      copy:
+      ansible.builtin.copy:
         dest: /etc/default/grub
         src: grub
         owner: root
@@ -116,7 +116,7 @@
         name: America/Detroit
 
     - name: Customize environment
-      copy:
+      ansible.builtin.copy:
         dest: /etc/profile.d/99_custom.sh
         src: profile.sh
         owner: root
@@ -124,7 +124,7 @@
         mode: "0644"
 
     - name: Remove RHEL file cruft
-      file:
+      ansible.builtin.file:
         dest: "{{ item }}"
         state: absent
       loop:
@@ -132,7 +132,7 @@
         - /etc/motd
 
     - name: Configure tmux
-      copy:
+      ansible.builtin.copy:
         dest: /etc/tmux.conf
         src: tmux.conf
         owner: root
@@ -156,7 +156,7 @@
           value: 1
 
     - name: Raise corefile limits
-      copy:
+      ansible.builtin.copy:
         dest: /etc/security/limits.d/core.conf
         src: core.conf
         owner: root
@@ -164,7 +164,7 @@
         mode: "0644"
 
     - name: Configure cron scheduled jobs
-      copy:
+      ansible.builtin.copy:
         dest: /etc/cron.d/dailyjobs
         src: dailyjobs.cron
         owner: root
@@ -179,7 +179,7 @@
         state: present
 
     - name: Configure OpenSSL certificate generation
-      copy:
+      ansible.builtin.copy:
         dest: /etc/pki/tls/{{ item }}
         src: "{{ item }}"
         owner: root
@@ -189,10 +189,10 @@
         - openssl.cnf
         - openssl-san.cnf
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: dynhostname
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_instance_profile
       vars:
         ec2_profile: datastore
@@ -200,7 +200,7 @@
         ec2_profile_user: root
 
     - name: Install git refresh script
-      copy:
+      ansible.builtin.copy:
         src: gitrepo-refresh-datastore
         dest: /usr/local/bin/gitrepo-refresh-datastore
         mode: "0755"

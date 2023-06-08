@@ -1,7 +1,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         launch_class: mx-test
@@ -19,7 +19,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - include_role:
+    - ansible.builtin.include_role:
         name: ec2_nlb
       vars:
         nlb_name: mx-test

@@ -1,13 +1,13 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_nlb
       vars:
         tg_group: Class_authz_relay
         nlb_name: authz-relay
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_nlb
       vars:
         tg_group: Class_authz_relay

@@ -46,7 +46,7 @@
 
     - name: Also make sure we have a subdir to dump RPMs into
       become: false
-      file:
+      ansible.builtin.file:
         dest: ~/rpmbuild/RPMS/x86_64/
         state: directory
 

@@ -10,5 +10,5 @@
         checksum: "{{ rpm_checksum }}"
         mode: "0644"
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: localrepo_update

@@ -16,7 +16,7 @@
       notify: Restart rsyslog
 
     - name: Configure rsyslog listener
-      copy:
+      ansible.builtin.copy:
         dest: /etc/rsyslog.d/imrelp.conf
         src: imrelp.conf
         owner: root
@@ -32,7 +32,7 @@
       when: result is changed
 
     - name: Configure logrotate for remote logs
-      copy:
+      ansible.builtin.copy:
         dest: /etc/logrotate.remote.conf
         src: logrotate.remote.conf
         owner: root
@@ -40,7 +40,7 @@
         mode: "0644"
 
     - name: Schedule rotation for remote logs
-      copy:
+      ansible.builtin.copy:
         dest: /etc/cron.daily/logrotate.remote.cron
         src: logrotate.remote.cron
         owner: root

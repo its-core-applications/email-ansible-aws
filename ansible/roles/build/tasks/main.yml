@@ -4,15 +4,15 @@
     - gather_facts:
       when: ansible_facts.date_time is not defined
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: rpmbuild
       tags: always
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: localrepo
       tags: always
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_prebuilt
       tags:
         - cjose
@@ -23,7 +23,7 @@
         rpm_url: https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.4.0/{{ rpm }}
         rpm_checksum: sha512:244ca9640ef0068275a4a9c3dfd936a5fef985789e0b92b86d90b305853ff788c15bce1811234fc432a78f615e335f80b21307c98b10a8ef66e4bbe6a972fdd2
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
         - sasl
@@ -41,7 +41,7 @@
           - pam-devel
           - zlib-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags:
         - denser
@@ -52,7 +52,7 @@
         build_deps:
           - openssl-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
         - jemalloc
@@ -64,7 +64,7 @@
         build_deps:
           - libxslt
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
         - libmaxminddb
@@ -74,7 +74,7 @@
           - perl-IPC-Run3
           - perl-Test-Output
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags:
         - libsnet
@@ -86,7 +86,7 @@
           - cyrus-sasl-devel
           - openssl-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
         - libucl
@@ -95,7 +95,7 @@
       vars:
         build_name: libucl
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags:
         - openarc
@@ -108,7 +108,7 @@
           - openssl-devel
           - sendmail-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_archive
       tags:
         - packer
@@ -123,17 +123,17 @@
     - tags:
         - sensu
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: build_rpm_go
           vars:
             build_name: sensu-agent
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: build_rpm_go
           vars:
             build_name: sensu-backend
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: build_rpm_go
           vars:
             build_name: sensuctl
@@ -143,7 +143,7 @@
         build_flags: '-ldflags ''-X "github.com/sensu/sensu-go/version.Version={{ build_version }}" -X "github.com/sensu/sensu-go/version.BuildDate={{ ansible_facts.date_time.date }}"'''
         build_version: 5.20.1.1
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_archive
       tags:
         - sensu
@@ -154,7 +154,7 @@
         archive_file: sensu-influxdb-handler_{{ build_version }}_linux_amd64.tar.gz
         archive_checksum: sha256:62efbaa74649c3b49d2692acefe6ec505f2d8599d4cb981bd3766ef78fa31f3b
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_archive
       tags:
         - sensu
@@ -165,7 +165,7 @@
         archive_file: sensu-prometheus-collector_{{ build_version }}_linux_amd64.tar.gz
         archive_checksum: sha512:100e2dd2f08eb1f2779e34eb45c9a5a8a9ca79c2ceddc29a2989d8d6d55a12f0e38446316f3a5f281b78c42892ecafc3a42b4fb4b43212e5c64007f7e119b12d
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_archive
       tags:
         - sensu
@@ -176,7 +176,7 @@
         archive_file: system-profile-linux_{{ build_version }}_linux_amd64.tar.gz
         archive_checksum: sha512:29a6e1725f37e533cd9f6a8a17b40ef757ba5ea5dc27701c19a7fb9ac9c2bdf9f684d758d4440f278bb7fc669e52bf02efb3fc6758731f7f3e10617a2fe026cf
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags:
         - urcl
@@ -188,7 +188,7 @@
         build_deps:
           - hiredis-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_archive
       tags:
         - vault
@@ -199,7 +199,7 @@
         archive_file: vault_{{build_version }}_linux_amd64.zip
         archive_checksum: sha256:ace4138269cb7214c73529f984b793d66074e3a3ad373eaa77bc9b39490d9ef9
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags: clamav
       vars:
@@ -214,13 +214,13 @@
           - sendmail-devel
           - tcp_wrappers-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags: dash
       vars:
         build_name: dash
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_prebuilt
       tags: mod_auth_openidc
       vars:
@@ -230,7 +230,7 @@
         rpm_url: https://github.com/zmartzone/mod_auth_openidc/releases/download/v{{ build_version }}/{{ rpm }}
         rpm_checksum: sha512:81b01d6723a4e2a8be619f4a219920557e8a1684a715b87b1e812de1f8be66a16177f4490df1f7f1f96555ddacbc2672bede799076229f3229af48fbdcf4b11e
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags: nmh
       vars:
@@ -241,7 +241,7 @@
           - gdbm-devel
           - ncurses-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags: penaltybox
       vars:
@@ -250,7 +250,7 @@
         build_deps:
           - urcl-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
         - hyperscan
@@ -259,7 +259,7 @@
       vars:
         build_name: ragel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
         - hyperscan
@@ -272,7 +272,7 @@
           - ragel-6.10
           - sqlite-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_prebuilt
       tags: influxdb
       vars:
@@ -281,7 +281,7 @@
         rpm_url: https://repos.influxdata.com/rhel/7/x86_64/stable/{{ rpm }}
         rpm_checksum: sha512:beb7cef44d664951cd7b271571341238a64ebd137aac8a085828e5931952e17656f179381f765ac6cb59549dc65e8d1db7c3c56ae0258d8d49e2e255b04e86b4
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_go
       tags:
         - jsonnet
@@ -290,7 +290,7 @@
         build_repo: https://github.com/google/go-jsonnet
         build_version: v0.15.0
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags: redis
       vars:
@@ -298,7 +298,7 @@
         build_deps:
           - jemalloc-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags: rspamd
       vars:
@@ -322,7 +322,7 @@
           - ragel-6.10
           - sqlite-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags:
         - simta
@@ -343,21 +343,21 @@
           - openssl-devel
           - tcp_wrappers-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags: simta-admin
       vars:
         build_name: simta-admin
         build_repo: https://github.com/simta/simta-admin.git
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags: simta-mscan
       vars:
         build_name: simta-mscan
         build_repo: https://github.com/simta/simta-mscan.git
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags: simvacation
       vars:
@@ -369,7 +369,7 @@
           - openldap-devel
           - urcl-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_prebuilt
       tags: splunk
       vars:
@@ -378,13 +378,13 @@
         rpm_url: https://download.splunk.com/products/universalforwarder/releases/8.2.5/linux/splunkforwarder-8.2.5-77015bc7a462-linux-2.6-x86_64.rpm
         rpm_checksum: sha256:8f9ad3da2c9d9e3bc4e75b5af8cbce2943cb7c75445903d73cb9fd8d6c26601a
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags: sshguard
       vars:
         build_name: sshguard
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
         - mosh
@@ -399,6 +399,6 @@
           - protobuf-devel
           - zlib-devel
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: s3repo_upload
       tags: always

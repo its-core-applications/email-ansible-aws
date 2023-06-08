@@ -1,7 +1,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         launch_class: jail
@@ -12,7 +12,7 @@
         launch_tags:
           Status: production
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: jail
@@ -20,7 +20,7 @@
         dns_regional: false
         dns_private_ip: false
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: jail

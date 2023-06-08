@@ -1,7 +1,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         launch_class: dnsbl
@@ -13,7 +13,7 @@
     - when: region == aws_region
       block:
         - name: Sync DNSBLs
-          import_role:
+          ansible.builtin.import_role:
             name: rbldnsd
             tasks_from: sync.yml
 
@@ -27,12 +27,12 @@
             tags:
               Status: production
 
-        - meta: refresh_inventory
+        - ansible.builtin.meta: refresh_inventory
 
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: rbldnsd

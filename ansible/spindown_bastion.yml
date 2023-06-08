@@ -2,7 +2,7 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: ec2_eip_disassociate
 
         - name: Set status to spundown

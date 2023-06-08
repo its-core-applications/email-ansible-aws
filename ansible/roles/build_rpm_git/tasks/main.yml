@@ -33,5 +33,5 @@
             chdir: ~/{{ build_name }}
             target: rpm
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: localrepo_update

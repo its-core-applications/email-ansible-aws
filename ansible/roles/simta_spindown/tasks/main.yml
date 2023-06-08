@@ -34,14 +34,14 @@
 
     - name: Create local queue storage directory
       delegate_to: localhost
-      file:
+      ansible.builtin.file:
         dest: "{{ simqtmp_base }}"
         state: directory
         owner: "{{ ansible_user }}"
 
     - name: Touch lockfile
       delegate_to: localhost
-      file:
+      ansible.builtin.file:
         dest: "{{ simqtmp_path }}.lock"
         state: touch
 
@@ -54,6 +54,6 @@
 
     - name: Remove lockfile
       delegate_to: localhost
-      file:
+      ansible.builtin.file:
         dest: "{{ simqtmp_path }}.lock"
         state: absent

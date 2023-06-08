@@ -3,7 +3,7 @@
     - coordinator
   block:
     - name: Install simta-requeue
-      template:
+      ansible.builtin.template:
         dest: /usr/local/sbin/simta-requeue
         src: simta-requeue.j2
         owner: root
@@ -11,7 +11,7 @@
         mode: "0755"
 
     - name: Install simta-downgrade-efile
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/sbin/simta-downgrade-efile
         src: simta-downgrade-efile
         owner: root

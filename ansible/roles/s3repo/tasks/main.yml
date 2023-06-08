@@ -5,7 +5,7 @@
       when: ansible_facts.distribution is not defined
 
     - name: Configure umcollab yum repo
-      template:
+      ansible.builtin.template:
         dest: /etc/yum.repos.d/umcollab.repo
         src: umcollab.repo.j2
         owner: root

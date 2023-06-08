@@ -2,7 +2,7 @@
     - email
   block:
     - name: Install SSH private key
-      copy:
+      ansible.builtin.copy:
         dest: /home/email/.ssh/id_ecdsa
         content: "{{ lookup('flowerysong.hvault.kv', 'ssh/email').value }}"
         owner: email
@@ -10,7 +10,7 @@
         mode: "0400"
       no_log: true
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_instance_profile
       vars:
         ec2_profile: datastore
@@ -18,7 +18,7 @@
         ec2_profile_user: email
 
     - name: Install dnsbl-update script
-      copy:
+      ansible.builtin.copy:
         dest: /usr/bin/dnsbl-update
         src: dnsbl-update
         owner: root
@@ -26,7 +26,7 @@
         mode: "0755"
 
     - name: Set up aliases
-      template:
+      ansible.builtin.template:
         dest: /etc/profile.d/99_dnsbl-update.sh
         src: 99_dnsbl-update.sh.j2
         owner: root

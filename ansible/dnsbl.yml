@@ -2,20 +2,20 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: base
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: rsyslog_forward
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta
           vars:
             simta_localmail: true
             simta_tls: false
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: rbldnsd
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: sensu

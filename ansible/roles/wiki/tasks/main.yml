@@ -1,10 +1,10 @@
 - tags:
     - wiki
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: httpd
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: gollum
 
     - name: Install extra packages
@@ -28,7 +28,7 @@
         job: cd ~gollum/cia-documentation && git fetch origin && git rebase origin/main && git push origin main
 
     - name: Configure gollum-wiki
-      copy:
+      ansible.builtin.copy:
         dest: /etc/gollum-wiki.rb
         src: config.rb
         owner: root
@@ -36,7 +36,7 @@
         mode: "0644"
 
     - name: Configure gollum-wiki service
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/gollum-wiki.service
         src: gollum-wiki.service
         owner: root
@@ -54,7 +54,7 @@
         name: gollum-wiki
         state: restarted
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: letsencrypt
       vars:
         certificate: wiki.{{ subd }}
@@ -62,7 +62,7 @@
           - httpd
 
     - name: Configure gollum vhost
-      template:
+      ansible.builtin.template:
         dest: /etc/httpd/conf.d/wiki.{{ subd }}.conf
         src: httpd.conf.j2
         owner: root

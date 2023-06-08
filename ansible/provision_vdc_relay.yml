@@ -1,7 +1,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         aws_profile: "{{ (aws_layout[aws_status] | dict2items | selectattr('value.classes', 'contains', 'vdc-relay')).0.key }}"
@@ -11,7 +11,7 @@
         launch_groups:
           - vdc-relay
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: vdc-relay

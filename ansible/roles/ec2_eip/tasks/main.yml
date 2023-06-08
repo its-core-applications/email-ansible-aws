@@ -13,7 +13,7 @@
       register: eips
 
     - name: Make sure we have a free EIP
-      assert:
+      ansible.builtin.assert:
         that: eips.addresses | rejectattr('association_id', 'defined') | length > 0
         msg: No available {{ eip_class }} EIPs
 

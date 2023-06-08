@@ -3,10 +3,10 @@
   vars:
     efs_region: "{{ aws_layout[aws_status][aws_profile_efs].region }}"
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_find_subnets
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_security_groups
       vars:
         ec2sg_groups:

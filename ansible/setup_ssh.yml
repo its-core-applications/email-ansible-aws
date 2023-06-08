@@ -13,13 +13,13 @@
         public_key_hash: "{{ ((public_key | split)[0:2] | join(' ') | hash('sha1'))[:6] }}"
       block:
         - name: Copy private key to canonical name
-          copy:
+          ansible.builtin.copy:
             dest: "{{ key_file }}.{{ public_key_hash }}"
             content: "{{ private_key }}\n"
             mode: "0400"
 
         - name: Copy public key to canonical name
-          copy:
+          ansible.builtin.copy:
             dest: "{{ key_file }}.{{ public_key_hash }}.pub"
             content: "{{ public_key }}\n"
 

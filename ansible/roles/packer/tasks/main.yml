@@ -8,6 +8,6 @@
 
     # Installed by a system package that we don't need but can't remove
     - name: Make sure there's no packer in sbin
-      file:
+      ansible.builtin.file:
         path: /usr/sbin/packer
         state: absent

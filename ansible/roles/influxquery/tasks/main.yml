@@ -2,7 +2,7 @@
     - influxquery
   block:
     - name: Install influxquery
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/bin/influxquery
         src: influxquery
         owner: root

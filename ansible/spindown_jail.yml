@@ -11,12 +11,12 @@
             resource: "{{ instance_id }}"
             tags:
               Status: spindown
-        - meta: refresh_inventory
+        - ansible.builtin.meta: refresh_inventory
 
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: jail
@@ -26,10 +26,10 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: sensu_spindown
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta_spindown
 
         - name: Set status to spundown

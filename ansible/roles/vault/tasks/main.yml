@@ -1,7 +1,7 @@
 - tags:
     - vault
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: letsencrypt
       vars:
         certificate: vault.{{ subd }}
@@ -13,7 +13,7 @@
         state: latest
 
     - name: Configure vault server
-      template:
+      ansible.builtin.template:
         dest: /etc/vault.hcl
         src: vault.hcl.j2
         owner: root
@@ -21,7 +21,7 @@
         mode: "0644"
 
     - name: Configure vault service
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/vault.service
         src: vault.service
         owner: root
@@ -40,18 +40,18 @@
         state: restarted
 
     - name: Install custom monitoring script
-      template:
+      ansible.builtin.template:
         dest: "/usr/local/bin/check-vault-seal"
         src: check-vault-seal.j2
         owner: collaborate
         group: collaborate
         mode: "0755"
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: httpd
 
     - name: Configure a vhost for vault.{{ subd }}
-      template:
+      ansible.builtin.template:
         dest: /etc/httpd/conf.d/vault.{{ subd }}.conf
         src: httpd.conf.j2
         owner: root

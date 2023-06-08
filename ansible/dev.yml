@@ -4,11 +4,11 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: base
-        - import_role:
+        - ansible.builtin.import_role:
             name: build
-        - import_role:
+        - ansible.builtin.import_role:
             name: s3repo_build
           tags:
             - always

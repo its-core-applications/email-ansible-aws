@@ -7,7 +7,7 @@
         state: latest
 
     - name: Install ipthrottle filter
-      template:
+      ansible.builtin.template:
         dest: /etc/mail/filters/90_ipt
         src: 90_ipt.j2
         owner: root

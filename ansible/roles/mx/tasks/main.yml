@@ -1,11 +1,11 @@
 - tags:
     - mx
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: penaltybox
 
     - name: Install ingress-specific filters
-      copy:
+      ansible.builtin.copy:
         dest: /etc/mail/filters/{{ item }}
         src: "{{ item }}"
         owner: root
@@ -15,7 +15,7 @@
         - 21_drop_from
 
     - name: Install ingress-specific templated filters
-      template:
+      ansible.builtin.template:
         dest: /etc/mail/filters/{{ item }}
         src: "{{ item }}.j2"
         owner: root

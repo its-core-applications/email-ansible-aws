@@ -3,7 +3,7 @@
     - simta_reports
   block:
     - name: Install simta report scripts
-      copy:
+      ansible.builtin.copy:
         src: "{{ item }}"
         dest: /usr/local/bin/{{ item }}
         owner: root

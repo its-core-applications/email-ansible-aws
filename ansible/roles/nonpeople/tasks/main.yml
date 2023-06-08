@@ -23,7 +23,7 @@
 
     - name: Create .ssh directory for non-person accounts
       become_user: "{{ item.name }}"
-      file:
+      ansible.builtin.file:
         dest: ~/.ssh
         state: directory
         owner: "{{ item.name }}"
@@ -33,7 +33,7 @@
 
     - name: Install authorized_keys for non-person accounts
       become_user: "{{ item.name }}"
-      copy:
+      ansible.builtin.copy:
         dest: ~/.ssh/authorized_keys
         src: authorized_keys.{{ item.name }}
         owner: "{{ item.name }}"
@@ -42,7 +42,7 @@
       loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') }}"
 
     - name: Grant sudo access
-      copy:
+      ansible.builtin.copy:
         dest: /etc/sudoers.d/99_nonpeople
         src: sudoers
         owner: root

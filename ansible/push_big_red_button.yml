@@ -1,6 +1,6 @@
 - hosts: all
   tasks:
-    - assert:
+    - ansible.builtin.assert:
         that: aws_status == 'nonprod'
         msg: I'm sorry, Dave, I'm afraid I can't do that.
 
@@ -18,7 +18,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - assert:
+    - ansible.builtin.assert:
         that:
           - aws_status == 'nonprod'
           - BURNTHEWORLD | default(false)

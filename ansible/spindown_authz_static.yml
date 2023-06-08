@@ -1,17 +1,17 @@
 - hosts: Class_authz_static
   serial: 1
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_mark_oldest
 
 - hosts: Class_authz_static:&Status_spindown
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: sensu_spindown
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta_spindown
 
         - name: Set status to spundown

@@ -7,7 +7,7 @@
         state: latest
 
     - name: Create /etc/sensu
-      file:
+      ansible.builtin.file:
         dest: /etc/sensu
         state: directory
         owner: root
@@ -15,7 +15,7 @@
         mode: "0755"
 
     - name: Create Sensu storage directories
-      file:
+      ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
         owner: sensu

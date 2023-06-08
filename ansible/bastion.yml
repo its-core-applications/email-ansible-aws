@@ -2,100 +2,100 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: base
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: bastion
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: ssh_certs
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: rsyslog_forward
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta
           vars:
             simta_localmail: true
             simta_tls: false
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: localnameserver
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: sensu
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: vault
           when: "'vault' in aws_layout[aws_status][aws_profile_ec2].services"
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: vault_backup
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: packer
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: nonpeople
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: people
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: duo
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: aws_saml_login
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: email_dnsbl-update
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: email_filter_data_update
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: ammit
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: google_gam
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: kerberos_client
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: redis_coordinator
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta_coordinator
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta_reports
           when: "'simta_reports' in aws_layout[aws_status][aws_profile_ec2].services"
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: plasticman
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: ansible_coordinator
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: dashboard
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: grafana
           when: "'graphs' in aws_layout[aws_status][aws_profile_ec2].services"
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: clamav_coordinator
           when: "'clamav' in aws_layout[aws_status][aws_profile_ec2].services"
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: ara
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: wiki
           when: "'wiki' in aws_layout[aws_status][aws_profile_ec2].services"
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: ealert

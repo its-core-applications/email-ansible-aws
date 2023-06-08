@@ -1,4 +1,4 @@
 - hosts: localhost
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: spf

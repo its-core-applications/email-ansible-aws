@@ -2,7 +2,7 @@
     - tcpd_update
   block:
     - name: Install sync script
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/sbin/tcpd-update
         src: tcpd-update
         owner: root
@@ -12,7 +12,7 @@
     # We can't just set `simta_tcpwrappers: true` because that tries to manage
     # /etc/hosts.allow as well.
     - name: Configure hosts.deny
-      copy:
+      ansible.builtin.copy:
         dest: /etc/hosts.deny
         src: hosts.deny
         owner: root
@@ -29,7 +29,7 @@
       delay: 10
 
     - name: Schedule syncing
-      template:
+      ansible.builtin.template:
         dest: /etc/cron.d/tcpd-update
         src: tcpd-update.cron.j2
         owner: root

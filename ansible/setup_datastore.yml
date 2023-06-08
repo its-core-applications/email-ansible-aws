@@ -1,6 +1,6 @@
 - hosts: localhost
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: s3_website
       vars:
         s3_hostname: datastore.{{ subd }}

@@ -2,7 +2,7 @@
     - sensu
     - sensu_agent
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: sensu_common
 
     - name: Install sensu and dependencies
@@ -14,7 +14,7 @@
         state: latest
       notify: Restart sensu-agent
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: python_venv
       vars:
         venv_name: sensu
@@ -31,7 +31,7 @@
           - requests
 
     - name: Install sensu unit
-      copy:
+      ansible.builtin.copy:
         src: sensu-agent.service
         dest: /etc/systemd/system/sensu-agent.service
         owner: root
@@ -46,7 +46,7 @@
       notify: Restart sensu-agent
 
     - name: Configure sensu startup
-      template:
+      ansible.builtin.template:
         dest: /etc/sensu/agent.yml
         src: agent.yml.j2
         owner: root
@@ -55,7 +55,7 @@
       notify: Restart sensu-agent
 
     - name: Install custom checks
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/bin/{{ item }}
         src: "{{ item }}"
         owner: root
@@ -74,7 +74,7 @@
         - metrics-ec2
 
     - name: Configure static labels
-      template:
+      ansible.builtin.template:
         dest: /etc/sensu/labels.yml
         src: labels.yml.j2
         owner: root
@@ -82,7 +82,7 @@
         mode: "0644"
 
     - name: Install sensu-dynsubs
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/sbin/sensu-dynsubs
         src: sensu-dynsubs
         owner: root

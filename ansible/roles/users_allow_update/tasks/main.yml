@@ -2,7 +2,7 @@
     - users_allow_update
   block:
     - name: Install sync script
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/sbin/users-allow-update
         src: users-allow-update
         owner: root
@@ -19,7 +19,7 @@
       delay: 10
 
     - name: Schedule syncing
-      template:
+      ansible.builtin.template:
         dest: /etc/cron.d/users-allow-update
         src: users-allow-update.cron.j2
         owner: root

@@ -11,7 +11,7 @@
       become: false
       block:
         - name: Install spec file for {{ build_name }}
-          copy:
+          ansible.builtin.copy:
             src: build/{{ build_name }}/{{ build_name }}.spec
             dest: ~/{{ build_name }}.spec
             mode: "0644"
@@ -20,7 +20,7 @@
           command: spectool -g -R ~/{{ build_name }}.spec
 
         - name: Install non-fetchable sources for {{ build_name }}
-          copy:
+          ansible.builtin.copy:
             src: "{{ item }}"
             dest: ~/rpmbuild/SOURCES/{{ item | basename }}
             mode: "0644"
@@ -31,5 +31,5 @@
           environment:
               QA_RPATHS: 1
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: localrepo_update

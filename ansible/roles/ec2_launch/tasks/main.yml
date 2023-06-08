@@ -8,11 +8,11 @@
        - "{{ launch_subnet_type | default('public') }}-default"
   block:
     - name: Check guardrail
-      assert:
+      ansible.builtin.assert:
         that: launch_class in aws_layout[aws_status][aws_profile].classes
         fail_msg: If you're really sure you want to launch this instance, modify aws_layout to allow it.
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_security_groups
       vars:
         ec2sg_groups: "{{ launch_groups_default | union(launch_groups) }}"
@@ -46,7 +46,7 @@
       set_fact:
         find_ami: "{{ find_ami_facts.images | sort(attribute='creation_date') | last }}"
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_find_subnets
 
     - name: Create {{ launch_class }} instance(s)
@@ -102,7 +102,7 @@
       loop_control:
         label: "{{ item.instance_id }}"
 
-    - meta: refresh_inventory
+    - ansible.builtin.meta: refresh_inventory
 
     - name: Flush DNS cache
       command: unbound-control reload

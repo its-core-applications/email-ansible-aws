@@ -3,7 +3,7 @@
     - collab_admin_kit
     - gam
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: python_venv
       vars:
         venv_name: gam
@@ -43,7 +43,7 @@
         version: v4.94
 
     - name: Create GAM config directories
-      file:
+      ansible.builtin.file:
         dest: /home/collaborate/gam-config/{{ item }}
         state: directory
         owner: collaborate
@@ -53,7 +53,7 @@
         - "{{ discussionsd }}"
 
     - name: Configure primary GAM
-      file:
+      ansible.builtin.file:
         dest: /home/collaborate/gam-config/{{ googled }}/{{ item }}
         state: touch
         owner: collaborate
@@ -63,7 +63,7 @@
         - nobrowser.txt
 
     - name: Copy over primary GAM credentials
-      copy:
+      ansible.builtin.copy:
         dest: "/home/collaborate/gam-config/{{ googled }}/{{ item.value }}.b64"
         content: "{{ lookup('flowerysong.hvault.kv', 'google/gam/primary/' ~ item.name).value }}"
         owner: collaborate
@@ -82,7 +82,7 @@
         - oauth2service.json
 
     - name: Set permissions on primary GAM credentials
-      file:
+      ansible.builtin.file:
         dest: "/home/collaborate/gam-config/{{ googled }}/{{ item }}"
         owner: collaborate
         group: collaborate
@@ -92,7 +92,7 @@
         - oauth2service.json
 
     - name: Configure discussions GAM
-      file:
+      ansible.builtin.file:
         dest: /home/collaborate/gam-config/{{ discussionsd }}/{{ item }}
         state: touch
         owner: collaborate
@@ -102,7 +102,7 @@
         - nobrowser.txt
 
     - name: Copy over discussions GAM credentials
-      copy:
+      ansible.builtin.copy:
         dest: "/home/collaborate/gam-config/{{ discussionsd }}/{{ item.value }}.b64"
         content: "{{ lookup('flowerysong.hvault.kv', 'google/gam/discussions/' ~ item.name).value }}"
         owner: collaborate
@@ -121,7 +121,7 @@
         - oauth2service.json
 
     - name: Set permissions on discussions GAM credentials
-      file:
+      ansible.builtin.file:
         dest: "/home/collaborate/gam-config/{{ discussionsd }}/{{ item }}"
         owner: collaborate
         group: collaborate

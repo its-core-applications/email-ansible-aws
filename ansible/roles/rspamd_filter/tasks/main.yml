@@ -1,11 +1,11 @@
 - tags:
     - rspamd
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: rspamd
 
     - name: Install rspamd filter
-      copy:
+      ansible.builtin.copy:
         dest: /etc/mail/filters/79_rspamd
         src: 80_rspamd
         owner: root

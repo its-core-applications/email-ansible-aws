@@ -2,7 +2,7 @@
     - rsyslog
   block:
     - name: Configure rsyslog forwarding
-      template:
+      ansible.builtin.template:
         dest: /etc/rsyslog.d/omrelp.conf
         src: omrelp.conf.j2
         owner: root

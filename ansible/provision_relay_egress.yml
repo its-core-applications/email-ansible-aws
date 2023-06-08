@@ -1,12 +1,12 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_class_eips
       vars:
         eip_class: relay-egress
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         launch_class: relay-egress
@@ -23,7 +23,7 @@
       delegate_to: localhost
       become: false
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: ec2_eip
           vars:
             eip_class: relay-egress
@@ -45,19 +45,19 @@
 - hosts: localhost
   become: false
   tasks:
-    - meta: refresh_inventory
+    - ansible.builtin.meta: refresh_inventory
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: relay-egress
         dns_group: Class_relay_egress
 
-    - import_role:
+    - ansible.builtin.import_role:
          name: redis_coordinator
       tags: redis
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: route53_dns_from_inventory
       vars:
         dns_host: pink

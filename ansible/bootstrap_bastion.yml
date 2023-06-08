@@ -4,13 +4,13 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: base
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: bastion
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: vault
           when: "'vault' in aws_layout[aws_status][aws_profile_ec2].services"
 

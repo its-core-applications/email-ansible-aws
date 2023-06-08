@@ -3,7 +3,7 @@
     - accounts
   block:
     - name: Configure PAM
-      copy:
+      ansible.builtin.copy:
         src: "{{ item }}.pam"
         dest: /etc/pam.d/{{ item }}
         owner: root
@@ -32,7 +32,7 @@
       loop: "{{ user_accounts }}"
 
     - name: Grant sudo access
-      template:
+      ansible.builtin.template:
         dest: /etc/sudoers.d/99_collab
         src: sudoers_99_collab.j2
         owner: root

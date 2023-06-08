@@ -3,15 +3,15 @@
   vars:
     bastion_hostname: "{{ aws_layout[aws_status][aws_profile].bastion }}.{{ subd }}"
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_find_subnets
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_class_eips
       vars:
         eip_class: bastion
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         launch_class: bastion
@@ -65,11 +65,11 @@
         seconds: 120
       when: bastion_hostname not in hostvars
 
-    - meta: refresh_inventory
+    - ansible.builtin.meta: refresh_inventory
 
 - hosts: Class_bastion:&Status_spinup
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_eip
       vars:
         eip_class: bastion

@@ -21,7 +21,7 @@
       notify: Restart splunkforwarder
 
     - name: Install systemd unit file for splunk
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/splunkforwarder.service
         src: splunkforwarder.service
         owner: root
@@ -30,7 +30,7 @@
       notify: Restart splunkforwarder
 
     - name: Configure splunk deploymentclient
-      copy:
+      ansible.builtin.copy:
         dest: /opt/splunkforwarder/etc/system/default/deploymentclient.conf
         src: deploymentclient.conf
         owner: root

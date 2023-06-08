@@ -22,7 +22,7 @@
       notify: Restart influxdb
 
     - name: Fix file permissions
-      file:
+      ansible.builtin.file:
         dest: /var/lib/influxdb
         state: directory
         owner: influxdb
@@ -30,7 +30,7 @@
         recurse: true
 
     - name: Configure influxdb
-      copy:
+      ansible.builtin.copy:
         dest: /etc/influxdb/influxdb.conf
         src: influxdb.conf
         owner: root
@@ -40,7 +40,7 @@
 
     # The InfluxDB RPM installs a broken service? Furrfu.
     - name: Create influxdb service
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/influxdb.service
         src: influxdb.service
         owner: root

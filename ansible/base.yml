@@ -1,5 +1,5 @@
 - hosts: all:!Status_spindown:!Status_spundown:!miserver
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: base
       when: region == aws_region

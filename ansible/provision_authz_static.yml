@@ -1,7 +1,7 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_launch
       vars:
         launch_class: authz-static
@@ -14,11 +14,11 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: tcpd_update
 
         - name: Sync filter data
-          import_role:
+          ansible.builtin.import_role:
             name: simta
             tasks_from: sync.yml
 
@@ -35,12 +35,12 @@
 - hosts: localhost
   become: false
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_find_subnets
       tags:
         - eni
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_eni
       vars:
         eni_name: authz-static

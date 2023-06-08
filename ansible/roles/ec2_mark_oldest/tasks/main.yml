@@ -17,4 +17,4 @@
         - ansible_play_hosts_all | intersect(aws_region_group) | intersect(groups.Status_spindown) | length == 0
         - launch_time == ansible_play_hosts_all | intersect(aws_region_group) | intersect(groups.Status_production) | map('extract', hostvars, 'launch_time') | sort | first
 
-    - meta: refresh_inventory
+    - ansible.builtin.meta: refresh_inventory

@@ -4,7 +4,7 @@
   become: true
   block:
     - name: Create cache dir
-      file:
+      ansible.builtin.file:
         dest: "{{ lambda_cache_dir }}/pkg"
         state: directory
         owner: root
@@ -20,7 +20,7 @@
       register: clone_result
 
     - name: Copy function
-      copy:
+      ansible.builtin.copy:
         src: lambda/{{ lambda_name }}.py
         dest: "{{ lambda_cache_dir }}/pkg/{{ lambda_name }}.py"
         owner: root

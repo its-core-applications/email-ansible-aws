@@ -1,11 +1,11 @@
 - tags:
     - plasticman
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: influxquery
 
     - name: Install plasticman
-      template:
+      ansible.builtin.template:
         dest: /usr/local/sbin/plasticman
         src: plasticman.j2
         owner: root

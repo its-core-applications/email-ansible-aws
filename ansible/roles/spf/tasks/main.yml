@@ -19,7 +19,7 @@
       loop: "{{ spf_main }}"
 
     - name: Make sure there are no duplicate names
-      assert:
+      ansible.builtin.assert:
         that: (spf_names | length) == (spf_names | unique | length)
 
     - name: Create third-party SPF records

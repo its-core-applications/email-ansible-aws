@@ -7,7 +7,7 @@
         state: latest
 
     - name: Install penaltybox filter
-      template:
+      ansible.builtin.template:
         dest: /etc/mail/filters/70_pb
         src: 70_pb.j2
         owner: root

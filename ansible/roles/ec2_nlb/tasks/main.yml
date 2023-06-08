@@ -3,7 +3,7 @@
     - nlb
   become: false
   block:
-    - include_role:
+    - ansible.builtin.include_role:
         name: ec2_targetgroup
       vars:
         tg_name: "{{ nlb_name }}-{{ tg_port }}"

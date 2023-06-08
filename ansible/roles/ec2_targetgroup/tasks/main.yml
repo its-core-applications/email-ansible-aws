@@ -4,7 +4,7 @@
   become: false
   delegate_to: localhost
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_find_subnets
 
     - name: Create {{ tg_name }} targetgroup

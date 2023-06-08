@@ -12,7 +12,7 @@
     - when: "'vault' not in aws_layout[aws_status][aws_profile_ec2].services"
       block:
         - name: Create /home/vault
-          file:
+          ansible.builtin.file:
             dest: /home/vault
             state: directory
             owner: root

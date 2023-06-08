@@ -19,7 +19,7 @@
           - --exclude=*/LICENSE*
 
     - name: Configure geoipupdate
-      template:
+      ansible.builtin.template:
         dest: /etc/GeoIP.conf
         src: GeoIP.conf.j2
         owner: root

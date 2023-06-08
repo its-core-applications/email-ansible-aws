@@ -31,7 +31,7 @@
         production_count_az: "{{ groups.Class_mx | intersect(groups.Status_production) | intersect(groups['az_' ~ placement.availability_zone | replace('-', '_')]) | length }}"
       register: result
 
-    - meta: refresh_inventory
+    - ansible.builtin.meta: refresh_inventory
 
 - import_playbook: setup_lb_mx.yml
 
@@ -39,10 +39,10 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: sensu_spindown
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta_spindown
 
 # Do Redis management with `serial: 1` to minimize races
@@ -51,7 +51,7 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: redis_spindown
 
         - name: Set status to spundown

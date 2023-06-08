@@ -7,7 +7,7 @@
         state: latest
 
     - name: Configure freshclam
-      template:
+      ansible.builtin.template:
         dest: /etc/freshclam.conf
         src: freshclam.conf.j2
         owner: root

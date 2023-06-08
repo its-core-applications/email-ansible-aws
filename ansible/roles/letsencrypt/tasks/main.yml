@@ -3,7 +3,7 @@
     - letsencrypt
   block:
     - name: Create certificate storage directory
-      file:
+      ansible.builtin.file:
         dest: /etc/pki/collab/private
         owner: root
         group: mail
@@ -30,7 +30,7 @@
       register: ec_key_result
 
     - name: Create OpenSSL configuration file for {{ certificate }}
-      template:
+      ansible.builtin.template:
         src: openssl.cnf.j2
         dest: /etc/pki/collab/{{ certificate }}.cnf
         owner: root

@@ -1,7 +1,7 @@
 - tags:
     - saslauthd
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: kerberos_client
 
     - name: Install sasl
@@ -11,7 +11,7 @@
       notify: Restart saslauthd
 
     - name: Configure saslauthd service
-      copy:
+      ansible.builtin.copy:
         dest: /etc/sysconfig/saslauthd
         src: saslauthd.sysconfig
         owner: root
@@ -20,7 +20,7 @@
       notify: Restart saslauthd
 
     - name: Configure saslauthd
-      template:
+      ansible.builtin.template:
         dest: /etc/saslauthd.conf
         src: saslauthd.conf.j2
         owner: root
@@ -29,7 +29,7 @@
       notify: Restart saslauthd
 
     - name: Copy the encoded keytab
-      copy:
+      ansible.builtin.copy:
         dest: /etc/krb5.keytab.b64
         content: "{{ lookup('flowerysong.hvault.kv', 'krb/' ~ simta_config ~ '.' ~ tld).value }}"
         owner: root
@@ -43,7 +43,7 @@
       notify: Restart saslauthd
 
     - name: Set permissions on the keytab
-      file:
+      ansible.builtin.file:
         dest: /etc/krb5.keytab
         owner: root
         group: mail

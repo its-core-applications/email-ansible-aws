@@ -3,7 +3,7 @@
     - sensu_monitor_health
   delegate_to: localhost
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_find_subnets
 
     - name: Fetch security group ID
@@ -15,7 +15,7 @@
       become: false
       register: result_sg_group
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: lambda_function
       vars:
         lambda_name: sensu_monitor_health

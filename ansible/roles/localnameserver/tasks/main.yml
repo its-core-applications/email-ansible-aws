@@ -8,7 +8,7 @@
       notify: Restart unbound
 
     - name: Configure unbound
-      template:
+      ansible.builtin.template:
         dest: /etc/unbound/unbound.conf
         src: unbound.conf.j2
         owner: root
@@ -28,7 +28,7 @@
         state: started
 
     - name: Set 127.0.0.1 as the active nameserver
-      copy:
+      ansible.builtin.copy:
         dest: /etc/resolv.conf
         content: "nameserver 127.0.0.1\n"
         owner: root
@@ -37,7 +37,7 @@
         attributes: i
 
     - name: Disable PEERDNS for eth0
-      copy:
+      ansible.builtin.copy:
         dest: /etc/sysconfig/network-scripts/ifcfg-eth0
         src: ifcfg-eth0
         owner: root
@@ -45,7 +45,7 @@
         mode: "0644"
 
     - name: Disable cloud-init network config
-      copy:
+      ansible.builtin.copy:
         dest: /etc/cloud/cloud.cfg.d/99-network.cfg
         content: "network: {config: disabled}"
         owner: root

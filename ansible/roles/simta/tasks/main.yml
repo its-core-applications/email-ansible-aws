@@ -19,7 +19,7 @@
         state: latest
 
     - name: Create directories
-      file:
+      ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
         owner: root
@@ -31,7 +31,7 @@
         - /etc/systemd/system/simta.service.d
 
     - name: Enable core files
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/simta.service.d/core.conf
         src: systemd-core.conf
         owner: root
@@ -43,7 +43,7 @@
         - not simta_localmail
       block:
         - name: Install standard filters
-          copy:
+          ansible.builtin.copy:
             dest: /etc/mail/filters/{{ item }}
             src: filters/{{ item }}
             owner: root
@@ -65,7 +65,7 @@
             job: /usr/local/bin/datastore-fetch -r --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }} filter_data/{{ 'relay' if simta_relay else 'mx' }} /etc/mail &>/dev/null
 
     - name: Install /etc/mail/aliases
-      copy:
+      ansible.builtin.copy:
         dest: /etc/mail/aliases
         src: "{{ lookup('first_found', 'aliases-' ~ simta_config, 'aliases') }}"
         owner: root
@@ -74,7 +74,7 @@
       notify: Rebuild aliases
 
     - name: Configure tcpwrappers
-      copy:
+      ansible.builtin.copy:
         dest: /etc/{{ item }}
         src: "{{ lookup('first_found', item ~ '-' ~ simta_config, item) }}"
         owner: root
@@ -97,7 +97,7 @@
       notify: Restart simta
 
     - name: Configure OpenLDAP defaults
-      copy:
+      ansible.builtin.copy:
         dest: /etc/openldap/ldap.conf
         src: ldap.conf
         owner: root
@@ -107,7 +107,7 @@
       when: simta_ldap
 
     - name: Install alias files for alias domains
-      copy:
+      ansible.builtin.copy:
         dest: /etc/mail/aliases-{{ item }}
         src: aliases-{{ item }}
         owner: root
@@ -117,7 +117,7 @@
       loop: "{{ simta_alias_domains | default([]) }}"
 
     - name: Configure simvacation
-      template:
+      ansible.builtin.template:
         dest: /etc/mail/simvacation.conf
         src: simvacation.conf.j2
         owner: root
@@ -125,12 +125,12 @@
         mode: "0644"
       when: simta_ldap
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: saslauthd
       when: simta_authn
 
     - name: Configure simta
-      template:
+      ansible.builtin.template:
         dest: /etc/simta.conf
         src: "{{ simta_localmail | ternary('simta.conf-localmail.j2', 'simta.conf.j2') }}"
         owner: root
@@ -139,7 +139,7 @@
       notify: Restart simta
 
     - name: Create config directories
-      file:
+      ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
         owner: root
@@ -152,7 +152,7 @@
     - when: simta_ldap
       block:
         - name: Configure LDAP domains
-          template:
+          ansible.builtin.template:
             dest: /etc/simta.conf.d/domain/{{ [item.slug, item.tld | default(tld)] | select('defined') | join('.') }}.conf
             src: ldap_domain.conf.j2
             owner: root
@@ -164,7 +164,7 @@
           notify: Restart simta
 
         - name: Configure mapped LDAP domains
-          template:
+          ansible.builtin.template:
             dest: /etc/simta.conf.d/domain/{{ item.domain }}.conf
             src: ldap_domain_mapped.conf.j2
             owner: root
@@ -176,7 +176,7 @@
           notify: Restart simta
 
     - name: Configure autoreply domains
-      template:
+      ansible.builtin.template:
         dest: /etc/simta.conf.d/domain/{{ item }}.conf
         src: autoreply_domain.conf.j2
         owner: root
@@ -186,7 +186,7 @@
       notify: Restart simta
 
     - name: Configure alias domains
-      template:
+      ansible.builtin.template:
         dest: /etc/simta.conf.d/domain/{{ item }}.conf
         src: alias_domain.conf.j2
         owner: root
@@ -196,7 +196,7 @@
       notify: Restart simta
 
     - name: Configure devnull domains
-      template:
+      ansible.builtin.template:
         dest: /etc/simta.conf.d/domain/{{ item }}.conf
         src: devnull_domain.conf.j2
         owner: root
@@ -206,7 +206,7 @@
       notify: Restart simta
 
     - name: Configure delivery domains
-      template:
+      ansible.builtin.template:
         dest: /etc/simta.conf.d/domain/{{ item.name }}.conf
         src: delivery_domain.conf.j2
         owner: root
@@ -214,20 +214,20 @@
         mode: "0644"
       loop: "{{ simta_delivery_domains | default([]) }}"
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: certificate
       vars:
         certificate: "{{ simta_config }}.{{ tld }}"
       when: simta_tls
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: certificate
       vars:
         certificate: "{{ simta_dkim_selector }}._domainkey.{{ tld }}"
         certificate_type: dkim
       when: simta_dkim
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: certificate
       vars:
         certificate: "{{ simta_arc_selector }}._domainkey.{{ tld }}"
@@ -246,7 +246,7 @@
         state: started
 
     - name: Install custom monitoring scripts
-      template:
+      ansible.builtin.template:
         dest: /usr/local/bin/{{ item }}
         src: "{{ item }}.j2"
         owner: collaborate

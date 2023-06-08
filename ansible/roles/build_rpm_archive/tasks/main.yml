@@ -10,7 +10,7 @@
         mode: "0644"
 
     - name: Create extraction dir
-      file:
+      ansible.builtin.file:
         dest: ~/{{ archive_file | splitext | first }}
         state: directory
 
@@ -38,5 +38,5 @@
       vars:
         build_executables: "{{ result.files | selectattr('mode', 'match', '^07') }}"
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: localrepo_update

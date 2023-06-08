@@ -12,7 +12,7 @@
         state: present
 
     - name: Create repo cache directory
-      file:
+      ansible.builtin.file:
         dest: "{{ cache_root }}"
         state: directory
         owner: root

@@ -4,6 +4,6 @@
 
 - hosts: localhost
   tasks:
-    - meta: refresh_inventory
+    - ansible.builtin.meta: refresh_inventory
 
 - import_playbook: deprovision_spundown.yml

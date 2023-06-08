@@ -1,7 +1,7 @@
 - tags:
     - hostcertificate
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_instance_profile
       vars:
         ec2_profile: acme
@@ -9,7 +9,7 @@
         ec2_profile_user: root
 
     - name: Install acme_tiny
-      copy:
+      ansible.builtin.copy:
         src: acme_tiny.py
         dest: /usr/local/sbin/acme_tiny
         owner: root
@@ -17,7 +17,7 @@
         mode: "0755"
 
     - name: Install hostcertificate
-      copy:
+      ansible.builtin.copy:
         src: hostcertificate
         dest: /usr/local/sbin/hostcertificate
         owner: root

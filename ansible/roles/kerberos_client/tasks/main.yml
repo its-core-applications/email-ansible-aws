@@ -2,7 +2,7 @@
     - kerberos
   block:
     - name: Configure krb5
-      template:
+      ansible.builtin.template:
         dest: /etc/krb5.conf.d/{{ item }}
         src: "{{ item }}.j2"
         owner: root

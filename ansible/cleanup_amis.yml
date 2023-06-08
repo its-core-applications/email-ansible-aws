@@ -2,7 +2,7 @@
   become: false
   tasks:
     - name: Clean up each type of image
-      include_role:
+      ansible.builtin.include_role:
         name: ec2_ami_cleanup
       vars:
         bad_classes:
@@ -26,7 +26,7 @@
       loop_control:
         loop_var: image_type
 
-    - include_role:
+    - ansible.builtin.include_role:
         name: ec2_ami_cleanup
       vars:
         image_type: vdc_relay

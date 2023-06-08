@@ -8,7 +8,7 @@
       notify: Restart redis
 
     - name: Configure redis
-      template:
+      ansible.builtin.template:
         dest: /etc/redis.conf
         src: redis.conf.j2
         owner: redis

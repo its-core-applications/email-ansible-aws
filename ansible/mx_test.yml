@@ -2,37 +2,37 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: base
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: rsyslog_forward
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: localnameserver
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: clamav_filter
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: rspamd_filter
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: redis
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: mx
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: rpmbuild
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: localrepo
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: build_rpm_git
           tags: simta
           vars:

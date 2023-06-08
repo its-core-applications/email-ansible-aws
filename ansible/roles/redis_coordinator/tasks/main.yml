@@ -12,7 +12,7 @@
 
     - name: Install management scripts
       become: true
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/sbin/{{ item }}
         src: "{{ item }}"
         owner: root

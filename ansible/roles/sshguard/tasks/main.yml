@@ -8,7 +8,7 @@
       notify: Restart sshguard
 
     - name: Configure sshguard
-      copy:
+      ansible.builtin.copy:
         dest: /etc/sshguard.conf
         src: sshguard.conf
         owner: root

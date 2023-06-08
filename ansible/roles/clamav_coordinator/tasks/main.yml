@@ -1,16 +1,16 @@
 - tags:
     - clamav
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: clamav
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: s3_website
       vars:
         s3_hostname: clamav.{{ subd }}
 
     - name: Create signature cache directories
-      file:
+      ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
         owner: clamupdate
@@ -30,7 +30,7 @@
         - clamav-update
 
     - name: Install processing scripts
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/sbin/{{ item }}
         src: "{{ item }}"
         owner: root
@@ -41,7 +41,7 @@
         - clamav_rfxn
 
     - name: Configure freshclam for official signatures
-      copy:
+      ansible.builtin.copy:
         dest: /etc/freshclam.official.conf
         src: freshclam.conf
         owner: root
@@ -55,7 +55,7 @@
       failed_when: result.rc > 1
 
     - name: Copy custom signatures
-      copy:
+      ansible.builtin.copy:
         src: "{{ item.name }}"
         dest: "{{ clamav_sigdir }}/{{ item.name }}"
         mode: "0644"
@@ -92,7 +92,7 @@
       changed_when: false
 
     - name: Copy signatures to cache directory
-      copy:
+      ansible.builtin.copy:
         src: "{{ clamav_tmpdir }}/{{ item.item.name }}"
         dest: "{{ clamav_sigdir }}/{{ item.item.name }}"
       loop: "{{ updated_sigs }}"
@@ -113,7 +113,7 @@
       register: result
 
     - name: Check scan results
-      assert:
+      ansible.builtin.assert:
         that:
           - result.rc == 1
           - scanned_files != 0

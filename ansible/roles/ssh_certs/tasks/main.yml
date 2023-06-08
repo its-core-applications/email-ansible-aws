@@ -28,7 +28,7 @@
       register: result
 
     - name: Write out certificates
-      copy:
+      ansible.builtin.copy:
         dest: "{{ item.item.source | regex_replace('.pub$', '-cert.pub') }}"
         content: "{{ item.result.data.signed_key }}"
         owner: root

@@ -15,7 +15,7 @@
         state: latest
 
     - name: Configure pam_duo
-      template:
+      ansible.builtin.template:
         dest: /etc/duo/pam_duo.conf
         src: pam_duo.conf.j2
         owner: root
@@ -23,7 +23,7 @@
         mode: "0600"
 
     - name: Configure PAM for sshd
-      copy:
+      ansible.builtin.copy:
         dest: /etc/pam.d/sshd
         src: sshd.pam
         owner: root

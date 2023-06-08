@@ -1,10 +1,10 @@
 - tags:
     - seshet
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: geolite2
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: python_venv
       vars:
         venv_name: seshet
@@ -24,7 +24,7 @@
             extra_args: /usr/local/venv/seshet/bin/seshet-retrieve
 
     - name: Install seshet
-      copy:
+      ansible.builtin.copy:
         src: "{{ item }}"
         dest: /usr/local/venv/seshet/bin/{{ item }}
         owner: root
@@ -42,7 +42,7 @@
         job: seshet -H pink.{{ aws_region }}.{{ subd }} -d '--heartbeat syslog --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
 
     - name: Install simta-authn-log-filter
-      copy:
+      ansible.builtin.copy:
         src: simta-authn-log-filter
         dest: /usr/local/bin/simta-authn-log-filter
         owner: root

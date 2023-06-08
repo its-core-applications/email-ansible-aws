@@ -57,7 +57,7 @@
         state: mounted
 
     - name: Update authorized_keys for {{ ansible_user }}
-      copy:
+      ansible.builtin.copy:
         dest: "~{{ ansible_user }}/.ssh/authorized_keys"
         content: "{{ slurped_keys.content | b64decode }}\n"
         mode: "0600"
@@ -76,7 +76,7 @@
       delegate_to: localhost
 
     - name: Create ~/.aws
-      file:
+      ansible.builtin.file:
         dest: "~{{ ansible_user }}/.aws"
         state: directory
         owner: "{{ ansible_user }}"
@@ -84,7 +84,7 @@
         mode: "0770"
 
     - name: Configure AWS profiles
-      template:
+      ansible.builtin.template:
         src: aws_config.j2
         dest: "~{{ ansible_user }}/.aws/config"
         owner: "{{ ansible_user }}"
@@ -96,20 +96,20 @@
         - github
       block:
         - name: Install GitHub deploy keys for root
-          copy:
+          ansible.builtin.copy:
             content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ item).value }}\n"
             dest: /root/.ssh/id_ed25519.{{ item }}
             mode: "0400"
           loop: "{{ [] if bootstrap else (query('flowerysong.hvault.list', 'secret/ssh/') | select('match', 'github.')) }}"
 
         - name: Configure SSH for root
-          template:
+          ansible.builtin.template:
             src: ssh_config.j2
             dest: ~/.ssh/config
             mode: "0644"
 
     - name: Install offcall script
-      copy:
+      ansible.builtin.copy:
         src: offcall.py
         dest: /usr/local/bin/offcall
         owner: root

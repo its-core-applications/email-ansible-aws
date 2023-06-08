@@ -1,11 +1,11 @@
 - tags:
     - dashboard
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: httpd
 
     - name: Configure a vhost for dashboard.{{ region }}.{{ subd }}
-      template:
+      ansible.builtin.template:
         dest: /etc/httpd/conf.d/dashboard.{{ region }}.{{ subd }}.conf
         src: httpd.conf.j2
         owner: root
@@ -13,7 +13,7 @@
         mode: "0644"
       notify: Restart httpd
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: letsencrypt
       vars:
         certificate: dashboard.{{ region }}.{{ subd }}

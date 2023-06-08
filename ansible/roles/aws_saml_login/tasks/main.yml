@@ -54,7 +54,7 @@
       command: chmod -R uoa+r {{ install_root }}/node_modules/puppeteer/.local-chromium
 
     - name: Configure alias
-      copy:
+      ansible.builtin.copy:
         dest: /etc/profile.d/99_aws-saml-login.sh
         content: alias aws-saml-login='node {{ install_root }}/aws-saml-login.js'
         owner: root

@@ -1,7 +1,7 @@
 - hosts: Class_authz_static
   serial: 1
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_mark_oldest
 
 - import_playbook: provision_authz_static.yml
@@ -10,7 +10,7 @@
 
 - hosts: localhost
   tasks:
-    - meta: refresh_inventory
+    - ansible.builtin.meta: refresh_inventory
 
 - import_playbook: deprovision_spundown.yml
 

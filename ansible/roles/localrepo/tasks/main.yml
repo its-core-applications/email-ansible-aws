@@ -1,14 +1,14 @@
 - tags:
     - build
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: rpmbuild
 
-    - import_role:
+    - ansible.builtin.import_role:
         name: localrepo_update
 
     - name: Configure local yum repo
-      template:
+      ansible.builtin.template:
         dest: /etc/yum.repos.d/local.repo
         src: local.repo.j2
         owner: root

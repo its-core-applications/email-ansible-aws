@@ -1,7 +1,7 @@
 - hosts: Class_authz_relay
   serial: 1
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_mark_oldest
 
 - import_playbook: setup_lb_authz_relay.yml
@@ -10,10 +10,10 @@
   tasks:
     - when: region == aws_region
       block:
-        - import_role:
+        - ansible.builtin.import_role:
             name: sensu_spindown
 
-        - import_role:
+        - ansible.builtin.import_role:
             name: simta_spindown
 
         - name: Set status to spundown

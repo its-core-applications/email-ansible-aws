@@ -1,7 +1,7 @@
 - tags:
     - dynhostname
   block:
-    - import_role:
+    - ansible.builtin.import_role:
         name: ec2_instance_profile
       vars:
         ec2_profile: dynhostname
@@ -9,7 +9,7 @@
         ec2_profile_user: root
 
     - name: Install hostname data files
-      copy:
+      ansible.builtin.copy:
         dest: /usr/share/{{ item }}
         src: "{{ lookup('first_found', item ~ '.' ~ aws_status, item) }}"
         owner: root
@@ -25,7 +25,7 @@
         - hostname-suffixes-mx
 
     - name: Install script
-      template:
+      ansible.builtin.template:
         dest: /usr/local/sbin/dynhostname
         src: dynhostname.j2
         owner: root
@@ -33,7 +33,7 @@
         mode: "0755"
 
     - name: Install systemd unit
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/dynhostname.service
         src: dynhostname.service
         owner: root
@@ -46,7 +46,7 @@
         enabled: true
 
     - name: Schedule dynhostname public IP re-check
-      copy:
+      ansible.builtin.copy:
         dest: /etc/cron.d/dynhostname
         src: dynhostname.cron
         owner: root

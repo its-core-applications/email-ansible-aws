@@ -9,7 +9,7 @@
         state: latest
 
     - name: Configure clamav
-      copy:
+      ansible.builtin.copy:
         dest: /etc/clamd.conf
         src: scan.conf
         owner: root
@@ -18,7 +18,7 @@
       notify: Restart clamd
 
     - name: Configure clamav-daemon service
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/clamav-daemon.service
         src: clamav-daemon.service
         owner: root
@@ -33,7 +33,7 @@
       notify: Restart clamd
 
     - name: Install custom monitoring script
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/bin/check-clamd-eicar
         src: check-clamd-eicar
         owner: collaborate

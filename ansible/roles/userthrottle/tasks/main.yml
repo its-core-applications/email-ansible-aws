@@ -7,7 +7,7 @@
         state: latest
 
     - name: Install userthrottle filter
-      template:
+      ansible.builtin.template:
         dest: /etc/mail/filters/90_ut
         src: 90_ut.j2
         owner: root

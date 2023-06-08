@@ -8,7 +8,7 @@
       register: install_result
 
     - name: Local rspamd configuration
-      copy:
+      ansible.builtin.copy:
         dest: /etc/rspamd/{{ item }}
         src: "{{ item }}"
         owner: root
@@ -44,7 +44,7 @@
         state: "{{ (install_result is changed or config_result is changed) | ternary('restarted', 'started') }}"
 
     - name: Install custom monitoring scripts
-      copy:
+      ansible.builtin.copy:
         dest: "/usr/local/bin/{{ item }}"
         src: "{{ item }}"
         owner: collaborate

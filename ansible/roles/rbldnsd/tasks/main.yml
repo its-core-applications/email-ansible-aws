@@ -8,7 +8,7 @@
       notify: Reconfigure rbldnsd
 
     - name: Create log dir for rbldnsd
-      file:
+      ansible.builtin.file:
         dest: /var/log/rbldnsd
         state: directory
         owner: rbldns
@@ -16,7 +16,7 @@
         mode: "0755"
 
     - name: Configure rbldnsd
-      copy:
+      ansible.builtin.copy:
         dest: /etc/sysconfig/rbldnsd
         src: rbldnsd
         owner: root
@@ -37,7 +37,7 @@
           value: 26214400
 
     - name: Install custom monitoring script
-      copy:
+      ansible.builtin.copy:
         dest: /usr/local/bin/metrics-rbldnsd
         src: metrics-rbldnsd
         owner: root
