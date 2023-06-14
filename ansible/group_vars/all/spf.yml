@@ -176,6 +176,14 @@ spf_thirdparty:
       - ip4:216.12.129.78
       - ip4:216.12.143.31
 
+  # 2023-06-14: rivett / Office of Government Relations / TDx 4448792
+  # Quorum
+  - names:
+      - devooghr
+      - kolbc
+      - seanhamm
+    record: include:sparkpostmail.com
+
   # 2017-04-27: psmitow / LSA Human Resources / INC1033889
   # PeopleAdmin
   - names:
