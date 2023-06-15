@@ -11,4 +11,7 @@
     state: restarted
 
 - name: Run logrotate
-  command: /etc/cron.daily/logrotate
+  systemd:
+    name: logrotate
+    daemon_reload: true
+    state: restarted

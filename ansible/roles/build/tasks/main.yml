@@ -13,15 +13,14 @@
       tags: always
 
     - ansible.builtin.import_role:
-        name: build_rpm_prebuilt
+        name: build_rpm_spec
       tags:
-        - cjose
-        - mod_auth_openidc
+        - amazon-ec2-utils
       vars:
-        build_name: cjose
-        rpm: cjose-0.6.1.5-2.el7.x86_64.rpm
-        rpm_url: https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.4.0/{{ rpm }}
-        rpm_checksum: sha512:244ca9640ef0068275a4a9c3dfd936a5fef985789e0b92b86d90b305853ff788c15bce1811234fc432a78f615e335f80b21307c98b10a8ef66e4bbe6a972fdd2
+        build_name: amazon-ec2-utils
+        build_deps:
+          - python3-devel
+          - systemd-rpm-macros
 
     - ansible.builtin.import_role:
         name: build_rpm_spec
@@ -51,28 +50,6 @@
         build_repo: https://github.com/simta/denser.git
         build_deps:
           - openssl-devel
-
-    - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags:
-        - jemalloc
-        - redis
-        - rspamd
-        - simta
-      vars:
-        build_name: jemalloc
-        build_deps:
-          - libxslt
-
-    - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags:
-        - libmaxminddb
-      vars:
-        build_name: libmaxminddb
-        build_deps:
-          - perl-IPC-Run3
-          - perl-Test-Output
 
     - ansible.builtin.import_role:
         name: build_rpm_git
@@ -200,48 +177,6 @@
         archive_checksum: sha256:ace4138269cb7214c73529f984b793d66074e3a3ad373eaa77bc9b39490d9ef9
 
     - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags: clamav
-      vars:
-        build_name: clamav
-        build_deps:
-          - bzip2-devel
-          - curl-devel
-          - gmp-devel
-          - libxml2-devel
-          - ncurses-devel
-          - openssl-devel
-          - sendmail-devel
-          - tcp_wrappers-devel
-
-    - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags: dash
-      vars:
-        build_name: dash
-
-    - ansible.builtin.import_role:
-        name: build_rpm_prebuilt
-      tags: mod_auth_openidc
-      vars:
-        build_name: mod_auth_openidc
-        build_version: 2.4.1
-        rpm: mod_auth_openidc-{{ build_version }}-1.el7.x86_64.rpm
-        rpm_url: https://github.com/zmartzone/mod_auth_openidc/releases/download/v{{ build_version }}/{{ rpm }}
-        rpm_checksum: sha512:81b01d6723a4e2a8be619f4a219920557e8a1684a715b87b1e812de1f8be66a16177f4490df1f7f1f96555ddacbc2672bede799076229f3229af48fbdcf4b11e
-
-    - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags: nmh
-      vars:
-        build_name: nmh
-        build_deps:
-          - cyrus-sasl-devel
-          - flex
-          - gdbm-devel
-          - ncurses-devel
-
-    - ansible.builtin.import_role:
         name: build_rpm_git
       tags: penaltybox
       vars:
@@ -260,35 +195,13 @@
         build_name: ragel
 
     - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags:
-        - hyperscan
-        - rspamd
-      vars:
-        build_name: hyperscan
-        build_deps:
-          - libpcap-devel
-          - pcre-devel
-          - ragel-6.10
-          - sqlite-devel
-
-    - ansible.builtin.import_role:
         name: build_rpm_prebuilt
       tags: influxdb
       vars:
         build_name: influxdb
         rpm: influxdb-1.8.10.x86_64.rpm
-        rpm_url: https://repos.influxdata.com/rhel/7/x86_64/stable/{{ rpm }}
+        rpm_url: https://repos.influxdata.com/rhel/9/x86_64/stable/{{ rpm }}
         rpm_checksum: sha512:beb7cef44d664951cd7b271571341238a64ebd137aac8a085828e5931952e17656f179381f765ac6cb59549dc65e8d1db7c3c56ae0258d8d49e2e255b04e86b4
-
-    - ansible.builtin.import_role:
-        name: build_rpm_go
-      tags:
-        - jsonnet
-      vars:
-        build_name: jsonnet
-        build_repo: https://github.com/google/go-jsonnet
-        build_version: v0.15.0
 
     - ansible.builtin.import_role:
         name: build_rpm_spec
@@ -304,9 +217,6 @@
       vars:
         build_name: rspamd
         build_deps:
-          - gcc10
-          - gcc10-c++
-          - cmake3
           - fann-devel
           - file-devel
           - glib2-devel
@@ -318,9 +228,20 @@
           - luajit-devel
           - openssl-devel
           - pcre2-devel
+          - perl
           - perl-Digest-MD5
           - ragel-6.10
           - sqlite-devel
+
+    - ansible.builtin.import_role:
+        name: build_rpm_spec
+      tags:
+        - simta
+        - tcp_wrappers
+      vars:
+        build_name: tcp_wrappers
+        build_deps:
+          - libnsl2-devel
 
     - ansible.builtin.import_role:
         name: build_rpm_git
@@ -377,27 +298,6 @@
         rpm: splunkforwarder-8.2.5-77015bc7a462-linux-2.6-x86_64.rpm
         rpm_url: https://download.splunk.com/products/universalforwarder/releases/8.2.5/linux/splunkforwarder-8.2.5-77015bc7a462-linux-2.6-x86_64.rpm
         rpm_checksum: sha256:8f9ad3da2c9d9e3bc4e75b5af8cbce2943cb7c75445903d73cb9fd8d6c26601a
-
-    - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags: sshguard
-      vars:
-        build_name: sshguard
-
-    - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags:
-        - mosh
-      vars:
-        build_name: mosh
-        build_deps:
-          - libutempter-devel
-          - ncurses-devel
-          - openssl-devel
-          - perl-generators
-          - protobuf-compiler
-          - protobuf-devel
-          - zlib-devel
 
     - ansible.builtin.import_role:
         name: s3repo_upload

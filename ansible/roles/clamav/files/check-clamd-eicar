@@ -8,7 +8,7 @@ racie='*H+H$!ELIF-TSET-SURIVITNA-DRADNATS-RACIE$}7)CC7)^P(45XZP\4[PA@%P!O5X'
 
 echo "$racie" | rev > $tmpfile
 
-result=$(clamdscan --config-file /etc/clamd.conf --no-summary --wait $tmpfile 2>&1)
+result=$(clamdscan --config-file /etc/clamd.d/scan.conf --no-summary --wait $tmpfile 2>&1)
 clamrc=$?
 
 if [[ $clamrc -eq 1 ]]; then

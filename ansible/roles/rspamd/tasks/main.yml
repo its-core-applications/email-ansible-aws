@@ -2,7 +2,7 @@
     - rspamd
   block:
     - name: Install rspamd
-      yum:
+      ansible.builtin.dnf:
         name: rspamd
         state: latest
       register: install_result

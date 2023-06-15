@@ -33,9 +33,21 @@ variable "subnet_id" {
   default = "subnet-xxx"
 }
 
+local "satellite_rpm" {
+    expression = vault("secret/satellite", "rpm")
+}
+
+local "satellite_org" {
+    expression = vault("secret/satellite", "org")
+}
+
+local "satellite_key" {
+    expression = vault("secret/satellite", "key")
+}
+
 source "amazon-ebs" "host" {
   ami_name = "${var.image_type}_${uuidv4()}"
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   ena_support = true
   encrypt_boot = contains(["base", "vdc_relay"], var.image_type)
   instance_type = "t3.medium"
@@ -68,7 +80,12 @@ build {
   sources = ["source.amazon-ebs.host"]
 
   provisioner "shell" {
-    script = "packer/scripts/ansible.sh"
+    script = "packer/scripts/setup.sh"
+    env = {
+      SATELLITE_RPM = "${local.satellite_rpm}"
+      SATELLITE_ORG = "${local.satellite_org}"
+      SATELLITE_KEY = "${local.satellite_key}"
+    }
   }
 
   provisioner "ansible" {

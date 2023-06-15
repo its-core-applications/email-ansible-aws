@@ -3,9 +3,3 @@ system_info:
   default_user:
       name: ec2-user
       sudo: ["ALL=(ALL) NOPASSWD:ALL"]
-fs_setup:
-  - device: /dev/xvdg
-    filesystem: xfs
-    partition: none
-mounts:
-  - [ xvdg, /var/tmp, auto, "defaults,noexec", "0", "0" ]

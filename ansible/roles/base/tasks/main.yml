@@ -8,6 +8,7 @@
         ansible_python_interpreter: /usr/bin/python3
         venv_name: system
         venv_packages:
+          - awscli
           - boto3
           - cryptography
           - influxdb
@@ -39,6 +40,37 @@
 
     - ansible.builtin.import_role:
         name: base_packages
+
+    - name: Reload udev rules to ensure drive aliases are present
+      ansible.builtin.command: udevadm {{ item }}
+      loop:
+        - control --reload
+        - trigger
+        - settle
+
+    - when: not bootstrap
+      block:
+        # /dev/xvd* relies on a package that we build, so skip it during bootstrap
+        - name: Create filesystem for /var/tmp
+          community.general.filesystem:
+            dev: /dev/xvdg
+            fstype: xfs
+            force: false
+
+        - name: Mount /var/tmp
+          ansible.posix.mount:
+            name: /var/tmp
+            src: /dev/xvdg
+            fstype: xfs
+            state: mounted
+
+    - name: Correct permissions on /var/tmp
+      ansible.builtin.file:
+        dest: /var/tmp
+        state: directory
+        owner: root
+        group: root
+        mode: "1777"
 
     - ansible.builtin.import_role:
         name: base_userenv
@@ -130,6 +162,22 @@
         - /etc/cron.daily/rhsmd
         - /etc/motd
 
+    - name: Basic krb5 configuration
+      # The main reason we're doing this is that the kerberos library used for
+      # sensu authentication dies if this file contains
+      # `dns_canonicalize_hostname = fallback`.
+      ansible.builtin.copy:
+        dest: /etc/krb5.conf
+        src: krb5.conf
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: System crypto policy
+      # Need to enable additional Kerberos crypto types
+      ansible.builtin.command:
+        cmd: update-crypto-policies --set DEFAULT:AD-SUPPORT-LEGACY
+
     - name: Configure tmux
       ansible.builtin.copy:
         dest: /etc/tmux.conf
@@ -205,3 +253,9 @@
         mode: "0755"
         owner: root
         group: root
+
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_services:
+          - mosh

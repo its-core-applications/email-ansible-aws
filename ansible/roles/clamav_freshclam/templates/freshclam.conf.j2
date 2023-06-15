@@ -1,7 +1,7 @@
 LogSyslog yes
 PrivateMirror clamav.{{ subd }}
 TestDatabases yes
-NotifyClamd /etc/clamd.conf
+NotifyClamd /etc/clamd.d/scan.conf
 
 # Custom databases
 {% for db in clamav_custom_sigs %}

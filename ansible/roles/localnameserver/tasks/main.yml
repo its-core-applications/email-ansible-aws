@@ -2,7 +2,7 @@
     - localnameserver
   block:
     - name: Install unbound
-      yum:
+      ansible.builtin.dnf:
         name: unbound
         state: latest
       notify: Restart unbound

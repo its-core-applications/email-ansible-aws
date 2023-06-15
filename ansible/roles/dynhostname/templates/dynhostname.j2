@@ -5,6 +5,8 @@ if [[ $1 = 'clear' ]]; then
     exit 0
 fi
 
+export PATH=/usr/local/venv/system/bin:$PATH
+
 rectype=CNAME
 ttl=60
 token=$(curl -fs -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 600")

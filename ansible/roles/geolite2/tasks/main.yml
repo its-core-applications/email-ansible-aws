@@ -30,6 +30,6 @@
       command: /usr/local/bin/geoipupdate -f /etc/GeoIP.conf -d /usr/share/GeoIP -v
 
     - name: Install mmdblookup
-      yum:
+      ansible.builtin.dnf:
         name: libmaxminddb-devel
         state: latest

@@ -4,7 +4,7 @@
   when: role_rpmbuild_done is not defined
   block:
     - name: Install basic build dependencies
-      yum:
+      ansible.builtin.dnf:
         name:
           - autoconf
           - automake
@@ -22,7 +22,7 @@
 
     - name: Clone fpm
       git:
-        repo: https://github.com/its-core-applications/fpm.git
+        repo: https://github.com/jordansissel/fpm.git
         dest: /var/cache/fpm
 
     - name: Build fpm gem

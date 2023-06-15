@@ -6,26 +6,16 @@
     - ansible.builtin.import_role:
         name: httpd
 
-    - name: Clone ARA repo
-      git:
-        repo: https://github.com/ansible-community/ara.git
-        dest: /var/cache/ara.git
-        version: 025a54a07af684e7cda9f02fb0373a5e8cbf2f1b
-        update: true
-        force: true
-
     - ansible.builtin.import_role:
         name: python_venv
       vars:
         venv_name: ara_server
         venv_packages:
-          - /var/cache/ara.git[server]
+          - ara[server] @ git+https://github.com/ansible-community/ara.git@94a7a4fd781c14fb50e09cf5c43f5afc6c5dc3b0
           - gunicorn
-          - tzlocal<2.0 # 2.0 has a broken sanity check and throws ValueError
-          - django<2.2  # SQLite 3.8.3 is required in 2.2
 
     - name: Install extra packages
-      yum:
+      ansible.builtin.dnf:
         name:
           - mod_auth_openidc
         state: latest

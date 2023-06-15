@@ -2,14 +2,11 @@
     - base
     - base_packages
   block:
-    - gather_facts:
-      when: ansible_facts.distribution is not defined
-
     - ansible.builtin.import_role:
         name: s3repo
 
     - name: Uninstall unwanted packages
-      yum:
+      ansible.builtin.dnf:
         name:
           - amazon-ssm-agent
           - cronie-anacron
@@ -20,25 +17,22 @@
         state: absent
         lock_timeout: 30
 
-    - name: Install Amazon Linux extras
-      command: amazon-linux-extras install -y python3.8
-      when: ansible_facts.distribution == 'Amazon'
-
     # Only for the fake hostname that packer uses when building the base image
     - name: Upgrade all packages
-      yum:
+      ansible.builtin.dnf:
         name: "*"
         state: latest
       when: inventory_hostname == 'base'
 
     - name: Install basic QoL packages
-      yum:
+      ansible.builtin.dnf:
         name:
-          - awscli
+          - bash-completion
           - bind-utils
           - cloud-init
           - cronie-noanacron
           - expect
+          - firewalld
           - gdb
           - git
           - jq
@@ -46,6 +40,7 @@
           - lsof
           - man
           - man-pages
+          - mosh
           - nc
           - openldap-clients
           - pam_krb5
@@ -65,9 +60,9 @@
         state: present
 
     - name: Install less-basic QoL packages
-      yum:
+      ansible.builtin.dnf:
         name:
-          - mosh
+          - amazon-ec2-utils
           - vault
         state: present
       when: bootstrap == false

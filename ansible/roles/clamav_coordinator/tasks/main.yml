@@ -21,7 +21,7 @@
         - "{{ clamav_tmpdir }}"
 
     - name: Install prerequisites
-      yum:
+      ansible.builtin.dnf:
         name:
           - perl-Digest-SHA
           - perl-Time-Piece

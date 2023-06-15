@@ -15,7 +15,7 @@
         state: mounted
 
     - name: Install splunk forwarder
-      yum:
+      ansible.builtin.dnf:
         name: splunkforwarder
         state: latest
       notify: Restart splunkforwarder

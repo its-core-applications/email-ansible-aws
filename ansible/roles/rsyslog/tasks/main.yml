@@ -2,7 +2,7 @@
     - rsyslog
   block:
     - name: Install rsyslog-relp
-      yum:
+      ansible.builtin.dnf:
         name: rsyslog-relp
         state: present
 
@@ -61,7 +61,7 @@
 
     - name: Configure logrotate for syslog files
       ansible.builtin.copy:
-        dest: /etc/logrotate.d/syslog
+        dest: /etc/logrotate.d/rsyslog
         src: logrotate.syslog
         owner: root
         group: root

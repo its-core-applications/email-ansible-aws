@@ -2,7 +2,7 @@
     - clamav
   block:
     - name: Install clamav
-      yum:
+      ansible.builtin.dnf:
         name:
           - clamav
           - clamd
@@ -10,17 +10,8 @@
 
     - name: Configure clamav
       ansible.builtin.copy:
-        dest: /etc/clamd.conf
+        dest: /etc/clamd.d/scan.conf
         src: scan.conf
-        owner: root
-        group: root
-        mode: "0644"
-      notify: Restart clamd
-
-    - name: Configure clamav-daemon service
-      ansible.builtin.copy:
-        dest: /etc/systemd/system/clamav-daemon.service
-        src: clamav-daemon.service
         owner: root
         group: root
         mode: "0644"
@@ -28,7 +19,7 @@
 
     - name: Enable clamd
       service:
-        name: clamav-daemon
+        name: clamd@scan
         enabled: true
       notify: Restart clamd
 

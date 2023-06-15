@@ -13,7 +13,7 @@ BuildRequires:  glib2-devel
 BuildRequires:  libevent-devel
 BuildRequires:  openssl-devel
 BuildRequires:  hyperscan-devel
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  file-devel
 BuildRequires:  perl
 BuildRequires:  ragel < 7.0
@@ -34,7 +34,7 @@ Rspamd is a rapid, modular and lightweight spam filter. It is designed to work
 %autosetup -p 1 -n %{name}-%{version}
 
 %build
-CC=gcc10-gcc CXX=gcc10-c++ cmake3 \
+%cmake \
     -DCMAKE_C_OPT_FLAGS="%{optflags}" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCONFDIR=%{_sysconfdir}/rspamd \
@@ -57,16 +57,14 @@ CC=gcc10-gcc CXX=gcc10-c++ cmake3 \
     -DENABLE_HYPERSCAN=ON \
     -DSTATIC_HYPERSCAN=ON
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-make DESTDIR=%{buildroot} INSTALLDIRS=vendor install
+%cmake_install
+
 install -d -p -m 0755 %{buildroot}%{rspamd_home}
 install -p -D -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/local.d/
 install -p -D -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/override.d/
-
-%clean
-rm -rf %{buildroot}
 
 %pre
 %{_sbindir}/groupadd -r %{rspamd_group} 2>/dev/null || :

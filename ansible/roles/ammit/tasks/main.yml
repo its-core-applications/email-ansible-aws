@@ -52,6 +52,12 @@
             value: "{{ result.efs.mount_targets.0.ip_address }}"
             ttl: 30
 
+    - name: Install NFS utils
+      ansible.builtin.dnf:
+        name:
+          - nfs-utils
+        state: latest
+
     - name: Mount ammit
       mount:
         src: "{{ (aws_region == efs_region) | ternary(result.efs.filesystem_address, 'ammit.' ~ subd ~ ':/') }}"

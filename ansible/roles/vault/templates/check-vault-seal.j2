@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH=/usr/local/venv/system/bin:$PATH
+
 for try in {0..1}; do
     seal=$(curl -k -s https://127.0.0.1:8200/v1/sys/seal-status 2>&1)
     if [[ $? -ne 0 ]]; then

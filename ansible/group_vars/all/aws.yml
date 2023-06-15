@@ -147,7 +147,8 @@ aws_layout:
           size: t3.medium
           cycle_method: spinup
         relay-egress: {}
-        syslog: {}
+        syslog:
+          size: t3.medium
 
     vdc-core-nonprod:
       region: us-east-2

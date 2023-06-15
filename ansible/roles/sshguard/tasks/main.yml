@@ -2,7 +2,7 @@
     - sshguard
   block:
     - name: Install sshguard
-      yum:
+      ansible.builtin.dnf:
         name: sshguard
         state: latest
       notify: Restart sshguard

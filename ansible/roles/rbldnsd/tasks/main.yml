@@ -2,10 +2,9 @@
     - rbldnsd
   block:
     - name: Install rbldnsd
-      yum:
+      ansible.builtin.dnf:
         name: rbldnsd
         state: latest
-      notify: Reconfigure rbldnsd
 
     - name: Create log dir for rbldnsd
       ansible.builtin.file:
@@ -15,14 +14,20 @@
         group: root
         mode: "0755"
 
-    - name: Configure rbldnsd
+    # Install a custom unit because of https://bugzilla.redhat.com/show_bug.cgi?id=2216790
+    - name: Configure rbldnsd service
       ansible.builtin.copy:
-        dest: /etc/sysconfig/rbldnsd
-        src: rbldnsd
+        dest: /etc/systemd/system/rbldnsd.service
+        src: rbldnsd.service
         owner: root
         group: root
         mode: "0644"
-      notify: Reconfigure rbldnsd
+
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_services:
+          - dns
 
     - name: Retune network buffers
       sysctl:
@@ -52,3 +57,10 @@
         user: root
         state: present
         job: /usr/local/bin/datastore-fetch -r --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }} dnsl /var/lib/rbldnsd &>/dev/null
+
+    - name: Start rbldnsd
+      ansible.builtin.systemd:
+        name: rbldnsd
+        state: restarted
+        enabled: true
+        daemon_reload: true

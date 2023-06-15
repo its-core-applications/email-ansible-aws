@@ -2,7 +2,7 @@
     - redis
   block:
     - name: Install redis
-      yum:
+      ansible.builtin.dnf:
         name: redis
         state: latest
       notify: Restart redis
@@ -22,6 +22,14 @@
         daemon_reload: true
         enabled: true
       notify: Restart redis
+
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_services:
+          - redis
+        firewall_ports:
+          - 16379/tcp   # cluster port
 
     - name: Start redis
       systemd:

@@ -20,31 +20,13 @@ fi
 
 export AWS_DEFAULT_REGION=$(env -u ANSIBLE_CALLBACK_PLUGINS ANSIBLE_STDOUT_CALLBACK=json ansible --playbook-dir ansible localhost -m debug -a 'msg={{ aws_layout[aws_status][aws_profile].region }}' | jq -r .plays[0].tasks[0].hosts.localhost.msg)
 
-if [[ $2 ]]; then
-    os=$2
-else
-    os=amzn2
-fi
+os=rhel9
 
 echo "Building $class image for $os in $AWS_STATUS $AWS_DEFAULT_REGION"
 
-case $os in
-    centos7)
-        owner='679593333241'
-        filter='Name=product-code,Values=aw0evgkw8e5c1q413zgy5pjce'
-        root='/dev/sda1'
-    ;;
-    rhel7)
-        owner='309956199498'
-        filter='Name=name,Values=RHEL-7.?_HVM_GA*'
-        root='/dev/sda1'
-    ;;
-    *)
-        owner='137112412989'
-        filter='Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2'
-        root='/dev/xvda'
-    ;;
-esac
+owner='309956199498'
+filter='Name=name,Values=RHEL-9.2.*_HVM-202*-x86_64*Access*'
+root='/dev/sda1'
 
 if [[ $class = 'base' ]] || [[ $class = 'vdc_relay' ]]; then
     base=$(aws ec2 describe-images --filters "Name=owner-id,Values=$owner" 'Name=state,Values=available' "$filter")
@@ -54,6 +36,7 @@ fi
 
 base=$(echo "$base" | jq -r '.Images | sort_by(.CreationDate) | last(.[]).ImageId')
 
-subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=public' | jq -r '.Subnets[].SubnetId' | shuf | head -n 1)
+subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=vpn' | jq -r '.Subnets[].SubnetId' | shuf | head -n 1)
 
+export VAULT_TOKEN=$(vault login -token-only -method=aws)
 packer build -var "aws_region=$AWS_DEFAULT_REGION" -var "image_os=$os" -var "image_type=$class" -var "base_ami=$base" -var "root_device=$root" -var "subnet_id=$subnet_id" packer/template.pkr.hcl

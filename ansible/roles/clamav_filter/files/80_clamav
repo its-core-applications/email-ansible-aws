@@ -13,7 +13,7 @@ CLAMTMP=$(mktemp -d /tmp/80_clamav.XXXXXXXX)
 CLAMOUT=${CLAMTMP}/output
 CLAMERR=${CLAMTMP}/stderr
 CLAMDSCAN=/usr/bin/clamdscan
-CLAMDSCAN_FLAGS="--config-file /etc/clamd.conf --quiet --no-summary --wait -l ${CLAMOUT}"
+CLAMDSCAN_FLAGS="--config-file /etc/clamd.d/scan.conf --quiet --no-summary --wait -l ${CLAMOUT}"
 
 if [ $SIMTA_DFILE ]; then
     # read from fast queue
