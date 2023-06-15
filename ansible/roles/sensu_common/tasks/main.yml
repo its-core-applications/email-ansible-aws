@@ -2,7 +2,7 @@
     - sensu
   block:
     - name: Install sensuctl
-      yum:
+      ansible.builtin.dnf:
         name: sensuctl
         state: latest
 

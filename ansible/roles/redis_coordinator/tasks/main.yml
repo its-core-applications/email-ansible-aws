@@ -4,7 +4,7 @@
   block:
     - name: Install redis
       become: true
-      yum:
+      ansible.builtin.dnf:
         name: redis
         state: present
       vars:

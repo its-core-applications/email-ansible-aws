@@ -6,7 +6,7 @@
         name: sensu_common
 
     - name: Install sensu and dependencies
-      yum:
+      ansible.builtin.dnf:
         name:
           - redis
           - sensu-agent
@@ -19,6 +19,7 @@
       vars:
         venv_name: sensu
         venv_build_deps:
+          - dbus-daemon   # provides dbus-run-session
           - dbus-devel
           - glib2-devel
           - python3-devel

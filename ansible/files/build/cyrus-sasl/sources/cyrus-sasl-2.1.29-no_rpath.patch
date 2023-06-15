@@ -1,0 +1,41 @@
+diff --git a/m4/cyrus.m4 b/m4/cyrus.m4
+index 0f9ac483..42f094b7 100644
+--- a/m4/cyrus.m4
++++ b/m4/cyrus.m4
+@@ -31,14 +31,5 @@ AC_DEFUN([CMU_ADD_LIBPATH_TO], [
+ dnl runpath initialization
+ AC_DEFUN([CMU_GUESS_RUNPATH_SWITCH], [
+    # CMU GUESS RUNPATH SWITCH
+-  AC_CACHE_CHECK(for runpath switch, andrew_cv_runpath_switch, [
+-    # first, try -R
+-    SAVE_LDFLAGS="${LDFLAGS}"
+-    LDFLAGS="-R /usr/lib"
+-    AC_TRY_LINK([],[],[andrew_cv_runpath_switch="-R"], [
+-  	LDFLAGS="-Wl,-rpath,/usr/lib"
+-    AC_TRY_LINK([],[],[andrew_cv_runpath_switch="-Wl,-rpath,"],
+-    [andrew_cv_runpath_switch="none"])
+-    ])
+-  LDFLAGS="${SAVE_LDFLAGS}"
+-  ])])
++    andrew_cv_runpath_switch="none"
++  ])
+diff --git a/utils/Makefile.am b/utils/Makefile.am
+index 9846884b..af19829f 100644
+--- a/utils/Makefile.am
++++ b/utils/Makefile.am
+@@ -54,15 +54,11 @@ man_MANS = $(SASL_DB_MANS) pluginviewer.8
+ 
+ saslpasswd2_LDADD = ../sasldb/libsasldb.la $(all_sasl_libs)
+ saslpasswd2_SOURCES = saslpasswd.c
+-saslpasswd2_LDFLAGS = -rpath $(libdir)
+ sasldblistusers2_LDADD = ../sasldb/libsasldb.la $(all_sasl_libs)
+ sasldblistusers2_SOURCES = sasldblistusers.c
+-sasldblistusers2_LDFLAGS = -rpath $(libdir)
+ dbconverter_2_LDADD = ../sasldb/libsasldb.la $(all_sasl_libs)
+-dbconverter_2_LDFLAGS = -rpath $(libdir)
+ pluginviewer_LDADD = $(all_sasl_libs)
+ pluginviewer_SOURCES = pluginviewer.c
+-pluginviewer_LDFLAGS = -rpath $(libdir)
+ 
+ testsuite_LDADD = $(all_sasl_libs) @DMALLOC_LIBS@
+ 

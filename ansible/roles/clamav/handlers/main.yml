@@ -1,5 +1,5 @@
 - name: Restart clamd
   systemd:
-    name: clamav-daemon
+    name: clamd@scan
     daemon_reload: true
     state: restarted

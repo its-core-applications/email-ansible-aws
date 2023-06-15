@@ -5,7 +5,7 @@
       command: amazon-linux-extras install -y ruby3.0
 
     - name: Install required packages
-      yum:
+      ansible.builtin.dnf:
         name:
           - cmake3
           - gcc-c++

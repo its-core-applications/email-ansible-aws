@@ -16,7 +16,7 @@
         name: sensu_common
 
     - name: Install sensu-go backend
-      yum:
+      ansible.builtin.dnf:
         name:
           - sensu-backend
           - sensu-influxdb-handler
@@ -31,6 +31,14 @@
         owner: root
         group: root
         mode: "0644"
+
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_ports:
+          - 3000/tcp  # dashboard
+          - 4567/tcp  # API
+          - 8081/tcp  # transport
 
     - ansible.builtin.import_role:
         name: sns2slack

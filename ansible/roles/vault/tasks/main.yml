@@ -8,7 +8,7 @@
         le_services: "{{ bootstrap | ternary([], ['vault']) }}"
 
     - name: Install vault
-      yum:
+      ansible.builtin.dnf:
         name: vault
         state: latest
 
@@ -33,6 +33,12 @@
         name: vault
         enabled: true
         daemon_reload: true
+
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_ports:
+          - 8200/tcp
 
     - name: Start vault
       systemd:

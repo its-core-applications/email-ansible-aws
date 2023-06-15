@@ -3,7 +3,7 @@
   when: go_version not in (go_installed | default([]))
   block:
     - name: Install system Go
-      yum:
+      ansible.builtin.dnf:
         name: golang
         state: present
 

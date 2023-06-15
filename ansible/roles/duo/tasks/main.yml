@@ -4,13 +4,13 @@
     - name: Add duosecurity yum repository
       yum_repository:
         name: duosecurity
-        baseurl: http://pkg.duosecurity.com/RedHat/7Server/$basearch
+        baseurl: http://pkg.duosecurity.com/RedHat/9/$basearch
         description: Duo Security repository
         enabled: true
         gpgcheck: false
 
     - name: Install duo_unix
-      yum:
+      ansible.builtin.dnf:
         name: duo_unix
         state: latest
 

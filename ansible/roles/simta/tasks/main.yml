@@ -2,13 +2,13 @@
     - simta
   block:
     - name: Install simta
-      yum:
+      ansible.builtin.dnf:
         name: simta-{{ simta_version }}
         state: present
       notify: Restart simta
 
     - name: Install auxiliary packages
-      yum:
+      ansible.builtin.dnf:
         name:
           - denser-utils
           - libucl-utils
@@ -233,6 +233,15 @@
         certificate: "{{ simta_arc_selector }}._domainkey.{{ tld }}"
         certificate_type: dkim
       when: simta_arc
+
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_services:
+          - smtp
+          - smtp-submission
+          - smtps
+      when: not simta_localmail
 
     - name: Enable simta
       systemd:

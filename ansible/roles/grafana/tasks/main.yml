@@ -10,14 +10,14 @@
         mode: "0644"
 
     - name: Install grafana
-      yum:
+      ansible.builtin.dnf:
         # >=9.4.0 breaks InfluxDB sources
         name: grafana < 9.4.0
         state: latest
       notify: Restart grafana
 
     - name: Install extra packages
-      yum:
+      ansible.builtin.dnf:
         name:
           - jsonnet
         state: latest

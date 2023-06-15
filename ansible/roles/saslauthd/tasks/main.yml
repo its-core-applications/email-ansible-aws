@@ -5,7 +5,7 @@
         name: kerberos_client
 
     - name: Install sasl
-      yum:
+      ansible.builtin.dnf:
         name: cyrus-sasl
         state: latest
       notify: Restart saslauthd

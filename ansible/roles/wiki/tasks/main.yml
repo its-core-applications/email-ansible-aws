@@ -8,7 +8,7 @@
         name: gollum
 
     - name: Install extra packages
-      yum:
+      ansible.builtin.dnf:
         name:
           - mod_auth_openidc
           - mod_ldap

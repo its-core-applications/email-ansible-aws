@@ -2,7 +2,7 @@
     - clamav
   block:
     - name: Install freshclam
-      yum:
+      ansible.builtin.dnf:
         name: clamav-update
         state: latest
 

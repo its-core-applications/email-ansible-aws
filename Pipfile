@@ -18,7 +18,7 @@ paramiko = "*"
 PyYAML = "*"
 Jinja2 = "*"
 PrettyTable = "*"
-ansible-core = "<2.14"  # 2.14 requires Python 3.9
+ansible-core = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"

@@ -2,7 +2,7 @@
     - bastion
   block:
     - name: Install extra packages
-      yum:
+      ansible.builtin.dnf:
         name:
           - gitolite3
           - opendkim

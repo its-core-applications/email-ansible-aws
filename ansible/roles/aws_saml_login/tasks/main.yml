@@ -1,21 +1,16 @@
 - tags:
     - aws
   block:
-    - name: Set up Node repo
-      yum:
-        name: https://rpm.nodesource.com/pub_16.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
-        state: present
-
     # https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md
     - name: Install dependencies
-      yum:
+      ansible.builtin.dnf:
         name:
           - GConf2
           - alsa-lib
           - atk
           - cups-libs
           - gtk3
-          - ipa-gothic-fonts
+          - vl-gothic-fonts-all
           - libXScrnSaver
           - libXcomposite
           - libXcursor

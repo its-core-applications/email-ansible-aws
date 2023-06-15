@@ -2,7 +2,7 @@
     - packer
   block:
     - name: Install packer
-      yum:
+      ansible.builtin.dnf:
         name: packer
         state: latest
 

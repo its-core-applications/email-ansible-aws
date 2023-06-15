@@ -2,7 +2,7 @@
     - penaltybox
   block:
     - name: Install penaltybox
-      yum:
+      ansible.builtin.dnf:
         name: penaltybox
         state: latest
 

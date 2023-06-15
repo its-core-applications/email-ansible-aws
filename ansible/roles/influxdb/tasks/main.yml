@@ -16,7 +16,7 @@
       notify: Restart influxdb
 
     - name: Install InfluxDB
-      yum:
+      ansible.builtin.dnf:
         name: influxdb
         state: latest
       notify: Restart influxdb
@@ -54,6 +54,12 @@
         daemon_reload: true
         enabled: true
       notify: Restart influxdb
+
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_ports:
+          - 8086/tcp
 
     - name: Start influxdb
       systemd:

@@ -9,8 +9,6 @@
         - ansible.builtin.import_role:
             name: build
 
-- hosts: "{{ groups.Class_bastion.0 | default(groups.Class_builder.0) }}"
-  tasks:
     - ansible.builtin.import_role:
         name: s3repo_build
       tags:

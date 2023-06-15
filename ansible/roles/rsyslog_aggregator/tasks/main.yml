@@ -24,6 +24,12 @@
         mode: "0644"
       register: result
 
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_ports:
+          - 2514/tcp
+
     - name: Restart rsyslog
       systemd:
         name: rsyslog

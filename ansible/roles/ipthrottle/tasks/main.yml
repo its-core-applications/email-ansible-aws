@@ -2,7 +2,7 @@
     - ipthrottle
   block:
     - name: Install penaltybox package
-      yum:
+      ansible.builtin.dnf:
         name: penaltybox
         state: latest
 

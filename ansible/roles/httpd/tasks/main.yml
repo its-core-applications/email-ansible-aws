@@ -2,7 +2,7 @@
     - httpd
   block:
     - name: Install httpd
-      yum:
+      ansible.builtin.dnf:
         name:
           - httpd
           - mod_ssl
