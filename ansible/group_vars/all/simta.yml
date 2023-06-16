@@ -1,4 +1,4 @@
-simta_version: 2.3.1
+simta_version: 2.4.0
 
 simta_dkim_selector: mx-2017-01-03
 simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
