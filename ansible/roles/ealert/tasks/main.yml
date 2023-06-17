@@ -4,7 +4,6 @@
     - ansible.builtin.import_role:
         name: python_venv
       vars:
-        venv_py3: true
         venv_name: ealert
         venv_packages:
           - git+https://github.com/its-core-applications/email-ealert

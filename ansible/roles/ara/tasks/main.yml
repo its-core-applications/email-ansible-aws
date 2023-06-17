@@ -18,7 +18,6 @@
         name: python_venv
       vars:
         venv_name: ara_server
-        venv_py3: true
         venv_packages:
           - /var/cache/ara.git[server]
           - gunicorn

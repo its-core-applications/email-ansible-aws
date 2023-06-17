@@ -7,7 +7,6 @@
         name: python_venv
       vars:
         venv_name: gam
-        venv_py3: true
         venv_packages:
           - python-dateutil
           - google-api-python-client

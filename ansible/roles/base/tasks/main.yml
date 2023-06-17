@@ -7,7 +7,6 @@
       vars:
         ansible_python_interpreter: /usr/bin/python3
         venv_name: system
-        venv_py3: true
         venv_packages:
           - boto3
           - cryptography

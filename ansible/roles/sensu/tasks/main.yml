@@ -18,7 +18,6 @@
         name: python_venv
       vars:
         venv_name: sensu
-        venv_py3: true
         venv_build_deps:
           - dbus-devel
           - glib2-devel

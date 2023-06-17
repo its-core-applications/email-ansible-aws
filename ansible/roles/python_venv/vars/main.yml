@@ -1,4 +1,3 @@
-venv_py3: false
 venv_base_deps:
   - git
   - python-virtualenv

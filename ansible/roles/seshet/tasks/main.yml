@@ -8,7 +8,6 @@
         name: python_venv
       vars:
         venv_name: seshet
-        venv_py3: true
         venv_packages:
           - maxminddb
           - netaddr
