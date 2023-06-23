@@ -7,7 +7,7 @@
     spf_names: "{{ (spf_main | map(attribute='name')) + (spf_thirdparty | map(attribute='names') | flatten | map('regex_replace', '$', '._ext')) }}"
   block:
     - name: Create main SPF records
-      route53:
+      amazon.aws.route53:
         profile: "{{ aws_profile_spfd }}"
         command: create
         overwrite: true
@@ -15,7 +15,7 @@
         record: "{{ item.name }}.{{ spfd }}"
         type: TXT
         ttl: 600
-        value: "'{{ lookup('pipe', role_path ~ '/files/spf-flatten --strict -t -r ' ~ ([item.record] | flatten | join(' ') | quote )) }}'"
+        value: "{{ lookup('pipe', role_path ~ '/files/spf-flatten --strict -t -r ' ~ ([item.record] | flatten | join(' ') | quote)) | string }}"
       loop: "{{ spf_main }}"
 
     - name: Make sure there are no duplicate names
@@ -23,7 +23,7 @@
         that: (spf_names | length) == (spf_names | unique | length)
 
     - name: Create third-party SPF records
-      route53:
+      amazon.aws.route53:
         profile: "{{ aws_profile_spfd }}"
         command: create
         overwrite: true
@@ -31,33 +31,33 @@
         record: "{{ item.1 }}._ext.{{ spfd }}"
         type: TXT
         ttl: 600
-        value: "'{{ lookup('pipe', role_path ~ '/files/spf-flatten -t ' ~ ((item.1 == '*') | ternary('-r ', '-u -r ')) ~ ([item.0.record] | flatten | join(' ') | quote)) }}'"
+        value: "{{ lookup('pipe', role_path ~ '/files/spf-flatten -t ' ~ ((item.1 == '*') | ternary('-r ', '-u -r ')) ~ ([item.0.record] | flatten | join(' ') | quote)) | string }}"
       loop: "{{ query('subelements', spf_thirdparty, 'names') }}"
       loop_control:
         label: "{{ item.1 }}"
 
     - name: Fetch zone list
-      route53_info:
+      amazon.aws.route53_info:
         profile: "{{ aws_profile_spfd }}"
         query: hosted_zone
       register: result
 
     - name: Fetch list of records
-      route53_info:
+      amazon.aws.route53_info:
         profile: "{{ aws_profile_spfd }}"
         query: record_sets
         hosted_zone_id: "{{ (result.hosted_zones | selectattr('name', '==', spfd ~ '.')).0.id }}"
       register: result
 
     - name: Delete stale SPF records
-      route53:
+      amazon.aws.route53:
         profile: "{{ aws_profile_spfd }}"
         command: delete
         zone: "{{ spfd }}"
         record: "{{ rr_real_name }}"
         type: TXT
         ttl: "{{ item.ttl }}"
-        value: "'{{ item.resource_records.0.value }}'"
+        value: "{{ item.resource_records.0.value }}"
       loop: "{{ result.resource_record_sets | selectattr('type', '==', 'TXT') }}"
       loop_control:
         label: "{{ rr_real_name }}"

@@ -66,7 +66,7 @@
         zone: "{{ subd }}"
         record: "{{ item.value['dns-01']['resource'] }}.{{ item.key }}"
         type: TXT
-        value: "'\"{{ item.value['dns-01']['resource_value'] }}\"'"
+        value: "\"{{ item.value['dns-01']['resource_value'] }}\""
         ttl: 30
       loop: "{{ acme_data.challenge_data | default({}) | dict2items }}"
       when: acme_data is changed
