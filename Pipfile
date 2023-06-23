@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-ara = {git = "https://github.com/ansible-community/ara",ref = "025a54a07af684e7cda9f02fb0373a5e8cbf2f1b"}
+ara = {git = "https://github.com/ansible-community/ara",ref = "94a7a4fd781c14fb50e09cf5c43f5afc6c5dc3b0"}
 awscli = "*"
 boto = "*"
 boto3 = "*"
