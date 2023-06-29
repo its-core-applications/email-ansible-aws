@@ -86,6 +86,9 @@ simta_ldap_domains_mapped:
     prefix: probabilitynetwork
   - domain: psfmobile.org
     prefix: psfmobile
+  - domain: researchdatagov.org
+    prefix: researchdatagov
+    control_group: researchdatagov domain control group
   - domain: smartgirl.org
     prefix: smartgirl
   - domain: smart.nursing.umich.edu
