@@ -93,6 +93,9 @@ simta_ldap_domains_mapped:
     prefix: smartgirl
   - domain: smart.nursing.umich.edu
     prefix: smartnursing
+  - domain: socialmediaarchive.org
+    prefix: socialmediaarchive
+    control_group: socialmediaarchive domain control group
   - domain: spirelearn.com
     prefix: spirelearn
   - domain: ssdan.net
