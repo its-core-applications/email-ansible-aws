@@ -23,25 +23,35 @@
 
     - name: Make new /home usable
       when: bootstrap and result is changed
+      vars:
+        tmp_mount: /media/new_home
       block:
+        - name: Create a temporary mount point
+          ansible.builtin.file:
+            dest: "{{ tmp_mount }}"
+            state: directory
+            mode: "0755"
+            owner: root
+            group: root
+
         - name: Temporarily mount /home
-          mount:
-            name: /var/tmp/home
+          ansible.posix.mount:
+            name: "{{ tmp_mount }}"
             src: /dev/xvdd
             fstype: xfs
             state: mounted
 
         - name: Copy the skeleton over
-          shell: rsync -av /home/ /var/tmp/home/
+          ansible.builtin.shell: rsync -av /home/ {{ tmp_mount }}/
 
         - name: Undo temporary mount
-          mount:
-            name: /var/tmp/home
+          ansible.posix.mount:
+            name: "{{ tmp_mount }}"
             state: unmounted
 
         - name: Erase temporary mount
-          mount:
-            name: /var/tmp/home
+          ansible.posix.mount:
+            name: "{{ tmp_mount }}"
             state: absent
 
     - name: Fetch authorized_keys for {{ ansible_user }}
