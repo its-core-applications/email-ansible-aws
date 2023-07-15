@@ -56,10 +56,26 @@
       mount:
         src: "{{ (aws_region == efs_region) | ternary(result.efs.filesystem_address, 'ammit.' ~ subd ~ ':/') }}"
         fstype: nfs4
-        opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noatime
+        opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noatime,bg
         state: mounted
         path: /ammit
       register: result
       retries: 10
       delay: 15
       until: result is success
+
+    - name: Create systemd drop-in directory for ammit
+      ansible.builtin.file:
+        dest: /etc/systemd/system/ammit.mount.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Fix boot order
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/ammit.mount.d/order.conf
+        src: order.conf
+        owner: root
+        group: root
+        mode: "0644"
