@@ -105,6 +105,10 @@ spf_thirdparty:
       # SpringShare, sends as many addresses
       - include:libanswers.com
 
+      # 2023-07-24: agrewe / Stamps School of Art and Design / TDx 4738721 4694886
+      # FormAssembly used with Salesforce
+      - include:spf1.formassembly.com
+
   # 2017-05-30: Dentistry
   - names:
       - bldawson
