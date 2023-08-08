@@ -305,6 +305,11 @@ spf_thirdparty:
       - rosscareerservices
     record: include:mbafocus.com
 
+  # 2023-08-08: jmcglone / University Library / TDx 4775360
+  - names:
+      - um.press.mktg
+    record: include:amazonses.com
+
   # 2022-02-15: rpward / U-M Dearborn / TDx 1922558
   # 2022-09-19: brobson / The Office of Enrollment Management / TDx 3113381
   - names:
