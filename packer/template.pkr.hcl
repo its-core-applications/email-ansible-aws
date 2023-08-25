@@ -38,7 +38,7 @@ source "amazon-ebs" "host" {
   associate_public_ip_address = true
   ena_support = true
   encrypt_boot = contains(["base", "vdc_relay"], var.image_type)
-  instance_type = "t3.small"
+  instance_type = "t3.medium"
   launch_block_device_mappings {
     delete_on_termination = true
     device_name = "${var.root_device}"
