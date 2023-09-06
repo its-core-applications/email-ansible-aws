@@ -26,3 +26,15 @@ config['regexp']['UMICH_PORN_EXTORTION'] = {
     score = 8,
     description = 'attempt to extort money through shame',
 }
+
+config['regexp']['UMICH_AKIRA_URL'] = {
+    re = '/akiralkzxzq2dsrzsrvbr2xgbbu2wgsmxryd4csgfameg52n7efvr2id/{mime}',
+    score = 0,
+    description = 'malware URL',
+}
+
+config['regexp']['UMICH_AKIRA_TOKEN'] = {
+    re = '/3246-ZF-JXAN-YQCP/{mime}',
+    score = 0,
+    description = 'malware token',
+}
