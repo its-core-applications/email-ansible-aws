@@ -31,6 +31,8 @@
 
     - name: Clean queues
       command: /usr/sbin/simta -C
+      register: result
+      until: result is success or 'daemon already running' not in result.stderr
 
     - name: Create local queue storage directory
       delegate_to: localhost
