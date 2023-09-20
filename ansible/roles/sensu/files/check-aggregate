@@ -40,23 +40,23 @@ meta = None
 if not args.no_stdin:
     meta = json.load(sys.stdin)['check']['metadata']
 
-query = '''
+query = f'''
 from(bucket: "sensu/three_weeks")
-    |> range(start: -5m)
+    |> range(start: -30m)
     |> filter(fn: (r) =>
         r._measurement == "sensu_event"
         and r._field == "status"
         and r.status == "production"
-        and r.sensu_check == "{}")
+        and r.sensu_check == "{args.check}")
     |> duplicate(column: "_value", as: "agg_status")
     |> last()
     |> group(columns: ["agg_status"])
     |> count()
-'''.format(args.check)
+'''
 
 try:
     res = requests.post(
-        'http://{}:{}/api/v2/query'.format(args.host, args.port),
+        f'http://{args.host}:{args.port}/api/v2/query',
         timeout=10,
         headers={
             'accept': 'application/csv',  # Ick, but the only output format
@@ -69,7 +69,7 @@ except requests.exceptions.Timeout:
     sys.exit(3)
 
 if not res.ok:
-    print('InfluxDB query failed: HTTP {}'.format(res.status_code))
+    print(f'InfluxDB query failed: HTTP {res.status_code}')
     sys.exit(3)
 
 total = 0
@@ -90,7 +90,7 @@ for row in csv.DictReader(res.text.splitlines()[3:-1]):
         unknown += int(row['_value'])
 
 if total == 0:
-    print('No check results for {}'.format(args.check))
+    print(f'No check results for {args.check}')
     sys.exit(3)
 
 retval = 0
@@ -100,7 +100,7 @@ if check_threshold(args.warning, warning, total, 'warning', args.check) and retv
     retval = 1
 if check_threshold(args.unknown, unknown, total, 'unknown', args.check) and retval == 0:
     retval = 3
-print('{:g}% of check results for {} are OK'.format(round(ok / total * 100, 1), args.check))
+print(f'{round(ok / total * 100, 1):g}% ({ok}/{total}) of check results for {args.check} are OK')
 
 if meta:
     print('\n<https://{}/n/{}/events?filters=check%3A{}>'.format(
