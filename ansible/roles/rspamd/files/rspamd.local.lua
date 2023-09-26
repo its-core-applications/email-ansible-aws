@@ -1,7 +1,7 @@
 local google_from = 'From=/\\@[a-z\\.]+\\.google\\.com\\b/iH'
-local umich_from = 'From=/\\@(umich\\.edu|.+\\.umich\\.edu)\\b/iH'
+local umich_from = 'From=/\\@(umich\\.edu|.+\\.umich\\.edu|umdearborn\\.edu|.+\\.umdearborn\\.edu|umflint\\.edu|.+\\.umflint\\.edu)\\b/iH'
 local suspicious_from = 'From=/[^=]umich\\.edu\\S*\\@/iH'
-local umich_replyto = 'reply-to=/\\@(umich\\.edu|.+\\.umich\\.edu)\\b/iH'
+local umich_replyto = 'reply-to=/\\@(umich\\.edu|.+\\.umich\\.edu|umdearborn\\.edu|.+\\.umdearborn\\.edu|umflint\\.edu|.+\\.umflint\\.edu)\\b/iH'
 local suspicious_replyto = 'reply-to=/[^=]umich\\.edu\\S*\\@/iH'
 config['regexp']['UMICH_FROM_SUSPICIOUS_UMICH_EDU'] = {
     re = string.format('(%s) & !(%s) & !(%s)', suspicious_from, umich_from, google_from),
