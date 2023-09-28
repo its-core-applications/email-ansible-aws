@@ -201,6 +201,12 @@ spf_thirdparty:
       - fleetrental
     record: ip4:209.25.178.7
 
+  # 2023-09-28: joelhowa / Flint ITS / TDx5120943
+  # TouchNet
+  - names:
+      - flint.cashiers
+    record: include:_tuf-spf.touchnet.com
+
   # 2017-02-17: Library Information Technology
   # Servers in .umdl.umich.edu (on an Indiana University IP range)
   - names:
