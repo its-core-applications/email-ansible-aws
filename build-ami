@@ -36,7 +36,7 @@ fi
 
 base=$(echo "$base" | jq -r '.Images | sort_by(.CreationDate) | last(.[]).ImageId')
 
-subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=vpn' | jq -r '.Subnets[].SubnetId' | shuf | head -n 1)
+subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=vpn' | jq -r '.Subnets[].SubnetId' | tail -n 1)
 
 export VAULT_TOKEN=$(vault login -token-only -method=aws)
 packer build -var "aws_region=$AWS_DEFAULT_REGION" -var "image_os=$os" -var "image_type=$class" -var "base_ami=$base" -var "root_device=$root" -var "subnet_id=$subnet_id" packer/template.pkr.hcl
