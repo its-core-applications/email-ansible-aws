@@ -15,11 +15,12 @@ server:
     num-threads: 4
     outgoing-range: 4096
 
-    msg-cache-size: 16m
-    rrset-cache-size: 32m
+    msg-cache-size: 32m
+    rrset-cache-size: 64m
 
     cache-min-ttl: 300
-    cache-max-ttl: 86400
+    cache-max-ttl: 43200
+    cache-max-negative-ttl: 300
     infra-host-ttl: 600
 
     chroot: ""
