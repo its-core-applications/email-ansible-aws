@@ -22,12 +22,11 @@
 
     - name: Install prerequisites
       yum:
-        name: "{{ item }}"
+        name:
+          - perl-Digest-SHA
+          - perl-Time-Piece
+          - clamav-update
         state: latest
-      loop:
-        - perl-Digest-SHA
-        - perl-Time-Piece
-        - clamav-update
 
     - name: Install processing scripts
       ansible.builtin.copy:
