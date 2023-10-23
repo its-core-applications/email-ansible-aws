@@ -42,7 +42,7 @@ if not args.no_stdin:
 
 query = f'''
 from(bucket: "sensu/three_weeks")
-    |> range(start: -30m)
+    |> range(start: -12m)
     |> filter(fn: (r) =>
         r._measurement == "sensu_event"
         and r._field == "status"
