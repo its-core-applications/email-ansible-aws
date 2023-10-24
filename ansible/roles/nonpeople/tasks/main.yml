@@ -2,6 +2,8 @@
     - nonpeople
     - accounts
   when: role_nonpeople_done is not defined
+  vars:
+    nonperson_accounts_ssh: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') }}"
   block:
     - name: Create non-person groups
       group:
@@ -29,7 +31,7 @@
         owner: "{{ item.name }}"
         group: "{{ item.name }}"
         mode: "0755"
-      loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') }}"
+      loop: "{{ nonperson_accounts_ssh }}"
 
     - name: Install authorized_keys for non-person accounts
       become_user: "{{ item.name }}"
@@ -39,7 +41,15 @@
         owner: "{{ item.name }}"
         group: "{{ item.name }}"
         mode: "0444"
-      loop: "{{ nonperson_accounts | selectattr('ssh', 'defined') | selectattr('ssh') }}"
+      loop: "{{ nonperson_accounts_ssh }}"
+      when: "'Class_bastion' not in group_names"
+
+    - name: Remove authorized_keys for non-person acccounts
+      become_user: "{{ item.name }}"
+      ansible.builtin.file:
+        dest: ~/.ssh/authorized_keys
+        state: absent
+      loop: "{{ ('Class_bastion' in group_names) | ternary(nonperson_accounts, nonperson_accounts | difference(nonperson_accounts_ssh)) }}"
 
     - name: Grant sudo access
       ansible.builtin.copy:
