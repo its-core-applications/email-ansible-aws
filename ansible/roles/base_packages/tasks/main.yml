@@ -12,6 +12,7 @@
           - cronie-anacron
           - cyrus-sasl-plain
           - ec2-instance-connect
+          - firewalld
           - postfix
           - update-motd
         state: absent
@@ -32,7 +33,6 @@
           - cloud-init
           - cronie-noanacron
           - expect
-          - firewalld
           - gdb
           - git
           - jq
