@@ -221,6 +221,13 @@ spf_thirdparty:
       -  hsg-hio-desk
     record: include:mail.zendesk.com
 
+  # 2023-11-14: danno / ICPSR / TDx 5379334
+  - names:
+      -  icpsr-help
+    record:
+      - ip4:141.211.146.23
+      - ip4:141.211.212.68
+
   # 2017-02-21: Law Library
   - names:
       - lawlibnotices
@@ -352,3 +359,13 @@ spf_thirdparty:
       - include:spf.ireshotels.com
       - ip4:128.177.144.190
       - ip4:128.177.144.191
+
+  # 2023-11-14: tsapp / College of Engineering / TDx 5320257
+  # Hivebrite
+  - names:
+      - wolverineentrepreneurshub
+      - tsapp
+      - hanburke
+      - cfezliadmins
+    record:
+      - include:email.hivebrite.com
