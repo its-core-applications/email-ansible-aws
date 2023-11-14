@@ -1,0 +1,52 @@
+- tags:
+    - dkim
+  vars:
+    dkim_keys:
+      - "{{ lookup('flowerysong.hvault.kv', 'dkim/' ~ dkim_key ~ '-0', errors='ignore') }}"
+      - "{{ lookup('flowerysong.hvault.kv', 'dkim/' ~ dkim_key ~ '-1', errors='ignore') }}"
+      - "{{ lookup('flowerysong.hvault.kv', 'dkim/' ~ dkim_key ~ '-2', errors='ignore') }}"
+    dkim_key_active: "{{ dkim_keys | select | sort(attribute='date') | last | default(none) }}"
+  block:
+    - ansible.builtin.include_tasks:
+        file: generate_key.yml
+      when: not dkim_key_active or ((now() - (dkim_key_active.date | to_datetime('%Y-%m-%d'))).days > 90)
+
+    - name: Save name of active key
+      ansible.builtin.set_fact:
+        dkim_key_map: "{{ dkim_key_map | default({}) | combine({dkim_key: dkim_key ~ '-' ~ dkim_keys.index(dkim_key_active)}) }}"
+
+    - name: Update keys in DNS
+      amazon.aws.route53:
+        profile: "{{ aws_profile_subd }}"
+        command: create
+        overwrite: true
+        wait: false
+        zone: "{{ subd }}"
+        record: "{{ dkim_key }}-{{ dkim_keys.index(item) }}.dkim.{{ subd }}"
+        type: TXT
+        value: " \"{{ raw_text | batch(254) | map('join') | join('\" \"') | string }}\""
+        ttl: 600
+      delegate_to: localhost
+      run_once: true
+      become: false
+      loop: "{{ dkim_keys | select }}"
+      no_log: true
+      vars:
+        raw_text: v=DKIM1; k=rsa; p={{ item.public_key }}
+
+    - name: Create key storage directory
+      ansible.builtin.file:
+        dest: /etc/pki/collab/private
+        owner: root
+        group: mail
+        mode: "0750"
+        state: directory
+
+    - name: Install key
+      ansible.builtin.copy:
+        dest: /etc/pki/collab/private/{{ dkim_key_map[dkim_key] }}.dkim.{{ subd }}.key
+        content: "{{ dkim_key_active.private_key }}"
+        owner: root
+        group: mail
+        mode: "0640"
+      no_log: true

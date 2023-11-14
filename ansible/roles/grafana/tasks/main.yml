@@ -123,10 +123,10 @@
         name: httpd
 
     - ansible.builtin.import_role:
-        name: letsencrypt
+        name: certificate
       vars:
         certificate: graphs.{{ subd }}
-        le_services:
+        certificate_services:
           - httpd
 
     - name: Schedule backups of grafana.db

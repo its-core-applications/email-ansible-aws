@@ -14,8 +14,8 @@
       notify: Restart httpd
 
     - ansible.builtin.import_role:
-        name: letsencrypt
+        name: certificate
       vars:
         certificate: dashboard.{{ region }}.{{ subd }}
-        le_services:
+        certificate_services:
           - httpd

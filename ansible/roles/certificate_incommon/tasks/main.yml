@@ -1,0 +1,141 @@
+- tags:
+    - certificate
+    - incommon
+  vars:
+    cert_directory: /etc/pki/acme
+    acme_key: "{{ lookup('flowerysong.hvault.kv', 'certificate/incommon', errors='ignore').rsa_key }}"
+    cert_existing: "{{ lookup('flowerysong.hvault.kv', 'certificate/' ~ certificate, errors='ignore') }}"
+    cert_subject_alt_names: "{{ [certificate] | union(certificate_sans | default([])) | map('regex_replace', '^', 'DNS:') }}"
+  module_defaults:
+    community.crypto.acme_certificate:
+      account_key_content: "{{ acme_key }}"
+      acme_directory: https://acme.sectigo.com/v2/InCommonRSAOV
+      modify_account: false
+      acme_version: 2
+      challenge: dns-01
+      remaining_days: 15
+  delegate_to: localhost
+  run_once: true
+  become: false
+  block:
+    - name: Create certificate storage directory
+      ansible.builtin.file:
+        dest: "{{ cert_directory }}"
+        owner: "{{ lookup('env', 'USER') }}"
+        mode: "0700"
+        state: directory
+      become: true
+
+    - name: Create account key
+      community.crypto.openssl_privatekey_pipe:
+      register: result
+      when: not (acme_key | default(false))
+      no_log: true
+
+    - name: Store account key
+      flowerysong.hvault.kv:
+        token: "{{ ansible_hvault_token }}"
+        key: certificate/incommon
+        value:
+          rsa_key: "{{ result.privatekey }}"
+      when: result is not skipped
+      no_log: true
+
+    - name: Register ACME account
+      community.crypto.acme_account:
+        state: present
+        account_key_content: "{{ acme_key }}"
+        acme_directory: https://acme.sectigo.com/v2/InCommonRSAOV
+        acme_version: 2
+        external_account_binding:
+          alg: HS256
+          key: "{{ lookup('flowerysong.hvault.kv', 'acme/incommon').key }}"
+          kid: "{{ lookup('flowerysong.hvault.kv', 'acme/incommon').id }}"
+        contact:
+          - mailto:letsencrypt@devnull.mail.umich.edu
+      when: result is not skipped
+
+    - name: Create keys for {{ certificate }}
+      community.crypto.openssl_privatekey_pipe:
+        type: "{{ item.type | upper }}"
+        size: "{{ item.size | default(omit) }}"
+        curve: "{{ item.curve | default(omit) }}"
+      loop:
+        - type: rsa
+          size: 4096
+        - type: ecc
+          curve: secp256r1
+      register: key_result
+      no_log: true
+
+    - name: Generate CSRs for {{ certificate }}
+      community.crypto.openssl_csr_pipe:
+        common_name: "{{ certificate }}"
+        subject_alt_name: "{{ cert_subject_alt_names }}"
+        privatekey_content: "{{ (key_result.results | selectattr('item.type', '==', item)).0.privatekey }}"
+      loop:
+        - rsa
+        - ecc
+      register: csr_result
+
+    - name: Copy existing certificates for {{ certificate }}
+      ansible.builtin.copy:
+        dest: "{{ cert_directory }}/{{ certificate }}.{{ item }}.crt"
+        content: "{{ cert_existing[item ~ '_cert'] | default('') }}"
+        mode: "0755"
+      when:
+        - cert_existing[item ~ '_cert'] | default(false)
+        - (cert_existing[item ~ '_cert'] | community.crypto.x509_certificate_info).subject_alt_name | ansible.builtin.symmetric_difference(cert_subject_alt_names) | length == 0
+      loop:
+        - rsa
+        - ecc
+      register: result
+
+    - name: Delete stale certificates for {{ certificate }}
+      ansible.builtin.file:
+        dest: "{{ cert_directory }}/{{ certificate }}.{{ item }}.crt"
+        state: absent
+      loop: "{{ result.results | select('skipped') | map(attribute='item') }}"
+
+    # These can't be looped because it needs to go order -> get -> order -> get
+    - name: Order RSA certificate for {{ certificate }}
+      community.crypto.acme_certificate:
+        csr_content: "{{ (csr_result.results | selectattr('item', '==', 'rsa')).0.csr }}"
+        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.rsa.crt"
+      register: acme_data
+
+    - name: Get RSA certificate for {{ certificate }}
+      community.crypto.acme_certificate:
+        csr_content: "{{ (csr_result.results | selectattr('item', '==', 'rsa')).0.csr }}"
+        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.rsa.crt"
+        data: "{{ acme_data }}"
+      register: rsa_result
+
+    - name: Order ECC certificate for {{ certificate }}
+      community.crypto.acme_certificate:
+        csr_content: "{{ (csr_result.results | selectattr('item', '==', 'ecc')).0.csr }}"
+        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.ecc.crt"
+      register: acme_data
+
+    - name: Get ECC certificate for {{ certificate }}
+      community.crypto.acme_certificate:
+        csr_content: "{{ (csr_result.results | selectattr('item', '==', 'ecc')).0.csr }}"
+        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.ecc.crt"
+        data: "{{ acme_data }}"
+      register: ecc_result
+
+    - name: Store new certificates for {{ certificate }}
+      flowerysong.hvault.kv:
+        token: "{{ ansible_hvault_token }}"
+        key: certificate/{{ certificate }}
+        value: "{{ cert_existing | default({}, true) | combine({item.type ~ '_key': new_key, item.type ~ '_cert': new_cert}) }}"
+      loop:
+        - type: rsa
+          result: "{{ rsa_result }}"
+        - type: ecc
+          result: "{{ ecc_result }}"
+      when: item.result is changed
+      no_log: true
+      vars:
+        new_cert: "{{ lookup('file', cert_directory ~ '/' ~ certificate ~ '.' ~ item.type ~ '.crt') }}"
+        new_key: "{{ (key_result.results | selectattr('item.type', '==', item.type)).0.privatekey }}"

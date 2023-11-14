@@ -118,6 +118,8 @@
               identity/*: [read, list]
               identity: [list]
               secret/*: [read, list]
+              secret/certificate/*: [create, read, update, delete, list]
+              secret/dkim/*: [create, read, update, delete, list]
               secret/ssh/*: [create, read, update, delete, list]
               secret: [list]
               ssh-client-signer/*: [list]

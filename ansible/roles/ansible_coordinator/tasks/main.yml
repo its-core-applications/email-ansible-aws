@@ -37,7 +37,16 @@
         minute: 13,28,43,58
         job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/deprovision_spundown.yml &>/dev/null
 
-    - name: Schedule renewal of certificates with LetsEncrypt
+    - name: Schedule AMI rebuilds
+      ansible.builtin.cron:
+        name: ansible-build-amis
+        user: "{{ ansible_user }}"
+        minute: 19
+        hour: 18
+        weekday: 4
+        job: . ~/ansible-aws/env-setup.sh && ~/ansible-aws/rebuild-all &>/dev/null
+
+    - name: Schedule renewal of ACME certificates
       cron:
         name: ansible-letsencrypt
         user: "{{ ansible_user }}"

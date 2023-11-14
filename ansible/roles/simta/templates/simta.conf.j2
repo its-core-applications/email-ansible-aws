@@ -165,8 +165,8 @@ receive {
     arc {
         enabled = true;
         domain = {{ tld }};
-        selector = {{ simta_arc_selector }};
-        key = /etc/pki/collab/private/{{ simta_arc_selector }}._domainkey.{{ tld }}.key;
+        selector = {{ dkim_key_map[simta_arc_selector] }};
+        key = /etc/pki/collab/private/{{ dkim_key_map[simta_arc_selector] }}.dkim.{{ subd }}.key;
     }
 {% endif %}{# simta_arc #}
 {% if simta_srs %}
@@ -207,8 +207,8 @@ deliver {
     dkim {
         enabled = true;
         domain = {{ tld }};
-        selector = {{ simta_dkim_selector }};
-        key = /etc/pki/collab/private/{{ simta_dkim_selector }}._domainkey.{{ tld }}.key;
+        selector = {{ dkim_key_map[simta_dkim_selector] }};
+        key = /etc/pki/collab/private/{{ dkim_key_map[simta_dkim_selector] }}.dkim.{{ subd }}.key;
     }
 {% endif %}{# simta_dkim #}
 {% if simta_jail_mail %}

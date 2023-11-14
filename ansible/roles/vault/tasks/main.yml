@@ -1,11 +1,12 @@
 - tags:
     - vault
   block:
+    # The InCommon secret is stored in Vault so we need to use LE for this certificate
     - ansible.builtin.import_role:
-        name: letsencrypt
+        name: certificate_letsencrypt
       vars:
         certificate: vault.{{ subd }}
-        le_services: "{{ bootstrap | ternary([], ['vault']) }}"
+        certificate_services: "{{ bootstrap | ternary([], ['vault']) }}"
 
     - name: Install vault
       ansible.builtin.dnf:

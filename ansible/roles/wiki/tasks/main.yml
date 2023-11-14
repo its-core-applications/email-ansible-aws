@@ -55,10 +55,10 @@
         state: restarted
 
     - ansible.builtin.import_role:
-        name: letsencrypt
+        name: certificate
       vars:
         certificate: wiki.{{ subd }}
-        le_services:
+        certificate_services:
           - httpd
 
     - name: Configure gollum vhost

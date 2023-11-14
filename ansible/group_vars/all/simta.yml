@@ -1,6 +1,7 @@
 simta_version: 2.4.1
 
-simta_dkim_selector: mx-2017-01-03
+simta_dkim_selector: mx{{ aws_status_suffix }}
+simta_arc_selector: arc{{ aws_status_suffix }}
 simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
 simta_ldap_host: 'ldap-mail.itd.umich.edu'
 simta_redis_host: "pink.{{ aws_region }}.{{ subd }}"

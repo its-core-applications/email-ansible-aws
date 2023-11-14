@@ -3,6 +3,9 @@
   vars:
     cert_data: "{{ lookup('flowerysong.hvault.kv', 'certificate/' ~ certificate) }}"
   block:
+    - import_role:
+        name: certificate_incommon
+
     - name: Install chain verification tool
       ansible.builtin.copy:
         dest: /usr/local/bin/cert-chain-verify
@@ -21,43 +24,32 @@
 
     - name: "{{ certificate }} : Get private key info"
       community.crypto.openssl_privatekey_info:
-        content: "{{ cert_data.key }}"
+        content: "{{ cert_data.rsa_key }}"
       register: cert_key_info
 
     - name: "{{ certificate }} : Install private key"
       ansible.builtin.copy:
         dest: /etc/pki/collab/private/{{ certificate }}.key
-        content: "{{ cert_data.key }}"
+        content: "{{ cert_data.rsa_key }}"
         owner: root
         group: mail
         mode: "0640"
+      no_log: true
 
-    - when: certificate_type == 'tls'
-      block:
-        # FIXME: this can be removed if the data in vault is consistently just the cert
-        - name: "{{ certificate }} : Trim off anything that's not the cert"
-          command:
-            cmd: openssl x509
-            stdin: "{{ cert_data.value }}"
-          changed_when: false
-          register: cert_crt
+    - name: "{{ certificate }} : Get certificate info"
+      community.crypto.x509_certificate_info:
+        content: "{{ cert_data.rsa_cert }}"
+      register: cert_crt_info
 
-        - name: "{{ certificate }} : Get certificate info"
-          community.crypto.x509_certificate_info:
-            content: "{{ cert_crt.stdout }}"
-          register: cert_crt_info
+    - ansible.builtin.assert:
+        that:
+          - cert_key_info.public_key_fingerprints.sha512 == cert_crt_info.public_key_fingerprints.sha512
 
-        - ansible.builtin.assert:
-            that:
-              - cert_key_info.public_key_fingerprints.sha512 == cert_crt_info.public_key_fingerprints.sha512
-
-        - name: "{{ certificate }} : Install certificate"
-          ansible.builtin.copy:
-            dest: /etc/pki/collab/private/{{ certificate }}.crt
-            content: "{{ cert_crt.stdout }}\n{{ cert_chain }}"
-            owner: root
-            group: mail
-            mode: "0644"
-            validate: cert-chain-verify %s
-          vars:
-            cert_chain: "{{ lookup('file', 'chains/' ~ cert_crt_info.authority_key_identifier ~ '.pem') }}"
+    - name: "{{ certificate }} : Install certificate"
+      ansible.builtin.copy:
+        dest: /etc/pki/collab/private/{{ certificate }}.crt
+        content: "{{ cert_data.rsa_cert }}"
+        owner: root
+        group: mail
+        mode: "0644"
+        validate: cert-chain-verify %s

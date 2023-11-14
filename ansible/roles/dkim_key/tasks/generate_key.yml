@@ -1,0 +1,26 @@
+- delegate_to: localhost
+  run_once: true
+  no_log: true
+  block:
+    - name: Generate private key
+      community.crypto.openssl_privatekey_pipe:
+        type: RSA
+        size: 2048
+      register: result_private
+
+    # FIXME: community.crypto.openssl_publickey_pipe doesn't exist
+    - name: Extract public key
+      ansible.builtin.command:
+        cmd: openssl rsa -pubout
+        stdin: "{{ result_private.privatekey }}"
+      register: result_public
+
+    - name: Store key
+      flowerysong.hvault.kv:
+        token: "{{ ansible_hvault_token }}"
+        key: dkim/{{ dkim_key }}-{{ 0 if not dkim_key_active else (dkim_keys.index(dkim_key_active) + 1) % 3 }}
+        value:
+          private_key: "{{ result_private.privatekey }}"
+          public_key: "{{ result_public.stdout_lines[1:-1] | join }}"
+          date: "{{ (now() | string)[:10] }}"
+      become: false

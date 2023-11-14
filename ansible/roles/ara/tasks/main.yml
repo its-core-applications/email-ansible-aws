@@ -21,10 +21,10 @@
         state: latest
 
     - ansible.builtin.import_role:
-        name: letsencrypt
+        name: certificate_incommon
       vars:
         certificate: "{{ ara_hostname }}"
-        le_services:
+        certificate_services:
           - httpd
 
     - name: Create data storage area

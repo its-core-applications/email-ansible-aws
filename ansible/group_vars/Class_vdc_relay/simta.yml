@@ -1,10 +1,12 @@
-simta_config: "{{ (aws_status == 'prod') | ternary('vdc-relay.mail', 'vdc-relay-nonprod.mail') }}"
+simta_config: vdc-relay{{ aws_status_suffix }}.mail
 simta_relay: true
 simta_dkim: true
-simta_dkim_selector: relay-2018-08-29
+simta_dkim_selector: relay{{ aws_status_suffix }}
 simta_dkim_level: ALWAYS
 simta_ldap: true
 simta_ldap_password: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
 simta_msa: true
 simta_tcpwrappers: true
 simta_queue_type: relay-egress
+simta_certificate_sans:
+  - vdc-relay.{{ aws_region }}.{{ subd }}

@@ -1,9 +1,16 @@
-simta_config: "{{ (aws_status == 'prod') | ternary('relay.mail', 'relay-nonprod.mail') }}"
+simta_config: relay{{ aws_status_suffix }}.mail
 simta_queue_type: relay-egress
 simta_relay: true
 simta_msa: true
 simta_dkim: true
-simta_dkim_selector: relay-2018-08-29
+simta_dkim_selector: relay{{ aws_status_suffix }}
 simta_dkim_level: ALWAYS
 simta_ldap: true
 simta_ldap_password: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
+simta_certificate_sans:
+  - authz-relay.{{ aws_region }}.{{ subd }}
+  - authz-relay-vpn.{{ aws_region }}.{{ subd }}
+  - relay{{ aws_status_suffix }}-public.mail.umich.edu
+  - relay{{ aws_status_suffix }}-private.mail.umich.edu
+  - relay{{ aws_status_suffix }}-static.mail.umich.edu
+  - mail-relay.itd.umich.edu

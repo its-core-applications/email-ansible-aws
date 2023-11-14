@@ -139,6 +139,18 @@
         name: saslauthd
       when: simta_authn
 
+    - ansible.builtin.import_role:
+        name: dkim_key
+      vars:
+        dkim_key: "{{ simta_dkim_selector }}"
+      when: simta_dkim
+
+    - ansible.builtin.import_role:
+        name: dkim_key
+      vars:
+        dkim_key: "{{ simta_arc_selector }}"
+      when: simta_arc
+
     - name: Configure simta
       ansible.builtin.template:
         dest: /etc/simta.conf
@@ -238,21 +250,8 @@
         name: certificate
       vars:
         certificate: "{{ simta_config }}.{{ tld }}"
+        certificate_sans: "{{ simta_certificate_sans | default([]) }}"
       when: simta_tls
-
-    - ansible.builtin.import_role:
-        name: certificate
-      vars:
-        certificate: "{{ simta_dkim_selector }}._domainkey.{{ tld }}"
-        certificate_type: dkim
-      when: simta_dkim
-
-    - ansible.builtin.import_role:
-        name: certificate
-      vars:
-        certificate: "{{ simta_arc_selector }}._domainkey.{{ tld }}"
-        certificate_type: dkim
-      when: simta_arc
 
     - ansible.builtin.import_role:
         name: firewall

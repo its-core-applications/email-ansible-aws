@@ -15,19 +15,11 @@
         cmd: openssl genrsa -out /etc/pki/collab/private/letsencrypt_account.key 4096
         creates: /etc/pki/collab/private/letsencrypt_account.key
 
-    - name: Create RSA certificate key for {{ certificate }}
-      command:
-        cmd: openssl genrsa -out /etc/pki/collab/private/{{ certificate }}.key 4096
-        creates: /etc/pki/collab/private/{{ certificate }}.key
-      register: rsa_key_result
-      # FIXME
-      when: false
-
-    - name: Create EC certificate key for {{ certificate }}
+    - name: Create certificate key for {{ certificate }}
       command:
         cmd: openssl ecparam -genkey -name prime256v1 -out /etc/pki/collab/private/{{ certificate }}.key
         creates: /etc/pki/collab/private/{{ certificate }}.key
-      register: ec_key_result
+      register: key_result
 
     - name: Create OpenSSL configuration file for {{ certificate }}
       ansible.builtin.template:
@@ -40,7 +32,7 @@
 
     - name: Generate CSR for {{ certificate }}
       command: openssl req -new -sha256 -key /etc/pki/collab/private/{{ certificate }}.key -out /etc/pki/collab/{{ certificate }}.csr -config /etc/pki/collab/{{ certificate }}.cnf
-      when: "[rsa_key_result, ec_key_result, cnf_result] | select('changed')"
+      when: "[key_result, cnf_result] | select('changed')"
 
     - name: Get ACME challenge for {{ certificate }}
       acme_certificate:
@@ -58,7 +50,7 @@
     - name: You challenge me, sirrah?
       delegate_to: localhost
       become: false
-      route53:
+      amazon.aws.route53:
         profile: "{{ aws_profile_subd }}"
         command: create
         overwrite: true
@@ -85,8 +77,8 @@
       register: result
 
     - name: Restart dependent services
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ item }}"
         state: restarted
       when: result is changed
-      loop: "{{ le_services | default([]) }}"
+      loop: "{{ certificate_services | default([]) }}"

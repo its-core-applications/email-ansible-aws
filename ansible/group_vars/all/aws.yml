@@ -5,6 +5,7 @@ aws_resource_owner: its core infrastructure and automation
 
 aws_profile: "{{ lookup('env', 'AWS_DEFAULT_PROFILE') }}"
 aws_status: "{{ lookup('env', 'AWS_STATUS') }}"
+aws_status_suffix: "{{ (aws_status == 'prod') | ternary('', '-nonprod') }}"
 ansible_ssh_private_key_file: "{{ playbook_dir }}/../id_ed25519.{{ ansible_user }}{{ '' if key_name is not defined else ('.' ~ (key_name | split | last)) }}"
 
 aws_layout:
