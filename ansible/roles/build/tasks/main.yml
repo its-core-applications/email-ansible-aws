@@ -41,6 +41,18 @@
           - zlib-devel
 
     - ansible.builtin.import_role:
+        name: build_rpm_spec
+      tags:
+        - jq
+      vars:
+        build_name: jq
+        build_deps:
+          - bison
+          - chrpath
+          - flex
+          - oniguruma-devel
+
+    - ansible.builtin.import_role:
         name: build_rpm_git
       tags:
         - denser
