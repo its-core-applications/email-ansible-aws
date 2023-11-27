@@ -1,17 +1,15 @@
 "{{ item }}" {
+{% if not simta_egress %}
     rule {
         type = accept;
         expand {
             enabled = false;
         }
     }
+{% endif %}
     deliver {
-        local {
+        bitbucket {
             enabled = true;
-            agent = /bin/true;
-        }
-        punt {
-            enabled = false;
         }
     }
 }
