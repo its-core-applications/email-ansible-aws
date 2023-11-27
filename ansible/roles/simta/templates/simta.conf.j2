@@ -197,7 +197,7 @@ receive {
 {% endif %}{# simta_jail #}
 {% if simta_egress %}
     queue {
-        aggression = 5;
+        aggression = 25;
     }
 {% endif %}{# simta_egress #}
 }
@@ -239,7 +239,7 @@ defaults {
     red {
         deliver {
             connection {
-                max_messages = 25;
+                max_messages = 100;
             }
             tls {
                 required = true;
