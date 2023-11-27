@@ -28,6 +28,10 @@
       systemd:
         name: simta
         state: stopped
+      register: result
+      until: result is not changed
+      retries: 6
+      delay: 10
 
     - name: Clean queues
       command: /usr/sbin/simta -C
