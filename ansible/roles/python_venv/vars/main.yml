@@ -1,6 +1,5 @@
 venv_base_deps:
   - git
-  - python-virtualenv
   - python3
   - gcc
 venv_build_deps: []
