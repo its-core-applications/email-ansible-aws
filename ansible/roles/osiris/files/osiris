@@ -24,8 +24,6 @@ find $queues -ignore_readdir_race -name 'E*' -type f 2>/dev/null | while read ef
     # The file might have disappeared
     [[ -s $efile ]] || continue
 
-    jailed=$(jq -r .jailed $efile)
-
     dfile=${efile/E/D}
     mid=$(basename $efile)
     mid=${mid#E}
@@ -66,11 +64,13 @@ find $queues -ignore_readdir_race -name 'E*' -type f 2>/dev/null | while read ef
     fi
 
     if [[ $disposition = 'allow' ]]; then
+        jailed=$(jq -r .jailed $efile)
         if [[ $jailed = 'true' ]]; then
             logger -p mail.info -t "osiris[$$]" "$mid from $src is released to continue on its journey"
             simc -m $mid &>/dev/null
         fi
     elif [[ $disposition = 'block' ]]; then
+        jailed=$(jq -r .jailed $efile)
         if [[ $simta_state = 'active' ]] && [[ $jailed = 'false' || $efile =~ /fast/ ]]; then
             systemctl stop simta
             simta_state='stopped'
