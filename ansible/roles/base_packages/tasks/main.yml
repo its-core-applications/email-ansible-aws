@@ -42,6 +42,7 @@
           - man-pages
           - mosh
           - nc
+          - nftables  # prevents weak dependencies from preferring firewalld
           - openldap-clients
           - pam_krb5
           - procmail  # Not used directly, but formail is sometimes useful
