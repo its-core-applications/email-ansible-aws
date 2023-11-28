@@ -3,7 +3,8 @@
   block:
     - name: Install sshguard
       ansible.builtin.dnf:
-        name: sshguard
+        # Install a specific backend instead of letting weak dependencies decide
+        name: sshguard-nftables
         state: latest
       notify: Restart sshguard
 
