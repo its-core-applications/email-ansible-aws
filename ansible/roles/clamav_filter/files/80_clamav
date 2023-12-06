@@ -9,13 +9,13 @@ cleanup() {
     fi
 }
 
-CLAMTMP=$(mktemp -d /tmp/80_clamav.XXXXXXXX)
-CLAMOUT=${CLAMTMP}/output
-CLAMERR=${CLAMTMP}/stderr
-CLAMDSCAN=/usr/bin/clamdscan
-CLAMDSCAN_FLAGS="--config-file /etc/clamd.d/scan.conf --quiet --no-summary --wait -l ${CLAMOUT}"
+if [ "$SIMTA_DFILE" -a $(cut -f1 -d. < /proc/loadavg) -lt 50 ]; then
+    CLAMTMP=$(mktemp -d /tmp/80_clamav.XXXXXXXX)
+    CLAMOUT=${CLAMTMP}/output
+    CLAMERR=${CLAMTMP}/stderr
+    CLAMDSCAN=/usr/bin/clamdscan
+    CLAMDSCAN_FLAGS="--config-file /etc/clamd.d/scan.conf --quiet --no-summary --wait -l ${CLAMOUT}"
 
-if [ $SIMTA_DFILE ]; then
     # read from fast queue
     ${CLAMDSCAN} ${CLAMDSCAN_FLAGS} ${SIMTA_DFILE} 2>|${CLAMERR}
     CLAMRET=$?
@@ -64,15 +64,13 @@ if [ $SIMTA_DFILE ]; then
 
     2)
 	log "80_clamav ${SIMTA_DFILE}: clamd error, saved in $CLAMTMP"
-	cleanup
 	;;
 
     *)
 	log "80_clamav ${SIMTA_DFILE}: $CLAMDSCAN returned $CLAMRET"
-	cleanup
 	;;
 
     esac
-fi
 
-cleanup
+    cleanup
+fi
