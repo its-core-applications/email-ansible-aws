@@ -93,8 +93,8 @@ if [[ $count -lt $min_count && $rup -eq 1 && $rpup = 'null' ]]; then
 fi
 
 # Check for datapoints in the last six minutes where the one minute load
-# average was over 6
-quint=$($influx "SELECT COUNT(mean) FROM (SELECT MEAN(\"1_min\") FROM load_avg WHERE time >= now() - 6m AND sensu_entity_name =~ /.+\.${class}\..+/ GROUP BY time(1m)) WHERE mean > 6" | $influx_jq)
+# average was over 5
+quint=$($influx "SELECT COUNT(mean) FROM (SELECT MEAN(\"1_min\") FROM load_avg WHERE time >= now() - 6m AND sensu_entity_name =~ /.+\.${class}\..+/ GROUP BY time(1m)) WHERE mean > 5" | $influx_jq)
 
 if [[ $quint != 'null' && $rup -eq 1 && $rpup = 'null' ]]; then
     if [[ $count -ge $max_count ]]; then
