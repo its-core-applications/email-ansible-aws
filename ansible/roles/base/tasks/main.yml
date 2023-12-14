@@ -165,6 +165,7 @@
       loop:
         - /etc/cron.daily/rhsmd
         - /etc/motd
+        - /etc/motd.d/insights-client
 
     - name: Basic krb5 configuration
       # The main reason we're doing this is that the kerberos library used for
