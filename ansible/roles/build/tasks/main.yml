@@ -183,10 +183,10 @@
         - vault
       vars:
         build_name: vault
-        build_version: 1.11.2
+        build_version: 1.14.8
         archive_url: https://releases.hashicorp.com/vault/{{ build_version }}/vault_{{ build_version }}_linux_amd64.zip
         archive_file: vault_{{build_version }}_linux_amd64.zip
-        archive_checksum: sha256:ace4138269cb7214c73529f984b793d66074e3a3ad373eaa77bc9b39490d9ef9
+        archive_checksum: sha256:c9aa42bf31a64ea3a7d29dfc8491caf8e51acd7925f35c14c48514258b30c0cf
 
     - ansible.builtin.import_role:
         name: build_rpm_git
