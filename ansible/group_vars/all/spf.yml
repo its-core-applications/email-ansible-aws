@@ -233,6 +233,12 @@ spf_thirdparty:
       - lawlibnotices
     record: include:umil.iii.com
 
+  # 2023-12-20: hanesjl / Law Library / TDx 5496205
+  - names:
+      - lawlibill
+      - phonepage
+    record: include:illiad.oclc.org
+
   # Marching Order
   - names:
       # 2021-03-09: jjude / Law School / TDx 692956
