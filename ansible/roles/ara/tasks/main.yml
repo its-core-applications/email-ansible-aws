@@ -11,7 +11,7 @@
       vars:
         venv_name: ara_server
         venv_packages:
-          - ara[server] @ git+https://github.com/ansible-community/ara.git@94a7a4fd781c14fb50e09cf5c43f5afc6c5dc3b0
+          - ara[server] @ git+https://github.com/ansible-community/ara.git@dde76744596b031f8a52297a71fee59ba9aeb605
           - gunicorn
 
     - name: Install extra packages
