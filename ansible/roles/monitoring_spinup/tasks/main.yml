@@ -1,2 +1,2 @@
-- ansible.builtin.import_role:
-    name: zabbix_spinup
+#- ansible.builtin.import_role:
+#    name: zabbix_spinup

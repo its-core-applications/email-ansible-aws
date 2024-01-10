@@ -6,3 +6,4 @@
         host_name: "{{ inventory_hostname }}"
         state: absent
       delegate_to: "{{ groups.Class_zabbix.0 }}"
+      ignore_errors: true
