@@ -64,6 +64,9 @@ simta_ldap_domains_mapped:
     prefix: michiganemagine
   - domain: michiganherc.org
     prefix: michiganherc
+  - domain: michiganpublic.org
+    prefix: michiganpublic
+    control_group: michiganpublic subdomain group
   - domain: michiganradio.org
     prefix: michiganradio
   - domain: michigantavr.org
