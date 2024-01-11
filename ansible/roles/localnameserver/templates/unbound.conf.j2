@@ -32,8 +32,12 @@ server:
     harden-glue: yes
     harden-dnssec-stripped: yes
     harden-below-nxdomain: no
-    harden-referral-path: yes
+    harden-referral-path: no
     unwanted-reply-threshold: 10000000
+
+    domain-insecure: "dnsal"
+    domain-insecure: "dnsbl"
+    domain-insecure: "internal"
 
     prefetch: yes
     prefetch-key: yes
