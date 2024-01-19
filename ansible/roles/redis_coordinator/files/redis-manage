@@ -206,7 +206,7 @@ def main():
             except RedisError:
                 logger.exception('Failed to fetch cluster info')
                 continue
-            if res[f'{host}:6379']['flags'] == 'myself,slave':
+            if res.get(f'{host}:6379', {}).get('flags') == 'myself,slave':
                 break
 
     # Forget stale nodes

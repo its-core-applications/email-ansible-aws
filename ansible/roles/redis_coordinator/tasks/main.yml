@@ -25,6 +25,7 @@
     - name: Run provision script
       command: "/usr/local/sbin/redis-manage {{ groups.redis | intersect(aws_region_group) | map('extract', hostvars, 'private_ip_address') | join(' ') }}"
       register: result
+      until: result is success
       when: groups.redis | intersect(aws_region_group) | length > 2
 
     - name: Schedule provision script runs
