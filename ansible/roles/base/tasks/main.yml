@@ -244,12 +244,19 @@
     - ansible.builtin.import_role:
         name: dynhostname
 
-    - ansible.builtin.import_role:
-        name: ec2_instance_profile
-      vars:
+    - vars:
         ec2_profile: datastore
         ec2_profile_role: arn:aws:iam::{{ aws_layout[aws_status][aws_profile_s3].account }}:role/{{ aws_resource_prefix }}_S3_ds
-        ec2_profile_user: root
+      block:
+        - ansible.builtin.import_role:
+            name: ec2_instance_profile
+          vars:
+            ec2_profile_user: root
+
+        - ansible.builtin.import_role:
+            name: ec2_instance_profile
+          vars:
+            ec2_profile_user: simta
 
     - name: Install git refresh script
       ansible.builtin.copy:

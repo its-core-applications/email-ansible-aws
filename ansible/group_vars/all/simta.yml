@@ -117,3 +117,6 @@ simta_ldap_domains_mapped:
     prefix: wcbn
   - domain: youthcivilrights.org
     prefix: youthcivilrights
+
+simta_s3_domains:
+  - s3.mail.umich.edu

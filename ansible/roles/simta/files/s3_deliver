@@ -1,0 +1,29 @@
+#!/bin/bash
+
+PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+
+tmpdir=$(mktemp -d /var/tmp/s3_email.XXXXXXXX)
+cat > $tmpdir/msg
+
+while getopts d:r: opt; do
+    case $opt in
+    d)  datastore_args=$OPTARG
+        ;;
+    r)  rcpt=$OPTARG
+        ;;
+    esac
+done
+
+msghash=$(md5sum $tmpdir/msg)
+msghash=${msghash%% *}
+
+datastore-upload $datastore_args $tmpdir/msg "email_messages/$rcpt/$(date +%F)/${msghash}.txt"
+ret=$?
+
+rm -rf $tmpdir
+
+if [[ $ret -eq 0 ]]; then
+    exit 0
+fi
+
+exit 75
