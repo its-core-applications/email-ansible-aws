@@ -18,12 +18,7 @@ msghash=$(md5sum $tmpdir/msg)
 msghash=${msghash%% *}
 
 datastore-upload $datastore_args $tmpdir/msg "email_messages/$rcpt/$(date +%F)/${msghash}.txt"
-ret=$?
 
 rm -rf $tmpdir
 
-if [[ $ret -eq 0 ]]; then
-    exit 0
-fi
-
-exit 75
+exit 0
