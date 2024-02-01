@@ -234,6 +234,25 @@ spf_thirdparty:
       - ip4:141.211.146.23
       - ip4:141.211.212.68
 
+  # 2024-02-01: jjude / Law School / TDx 5785367
+  # Symplicity
+  - names:
+      - lawcareers
+      - kmrus
+      - sdelecki
+      - rkaul
+      - sindling
+      - rwitkop
+      - pkl
+      - gtrakul
+      - eachen
+      - kyrasims
+      - rakaplan
+      - sjbonn
+      - ebretz
+      - jcowin
+    record: include:spf.symplicity.com
+
   # 2017-02-21: Law Library
   - names:
       - lawlibnotices
