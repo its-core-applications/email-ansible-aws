@@ -330,6 +330,11 @@ spf_thirdparty:
       - rosscareerservices
     record: include:mbafocus.com
 
+  # 2024-01-31: wwight / Michigan Medicine / TDx 5778158
+  - names:
+      - singlecellspatialanalysis
+    record: include:20373748.spf08.hubspotemail.net
+
   # 2023-08-08: jmcglone / University Library / TDx 4775360
   - names:
       - um.press.mktg
