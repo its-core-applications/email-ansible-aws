@@ -29,7 +29,9 @@
         name: simta
         state: stopped
       register: result
-      until: result is not changed
+      until:
+        - result is success
+        - result is not changed
       retries: 6
       delay: 10
 
