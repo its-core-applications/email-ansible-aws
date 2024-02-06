@@ -251,6 +251,8 @@ spf_thirdparty:
       - sjbonn
       - ebretz
       - jcowin
+      # 2024-02-06: joegorde / School of Education / TDx 5797370
+      - marsal.careerservices
     record: include:spf.symplicity.com
 
   # 2017-02-21: Law Library
