@@ -270,6 +270,8 @@ spf_thirdparty:
       - lawseniorday
       # 2021-03-08: dparry / UMSI / TDx 686194
       - umsi.studentlife
+      # 2024-02-06: annere / School of Public Health / TDx 5714770
+      - sph.events
     record: ip4:176.31.145.254
 
   # 2017-05-30
