@@ -142,11 +142,11 @@ spf_thirdparty:
       - ip4:199.106.139.112/28
       - ip4:198.187.195.89
 
-  # 2024-01-30: srel / LSA / TDx 5707225
-  # MailerLite
+  # 2024-02-12: srel / LSA / TDx 5707225
+  # Sender
   - names:
       - cfceboard
-    record: include:_spf.mlsend.com
+    record: include:sendersrv.com
 
   # 2017-05-30
   # Cision
