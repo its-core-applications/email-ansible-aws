@@ -109,6 +109,10 @@ spf_thirdparty:
       # FormAssembly used with Salesforce
       - include:spf1.formassembly.com
 
+      # 2024-02-20: adamjhos / DPSS / TDx 5828740
+      # put in temporarily for domain verification by vendor
+      - include:mailgun.org
+
   # 2017-05-30: Dentistry
   - names:
       - bldawson
@@ -193,20 +197,6 @@ spf_thirdparty:
       - kolbc
       - seanhamm
     record: include:sparkpostmail.com
-
-  # 2024-02-08: adamjhos / DPSS / TDx 5828740
-  # mailgun
-  - names:
-      - dpss-safety-security
-      - animalsecuritycg
-      - cmgerdes
-      - washine
-      - umealerts
-      - umdearborn-emermgt
-      - umemergency
-      - raydhall
-      - public.affairs
-    record: include:mailgun.org
 
   # 2017-04-27: psmitow / LSA Human Resources / INC1033889
   # PeopleAdmin
