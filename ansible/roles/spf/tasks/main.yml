@@ -57,7 +57,7 @@
         record: "{{ rr_real_name }}"
         type: TXT
         ttl: "{{ item.ttl }}"
-        value: "{{ item.resource_records.0.value }}"
+        value: "{{ item.resource_records.0.value | string }}"
       loop: "{{ result.resource_record_sets | selectattr('type', '==', 'TXT') }}"
       loop_control:
         label: "{{ rr_real_name }}"
