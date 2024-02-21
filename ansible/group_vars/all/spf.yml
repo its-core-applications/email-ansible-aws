@@ -378,6 +378,12 @@ spf_thirdparty:
       - singlecellspatialanalysis
     record: include:20373748.spf08.hubspotemail.net
 
+  # 2024-02-21: valdezav / LSA Sweetland Writing Center / TDx 5704513
+  - names:
+      - sweetlandinfo
+      - valdezav
+    record: include:_spf.mlsend.com
+
   # 2023-08-08: jmcglone / University Library / TDx 4775360
   - names:
       - um.press.mktg
