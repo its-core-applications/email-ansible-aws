@@ -109,6 +109,9 @@ spf_thirdparty:
       # FormAssembly used with Salesforce
       - include:spf1.formassembly.com
 
+      # 2024-03-07: valdezav / LSA Sweetland Writing Center / TDx 5704513
+      - include:_spf.mlsend.com
+
   # 2017-05-30: Dentistry
   - names:
       - bldawson
@@ -168,7 +171,7 @@ spf_thirdparty:
     record:
       - ip4:68.169.15.105
       - ip4:68.169.15.106
-  
+
   # 2020-01-14: jmchris / CoE Office of Advancement / INC1882190
   # 2022-04-08: agbloom / Alumni Association / TDx 2143853
   - names:
@@ -207,6 +210,12 @@ spf_thirdparty:
       - raydhall
       - public.affairs
     record: include:mailgun.org
+
+  # 2024-03-07: nlroth / COE-IT / TDx 5850827
+  # CollegeNET
+  - names:
+      - enginscheduling
+    record: ip4:74.122.104.0/22
 
   # 2017-04-27: psmitow / LSA Human Resources / INC1033889
   # PeopleAdmin
@@ -387,12 +396,6 @@ spf_thirdparty:
   - names:
       - singlecellspatialanalysis
     record: include:20373748.spf08.hubspotemail.net
-
-  # 2024-02-21: valdezav / LSA Sweetland Writing Center / TDx 5704513
-  - names:
-      - sweetlandinfo
-      - valdezav
-    record: include:_spf.mlsend.com
 
   # 2023-08-08: jmcglone / University Library / TDx 4775360
   - names:
