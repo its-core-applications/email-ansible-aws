@@ -46,7 +46,9 @@ spf_thirdparty:
 
       # 2016-10-10: cparkins / U-M Dearborn Office of Admissions & Orientation / INC0853708
       # MyEmma
-      - include:e2ma.net
+      # 2024-03-07: lindskc / Dearborn External Relations / TDx5932421
+      # change from e2ma.net to _spf.e2ma.net
+      - include:_spf.e2ma.net
 
       # 2016-10-17: cparkins / U-M Dearborn Office of Admissions & Orientation / INC0866923
       # DDM sending as a lot of addresses
