@@ -21,8 +21,11 @@
     OIDCClientSecret {{ lookup('flowerysong.hvault.kv', 'google/' ~ ara_hostname).secret }}
     OIDCCryptoPassphrase {{ lookup('flowerysong.hvault.kv', 'google/' ~ ara_hostname).passphrase }}
     OIDCRedirectURI https://{{ ara_hostname }}/login/google
-    OIDCScope "openid email"
+    OIDCScope "openid email profile"
     OIDCRemoteUserClaim email
+    OIDCCacheType file
+    OIDCCacheDir /var/cache/httpd/mod_auth_openidc/cache
+    OIDCCacheFileCleanInterval 300
 
     <Location />
         AuthType openid-connect
