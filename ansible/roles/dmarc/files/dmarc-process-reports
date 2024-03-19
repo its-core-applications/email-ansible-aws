@@ -1,0 +1,22 @@
+#!/bin/bash
+
+tmpdir=$(mktemp -d /var/tmp/dmarc_reports.XXXXXXXX)
+ts=$(date +%F -d "1 day ago")
+
+while getopts d:t: opt; do
+    case $opt in
+    d)  datastore_args="$OPTARG"
+        ;;
+    t)  ts="$OPTARG"
+        ;;
+    esac
+done
+
+datastore-fetch $datastore_args --recurse email_messages/dmarc/$ts $tmpdir
+cd $tmpdir
+
+for rep in *.txt; do
+    parsedmarc $rep | dmarc-aggregate-to-influxdb-line /dev/stdin | curl -i -XPOST 'http://localhost:8086/write?db=dmarc&precision=s' --data-binary @-
+done
+
+rm -rf $tmpdir

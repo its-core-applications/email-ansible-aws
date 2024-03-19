@@ -20,6 +20,7 @@ aws_layout:
         - autoreply
         - clamav
         - cloud_monitoring
+        - dmarc_reports
         - graphs
         - route53_spfd
         - route53_subd
@@ -110,6 +111,7 @@ aws_layout:
         - autoreply
         - clamav
         - cloud_monitoring
+        - dmarc_reports
         - efs
         - graphs
         - lambda

@@ -1,0 +1,44 @@
+- tags:
+    - dmarc
+  block:
+    - name: Create the InfluxDB database
+      community.general.influxdb_database:
+        database_name: dmarc
+        state: present
+
+    - name: Set the default InfluxDB retention policy
+      community.general.influxdb_retention_policy:
+        database_name: dmarc
+        policy_name: three_years
+        duration: 1100d
+        replication: 1
+        default: true
+
+    - name: Install parsedmarc
+      ansible.builtin.import_role:
+        name: python_venv
+      vars:
+        venv_name: dmarc
+        venv_packages:
+          - parsedmarc
+        venv_wrappers:
+          - name: parsedmarc
+
+    - name: Install processing scripts
+      ansible.builtin.copy:
+        dest: /usr/local/bin/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - dmarc-aggregate-to-influxdb-line
+        - dmarc-process-reports
+
+    - name: Schedule report processing
+      ansible.builtin.template:
+        dest: /etc/cron.d/dmarc-reports
+        src: dmarc-reports.cron.j2
+        owner: root
+        group: root
+        mode: "0644"
