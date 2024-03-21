@@ -32,7 +32,10 @@
         AuthLDAPURL "ldap://{{ ldap_host }}/{{ ldap_base }}?mail"
 
         <Limit GET>
-            Require valid-user
+            <RequireAll>
+                Require claim hd:{{ tld }}
+                Require ldap-group {{ ldap_group_read }}
+            </RequireAll>
         </Limit>
         <LimitExcept GET>
             <RequireAll>

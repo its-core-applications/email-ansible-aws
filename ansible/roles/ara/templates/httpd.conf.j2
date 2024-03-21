@@ -29,7 +29,11 @@
 
     <Location />
         AuthType openid-connect
-        Require claim hd:{{ tld }}
+        AuthLDAPURL "ldap://{{ ldap_host }}/{{ ldap_base }}?mail"
+        <RequireAll>
+            Require claim hd:{{ tld }}
+            Require ldap-group {{ ldap_group_read }}
+        </RequireAll>
     </Location>
 
     ProxyPass / http://localhost:8082/

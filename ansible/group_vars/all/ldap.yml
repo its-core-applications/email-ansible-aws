@@ -1,3 +1,4 @@
 ldap_host: ldap.umich.edu
 ldap_base: dc=umich,dc=edu
 ldap_group: cn=blackops,ou=User Groups,ou=Groups,dc=umich,dc=edu
+ldap_group_read: cn=ITS AllStaff,ou=User Groups,ou=Groups,dc=umich,dc=edu
