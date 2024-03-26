@@ -10,3 +10,10 @@ datasources:
     jsonData:
       httpMode: GET
 {% endfor %}
+  - name: dmarc InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb.{{ (aws_layout[aws_status] | dict2items | selectattr('value.services', 'defined') | selectattr('value.services', 'contains', 'dmarc_reports')).0.value.region }}.{{ subd }}:8086
+    database: dmarc
+    jsonData:
+      httpMode: GET
