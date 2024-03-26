@@ -75,6 +75,8 @@
           environment:
             regions: "{{ aws_layout[aws_status] | dict2items | rejectattr('value.controller', 'defined') | map(attribute='value.region') | list | to_json }}"
           loop: "{{ result.results }}"
+          loop_control:
+            label: "{{ item.dest | default(item.item) }}"
 
     - name: See if we have a database backup
       stat:
