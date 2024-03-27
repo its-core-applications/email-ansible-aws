@@ -90,7 +90,7 @@ grafana.dashboard.new(
     sort='count',
   ).addTarget(
     grafana.influxdb.target(
-      'SELECT top("sum", 24) as "count", "src_domain" FROM (SELECT sum("count") FROM "dmarc_report" WHERE ("domain" = \'$domain\') AND ("aligned_dmarc" = \'false\') AND $timeFilter GROUP BY "src_domain")',
+      'SELECT top("sum", 24) as "count", "src_domain" FROM (SELECT sum("count") FROM "dmarc_report" WHERE ("domain" = \'$domain\') AND ("aligned_dmarc" = \'false\') GROUP BY "src_domain") WHERE $timeFilter',
       resultFormat='table',
     )
   ).hideColumn('Time'),
@@ -102,7 +102,7 @@ grafana.dashboard.new(
     sort='count',
   ).addTarget(
     grafana.influxdb.target(
-      'SELECT top("sum", 24) as count, "org" FROM (SELECT sum("count") FROM "dmarc_report" WHERE ("domain" = \'$domain\') AND ("aligned_dmarc" = \'false\') AND $timeFilter GROUP BY "org")',
+      'SELECT top("sum", 24) as count, "org" FROM (SELECT sum("count") FROM "dmarc_report" WHERE ("domain" = \'$domain\') AND ("aligned_dmarc" = \'false\') GROUP BY "org") WHERE $timeFilter',
       resultFormat='table',
     )
   ).hideColumn('Time'),
@@ -114,7 +114,7 @@ grafana.dashboard.new(
     sort='count',
   ).addTarget(
     grafana.influxdb.target(
-      'SELECT top("sum", 24) as count, "src_domain" FROM (SELECT sum("count") FROM "dmarc_report" WHERE ("domain" = \'$domain\') AND ("aligned_spf" = \'false\') AND $timeFilter GROUP BY "src_domain")',
+      'SELECT top("sum", 24) as count, "src_domain" FROM (SELECT sum("count") FROM "dmarc_report" WHERE ("domain" = \'$domain\') AND ("aligned_spf" = \'false\') GROUP BY "src_domain") WHERE $timeFilter',
       resultFormat='table',
     )
   ).hideColumn('Time'),
@@ -126,7 +126,7 @@ grafana.dashboard.new(
     sort='count',
   ).addTarget(
     grafana.influxdb.target(
-      'SELECT top("sum", 24) as count, "src_domain" FROM (SELECT sum("count") FROM "dmarc_report" WHERE ("domain" = \'$domain\') AND ("aligned_dkim" = \'false\') AND $timeFilter GROUP BY "src_domain")',
+      'SELECT top("sum", 24) as count, "src_domain" FROM (SELECT sum("count") FROM "dmarc_report" WHERE ("domain" = \'$domain\') AND ("aligned_dkim" = \'false\') GROUP BY "src_domain") WHERE $timeFilter',
       resultFormat='table',
     )
   ).hideColumn('Time'),
