@@ -7,10 +7,10 @@
 
 - hosts: localhost
   tasks:
-    - gather_facts:
+    - ansible.builtin.gather_facts:
       when: ansible_facts.date_time is not defined
 
-    - set_fact:
+    - ansible.builtin.set_fact:
         destdir: ~/ealert/{{ ansible_facts.date_time.iso8601[:-4] }}
 
 - hosts: Class_syslog
@@ -18,16 +18,16 @@
     logname: mail
   tasks:
     - name: Preprocess logs
-      command: ealert-preprocess {{ logname }}
+      ansible.builtin.command: ealert-preprocess {{ logname }}
       register: result
 
     - name: Fetch preprocessed logs
-      fetch:
+      ansible.builtin.fetch:
         src: "{{ result.stdout_lines | last }}"
         dest: "{{ hostvars.localhost.destdir }}/"
         flat: true
 
 - hosts: localhost
   tasks:
-    - debug:
+    - ansible.builtin.debug:
         msg: Artifacts have been saved to {{ destdir }}

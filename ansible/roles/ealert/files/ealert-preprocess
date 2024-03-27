@@ -10,7 +10,7 @@ mkdir mx
 pushd mx
 launched=0
 for logfile in /var/log/remote/*.mx.*/${logname}; do
-    ealert-processlogs -t mx $logfile > $(basename $(dirname $logfile)).json &
+    ealert-processlogs -t mx $logfile | zstd > $(basename $(dirname $logfile)).json.zst &
     if [[ $(( launched++ )) -ge 3 ]]; then
         launched=0
         wait
@@ -19,19 +19,19 @@ done
 wait
 popd
 
-ealert-getmids mx > mids.json
+ealert-getmids mx | zstd > mids.json.zst
 
 mkdir -p egress
 pushd egress
 for logfile in /var/log/remote/*.egress.*/${logname}; do
-    ealert-processlogs -t egress -m ../mids.json $logfile > $(basename $(dirname $logfile)).json &
+    ealert-processlogs -t egress -m ../mids.json.zst $logfile > $(basename $(dirname $logfile)).json.zst &
 done
 wait
 popd
 
 popd
 
-output=$(hostname)-$(date +%F).json
-ealert-processraw raw > $output
+output=$(hostname)-$(date +%F).json.zst
+ealert-processraw raw | zstd > $output
 
 echo $tmpdir/$output
