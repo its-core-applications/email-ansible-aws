@@ -111,9 +111,6 @@ spf_thirdparty:
       # FormAssembly used with Salesforce
       - include:spf1.formassembly.com
 
-      # 2024-03-07: valdezav / LSA Sweetland Writing Center / TDx 5704513
-      - include:_spf.mlsend.com
-
   # 2017-05-30: Dentistry
   - names:
       - bldawson
@@ -147,11 +144,17 @@ spf_thirdparty:
       - ip4:199.106.139.112/28
       - ip4:198.187.195.89
 
-  # 2024-02-12: srel / LSA / TDx 5707225
-  # Sender
+  # 2024-04-02: srel / Student Org Campus Farm Club / TDx 5707225
+  # 2024-04-02: ecui / Student Org DigiPaint / TDx 5956226
+  # 2024-04-02: valdezav / LSA Sweetland Writing Center / TDx 5704513
   - names:
       - cfceboard
-    record: include:sendersrv.com
+      - digipaint.admin
+      - sweetlandinfo
+      - valdezav
+    record:
+      - include:_spf.mlsend.com
+      - include:sendersrv.com
 
   # 2017-05-30
   # Cision
