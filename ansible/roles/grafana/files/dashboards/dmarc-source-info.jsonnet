@@ -147,7 +147,7 @@ grafana.dashboard.new(
     datasource='dmarc InfluxDB',
   ).addTarget(
     grafana.influxdb.target(
-      'SELECT "count", "envelope_from", "spf_result", "spf_raw_result", "dkim_domain", "dkim_result", "dkim_raw_result", "org", "src", "src_ip" FROM "dmarc_report" WHERE ("header_from" = \'$domain\') AND ("src_domain" = \'$src_domain\') AND ("aligned_dmarc" = \'false\') AND $timeFilter fill(null)',
+      'SELECT "count", "envelope_from", "spf_raw_result", "spf_result", "dkim_domain", "dkim_selector", "dkim_raw_result", "dkim_result", "org", "src", "src_ip" FROM "dmarc_report" WHERE ("header_from" = \'$domain\') AND ("src_domain" = \'$src_domain\') AND ("aligned_dmarc" = \'false\') AND $timeFilter fill(null)',
       resultFormat='table',
     )
   ).addTransformations(
