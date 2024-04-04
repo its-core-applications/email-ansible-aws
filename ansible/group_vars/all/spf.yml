@@ -351,6 +351,25 @@ spf_thirdparty:
       - ip4:64.91.241.212
       - ip4:67.225.165.182
 
+  # 2024-04-04: ncapul / Dearborn University Center / TDx5856766
+  # CollegeNET 25Live
+  - names:
+     - ncapul
+     - redurant
+     - billflu
+     - shajibg
+     - rngibbs
+     - blagoe
+     - ablewis
+     - jmangao
+     - anonnenm
+     - dwreeve
+     - fsanders
+     - mespeck
+     - thstockw
+     - rpward
+    record: ip4:74.122.104.0/22
+
   # 2017-05-31: Ross School of Business
   - names:
       - ochfitnesscenter
