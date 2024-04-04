@@ -18,7 +18,7 @@ ealert-getmids mx | zstd > mids.json.zst
 mkdir -p egress
 pushd egress
 for logfile in /var/log/remote/*.egress.*/${logname}; do
-    ealert-processlogs -t egress -m ../mids.json.zst $logfile > $(basename $(dirname $logfile)).json.zst
+    ealert-processlogs -t egress -m ../mids.json.zst $logfile | zstd > $(basename $(dirname $logfile)).json.zst
 done
 popd
 
