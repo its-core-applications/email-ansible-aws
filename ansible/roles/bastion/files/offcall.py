@@ -163,6 +163,9 @@ def main():
         for key in ['output', 'service_output', 'host_output']:
             if not output:
                 output = alert_details['details'].get(key, '')
+        if not output:
+            output = alert_details['message']
+
         output = output.splitlines()[0]
 
         period['alerts'].append(f'{alert_start} {alert_duration} - {alert["alias"]} - {output}')
