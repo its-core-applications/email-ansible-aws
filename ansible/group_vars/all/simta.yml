@@ -115,6 +115,9 @@ simta_ldap_domains_mapped:
     prefix: ums
   - domain: wcbn.org
     prefix: wcbn
+  - domain: weiserprostatecancer.org
+    prefix: weiserprostatecancer
+    control_group: weiserprostatecancer domain control group
   - domain: youthcivilrights.org
     prefix: youthcivilrights
 
