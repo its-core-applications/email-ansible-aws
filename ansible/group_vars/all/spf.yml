@@ -248,6 +248,12 @@ spf_thirdparty:
       - lit-ae-mysql
     record: ip4:134.68.0.0/16
 
+  # 2024-04-23: hayleyac / School of Nursing / TDx 6234560
+  # HubSpot
+  - names:
+      - healthylifetime
+    record: include:45534281.spf07.hubspotemail.net
+
   # 2021-05-13: dbla / Student Life / TDx 886803
   # Student Life / Zendesk
   - names:
