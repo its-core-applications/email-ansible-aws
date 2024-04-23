@@ -18,17 +18,6 @@
         controlled_classes: "{{ aws_layout[aws_status] | dict2items | selectattr('value.controller', 'defined') | selectattr('value.controller', '==', aws_profile) | map(attribute='value.classes') | map('dict2items') | flatten }}"
       when: item.value.autocycle | default(true)
 
-    - name: Schedule scaling up classes
-      ansible.builtin.cron:
-        name: ansible-spinup-{{ item.key }}
-        user: "{{ ansible_user }}"
-        minute: 45
-        hour: 5
-        job: . ~/ansible-aws/env-setup.sh && ansible-playbook ~/ansible-aws/ansible/spinup_{{ item.key | replace('-', '_') }}.yml &>/dev/null
-      loop: "{{ aws_layout[aws_status][aws_profile].classes | dict2items | selectattr('value.cycle_method', 'defined') | selectattr('value.cycle_method', '==', 'spinup') }}"
-      loop_control:
-        label: "{{ item.key }}"
-
     - name: Schedule spindown of ephemeral tool hosts
       cron:
         name: ansible-shutdown-{{ item.key }}
