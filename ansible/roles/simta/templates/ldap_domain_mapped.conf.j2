@@ -12,6 +12,13 @@
 {% endif %}
                 type = all;
             }
+{% if item.control_group is defined %}{# only support wildcards for safer domains #}
+            search {
+                 uri = "ldap:///ou=User%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn={{ item.prefix }} wildcard)(!(umichEntryDisabled=TRUE)))";
+                subsearch = "ldap:///ou=User%20Groups,ou=Groups,dc=umich,dc=edu?*?sub?(&(cn={{ item.control_group }})(member=%25s))"
+                type = all;
+            }
+{% endif %}
         }
     }
 }
