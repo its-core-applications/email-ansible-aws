@@ -4,6 +4,8 @@ import sys
 
 import requests
 
+from datetime import datetime, timezone
+
 
 hosts = [
     'influxdb.us-east-2.a.mail.umich.edu',
@@ -14,24 +16,63 @@ report_class = 'mx'
 if len(sys.argv) > 1:
     report_class = sys.argv[1]
 
+period = '7d'
+if len(sys.argv) > 2:
+    period = sys.argv[2]
+
+
+def raw_query(host, query):
+    params = {
+        'db': 'sensu',
+        'q': query,
+    }
+
+    return requests.get(
+        f'http://{host}:8086/query',
+        timeout=10,
+        params=params,
+    )
+
+
+def peak_query(metric, base='simta', time='1h'):
+    q = f'SELECT sum("{metric}") FROM "{base}" WHERE time > now() - {period} GROUP BY time({time}), "class" fill(0)'
+
+    # Combine the data from both regions
+    totals = {}
+    for h in hosts:
+        res = raw_query(h, q)
+
+        for r in res.json()['results']:
+            for s in r.get('series', {}):
+                cls = s['tags']['class']
+                if cls not in totals:
+                    totals[cls] = {}
+                for v in s['values']:
+                    if v[0] not in totals[cls]:
+                        totals[cls][v[0]] = 0
+                    totals[cls][v[0]] += v[1]
+
+    # Find the peak for each class
+    peaks = {}
+    for k, v in totals.items():
+        peaks[k] = ('', 0)
+        for ik, iv in v.items():
+            if peaks[k][1] < iv:
+                peaks[k] = (ik, iv)
+
+    return peaks
+
 
 def metric_query(metric, base='simta'):
     if not metric.startswith('/'):
         metric = f'"{metric}"'
 
-    params = {
-        'db': 'sensu',
-        'q': f'SELECT sum({metric}) FROM "{base}" WHERE time > now() - 7d GROUP BY time(1d), "class" fill(0)'
-    }
+    q = f'SELECT sum({metric}) FROM "{base}" WHERE time > now() - {period} GROUP BY time(1d), "class" fill(0)'
 
     totals = {}
 
     for h in hosts:
-        res = requests.get(
-            f'http://{h}:8086/query',
-            timeout=10,
-            params=params,
-        )
+        res = raw_query(h, q)
 
         for r in res.json()['results']:
             for s in r.get('series', {}):
@@ -54,12 +95,31 @@ def get_sum(metric):
     return res.get(report_class, {'sum': 0})['sum']
 
 
+def get_peak(metric):
+    res = peak_query(metric)
+    peak = res.get(report_class)
+    if peak:
+        dt = datetime.fromisoformat(peak[0][0:19])
+        dt = dt.replace(tzinfo=timezone.utc).astimezone()
+        return (dt.isoformat(), peak[1])
+    return None
+
+
 def print_col(name, val):
     print(f'{name:<22}{val}')
 
 
 def f_perc(value, total):
     return f'{value:>11,} ({value / total * 100:.1f}%)'
+
+
+def human_bytes(value):
+    units = ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei')
+    idx = 0
+    while value > 1024:
+        idx += 1
+        value /= 1024
+    return f'{value:.1f} {units[idx]}B'
 
 
 conn_total = get_sum('receive.connection.attempted.value')
@@ -74,6 +134,14 @@ print_col('Messages Accepted:', f'{msg_accepted:>11,} ({msg_accepted / msg_total
 bounces = get_sum('bounce.messages.value')
 if bounces > 0:
     print_col('Messages Bounced:', f'{bounces:>11,}')
+
+data_sessions = get_sum('receive.smtp_command.DATA.count')
+data_size = get_sum('receive.message_data.value')
+print_col('Average Message Size:', f'{human_bytes(data_size / data_sessions):>11} ({human_bytes(data_size)} in {data_sessions:,} data sessions)')
+
+msg_peak = get_peak('receive.smtp_command.MAIL.count')
+if msg_peak:
+    print_col('Max messages per hour:', f'{msg_peak[1]:>11,} at {msg_peak[0]}')
 
 conn_banner_write = get_sum('receive.connection.write_before_banner.value')
 conn_3strikes = get_sum('receive.connection.max_failed_rcpt.value') + get_sum('receive.connection.max_failed_sender.value')
