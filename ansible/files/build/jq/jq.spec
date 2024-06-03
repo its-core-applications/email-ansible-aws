@@ -1,5 +1,5 @@
 Name:           jq
-Version:        1.7
+Version:        1.7.1
 Release:        1%{?dist}
 Summary:        Command-line JSON processor
 
