@@ -6,6 +6,20 @@
     - import_role:
         name: certificate_incommon
 
+    - name: "{{ certificate }} : Get private key info"
+      community.crypto.openssl_privatekey_info:
+        content: "{{ cert_data.rsa_key }}"
+      register: cert_key_info
+
+    - name: "{{ certificate }} : Get certificate info"
+      community.crypto.x509_certificate_info:
+        content: "{{ cert_data.rsa_cert }}"
+      register: cert_crt_info
+
+    - ansible.builtin.assert:
+        that:
+          - cert_key_info.public_key_fingerprints.sha512 == cert_crt_info.public_key_fingerprints.sha512
+
     - name: Install chain verification tool
       ansible.builtin.copy:
         dest: /usr/local/bin/cert-chain-verify
@@ -22,11 +36,6 @@
         mode: "0750"
         state: directory
 
-    - name: "{{ certificate }} : Get private key info"
-      community.crypto.openssl_privatekey_info:
-        content: "{{ cert_data.rsa_key }}"
-      register: cert_key_info
-
     - name: "{{ certificate }} : Install private key"
       ansible.builtin.copy:
         dest: /etc/pki/collab/private/{{ certificate }}.key
@@ -35,15 +44,8 @@
         group: mail
         mode: "0640"
       no_log: true
+      register: result_key
 
-    - name: "{{ certificate }} : Get certificate info"
-      community.crypto.x509_certificate_info:
-        content: "{{ cert_data.rsa_cert }}"
-      register: cert_crt_info
-
-    - ansible.builtin.assert:
-        that:
-          - cert_key_info.public_key_fingerprints.sha512 == cert_crt_info.public_key_fingerprints.sha512
 
     - name: "{{ certificate }} : Install certificate"
       ansible.builtin.copy:
@@ -53,3 +55,11 @@
         group: mail
         mode: "0644"
         validate: cert-chain-verify %s
+      register: result_cert
+
+    - name: Restart dependent services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: restarted
+      when: "[result_key, result_cert] | select('changed')"
+      loop: "{{ certificate_services | default([]) }}"
