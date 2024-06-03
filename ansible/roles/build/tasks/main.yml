@@ -27,7 +27,6 @@
       tags:
         - sasl
         - libsnet
-        - nmh
         - simta
       vars:
         build_name: cyrus-sasl
