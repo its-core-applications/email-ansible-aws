@@ -8,7 +8,9 @@
     cert_subject_alt_names: "{{ [certificate] | union(certificate_sans | default([])) | map('regex_replace', '^', 'DNS:') }}"
   module_defaults:
     community.crypto.acme_certificate:
-      account_key_content: "{{ acme_key }}"
+      # Need to have a default so that initial setup is possible;
+      # module_defaults are evaluated even when they're not used...
+      account_key_content: "{{ acme_key | default('placeholder') }}"
       acme_directory: https://acme.sectigo.com/v2/InCommonRSAOV
       modify_account: false
       acme_version: 2
