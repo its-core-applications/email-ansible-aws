@@ -4,7 +4,7 @@
 %define rspamd_confdir   %{_sysconfdir}/rspamd
 
 Name:           rspamd
-Version:        3.5
+Version:        3.8.2
 Release:        1
 Summary:        Rapid spam filtering system
 License:        BSD2c
