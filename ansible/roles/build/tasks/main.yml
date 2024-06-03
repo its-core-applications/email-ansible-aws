@@ -102,11 +102,11 @@
         - packer
       vars:
         build_name: packer
-        build_version: 1.8.3
+        build_version: 1.11.0
         build_bindir: /usr/sbin
         archive_url: https://releases.hashicorp.com/packer/{{ build_version }}/packer_{{ build_version }}_linux_amd64.zip
         archive_file: packer_{{ build_version }}_linux_amd64.zip
-        archive_checksum: sha256:0587f7815ed79589cd9c2b754c82115731c8d0b8fd3b746fe40055d969facba5
+        archive_checksum: sha256:dcac06a4c671bbb71e916da5abe947ebf4d6aa35c197e21c7c7b1d68cb8b7cad
 
     - tags:
         - sensu
@@ -182,10 +182,10 @@
         - vault
       vars:
         build_name: vault
-        build_version: 1.14.8
+        build_version: 1.14.10
         archive_url: https://releases.hashicorp.com/vault/{{ build_version }}/vault_{{ build_version }}_linux_amd64.zip
         archive_file: vault_{{build_version }}_linux_amd64.zip
-        archive_checksum: sha256:c9aa42bf31a64ea3a7d29dfc8491caf8e51acd7925f35c14c48514258b30c0cf
+        archive_checksum: sha256:5741d87fc4e33731e74224c72925457779690c1de85d2bf0cc7fc1b4c637d41d
 
     - ansible.builtin.import_role:
         name: build_rpm_git
@@ -306,9 +306,9 @@
       tags: splunk
       vars:
         build_name: splunk
-        rpm: splunkforwarder-8.2.5-77015bc7a462-linux-2.6-x86_64.rpm
-        rpm_url: https://download.splunk.com/products/universalforwarder/releases/8.2.5/linux/splunkforwarder-8.2.5-77015bc7a462-linux-2.6-x86_64.rpm
-        rpm_checksum: sha256:8f9ad3da2c9d9e3bc4e75b5af8cbce2943cb7c75445903d73cb9fd8d6c26601a
+        rpm: splunkforwarder-9.2.1-78803f08aabb.x86_64.rpm
+        rpm_url: https://download.splunk.com/products/universalforwarder/releases/9.2.1/linux/splunkforwarder-9.2.1-78803f08aabb.x86_64.rpm
+        rpm_checksum: md5:8666c398b516c978cddfd58b51f09390
 
     - ansible.builtin.import_role:
         name: s3repo_upload
