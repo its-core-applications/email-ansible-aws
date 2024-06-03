@@ -1,4 +1,0 @@
-/var/log/freshclam.log {
-        monthly
-        notifempty
-}
