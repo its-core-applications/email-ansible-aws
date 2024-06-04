@@ -32,6 +32,7 @@
           - bind-utils
           - cloud-init
           - cronie-noanacron
+          - ejq
           - expect
           - gdb
           - git

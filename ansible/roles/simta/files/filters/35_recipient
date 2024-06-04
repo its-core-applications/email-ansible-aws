@@ -5,7 +5,7 @@ rejectlist=/etc/mail/recipient.deny
 
 if [ $SIMTA_TFILE ]; then
     if [ -s $acceptlist ]; then
-        match=$(jq -r .recipients[] $SIMTA_TFILE | fgrep -ixf $acceptlist 2>/dev/null)
+        match=$(ejq -r -f $SIMTA_TFILE -e .recipients | fgrep -ixf $acceptlist 2>/dev/null)
         ret=$?
         if [ $ret -eq 0 ]; then
             log "35_recipient: $acceptlist matched $match"
@@ -14,7 +14,7 @@ if [ $SIMTA_TFILE ]; then
         fi
     fi
     if [ -s $rejectlist ]; then
-        match=$(jq -r .recipients[] $SIMTA_TFILE | fgrep -ixf $rejectlist 2>/dev/null)
+        match=$(ejq -r -f $SIMTA_TFILE -e .recipients | fgrep -ixf $rejectlist 2>/dev/null)
         ret=$?
         if [ $ret -eq 0 ]; then
             log "35_recipient: $rejectlist matched $match"
