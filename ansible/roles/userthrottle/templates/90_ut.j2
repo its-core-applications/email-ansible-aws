@@ -1,6 +1,6 @@
 #!/bin/dash
 
-if [ $SIMTA_TFILE ] && SIMTA_NRCPTS=$(jq -r '.recipients | length' $SIMTA_TFILE); then
+if [ $SIMTA_TFILE ] && SIMTA_NRCPTS=$(ejq -r -f $SIMTA_TFILE .recipients | wc -l); then
     if [ $SIMTA_AUTH_ID ]; then
         export SIMTA_NRCPTS
 
