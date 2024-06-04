@@ -21,7 +21,7 @@
         state: latest
 
     - ansible.builtin.import_role:
-        name: certificate_incommon
+        name: certificate
       vars:
         certificate: "{{ ara_hostname }}"
         certificate_services:
