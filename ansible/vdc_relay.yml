@@ -1,6 +1,8 @@
 - hosts: Class_vdc_relay
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: vdc_relay
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
+
+    - ansible.builtin.import_role:
+        name: vdc_relay

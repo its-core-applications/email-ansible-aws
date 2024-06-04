@@ -1,9 +1,11 @@
 - hosts: Class_authz_relay:Class_authz_static
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: relay
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: tcpd_update
+    - ansible.builtin.import_role:
+        name: relay
+
+    - ansible.builtin.import_role:
+        name: tcpd_update

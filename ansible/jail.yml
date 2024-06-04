@@ -1,21 +1,23 @@
 - hosts: Class_jail
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: base
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: rsyslog_forward
+    - ansible.builtin.import_role:
+        name: base
 
-        - ansible.builtin.import_role:
-            name: localnameserver
+    - ansible.builtin.import_role:
+        name: rsyslog_forward
 
-        - ansible.builtin.import_role:
-            name: simta
+    - ansible.builtin.import_role:
+        name: localnameserver
 
-        - ansible.builtin.import_role:
-            name: sensu
+    - ansible.builtin.import_role:
+        name: simta
 
-        - ansible.builtin.import_role:
-            name: osiris
+    - ansible.builtin.import_role:
+        name: sensu
+
+    - ansible.builtin.import_role:
+        name: osiris

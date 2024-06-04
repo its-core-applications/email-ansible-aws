@@ -1,13 +1,15 @@
 - hosts: Class_dev:!Status_spundown
   tasks:
-    - when: region == aws_region
-      block:
-        - name: Set status to spundown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spundown
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
+
+    - name: Set status to spundown
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: spundown

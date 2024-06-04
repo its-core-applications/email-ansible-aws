@@ -1,52 +1,54 @@
 - hosts: Class_mx_test
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: base
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: rsyslog_forward
+    - ansible.builtin.import_role:
+        name: base
 
-        - ansible.builtin.import_role:
-            name: localnameserver
+    - ansible.builtin.import_role:
+        name: rsyslog_forward
 
-        - ansible.builtin.import_role:
-            name: simta
+    - ansible.builtin.import_role:
+        name: localnameserver
 
-        - ansible.builtin.import_role:
-            name: clamav_filter
+    - ansible.builtin.import_role:
+        name: simta
 
-        - ansible.builtin.import_role:
-            name: rspamd_filter
+    - ansible.builtin.import_role:
+        name: clamav_filter
 
-        - ansible.builtin.import_role:
-            name: redis
+    - ansible.builtin.import_role:
+        name: rspamd_filter
 
-        - ansible.builtin.import_role:
-            name: mx
+    - ansible.builtin.import_role:
+        name: redis
 
-        - ansible.builtin.import_role:
-            name: rpmbuild
+    - ansible.builtin.import_role:
+        name: mx
 
-        - ansible.builtin.import_role:
-            name: localrepo
+    - ansible.builtin.import_role:
+        name: rpmbuild
 
-        - ansible.builtin.import_role:
-            name: build_rpm_git
-          tags: simta
-          vars:
-            build_name: simta
-            build_repo: https://github.com/flowerysong/simta.git
-            build_deps:
-              - denser-devel
-              - jemalloc-devel
-              - libidn2-devel
-              - libopenarc-devel
-              - libopendkim-devel
-              - libsnet-devel
-              - libucl-devel
-              - lmdb-devel
-              - openldap-devel
-              - openssl-devel
-              - tcp_wrappers-devel
+    - ansible.builtin.import_role:
+        name: localrepo
+
+    - ansible.builtin.import_role:
+        name: build_rpm_git
+      tags: simta
+      vars:
+        build_name: simta
+        build_repo: https://github.com/flowerysong/simta.git
+        build_deps:
+          - denser-devel
+          - jemalloc-devel
+          - libidn2-devel
+          - libopenarc-devel
+          - libopendkim-devel
+          - libsnet-devel
+          - libucl-devel
+          - lmdb-devel
+          - openldap-devel
+          - openssl-devel
+          - tcp_wrappers-devel

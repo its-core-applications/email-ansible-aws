@@ -1,43 +1,39 @@
 - hosts: Class_jail:&Status_production
   tasks:
-    - when: region == aws_region
-      block:
-        - name: Set status on oldest host to spindown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spindown
-        - ansible.builtin.meta: refresh_inventory
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-- hosts: localhost
-  become: false
-  tasks:
-    - ansible.builtin.import_role:
-        name: route53_dns_from_inventory
-      vars:
-        dns_host: jail
-        dns_group: Class_jail
+    - name: Set status to spindown
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: spindown
+
+    - ansible.builtin.meta: refresh_inventory
 
 - hosts: Class_jail:&Status_spindown
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: monitoring_spindown
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: simta_spindown
+    - ansible.builtin.import_role:
+        name: monitoring_spindown
 
-        - name: Set status to spundown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spundown
+    - ansible.builtin.import_role:
+        name: simta_spindown
+
+    - name: Set status to spundown
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: spundown
