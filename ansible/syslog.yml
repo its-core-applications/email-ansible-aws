@@ -1,35 +1,37 @@
 - hosts: Class_syslog
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: base
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: rsyslog_aggregator
+    - ansible.builtin.import_role:
+        name: base
 
-        - ansible.builtin.import_role:
-            name: simta
-          vars:
-            simta_localmail: true
-            simta_tls: false
+    - ansible.builtin.import_role:
+        name: rsyslog_aggregator
 
-        - ansible.builtin.import_role:
-            name: splunk_forwarder
+    - ansible.builtin.import_role:
+        name: simta
+      vars:
+        simta_localmail: true
+        simta_tls: false
 
-        - ansible.builtin.import_role:
-            name: sensu_backend
+    - ansible.builtin.import_role:
+        name: splunk_forwarder
 
-        - ansible.builtin.import_role:
-            name: sensu
+    - ansible.builtin.import_role:
+        name: sensu_backend
 
-        - ansible.builtin.import_role:
-            name: ealert
+    - ansible.builtin.import_role:
+        name: sensu
 
-        - ansible.builtin.import_role:
-            name: seshet
-          when: "'authn-relay' in aws_layout[aws_status][aws_profile].classes"
+    - ansible.builtin.import_role:
+        name: ealert
 
-        - ansible.builtin.import_role:
-            name: dmarc
-          when: "'dmarc_reports' in aws_layout[aws_status][aws_profile].services"
+    - ansible.builtin.import_role:
+        name: seshet
+      when: "'authn-relay' in aws_layout[aws_status][aws_profile].classes"
+
+    - ansible.builtin.import_role:
+        name: dmarc
+      when: "'dmarc_reports' in aws_layout[aws_status][aws_profile].services"

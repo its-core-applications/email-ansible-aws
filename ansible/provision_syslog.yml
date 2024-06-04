@@ -58,10 +58,12 @@
 
 - hosts: Class_syslog:&Status_production
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: monitoring_spinup
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
+
+    - ansible.builtin.import_role:
+        name: monitoring_spinup
 
 - hosts: localhost
   become: false

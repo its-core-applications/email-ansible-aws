@@ -1,19 +1,21 @@
 - hosts: Status_spundown
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: sensu_spindown
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: monitoring_spindown
+    - ansible.builtin.import_role:
+        name: sensu_spindown
 
-        - name: Destroy host
-          become: false
-          delegate_to: localhost
-          ec2_instance:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            instance_ids: "{{ instance_id }}"
-            state: absent
-            wait: false
+    - ansible.builtin.import_role:
+        name: monitoring_spindown
+
+    - name: Destroy host
+      become: false
+      delegate_to: localhost
+      ec2_instance:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        instance_ids: "{{ instance_id }}"
+        state: absent
+        wait: false

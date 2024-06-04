@@ -2,24 +2,26 @@
   vars:
     bootstrap: true
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: base
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: bastion
+    - ansible.builtin.import_role:
+        name: base
 
-        - ansible.builtin.import_role:
-            name: vault
-          when: "'vault' in aws_layout[aws_status][aws_profile_ec2].services"
+    - ansible.builtin.import_role:
+        name: bastion
 
-        - name: Set status to production
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ aws_region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: production
+    - ansible.builtin.import_role:
+        name: vault
+      when: "'vault' in aws_layout[aws_status][aws_profile_ec2].services"
+
+    - name: Set status to production
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: production

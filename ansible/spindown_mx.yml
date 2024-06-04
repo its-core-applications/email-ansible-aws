@@ -37,29 +37,33 @@
 
 - hosts: Class_mx:&Status_spindown
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: monitoring_spindown
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: simta_spindown
+    - ansible.builtin.import_role:
+        name: monitoring_spindown
+
+    - ansible.builtin.import_role:
+        name: simta_spindown
 
 # Do Redis management with `serial: 1` to minimize races
 - hosts: Class_mx:&Status_spindown
   serial: 1
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: redis_spindown
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - name: Set status to spundown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spundown
+    - ansible.builtin.import_role:
+        name: redis_spindown
+
+    - name: Set status to spundown
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: spundown

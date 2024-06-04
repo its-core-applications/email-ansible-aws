@@ -1,21 +1,23 @@
 - hosts: Class_dnsbl
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: base
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: rsyslog_forward
+    - ansible.builtin.import_role:
+        name: base
 
-        - ansible.builtin.import_role:
-            name: simta
-          vars:
-            simta_localmail: true
-            simta_tls: false
+    - ansible.builtin.import_role:
+        name: rsyslog_forward
 
-        - ansible.builtin.import_role:
-            name: rbldnsd
+    - ansible.builtin.import_role:
+        name: simta
+      vars:
+        simta_localmail: true
+        simta_tls: false
 
-        - ansible.builtin.import_role:
-            name: sensu
+    - ansible.builtin.import_role:
+        name: rbldnsd
+
+    - ansible.builtin.import_role:
+        name: sensu

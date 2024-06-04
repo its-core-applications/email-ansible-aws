@@ -1,9 +1,11 @@
 - hosts: Class_authn_relay
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: relay
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: users_allow_update
+    - ansible.builtin.import_role:
+        name: relay
+
+    - ansible.builtin.import_role:
+        name: users_allow_update

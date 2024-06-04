@@ -19,31 +19,33 @@
 - hosts: Class_relay_egress:&Status_spinup
   serial: 1
   tasks:
-    - when: region == aws_region
-      delegate_to: localhost
-      become: false
-      block:
-        - ansible.builtin.import_role:
-            name: ec2_eip
-          vars:
-            eip_class: relay-egress
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
+
+    - ansible.builtin.import_role:
+        name: ec2_eip
+      vars:
+        eip_class: relay-egress
 
 - hosts: Class_relay_egress:&Status_spinup
   tasks:
-    - when: region == aws_region
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
+
+    - name: Set status to production
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: production
       delegate_to: localhost
       become: false
-      block:
-        - name: Set status to production
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: production
 
-        - ansible.builtin.import_role:
-            name: monitoring_spinup
+    - ansible.builtin.import_role:
+        name: monitoring_spinup
 
 - hosts: localhost
   become: false

@@ -1,16 +1,18 @@
 - hosts: Class_bastion
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: ec2_eip_disassociate
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - name: Set status to spundown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spundown
+    - ansible.builtin.import_role:
+        name: ec2_eip_disassociate
+
+    - name: Set status to spundown
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: spundown

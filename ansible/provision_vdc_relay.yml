@@ -19,7 +19,9 @@
 
 - hosts: Class_vdc_relay:&Status_production
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: monitoring_spinup
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
+
+    - ansible.builtin.import_role:
+        name: monitoring_spinup

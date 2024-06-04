@@ -1,9 +1,11 @@
 - hosts: Class_relay_egress
   tasks:
-    - when: region == aws_region
-      block:
-        - ansible.builtin.import_role:
-            name: egress
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: osiris
+    - ansible.builtin.import_role:
+        name: egress
+
+    - ansible.builtin.import_role:
+        name: osiris

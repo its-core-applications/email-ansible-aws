@@ -1,30 +1,32 @@
 - hosts: Class_syslog
   tasks:
-    - when: region == aws_region
-      block:
-        - name: Set status to spundown
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: spundown
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - ansible.builtin.import_role:
-            name: monitoring_spindown
+    - name: Set status to spundown
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: spundown
 
-        - name: Disable Sensu health check
-          delegate_to: localhost
-          become: false
-          cloudwatchevent_rule:
-            name: "{{ aws_resource_prefix }}_sensu_health_cron"
-            region: "{{ aws_region }}"
-            profile: "{{ aws_profile }}"
-            schedule_expression: rate(5 minutes)
-            description: Monitor Sensu health
-            targets:
-              - id: sensu_health_target
-                arn: arn:aws:lambda:{{ aws_region }}:{{ aws_layout[aws_status][aws_profile].account }}:function:{{ aws_resource_prefix }}_sensu_monitor_health
-            state: disabled
+    - ansible.builtin.import_role:
+        name: monitoring_spindown
+
+    - name: Disable Sensu health check
+      delegate_to: localhost
+      become: false
+      cloudwatchevent_rule:
+        name: "{{ aws_resource_prefix }}_sensu_health_cron"
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        schedule_expression: rate(5 minutes)
+        description: Monitor Sensu health
+        targets:
+          - id: sensu_health_target
+            arn: arn:aws:lambda:{{ aws_region }}:{{ aws_layout[aws_status][aws_profile].account }}:function:{{ aws_resource_prefix }}_sensu_monitor_health
+        state: disabled

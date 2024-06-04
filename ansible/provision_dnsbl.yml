@@ -10,27 +10,29 @@
 
 - hosts: Class_dnsbl:&Status_spinup
   tasks:
-    - when: region == aws_region
-      block:
-        - name: Sync DNSBLs
-          ansible.builtin.import_role:
-            name: rbldnsd
-            tasks_from: sync.yml
+    - ansible.builtin.meta: end_host
+      when: region != aws_region
+      tags: always
 
-        - name: Set status to production
-          delegate_to: localhost
-          become: false
-          ec2_tag:
-            region: "{{ region }}"
-            profile: "{{ aws_profile_ec2 }}"
-            resource: "{{ instance_id }}"
-            tags:
-              Status: production
+    - name: Sync DNSBLs
+      ansible.builtin.import_role:
+        name: rbldnsd
+        tasks_from: sync.yml
 
-        - ansible.builtin.import_role:
-            name: monitoring_spinup
+    - name: Set status to production
+      delegate_to: localhost
+      become: false
+      ec2_tag:
+        region: "{{ region }}"
+        profile: "{{ aws_profile_ec2 }}"
+        resource: "{{ instance_id }}"
+        tags:
+          Status: production
 
-        - ansible.builtin.meta: refresh_inventory
+    - ansible.builtin.import_role:
+        name: monitoring_spinup
+
+    - ansible.builtin.meta: refresh_inventory
 
 - hosts: localhost
   become: false
