@@ -8,17 +8,24 @@
 
     - name: "{{ certificate }} : Get private key info"
       community.crypto.openssl_privatekey_info:
-        content: "{{ cert_data.rsa_key }}"
+        content: "{{ cert_data[item ~ '_key'] }}"
+      loop:
+        - rsa
+        - ecc
       register: cert_key_info
 
     - name: "{{ certificate }} : Get certificate info"
       community.crypto.x509_certificate_info:
-        content: "{{ cert_data.rsa_cert }}"
+        content: "{{ cert_data[item ~ '_cert'] }}"
+      loop:
+        - rsa
+        - ecc
       register: cert_crt_info
 
     - ansible.builtin.assert:
         that:
-          - cert_key_info.public_key_fingerprints.sha512 == cert_crt_info.public_key_fingerprints.sha512
+          - cert_key_info.results.0.public_key_fingerprints.sha512 == cert_crt_info.results.0.public_key_fingerprints.sha512
+          - cert_key_info.results.1.public_key_fingerprints.sha512 == cert_crt_info.results.1.public_key_fingerprints.sha512
 
     - name: Install chain verification tool
       ansible.builtin.copy:
@@ -36,25 +43,30 @@
         mode: "0750"
         state: directory
 
-    - name: "{{ certificate }} : Install private key"
+    - name: "{{ certificate }} : Install private keys"
       ansible.builtin.copy:
-        dest: /etc/pki/collab/private/{{ certificate }}.key
-        content: "{{ cert_data.rsa_key }}"
+        dest: /etc/pki/collab/private/{{ certificate }}.{{ item }}.key
+        content: "{{ cert_data[item ~ '_key'] }}"
         owner: root
         group: mail
         mode: "0640"
       no_log: true
+      loop:
+        - rsa
+        - ecc
       register: result_key
 
-
-    - name: "{{ certificate }} : Install certificate"
+    - name: "{{ certificate }} : Install certificates"
       ansible.builtin.copy:
-        dest: /etc/pki/collab/private/{{ certificate }}.crt
-        content: "{{ cert_data.rsa_cert }}"
+        dest: /etc/pki/collab/private/{{ certificate }}.{{ item }}.crt
+        content: "{{ cert_data[item ~ '_cert'] }}"
         owner: root
         group: mail
         mode: "0644"
         validate: cert-chain-verify %s
+      loop:
+        - rsa
+        - ecc
       register: result_cert
 
     - name: Restart dependent services

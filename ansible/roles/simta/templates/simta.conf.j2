@@ -18,8 +18,14 @@ receive {
 {% if simta_tls %}
     tls {
         enabled = true;
-        certificate = /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.crt;
-        key = /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.key;
+        certificate = [
+            /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.rsa.crt,
+            /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.ecc.crt,
+        ]
+        key = [
+            /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.rsa.key,
+            /etc/pki/collab/private/{{ simta_config }}.{{ tld }}.ecc.key,
+        ]
         ciphers = "@SECLEVEL=0:EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:DH+CHACHA20:DH+AES128:DH+AES256:!MD5";
 {%  if simta_msa %}
         ports = [ 465 ]
