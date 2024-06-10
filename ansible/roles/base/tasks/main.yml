@@ -1,26 +1,36 @@
 - tags:
     - base
   block:
-    # using import_role leaks ansible_python_interpreter, which we don't want
-    - ansible.builtin.include_role:
-        name: python_venv
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
-        venv_name: system
-        venv_packages:
-          - awscli
-          - boto3
-          - cryptography
-          - influxdb
-          - pyyaml
-          - redis
-          - requests
-          - git+https://github.com/its-core-applications/s3_datastore
-        venv_wrappers:
-          - name: datastore-fetch
-          - name: datastore-upload
-      tags:
+    - tags:
         - python
+      vars:
+        # Chicken and egg problem; can't use the system venv for initial
+        # creation of the system venv.
+        ansible_python_interpreter: /usr/bin/python3
+      block:
+        - name: Install Python 3.12
+          ansible.builtin.dnf:
+            name: python3.12
+            state: latest
+
+        # using import_role leaks ansible_python_interpreter, which is bad
+        # FIXME: is this still true after the fixes to role var visibility?
+        - ansible.builtin.include_role:
+            name: python_venv
+          vars:
+            venv_name: system
+            venv_packages:
+              - awscli
+              - boto3
+              - cryptography
+              - influxdb
+              - pyyaml
+              - redis
+              - requests
+              - git+https://github.com/its-core-applications/s3_datastore
+            venv_wrappers:
+              - name: datastore-fetch
+              - name: datastore-upload
 
     - gather_facts:
 
@@ -35,8 +45,6 @@
     - name: Disable SELinux
       selinux:
         state: disabled
-      vars:
-        ansible_python_interpreter: /usr/bin/python
 
     - name: Disable SELinux entirely
       ansible.builtin.command:

@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-ara = {git = "https://github.com/ansible-community/ara",ref = "94a7a4fd781c14fb50e09cf5c43f5afc6c5dc3b0"}
+ara = {git = "https://github.com/ansible-community/ara",ref = "8eda9c87086a289cf9bf41a2d4cc4060e2d50ad7"}
 awscli = "*"
 boto = "*"
 boto3 = "*"
@@ -21,4 +21,4 @@ PrettyTable = "*"
 ansible-core = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.12"

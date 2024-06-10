@@ -22,7 +22,7 @@
           - dbus-daemon   # provides dbus-run-session
           - dbus-devel
           - glib2-devel
-          - python3-devel
+          - python3.12-devel
         venv_packages:
           - boto3
           - dbus-python

@@ -43,7 +43,7 @@
               - setuptools
             state: latest
             virtualenv: "{{ venv_user.home }}/{{ venv_name }}"
-            virtualenv_command: /usr/bin/python3 -m venv
+            virtualenv_command: /usr/bin/python3.12 -m venv
 
         - name: Install extra packages for {{ venv_name }}
           ansible.builtin.pip:
