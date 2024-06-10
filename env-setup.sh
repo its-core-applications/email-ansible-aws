@@ -7,7 +7,7 @@ export PIPENV_IGNORE_VIRTUALENVS=1
 . $hacking_dir/.venv/bin/activate
 export ANSIBLE_DEVEL_WARNING=False
 export ANSIBLE_CONFIG=$hacking_dir/ansible/ansible.cfg
-export ANSIBLE_COLLECTIONS_PATHS=$hacking_dir/ansible/collections
+export ANSIBLE_COLLECTIONS_PATH=$hacking_dir/ansible/collections
 export AWS_STATUS=prod
 export AWS_DEFAULT_PROFILE=umcollab
 export SNS_TOPIC=rootmail
