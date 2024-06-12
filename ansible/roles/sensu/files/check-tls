@@ -6,20 +6,26 @@ import socket
 import ssl
 import sys
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 import yaml
 
 def get_cert_smtp(host, port, context):
     with smtplib.SMTP(host, port) as smtp:
         smtp.starttls(context=context)
-        return smtp.sock.getpeercert()
+        return {
+            'cipher': smtp.sock.cipher(),
+            'cert': smtp.sock.getpeercert(),
+        }
 
 
 def get_cert(host, port, context):
     with socket.create_connection((host, port)) as sock:
         with context.wrap_socket(sock, server_hostname=host) as ssock:
-            return ssock.getpeercert()
+            return {
+                'cipher': smtp.sock.cipher(),
+                'cert': ssock.getpeercert(),
+            }
 
 
 def main():
@@ -36,6 +42,10 @@ def main():
         '-p', '--protocol',
         default='smtp',
         choices=('none', 'smtp'),
+    )
+    parser.add_argument(
+        '--rsa',
+        action='store_true',
     )
     parser.add_argument(
         '--check-hostname',
@@ -56,11 +66,14 @@ def main():
 
     socket.setdefaulttimeout(15)
 
-    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     context.verify_mode = ssl.CERT_REQUIRED
-    if args.check_hostname:
-        context.check_hostname = True
+    context.check_hostname = args.check_hostname
     context.load_default_certs()
+
+    if args.rsa:
+        context.maximum_version = ssl.TLSVersion.TLSv1_2
+        context.set_ciphers('RSA')
 
     cert = None
     retval = 0
@@ -83,8 +96,8 @@ def main():
         retval = 3
 
     if cert:
-        expires = datetime.utcfromtimestamp(ssl.cert_time_to_seconds(cert['notAfter']))
-        delta = expires - datetime.utcnow()
+        expires = datetime.fromtimestamp(ssl.cert_time_to_seconds(cert['cert']['notAfter']), UTC)
+        delta = expires - datetime.now(UTC)
         if delta.days < args.critical:
             print('Cert expires in less than {} days: {}\n'.format(args.critical, expires))
             retval = 2
