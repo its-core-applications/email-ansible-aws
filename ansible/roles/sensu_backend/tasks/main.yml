@@ -468,8 +468,8 @@
 
     - name: Monitor loadbalancers
       sensu.sensu_go.check:
-        name: cert
-        command: !unsafe check-tls -H {{ .name }} --check-hostname
+        name: "{{ item.name }}"
+        command: "{{ item.command }}"
         interval: 300
         publish: true
         subscriptions:
@@ -480,6 +480,11 @@
           entity_attributes:
             - "entity.subscriptions.filter(function(s) { return s == 'Class_loadbalancer' }).length > 0"
         <<: *sensu_auth
+      loop:
+        - name: cert
+          command: !unsafe check-tls -H {{ .name }} --check-hostname
+        - name: cert-rsa
+          command: !unsafe check-tls -H {{ .name }} --check-hostname --rsa
 
     - name: Monitor redis clusters
       sensu.sensu_go.check:
