@@ -68,3 +68,4 @@
 
     - name: Run monitoring script to unseal vault
       command: /usr/local/bin/check-vault-seal
+      tags: certificate
