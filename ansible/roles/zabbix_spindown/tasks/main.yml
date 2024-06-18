@@ -1,0 +1,8 @@
+- tags:
+    - zabbix
+  block:
+    - name: Remove from Zabbix
+      community.zabbix.zabbix_host:
+        host_name: "{{ inventory_hostname }}"
+        state: absent
+      delegate_to: "{{ groups.Class_zabbix.0 }}"

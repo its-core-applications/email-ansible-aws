@@ -29,7 +29,7 @@ sethostname() {
     echo "Setting FQDN to $1"
     hostnamectl set-hostname $1
     systemctl daemon-reload
-    systemctl try-restart rsyslog.service simta.service sensu-agent.service
+    systemctl try-restart rsyslog.service simta.service sensu-agent.service zabbix-agent2.service
     aws ec2 create-tags --region=$region --resources=$instanceid --tags Key=Name,Value=${1%%.*} Key=CustomDNSName,Value=$1
 }
 
