@@ -99,3 +99,6 @@
 
         - ansible.builtin.import_role:
             name: ealert
+
+        - ansible.builtin.import_role:
+            name: monitoring_spinup

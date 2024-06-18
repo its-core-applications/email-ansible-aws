@@ -56,6 +56,13 @@
 
 - import_playbook: syslog.yml
 
+- hosts: Class_syslog:&Status_production
+  tasks:
+    - when: region == aws_region
+      block:
+        - ansible.builtin.import_role:
+            name: monitoring_spinup
+
 - hosts: localhost
   become: false
   tasks:

@@ -5,6 +5,9 @@
         - ansible.builtin.import_role:
             name: sensu_spindown
 
+        - ansible.builtin.import_role:
+            name: monitoring_spindown
+
         - name: Destroy host
           become: false
           delegate_to: localhost

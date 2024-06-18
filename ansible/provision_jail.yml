@@ -25,3 +25,10 @@
       vars:
         dns_host: jail
         dns_group: Class_jail
+
+- hosts: Class_jail:&Status_production
+  tasks:
+    - when: region == aws_region
+      block:
+        - ansible.builtin.import_role:
+            name: monitoring_spinup

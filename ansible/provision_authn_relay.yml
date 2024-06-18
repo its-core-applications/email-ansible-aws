@@ -30,6 +30,9 @@
             tags:
               Status: production
 
+        - ansible.builtin.import_role:
+            name: monitoring_spinup
+
         - ansible.builtin.meta: refresh_inventory
 
 - import_playbook: setup_lb_authn_relay.yml

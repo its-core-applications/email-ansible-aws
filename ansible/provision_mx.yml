@@ -17,6 +17,9 @@
           delegate_to: localhost
           become: false
 
+        - ansible.builtin.import_role:
+            name: monitoring_spinup
+
         - ansible.builtin.meta: refresh_inventory
 
 - hosts: localhost
