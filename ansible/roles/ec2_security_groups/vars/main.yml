@@ -126,6 +126,8 @@ ec2_sg:
         ports:
           - 2514 # Remote syslog using RELP
           - 8086 # InfluxDB
+          - 10050 # Zabbix
+          - 10051 # Zabbix
         cidr_ip: "{{ ec2_sg_trusted_ips }}"
 
   rbldnsd:

@@ -1,0 +1,59 @@
+- tags:
+    - zabbix
+    - zabbix_proxy
+  block:
+    - ansible.builtin.import_role:
+        name: zabbix_agent
+
+    - name: Install Zabbix proxy
+      ansible.builtin.yum:
+        name:
+          - zabbix-proxy-sqlite3
+        state: latest
+
+    - name: Create Zabbix proxy in Zabbix
+      community.zabbix.zabbix_proxy:
+        proxy_name: syslog.{{ aws_region }}.{{ subd }}
+        description: Proxy for {{ aws_profile }}
+        status: active
+        tls_accept: PSK
+        tls_psk: "{{ lookup('flowerysong.hvault.kv', 'zabbix/psk').value }}"
+        tls_psk_identity: "{{ aws_region }}.{{ subd }}"
+      delegate_to: "{{ zabbix_server }}"
+
+    - name: Create Zabbix storage directory
+      ansible.builtin.file:
+        dest: /var/lib/zabbix
+        state: directory
+        owner: zabbix
+        group: zabbix
+        mode: "0750"
+
+    - name: Configure Zabbix proxy
+      ansible.builtin.template:
+        src: zabbix_proxy.conf.j2
+        dest: /etc/zabbix/zabbix_proxy.conf
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Configure Zabbix proxy PSK
+      ansible.builtin.template:
+        src: psk.proxy.j2
+        dest: /etc/zabbix/psk.proxy
+        owner: zabbix
+        group: zabbix
+        mode: "0750"
+
+    - ansible.builtin.import_role:
+        name: firewall
+      vars:
+        firewall_services:
+          - zabbix-server
+
+    - name: Start Zabbix proxy
+      ansible.builtin.systemd:
+        name: zabbix-proxy
+        state: restarted
+        enabled: true
+        daemon_reload: true
