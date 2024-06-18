@@ -1,0 +1,10 @@
+LogType=system
+ServerActive=syslog.{{ aws_region }}.{{ subd }}:10051
+
+# From the default config
+PidFile=/run/zabbix/zabbix_agent2.pid
+PluginSocket=/run/zabbix/agent.plugin.sock
+ControlSocket=/run/zabbix/agent.sock
+
+Include=/etc/zabbix/zabbix_agent2.d/*.conf
+Include=./zabbix_agent2.d/plugins.d/*.conf
