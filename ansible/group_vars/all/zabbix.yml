@@ -1,0 +1,4 @@
+zabbix_server: zabbix-dev.dsc.umich.edu
+zabbix_cluster:
+  - zabbix-dev01.dsc.umich.edu
+  - zabbix-dev02.dsc.umich.edu

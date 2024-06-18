@@ -1,0 +1,18 @@
+Server={{ zabbix_cluster | join(';') }}
+Hostname=syslog.{{ aws_region }}.{{ subd }}
+LogType=system
+TLSConnect=psk
+TLSPSKIdentity={{ aws_region }}.{{ subd }}
+TLSPSKFile=/etc/zabbix/psk.proxy
+
+DBName=/var/lib/zabbix/zabbix_proxy
+
+ProxyOfflineBuffer=24
+# FIXME: do we need this? If so, for how long should we keep data?
+ProxyLocalBuffer=12
+
+
+# From the upstream config
+PidFile=/run/zabbix/zabbix_proxy.pid
+SocketDir=/run/zabbix
+

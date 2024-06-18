@@ -1,0 +1,5 @@
+ansible_network_os: community.zabbix.zabbix
+ansible_connection: ansible.netcommon.httpapi
+ansible_httpapi_use_ssl: true
+ansible_zabbix_auth_key: "{{ lookup('flowerysong.hvault.kv', 'zabbix/admin').value }}"
+ansible_zabbix_url_path: ""
