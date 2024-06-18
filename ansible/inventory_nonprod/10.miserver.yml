@@ -1,0 +1,9 @@
+all:
+  children:
+    miserver:
+      vars:
+        ansible_become: false
+      children:
+        Class_zabbix:
+          hosts:
+            zabbix-dev.dsc.umich.edu:

@@ -287,3 +287,7 @@
       vars:
         firewall_services:
           - mosh
+
+    - ansible.builtin.import_role:
+        name: zabbix_agent
+      when: not bootstrap
