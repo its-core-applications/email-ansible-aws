@@ -59,7 +59,7 @@ for entry in $@ ; do
             echo "I'm skipping this one."
             continue
         else
-            sed -i -e "5i$entry" $file
+            sed -i -e "4a$entry" $file
         fi
     elif [[ $action = "remove" ]]; then
         if grep -q -x "$entry" $file ; then
