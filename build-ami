@@ -36,7 +36,7 @@ fi
 
 base=$(echo "$base" | jq -r '.Images | sort_by(.CreationDate) | last(.[]).ImageId')
 
-subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=vpn' | jq -r '.Subnets | sort_by(.AvailabilityZone) | first(.[]).SubnetId')
+subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=vpn' | jq -r '.Subnets[].SubnetId' | shuf | head -n 1)
 
 export VAULT_TOKEN=$(vault login -token-only -method=aws)
 packer init -upgrade packer/template.pkr.hcl
