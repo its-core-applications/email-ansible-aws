@@ -25,7 +25,7 @@ os=rhel9
 echo "Building $class image for $os in $AWS_STATUS $AWS_DEFAULT_REGION"
 
 owner='309956199498'
-filter='Name=name,Values=RHEL-9.2.*_HVM-202*-x86_64*Access*'
+filter='Name=name,Values=RHEL-9.4.*_HVM-202*-x86_64*Access*'
 root='/dev/sda1'
 
 if [[ $class = 'base' ]] || [[ $class = 'vdc_relay' ]]; then
@@ -36,7 +36,7 @@ fi
 
 base=$(echo "$base" | jq -r '.Images | sort_by(.CreationDate) | last(.[]).ImageId')
 
-subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=vpn' | jq -r '.Subnets[].SubnetId' | tail -n 1)
+subnet_id=$(aws ec2 describe-subnets --filters 'Name=tag:Class,Values=vpn' | jq -r '.Subnets | sort_by(.AvailabilityZone) | first(.[]).SubnetId')
 
 export VAULT_TOKEN=$(vault login -token-only -method=aws)
 packer init -upgrade packer/template.pkr.hcl
