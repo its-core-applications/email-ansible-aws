@@ -14,7 +14,7 @@ aws_layout:
       region: us-west-2
       account: '236262816615'
       bastion: mogo
-      default_instance: m5.large
+      default_instance: m7i-flex.large
       mx_names:
         - mx1
       services:
@@ -38,25 +38,25 @@ aws_layout:
           autocycle: false
         dnsbl:
           count: 4
-          size: c5n.large
+          size: c6in.large
         egress:
           count: 3
-          size: m5.2xlarge
+          size: m7i-flex.2xlarge
         bastion:
           autocycle: false
         mx:
           count: 6
-          size: m5.xlarge
+          size: m7i-flex.xlarge
           cycle_method: spinup
         syslog:
           autocycle: false
-          size: m5.xlarge
+          size: m7i.xlarge
 
     vdc-prod:
       region: us-east-2
       account: '023382427380'
       bastion: ego
-      default_instance: m5.large
+      default_instance: m7i-flex.large
       mx_names:
         - mx2
       services:
@@ -68,28 +68,28 @@ aws_layout:
           count: 3
         authz-relay:
           count: 3
-          size: m5.xlarge
+          size: m7i-flex.xlarge
         authz-static:
-          size: t3.medium
+          size: t3.large
         dnsbl:
           count: 5
-          size: c5n.large
+          size: c6in.large
         egress:
           count: 3
-          size: m5.2xlarge
+          size: m7i-flex.2xlarge
         jail:
           size: t3.large
         bastion:
           autocycle: false
         mx:
           count: 6
-          size: m5.xlarge
+          size: m7i-flex.xlarge
           cycle_method: spinup
         relay-egress:
           count: 3
         syslog:
           autocycle: false
-          size: m5.xlarge
+          size: m7i.2xlarge
 
     vdc-core:
       region: us-east-2
