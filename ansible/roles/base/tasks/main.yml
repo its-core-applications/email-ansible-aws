@@ -8,6 +8,11 @@
         # creation of the system venv.
         ansible_python_interpreter: /usr/bin/python3
       block:
+        # This should already have been done by Packer, but it keeps breaking for       # eldritch reasons and redoing it shouldn't hurt.
+        - name: Enable CRB repo
+          ansible.builtin.command:
+            cmd: dnf config-manager --set-enabled codeready-builder-for-rhel-9-rhui-rpms
+
         - name: Install Python 3.12
           ansible.builtin.dnf:
             name: python3.12
