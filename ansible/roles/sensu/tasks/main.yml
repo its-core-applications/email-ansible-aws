@@ -8,6 +8,7 @@
     - name: Install sensu and dependencies
       ansible.builtin.dnf:
         name:
+          - nagios-plugins-http
           - redis
           - sensu-agent
           - sensu-system-profile-linux
