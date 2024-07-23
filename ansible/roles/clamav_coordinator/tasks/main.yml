@@ -2,9 +2,6 @@
     - clamav
   block:
     - ansible.builtin.import_role:
-        name: clamav
-
-    - ansible.builtin.import_role:
         name: s3_website
       vars:
         s3_hostname: clamav.{{ subd }}
@@ -23,9 +20,10 @@
     - name: Install prerequisites
       ansible.builtin.dnf:
         name:
+          - clamav
+          - clamav-update
           - perl-Digest-SHA
           - perl-Time-Piece
-          - clamav-update
         state: latest
 
     - name: Install processing scripts
