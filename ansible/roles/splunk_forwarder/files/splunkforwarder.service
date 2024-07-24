@@ -4,12 +4,18 @@ Wants=network.target
 After=network.target
 
 [Service]
-Type=forking
+Type=simple
 Restart=always
 RestartSec=30s
-ExecStart=/opt/splunkforwarder/bin/splunk start --accept-license --answer-yes --no-prompt
-ExecStop=/opt/splunkforwarder/bin/splunk stop
-ExecReload=/opt/splunkforwarder/bin/splunk restart
+ExecStart=/opt/splunkforwarder/bin/splunk _internal_launch_under_systemd
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutStopSec=360
+LimitNOFILE=65536
+SuccessExitStatus=51 52
+RestartPreventExitStatus=51
+RestartForceExitStatus=52
+Delegate=true
 
 [Install]
 WantedBy=multi-user.target
