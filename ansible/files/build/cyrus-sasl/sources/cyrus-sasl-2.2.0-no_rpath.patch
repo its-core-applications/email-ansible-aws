@@ -20,10 +20,10 @@ index 0f9ac483..42f094b7 100644
 +    andrew_cv_runpath_switch="none"
 +  ])
 diff --git a/utils/Makefile.am b/utils/Makefile.am
-index 9846884b..af19829f 100644
+index 1c1931fe..c69e7518 100644
 --- a/utils/Makefile.am
 +++ b/utils/Makefile.am
-@@ -54,15 +54,11 @@ man_MANS = $(SASL_DB_MANS) pluginviewer.8
+@@ -52,13 +52,10 @@ man_MANS = $(SASL_DB_MANS) saslpasswd2.8 pluginviewer.8
  
  saslpasswd2_LDADD = ../sasldb/libsasldb.la $(all_sasl_libs)
  saslpasswd2_SOURCES = saslpasswd.c
@@ -31,8 +31,6 @@ index 9846884b..af19829f 100644
  sasldblistusers2_LDADD = ../sasldb/libsasldb.la $(all_sasl_libs)
  sasldblistusers2_SOURCES = sasldblistusers.c
 -sasldblistusers2_LDFLAGS = -rpath $(libdir)
- dbconverter_2_LDADD = ../sasldb/libsasldb.la $(all_sasl_libs)
--dbconverter_2_LDFLAGS = -rpath $(libdir)
  pluginviewer_LDADD = $(all_sasl_libs)
  pluginviewer_SOURCES = pluginviewer.c
 -pluginviewer_LDFLAGS = -rpath $(libdir)
