@@ -1,4 +1,4 @@
-%global commit0 00058abab1af3d26761b76b867cd331543c90d92
+%global commit0 d04f717c58b412262797b1651baa2c1107ff1cb1
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 %define username        saslauth
@@ -12,15 +12,16 @@
 
 Summary: The Cyrus SASL library
 Name: cyrus-sasl
-Version: 2.1.29
-Release: 0.1.20230710.%{shortcommit0}%{?dist}
+Version: 2.2.0~git20240725.%{shortcommit0}
+Release: 0%{?dist}
 License: BSD with advertising
 Group: System Environment/Libraries
 URL: https://www.cyrusimap.org/sasl/
-Source0: https://github.com/its-core-applications/%{name}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
+Source0: https://github.com/cyrusimap/%{name}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
 Source5: saslauthd.service
 Source9: saslauthd.sysconfig
-Patch1: cyrus-sasl-2.1.29-no_rpath.patch
+Patch0: cyrus-sasl-2.2.0-man_install.patch
+Patch1: cyrus-sasl-2.2.0-no_rpath.patch
 Requires: %{name}-lib%{?_isa} = %{version}-%{release}
 BuildRequires: autoconf, automake, libtool, gdbm-devel, groff
 BuildRequires: krb5-devel >= 1.2.2, openssl-devel, pam-devel, pkgconfig
@@ -108,7 +109,6 @@ echo "$LDFLAGS"
         --disable-digest \
         --disable-ntlm \
         --enable-plain \
-        --enable-login \
         --enable-alwaystrue \
         --disable-httpform \
         --disable-otp \
