@@ -117,6 +117,13 @@ spf_thirdparty:
       # MailerLite
       - include:_spf.mlsend.com
 
+  # 2024-08-01: earthl,flanigam / A2RU / TDx 6584994
+  # Nutshell
+  - names:
+      - a2ruconnect
+      - skfitz
+    record: include:nm.nutshellemail.com
+
   # 2017-05-30: Dentistry
   - names:
       - bldawson
