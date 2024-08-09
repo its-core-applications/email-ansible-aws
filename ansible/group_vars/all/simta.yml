@@ -31,6 +31,9 @@ simta_ldap_domains_mapped:
     prefix: bmi2
   - domain: bmi2study.org
     prefix: bmi2
+  - domain: canconferenceuofm.org
+    prefix: canconferenceuofm
+    control_group: canconferenceuofm domain control group
   - domain: chrt.org
     prefix: chrt
   - domain: connectedcancercare.org
