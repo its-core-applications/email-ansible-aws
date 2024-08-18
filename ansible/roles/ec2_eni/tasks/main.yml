@@ -10,7 +10,7 @@
         profile: "{{ aws_profile }}"
         security_groups: "{{ eni_security_groups | map('regex_replace', '^', aws_resource_prefix ~ ' ') }}"
         subnet_id: "{{ eni_subnet.id }}"
-        private_ip_address: "{{ eni_subnet.cidr_block | next_nth_usable(eni_ip_index) }}"
+        private_ip_address: "{{ eni_subnet.cidr_block | ansible.utils.next_nth_usable(eni_ip_index) }}"
       register: result
 
     - name: Tag ENI
