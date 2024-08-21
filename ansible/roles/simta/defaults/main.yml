@@ -1,7 +1,7 @@
 tld: umich.edu
 simta_config: 'this host'
 simta_tls: true
-simta_spambusters: http://its.umich.edu/computing/email-calendar/troubleshoot/block-status
+simta_spambusters: https://its.umich.edu/computing/email-calendar/troubleshoot/block-status
 simta_bitbucket: false
 simta_tcpwrappers: false
 simta_ldap: false
