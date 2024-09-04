@@ -75,6 +75,9 @@ simta_ldap_domains_mapped:
     prefix: michiganradio
   - domain: michigantavr.org
     prefix: michigantavr
+  - domain: michildwelfare.org
+    prefix: michildwelfare
+    control_group: michildwelfare domain control group
   - domain: miseagrant.com
     prefix: miseagrant
   - domain: openclimate.org
