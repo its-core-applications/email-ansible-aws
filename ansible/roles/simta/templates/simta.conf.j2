@@ -55,6 +55,19 @@ receive {
             list = relay-deny.dnsbl;
             message = {{ simta_spambusters }};
         }
+    }
+    mail_from {
+        acl {
+            action = block;
+            list = relay-deny-from.dnsbl;
+            algorithm = sha1;
+        }
+        acl {
+            action = block;
+            list = relay-deny-from.dnsbl;
+            domain_only = true;
+            algorithm = sha1;
+        }
 {%  endif %}{# not simta_egress #}
     }
     spf {

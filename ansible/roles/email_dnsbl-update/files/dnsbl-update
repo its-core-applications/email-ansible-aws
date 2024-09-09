@@ -48,7 +48,7 @@ fi
 
 for entry in $@ ; do
     label=$entry
-    if [[ $file = 'deny-from' ]] || [[ $file = 'drop-from' ]]; then
+    if [[ $file = 'deny-from' ]] || [[ $file = 'drop-from' ]] || [[ $file = 'relay-deny-from' ]]; then
         label=$(echo $label | tr A-Z a-z)
         entry="$(echo -n $label | sha1sum | cut -d' ' -f1) $label"
     fi
