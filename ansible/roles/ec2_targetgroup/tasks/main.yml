@@ -27,3 +27,4 @@
         healthy_threshold_count: 3
         unhealthy_threshold_count: 3
         deregistration_delay_timeout: 90
+      when: groups[tg_group] | intersect(aws_region_group) | length > 0
