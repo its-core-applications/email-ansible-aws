@@ -25,6 +25,7 @@ ExecStart=/sbin/rbldnsd -n -w /var/lib/rbldnsd -q -a \
     ubl.dnsbl:dnset:umich/ubl \
     deny-from.dnsbl:dnset:umich/deny-from \
     drop-from.dnsbl:dnset:umich/drop-from \
+    relay-deny-from.dnsbl:dnset:umich/relay-deny-from \
     test1.dnsbl:ip4set:umich/testrbl1 \
     test2.dnsbl:ip4set:umich/testrbl2 \
     test3.dnsbl:ip4set:umich/testrbl3 \
