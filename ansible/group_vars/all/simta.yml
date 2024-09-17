@@ -94,6 +94,9 @@ simta_ldap_domains_mapped:
     prefix: predictive
   - domain: probabilitynetwork.org
     prefix: probabilitynetwork
+  - domain: project-synergy.org
+    prefix: project-synergy
+    control_group: project-synergy domain control group
   - domain: psfmobile.org
     prefix: psfmobile
   - domain: researchdatagov.org
