@@ -458,6 +458,12 @@ spf_thirdparty:
       - umditmais
     record: include:itmnow.com
 
+  # 2024-09-19: cto / Gift and Records / TDx7087390
+  - names:
+      - umgift
+    record:
+      - ip4:184.175.191.45
+
   # 2017-05-30
   - names:
       - umpark
