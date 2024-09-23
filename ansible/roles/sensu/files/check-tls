@@ -23,7 +23,7 @@ def get_cert(host, port, context):
     with socket.create_connection((host, port)) as sock:
         with context.wrap_socket(sock, server_hostname=host) as ssock:
             return {
-                'cipher': smtp.sock.cipher(),
+                'cipher': ssock.cipher(),
                 'cert': ssock.getpeercert(),
             }
 
