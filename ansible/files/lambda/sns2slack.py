@@ -1,17 +1,10 @@
-#!/usr/bin/env python
-
-from __future__ import (absolute_import, division, print_function)
+#!/usr/bin/env python3
 
 import json
 import os
 
 import requests
 
-ICON_MAP = {
-    'sensu': 'https://cdn-images-1.medium.com/1*qC5lFfMvQd_zci2MBXZZpg.png',
-    'ansible': 'https://www.ansible.com/favicon.ico',
-    'nagios': 'https://a.slack-edge.com/80588/img/services/nagios_512.png',
-}
 
 def handler(event, context):
     print(json.dumps(event))
@@ -29,9 +22,7 @@ def handler(event, context):
 
     msg = {
         'parse': 'none',
-        'username': 'SNS',
-        'icon_url': 'https://a.slack-edge.com/66f9/img/avatars/ava_0002-48.png',
-        'text': '*{}*'.format(sns['Subject']),
+        'text': f'*{sns["Subject"]}*',
         'attachments': [
             {
                 'color': color,
@@ -47,11 +38,8 @@ def handler(event, context):
     else:
         msg['attachments'][0]['text'] = cooked['message']
 
-        if cooked['sourcetype'] in ICON_MAP:
-            msg['icon_url'] = ICON_MAP[cooked['sourcetype']]
+        msg['text'] = f'{cooked["sourcetype"]}@{cooked["source"]}\n{msg["text"]}'
 
-        msg['username'] = '{}@{}'.format(cooked['sourcetype'], cooked['source'])
-
-    response = requests.post(webhook, json = msg)
+    response = requests.post(webhook, json=msg)
 
     print(response)
