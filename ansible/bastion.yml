@@ -48,9 +48,6 @@
         name: duo
 
     - ansible.builtin.import_role:
-        name: aws_saml_login
-
-    - ansible.builtin.import_role:
         name: email_dnsbl-update
 
     - ansible.builtin.import_role:
