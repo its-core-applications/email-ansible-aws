@@ -57,9 +57,9 @@
         key_name: "{{ aws_ssh_key }}"
         instance_type: "{{ aws_layout[aws_status][aws_profile]['classes'][launch_class].size | default(aws_layout[aws_status][aws_profile].default_instance) }}"
         vpc_subnet_id: "{{ (launch_subnet | default(ec2_subnets[aws_profile][item % (ec2_subnets[aws_profile] | length)])).id }}"
-        network:
-          assign_public_ip: "{{ launch_public_ip }}"
-          delete_on_termination: true
+        network_interfaces:
+          - assign_public_ip: "{{ launch_public_ip }}"
+            delete_on_termination: true
         image_id: "{{ find_ami.image_id }}"
         instance_role: "{{ aws_resource_prefix }}_{{ launch_profile | default('standard') }}"
         tags: "{{ launch_tags_default | combine(launch_tags) }}"
