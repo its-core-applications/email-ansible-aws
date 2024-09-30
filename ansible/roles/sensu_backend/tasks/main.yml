@@ -527,7 +527,7 @@
     - name: Add simta restart hook
       sensu.sensu_go.hook:
         name: restart_simta
-        command: sudo /bin/systemctl restart simta
+        command: sudo /bin/systemctl try-restart simta
         timeout: 60
         <<: *sensu_auth
 
