@@ -4,12 +4,13 @@
 %define rspamd_confdir   %{_sysconfdir}/rspamd
 
 Name:           rspamd
-Version:        3.8.2
+Version:        3.11.1
 Release:        1
 Summary:        Rapid spam filtering system
 License:        BSD2c
 URL:            https://rspamd.com
 BuildRequires:  glib2-devel
+BuildRequires:  libarchive-devel
 BuildRequires:  libevent-devel
 BuildRequires:  openssl-devel
 BuildRequires:  hyperscan-devel
@@ -50,7 +51,7 @@ Rspamd is a rapid, modular and lightweight spam filter. It is designed to work
     -DLIBDIR=%{_libdir}/rspamd/ \
     -DINCLUDEDIR=%{_includedir} \
     -DNO_SHARED=ON \
-    -DDEBIAN_BUILD=1 \
+    -DNO_TARGET_VERSIONS=1 \
     -DRSPAMD_GROUP=%{rspamd_group} \
     -DRSPAMD_USER=%{rspamd_user} \
     -DENABLE_FANN=ON \
@@ -94,11 +95,14 @@ install -p -D -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/override.d/
 %config(noreplace) %{rspamd_confdir}/scores.d/*
 %config(noreplace) %{rspamd_confdir}/*.inc
 %config(noreplace) %{rspamd_confdir}/*.conf
+%{rspamd_confdir}/*/*.example
 %attr(-, _rspamd, _rspamd) %dir %{rspamd_home}
 %dir %{rspamd_confdir}
 %dir %{rspamd_confdir}/local.d
+%dir %{rspamd_confdir}/lua.local.d
 %dir %{rspamd_confdir}/maps.d
 %dir %{rspamd_confdir}/modules.d
+%dir %{rspamd_confdir}/modules.local.d
 %dir %{rspamd_confdir}/override.d
 %dir %{rspamd_confdir}/scores.d
 %dir %{_libdir}/rspamd
