@@ -90,10 +90,14 @@
         - simta
       vars:
         build_name: openarc
-        build_repo: https://github.com/its-core-applications/OpenARC.git
+        build_repo: https://github.com/flowerysong/OpenARC.git
+        build_version: b6737383d3dbaeb7617738859f099c3090c4c2e2
         build_deps:
+          - jansson-devel
           - libbsd-devel
+          - libidn2-devel
           - openssl-devel
+          - python3-devel
           - sendmail-devel
 
     - ansible.builtin.import_role:
