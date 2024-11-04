@@ -29,6 +29,7 @@
         - local.d/whitelist.conf
         - local.d/worker-proxy.inc
         - rspamd.local.lua
+        - umich_bad_fileext.inc
         - umich_bad_tld.inc
       register: config_result
 
