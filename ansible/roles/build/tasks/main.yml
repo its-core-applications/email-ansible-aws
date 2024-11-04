@@ -245,6 +245,7 @@
           - glib2-devel
           - hyperscan-devel
           - jemalloc-devel
+          - libarchive-devel
           - libevent-devel
           - libicu-devel
           - libsodium-devel
