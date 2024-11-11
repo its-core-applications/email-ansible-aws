@@ -6,7 +6,7 @@
 
 - hosts: Class_egress:Class_relay_egress:&Status_production
   tasks:
-    - gather_facts:
+    - ansible.builtin.gather_facts:
       when: ansible_facts.date_time is not defined
 
     - name: Check for limit
@@ -20,9 +20,9 @@
         fail_msg: Missing destination. Try something like `-e target_destination=hotmail.com`
 
     - name: Select messages to requeue
-      command: "simqclean -e -s '\"hostname\": \"{{ target_destination }}\"'"
+      ansible.builtin.command: "simqclean -e -s '\"hostname\": \"{{ target_destination }}\"'"
 
-    - find:
+    - ansible.builtin.find:
         path: /var/tmp/simqclean/_hostname____{{ target_destination }}_
         file_type: directory
       register: result
@@ -31,6 +31,8 @@
         path: "{{ item.path }}/files"
         state: absent
       loop: "{{ result.files }}"
+      loop_control:
+        label: "{{ item.path }}"
 
     - name: Lock and load
       vars:
@@ -51,12 +53,14 @@
             state: touch
 
         - name: Save queue
-          synchronize:
+          ansible.posix.synchronize:
             mode: pull
             archive: true
             src: "{{ item.path }}/"
             dest: "{{ simqtmp }}/"
           loop: "{{ result.files }}"
+          loop_control:
+            label: "{{ item.path }}"
 
         - name: Remove remote directories from consideration
           command: mv /var/tmp/simqclean/_hostname____{{ target_destination }}_ /var/tmp/{{ target_destination }}.requeued.{{ ansible_facts.date_time.iso8601 }}
