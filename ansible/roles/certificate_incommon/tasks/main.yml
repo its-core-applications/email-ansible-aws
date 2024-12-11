@@ -15,7 +15,7 @@
       modify_account: false
       acme_version: 2
       challenge: dns-01
-      remaining_days: 15
+      remaining_days: 30
   delegate_to: localhost
   run_once: true
   become: false
