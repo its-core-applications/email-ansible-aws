@@ -281,6 +281,7 @@
         runtime_assets:
           - sensu-opsgenie-handler
         filters:
+          - not_silenced
           - is_incident
           - occurrences
           - production
