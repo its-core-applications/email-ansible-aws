@@ -9,9 +9,14 @@
         required = true;
     }
 {% endif %}
-{% if item.max_rcpts is defined %}
+{% if item.max_rcpts is defined or item.max_messages is defined %}
     connection {
+{% if item.max_messages is defined %}
+        max_messages = {{ item.max_messages }};
+{% endif %}
+{% if item.max_rcpts is defined %}
         max_rcpts = {{ item.max_rcpts }};
+{% endif %}
     }
 {% endif %}
 }
