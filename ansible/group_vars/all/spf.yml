@@ -466,6 +466,7 @@ spf_thirdparty:
       - umgift
     record:
       - ip4:184.175.191.45
+      - include:_spf.createsend.com
 
   # 2017-05-30
   - names:
