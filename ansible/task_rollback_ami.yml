@@ -1,0 +1,23 @@
+- hosts: localhost
+  become: false
+  vars:
+    ami_os: rhel9
+  tasks:
+    - name: Get AMI info
+      amazon.aws.ec2_ami_info:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        owners: self
+        filters:
+          "tag:os": "{{ ami_os }}"
+          "tag:image_type": "{{ ami_class | replace('-', '_') }}"
+      register: ami_info
+
+    - name: Tag AMI as junk
+      amazon.aws.ec2_ami:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        image_id: "{{ (ami_info.images | sort(attribute='creation_date') | last).image_id }}"
+        purge_tags: false
+        tags:
+          image_type: junk
