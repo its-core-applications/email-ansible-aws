@@ -336,7 +336,11 @@ spf_thirdparty:
       - umsi.studentlife
       # 2024-02-06: annere / School of Public Health / TDx 5714770
       - sph.events
-    record: ip4:176.31.145.254
+      # 2025-02-06: erkelley / CoE Dean's Office / TDx 7875208
+      - coegraduation
+    record:
+      - ip4:176.31.145.254
+      - include:_spf.elasticemail.com
 
   # 2017-05-30
   # No MCommunity entry for the name, but it looks kind of legitimate.
