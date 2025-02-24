@@ -332,10 +332,6 @@
           subscriptions:
             - Class_redis_cluster
             - Status_production
-        - name: area1security.com
-          subscriptions:
-            - Status_production
-        - name: github.com
 
     - name: Register Sensu proxy entities for other syslog hosts
       sensu.sensu_go.entity:
@@ -388,20 +384,6 @@
           entity_attributes:
             - "entity.subscriptions.filter(function(s) { return s == 'Class_foreign_syslog' }).length > 0"
         <<: *sensu_auth
-
-    - name: Monitor Area 1
-      sensu.sensu_go.check:
-        name: area1-statuspage
-        command: check-statuspage -d status.area1security.com -c 'Email Protection Service'
-        interval: 300
-        publish: true
-        subscriptions:
-          - Class_syslog
-        handlers:
-          - default
-        proxy_entity_name: area1security.com
-        <<: *sensu_auth
-      when: "'cloud_monitoring' in aws_layout[aws_status][aws_profile_ec2].services"
 
     - name: Monitor GitHub
       sensu.sensu_go.check:
