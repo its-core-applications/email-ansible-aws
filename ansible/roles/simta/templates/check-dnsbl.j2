@@ -29,7 +29,6 @@ for bl in \
     sip.dnsbl \
     sip24.dnsbl \
     xbl.dnsbl \
-    ix.dnsbl.manitu.net \
     bl.blocklist.de
 do
     if ! simrbl -q -l $bl $ip ; then
