@@ -2,14 +2,30 @@
 
 retval=0
 
-for bl in \
+dnsbls=(
+    b.barracudacentral.org \
+    bl.blocklist.de \
+    bl.spamcop.net \
+    bl.spameatingmonkey.net \
+    cbl.abuseat.org \
+    ips.backscatterer.org \
+    pbl.dnsbl \
+    sbl.dnsbl \
+    sip.dnsbl \
+    sip24.dnsbl \
+    xbl.dnsbl \
+    zen.dnsbl \
     mx-accept.dnsal \
+    mx-deny.dnsbl \
     mx-trust.dnsal \
     penaltybox-skip.dnsal \
-    umnetworks.dnsal \
-    mx-deny.dnsbl \
     relay-accept.dnsal \
-    relay-deny.dnsbl
+    relay-deny.dnsbl \
+    relay-trust.dnsal \
+    umnetworks.dnsal
+)
+
+for bl in ${dnsbls[@]}
 do
     if simrbl -q -l $bl 127.0.0.2 ; then
         echo "$bl does not list 127.0.0.2"
@@ -17,26 +33,7 @@ do
     fi
 done
 
-for bl in \
-    b.barracudacentral.org \
-    bl.spamcop.net \
-    cbl.abuseat.org \
-    ips.backscatterer.org \
-    pbl.dnsbl \
-    sbl.dnsbl \
-    xbl.dnsbl \
-    sip.dnsbl \
-    sip24.dnsbl \
-    xbl.dnsbl \
-    zen.dsnbl \
-    bl.spameatingmonkey.net \
-    mx-accept.dnsal \
-    mx-trust.dnsal \
-    penaltybox-skip.dnsal \
-    umnetworks.dnsal \
-    mx-deny.dnsbl \
-    relay-accept.dnsal \
-    relay-deny.dnsbl
+for bl in ${dnsbls[@]}
 do
     if ! simrbl -q -l $bl 127.0.0.1 ; then
         echo "$bl lists 127.0.0.1"
