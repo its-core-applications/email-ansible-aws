@@ -8,4 +8,7 @@
         name: relay
 
     - ansible.builtin.import_role:
+        name: firewall_blocklist
+
+    - ansible.builtin.import_role:
         name: users_allow_update
