@@ -29,6 +29,7 @@
               - boto3
               - cryptography
               - influxdb
+              - netaddr
               - pyyaml
               - redis
               - requests

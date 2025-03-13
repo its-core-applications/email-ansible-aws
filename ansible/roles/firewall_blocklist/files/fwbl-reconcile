@@ -1,0 +1,33 @@
+#!/usr/local/venv/system/bin/python
+
+import argparse
+
+import netaddr
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--file', required=True)
+parser.add_argument('-x', '--exclude', action='append')
+args = parser.parse_args()
+
+ip_set = netaddr.IPSet()
+with open(args.file, 'r') as f:
+    for l in f:
+        ip_set.add(netaddr.IPNetwork(l.rstrip()))
+
+for x in args.exclude or []:
+    with open(x, 'r') as f:
+        for l in f:
+            # rbldnsd file format support
+            ip = l.split()
+            if not ip:
+                continue
+            ip = ip[0]
+            if netaddr.valid_ipv4(ip):
+                ip_set.remove(netaddr.IPNetwork(ip))
+
+for ip in netaddr.cidr_merge(ip_set):
+    if ip.cidr.size == 1:
+        print(ip.cidr.ip)
+    else:
+        print(ip.cidr)

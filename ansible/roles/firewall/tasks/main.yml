@@ -1,0 +1,46 @@
+- tags:
+    - firewall
+    - firewalld
+  when: use_firewalld | default(false)
+  block:
+    - name: Install firewalld
+      ansible.builtin.dnf:
+        name: firewalld
+        state: present
+
+    - name: Start firewalld
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+
+    # FIXME: ansible.posix.firewalld has an `offline` flag that's supposed to
+    # allow changing things when the daemon isn't running, but it doesn't
+    # actually do anything. Instead we have to manually discover whether the
+    # service is running and change the options we pass to the module.
+    - name: Fetch service facts
+      ansible.builtin.service_facts:
+      when: ansible_facts.services is not defined
+
+    - name: Enable firewall services
+      ansible.posix.firewalld:
+        zone: public
+        service: "{{ item }}"
+        state: enabled
+        permanent: true
+        immediate: "{{ ansible_facts.services['firewalld.service'].state == 'running' }}"
+      loop: "{{ [firewall_services | default([])] | flatten }}"
+      vars:
+        # FIXME: This should be unnecessary once the module supports respawn
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Open firewall ports
+      ansible.posix.firewalld:
+        zone: public
+        port: "{{ item }}"
+        state: enabled
+        permanent: true
+        immediate: "{{ ansible_facts.services['firewalld.service'].state == 'running' }}"
+      loop: "{{ [firewall_ports | default([])] | flatten }}"
+      vars:
+        # FIXME: This should be unnecessary once the module supports respawn
+        ansible_python_interpreter: /usr/bin/python3

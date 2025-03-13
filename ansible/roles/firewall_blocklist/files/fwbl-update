@@ -1,0 +1,60 @@
+#!/bin/bash
+
+srcfile=iia/ipv4-smtp
+destset=blocklist
+excludes='-x /etc/mail/dnslists/umich/relay-accept -x /etc/mail/dnslists/umich/relay-trust'
+
+while getopts b:d:r: opt; do
+    case $opt in
+    b)  destset=$OPTARG
+        ;;
+    d)  datastore=$OPTARG
+        ;;
+    r)  region=$OPTARG
+        ;;
+    s)  srcfile=$OPTARG
+        ;;
+    esac
+done
+(
+    flock -n 9 || exit 1
+
+    retval=0
+    startts=$(date +%s%N)
+
+    mkdir -p /etc/mail/dnslists
+    msg=$(datastore-fetch --recurse --s3-bucket ${datastore} --s3-region ${region} dnsl /etc/mail/dnslists)
+    if [[ $? -eq 0 ]]; then
+        msg="Block list unchanged"
+        workdir=$(mktemp -d /var/tmp/fwbl-update.XXXXXXXX)
+        fwbl-reconcile -f /etc/mail/dnslists/$srcfile $excludes > $workdir/blocklist
+        for permanent in '' '--permanent'; do
+            firewall-cmd $permanent --ipset=$destset --get-entries > $workdir/current
+            diff -q $workdir/current $workdir/blocklist
+            if [[ $? -eq 1 ]]; then
+                firewall-cmd $permanent --ipset=$destset --remove-entries-from-file=$workdir/current
+                firewall-cmd $permanent --ipset=$destset --add-entries-from-file=$workdir/blocklist
+                msg="Block list updated"
+            fi
+        done
+    else
+        retval=2
+    fi
+
+    rm -rf $workdir
+
+    duration=$(( $(date +%s%N) - startts ))
+
+    jq -n -r \
+        --arg status $retval \
+        --arg duration $(( duration / 1000000000 )).$(( duration % 1000000000 / 1000000 )) \
+        --arg msg "$msg" \
+        '{ check: { metadata: { name: "fwbl-update", annotations: { "fatigue_check/occurrences": "3" }}, ttl: 3600, duration: $duration | tonumber, status: $status | tonumber, output: $msg }}' | curl -X POST -H 'Content-Type: application/json' -d @- http://127.0.0.1:3031/events
+
+    exit $retval
+) 9>>/var/run/fwbl-update.lock
+retval=$?
+
+if [[ $RETURN_RC -ne 0 ]]; then
+    exit $retval
+fi

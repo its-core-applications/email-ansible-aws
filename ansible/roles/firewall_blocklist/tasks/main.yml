@@ -1,0 +1,88 @@
+- tags:
+    - firewall
+    - firewalld
+  when: use_firewalld | default(false)
+  block:
+    - name: Install firewalld
+      ansible.builtin.dnf:
+        name: firewalld
+        state: present
+
+    - name: Start firewalld
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+
+    # FIXME: ansible.posix.firewalld has an `offline` flag that's supposed to
+    # allow changing things when the daemon isn't running, but it doesn't
+    # actually do anything. Instead we have to manually discover whether the
+    # service is running and change the options we pass to the module.
+    - name: Fetch service facts
+      ansible.builtin.service_facts:
+      when: ansible_facts.services is not defined
+
+    - vars:
+        firewall_cmd: "{{ 'firewall-cmd' if ansible_facts.services['firewalld.service'].state == 'running' else 'firewall-offline-cmd' }}"
+      block:
+
+        - name: Create blocklist
+          # FIXME: a dedicated module would be nice...or maybe just copy this
+          # file into place.
+          ansible.builtin.command:
+            cmd: "{{ firewall_cmd }} {{ '--permanent' if firewall_cmd == 'firewall-cmd' else '' }} --new-ipset=blocklist --type=hash:net --option=family=inet --option=hashsize=1048576 --option=maxelem=1048576"
+            creates: /etc/firewalld/ipsets/blocklist.xml
+          register: result_ipset
+
+        - name: Enable drop logging
+          ansible.builtin.command:
+            cmd: "{{ firewall_cmd }} --set-log-denied=all"
+          register: result_log
+          changed_when: "'ALREADY_SET' not in result_log.stderr"
+
+    - name: Restart firewalld
+      ansible.builtin.systemd:
+        name: firewalld
+        state: restarted
+      when:
+        - ansible_facts.services['firewalld.service'].state == 'running'
+        - "[result_ipset, result_log] | select('changed') | length > 0"
+
+    - name: Enable blocklist
+      ansible.posix.firewalld:
+        zone: drop
+        source: ipset:blocklist
+        state: enabled
+        permanent: true
+        immediate: "{{ ansible_facts.services['firewalld.service'].state == 'running' }}"
+      vars:
+        # FIXME: This should be unnecessary once the module supports respawn
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Install sync scripts
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /usr/local/sbin/{{ item }}
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - fwbl-update
+        - fwbl-reconcile
+
+    - name: Sync blocklist
+      ansible.builtin.command:
+        cmd: /usr/local/sbin/fwbl-update -d datastore.{{ subd }} -r {{ aws_layout[aws_status][aws_profile_s3].region }}
+      environment:
+        RETURN_RC: 1
+      register: result
+      until: result is success
+      retries: 5
+      delay: 10
+
+    - name: Schedule syncing
+      ansible.builtin.template:
+        dest: /etc/cron.d/fwbl-update
+        src: fwbl-update.cron.j2
+        owner: root
+        group: root
+        mode: "0644"
