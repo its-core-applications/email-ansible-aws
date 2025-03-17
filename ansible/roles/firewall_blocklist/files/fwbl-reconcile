@@ -5,26 +5,35 @@ import argparse
 import netaddr
 
 
+def parse_line(l):
+    # Acceptable formats are a plain list of IPs or an RBLDNSD file
+    if l:
+        l = l.split()
+        if l:
+            if netaddr.valid_ipv4(l[0].split('/')[0]):
+                return netaddr.IPNetwork(l[0])
+    return None
+
+
 parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--file', required=True)
+parser.add_argument('-f', '--file', required=True, action='append')
 parser.add_argument('-x', '--exclude', action='append')
 args = parser.parse_args()
 
 ip_set = netaddr.IPSet()
-with open(args.file, 'r') as f:
-    for l in f:
-        ip_set.add(netaddr.IPNetwork(l.rstrip()))
+for i in args.file:
+    with open(i, 'r') as f:
+        for l in f:
+            ip = parse_line(l)
+            if ip:
+                ip_set.add(ip)
 
 for x in args.exclude or []:
     with open(x, 'r') as f:
         for l in f:
-            # rbldnsd file format support
-            ip = l.split()
-            if not ip:
-                continue
-            ip = ip[0]
-            if netaddr.valid_ipv4(ip):
-                ip_set.remove(netaddr.IPNetwork(ip))
+            ip = parse_line(l)
+            if ip:
+                ip_set.remove(ip)
 
 for ip in netaddr.cidr_merge(ip_set):
     if ip.cidr.size == 1:

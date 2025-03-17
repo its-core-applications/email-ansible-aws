@@ -1,10 +1,10 @@
 #!/bin/bash
 
-srcfile=iia/ipv4-smtp
 destset=blocklist
+srcfiles='-f /etc/mail/dnslists/iia/ipv4-smtp -f /etc/mail/dnslists/umich/relay-deny -f /etc/mail/dnslists/umich/seshet'
 excludes='-x /etc/mail/dnslists/umich/relay-accept -x /etc/mail/dnslists/umich/relay-trust'
 
-while getopts b:d:r: opt; do
+while getopts b:d:r:x: opt; do
     case $opt in
     b)  destset=$OPTARG
         ;;
@@ -12,7 +12,9 @@ while getopts b:d:r: opt; do
         ;;
     r)  region=$OPTARG
         ;;
-    s)  srcfile=$OPTARG
+    s)  srcfiles=$OPTARG
+        ;;
+    x)  excludes=$OPTARG
         ;;
     esac
 done
@@ -27,7 +29,7 @@ done
     if [[ $? -eq 0 ]]; then
         msg="Block list unchanged"
         workdir=$(mktemp -d /var/tmp/fwbl-update.XXXXXXXX)
-        fwbl-reconcile -f /etc/mail/dnslists/$srcfile $excludes > $workdir/blocklist
+        fwbl-reconcile $srcfiles $excludes > $workdir/blocklist
         for permanent in '' '--permanent'; do
             firewall-cmd $permanent --ipset=$destset --get-entries > $workdir/current
             diff -q $workdir/current $workdir/blocklist
