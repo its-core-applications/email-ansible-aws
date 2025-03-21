@@ -14,6 +14,7 @@ elif ! simrbl -q -l penaltybox-skip.dnsal "$SIMTA_REMOTE_IP" ; then
 elif [ "x$SIMTA_DMARC_RESULT" = 'xquarantine' -o "x$SIMTA_DMARC_RESULT" = 'xreject' ]; then
     reason='dmarc'
 elif [ "x$SIMTA_DMARC_RESULT" != 'xpass' -a \
+    "x$SIMTA_DMARC_RESULT" != 'xbestguesspass' -a \
     "x$SIMTA_SPF_RESULT" != 'xpass' -a \
     "x$SIMTA_SPF_RESULT" != 'xneutral' -a \
     "x$SIMTA_SPF_RESULT" != 'xnone' ]; then
