@@ -83,6 +83,9 @@ simta_ldap_domains_mapped:
     control_group: michildwelfare domain control group
   - domain: miseagrant.com
     prefix: miseagrant
+  - domain: mroqc.org
+    prefix: mroqc
+    control_group: mroqc domain control group
   - domain: openclimate.org
     prefix: openclimate
   - domain: outsmarthpv.org
