@@ -32,6 +32,9 @@ receive {
 {%  endif %}
     }
 {% endif %}{# simta_tls #}
+    timeout {
+        tls = 1min;
+    }
 {% if simta_relay %}
     mode = global_relay;
     connection {
