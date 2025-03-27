@@ -33,19 +33,13 @@
             creates: /etc/firewalld/ipsets/blocklist.xml
           register: result_ipset
 
-        - name: Enable drop logging
-          ansible.builtin.command:
-            cmd: "{{ firewall_cmd }} --set-log-denied=all"
-          register: result_log
-          changed_when: "'ALREADY_SET' not in result_log.stderr"
-
     - name: Restart firewalld
       ansible.builtin.systemd:
         name: firewalld
         state: restarted
       when:
         - ansible_facts.services['firewalld.service'].state == 'running'
-        - "[result_ipset, result_log] | select('changed') | length > 0"
+        - result_ipset is changed
 
     - name: Enable blocklist
       ansible.posix.firewalld:
