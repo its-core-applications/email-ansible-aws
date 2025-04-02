@@ -63,7 +63,7 @@ for entry in $@ ; do
         fi
     elif [[ $action = "remove" ]]; then
         if grep -q -x "$entry" $file ; then
-            sed -ri -e "/^${entry}\b/d" $file
+            sed -ri -e "\#^${entry}\b#d" $file
         else
             echo ""
             echo -n "Oh my, it looks like $label is not in ${file}. "
