@@ -342,6 +342,12 @@ spf_thirdparty:
       - ip4:176.31.145.254
       - include:_spf.elasticemail.com
 
+  # 2025-04-09 ileka / LSA Stewardship / TDx 8208210
+  # Mythos / SendGrid
+  - names:
+      - lsastewardship
+    record: include:mail.mythoshq.com
+
   # 2017-05-30
   # No MCommunity entry for the name, but it looks kind of legitimate.
   - names:
