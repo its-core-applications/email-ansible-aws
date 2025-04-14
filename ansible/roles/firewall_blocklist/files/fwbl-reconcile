@@ -10,7 +10,7 @@ def parse_line(l):
     if l:
         l = l.split()
         if l:
-            if netaddr.valid_ipv4(l[0]):
+            if netaddr.valid_ipv4(l[0].split('/')[0]):
                 return netaddr.IPNetwork(l[0])
     return None
 
