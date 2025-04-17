@@ -30,6 +30,7 @@ def record_ip(ip_str, verbose):
 today = date.today()
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--force', action='store_true')
 parser.add_argument('-H', '--host', default='localhost')
 parser.add_argument('-P', '--port', default='6379')
 parser.add_argument('-v', '--verbose', action='store_true')
@@ -45,6 +46,13 @@ mmdb = maxminddb.open_database('/usr/share/GeoIP/GeoLite2-Country.mmdb')
 
 for ip in sys.stdin:
     ip = ip.rstrip()
-    cc = mmdb.get(ip).get('country', {}).get('iso_code', 'US')
-    if cc != 'US':
+
+    record = args.force
+
+    if not record:
+        cc = mmdb.get(ip).get('country', {}).get('iso_code', 'US')
+        if cc != 'US':
+            record = True
+
+    if record:
         record_ip(ip, args.verbose)
