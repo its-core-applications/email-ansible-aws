@@ -250,6 +250,14 @@ spf_thirdparty:
       - flint.cashiers
     record: include:_tuf-spf.touchnet.com
 
+  # 2025-04-23: hbacon / Flint ITS / TDx8281452
+  # StarRez
+  - names:
+      - flint.housing
+    record:
+      - ip4:38.106.32.22
+      - ip4:38.106.32.46
+
   # 2017-02-17: Library Information Technology
   # Servers in .umdl.umich.edu (on an Indiana University IP range)
   - names:
