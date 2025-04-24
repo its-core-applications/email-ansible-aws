@@ -128,6 +128,7 @@ spf_thirdparty:
     record: include:nm.nutshellemail.com
 
   # 2025-04-23: cdmay / Alumni Association / TDx 8262058
+  # 2025-04-24: salikhod / CoE Online / TDx 8298190
   # Salesforce
   - names:
       - aaumcareer
@@ -136,6 +137,7 @@ spf_thirdparty:
       - alumni.communities
       - alumni.volunteer
       - michigania
+      - srexecenadmissions
     record: include:_spf.salesforce.com
 
   # 2017-05-30: Dentistry
