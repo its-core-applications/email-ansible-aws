@@ -1,3 +1,4 @@
+simta_version: 2.4.2.1
 use_firewalld: true
 simta_config: smtp{{ aws_status_suffix }}.mail
 simta_queue_type: relay-egress

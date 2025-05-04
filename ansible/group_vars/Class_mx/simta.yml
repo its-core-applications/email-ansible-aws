@@ -1,4 +1,3 @@
-simta_version: 2.5.0.4
 simta_config: mx.{{ subd | replace('.' ~ tld, '') }}
 simta_arc: true
 simta_dkim: true
