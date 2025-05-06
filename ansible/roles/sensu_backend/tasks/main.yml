@@ -581,6 +581,7 @@
           - Class_relay_egress
           - Class_vdc_relay
         handlers:
+          - email
           - influxdb_event
         <<: *sensu_auth
 
@@ -595,6 +596,7 @@
         subscriptions:
           - Class_authn_relay
         handlers:
+          - email
           - influxdb_event
         <<: *sensu_auth
 
@@ -609,6 +611,7 @@
         subscriptions:
           - Class_authn_relay
         handlers:
+          - email
           - influxdb_event
         <<: *sensu_auth
 
