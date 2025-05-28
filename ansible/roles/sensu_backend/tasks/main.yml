@@ -583,6 +583,8 @@
         handlers:
           - email
           - influxdb_event
+        annotations:
+          fatigue_check/occurrences: 2
         <<: *sensu_auth
 
     - name: Monitor simta authentication
