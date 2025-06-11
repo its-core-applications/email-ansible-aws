@@ -3,7 +3,7 @@ simta_version: 2.5.1
 simta_dkim_selector: mx{{ aws_status_suffix }}
 simta_arc_selector: arc{{ aws_status_suffix }}
 simta_ldap_user: 'cn=simta,ou=mail agents,ou=Security,dc=umich,dc=edu'
-simta_ldap_host: 'ldap-mail.itd.umich.edu'
+simta_ldap_host: ldap-mail.iam.it.umich.edu
 simta_redis_host: "pink.{{ aws_region }}.{{ subd }}"
 simta_queue_type: egress
 simta_jail_host: "jail.{{ aws_region }}.{{ subd }}"
