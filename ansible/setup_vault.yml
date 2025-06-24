@@ -19,13 +19,17 @@
             type: ldap
             listing_visibility: unauth
 
+        # ldap.umich.edu has limits on how large of a result it will return;
+        # since we don't currently care about other groups and will need to
+        # change authentication methods soon anyway, the controlling group
+        # name is hardcoded in the group filter.
         - name: Configure LDAP authentication
           flowerysong.hvault.ldap_config:
             url: ldaps://ldap.umich.edu
             userdn: ou=People,dc=umich,dc=edu
             userattr: uid
             groupdn: ou=User Groups,ou=Groups,dc=umich,dc=edu
-            groupfilter: !unsafe (member={{.UserDN}})
+            groupfilter: !unsafe (&(cn=blackops)(member={{.UserDN}}))
             groupattr: cn
 
         - name: Create blackops policy
