@@ -11,6 +11,13 @@ influx_jq="jq .results[0].series[0].values[0][1]"
 
 # FIXME: This should probably go in a config file or a command line flag
 min_count={{ aws_layout[aws_status][aws_profile].classes.mx.count }}
+# If there's not enough early morning load to scale up the spike at
+# 7 or 8 AM can be vicious, so force a higher minimum count.
+ts=$(date +%-H%M)
+if [[ $ts -gt 640 ]] && [[ $ts -lt 820 ]]; then
+    (( min_count += 3 ))
+fi
+
 max_count=24
 
 startts=$(date +%s)
