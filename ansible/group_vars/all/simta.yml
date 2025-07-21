@@ -98,6 +98,9 @@ simta_ldap_domains_mapped:
     control_group: positivelysmokefree domain control group
   - domain: predictive.space
     prefix: predictive
+  - domain: proact.org
+    prefix: proact
+    control_group: proact domain control group
   - domain: probabilitynetwork.org
     prefix: probabilitynetwork
   - domain: project-synergy.org
