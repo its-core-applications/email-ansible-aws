@@ -189,7 +189,11 @@ receive {
     data {
 {% if simta_egress %}
         limits {
+            # Defaults are 80 and 100mb; they need to be higher here so that
+            # messages don't become undeliverable due to the headers added on
+            # ingress.
             received_headers = 100;
+            message_size = 101mb;
         }
 {% endif %}{# simta_egress #}
 {% if simta_filters %}
