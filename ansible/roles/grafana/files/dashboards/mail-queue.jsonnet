@@ -49,7 +49,7 @@ grafana.dashboard.new(
 ).addPanel(
   regionQueryPanel(
     'Queues',
-    query='SELECT sum("messages") FROM "simta_host_queue" WHERE $timeFilter AND ("remote_host" = \'$queue_host\') GROUP BY time($__interval), "class" fill(none)',
+    query='SELECT max("messages") FROM (SELECT sum("messages") AS "messages" FROM "simta_host_queue" WHERE $timeFilter AND ("remote_host" = \'$queue_host\') GROUP BY time(1m), "class" fill(none)) GROUP BY time($__interval), "class" fill(none)',
   ),
   { x: 0, y: 0, w: 24, h: 20 }
 )
