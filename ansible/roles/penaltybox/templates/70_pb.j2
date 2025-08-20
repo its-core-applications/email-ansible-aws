@@ -7,6 +7,9 @@ penaltybox_args='-h {{ simta_redis_host }}'
 
 if [ $SIMTA_TFILE ] && jq -r .recipients[] $SIMTA_TFILE | grep -iq '^penaltybox@' ; then
     reason='testing'
+elif echo "$SIMTA_DKIM_DOMAINS" | grep -q -E '\bumich.edu( |$)' ; then
+    # authenticated mail from umich.edu or a subdomain shouldn't be penaltyboxed
+    PENALTYBOX_PASS=0
 elif ! simrbl -q -l penaltybox-skip-domains.dnsal -t "$SIMTA_DMARC_DOMAIN" $SIMTA_DKIM_DOMAINS ; then
     PENALTYBOX_PASS=0
 elif ! simrbl -q -l penaltybox-skip.dnsal "$SIMTA_REMOTE_IP" ; then
