@@ -36,7 +36,13 @@ def failover(host, client):
     logger = logging.getLogger()
 
     nodes = client.execute_command('CLUSTER NODES')
-    node = nodes[f'{host}:6379']
+    try:
+        node = nodes[f'{host}:6379']
+    except KeyError:
+        # If we don't know about ourself we're not in a normal cluster state
+        # and there's no failover to do.
+        return True
+
     replicas = [k.split(':')[0] for k, v in nodes.items() if v['master_id'] == node['node_id']]
 
     if node['slots'] and 'master' in node['flags'].split(','):
@@ -180,7 +186,7 @@ def main():
             break
 
     nodes = client.execute_command('CLUSTER NODES')
-    node = nodes[f'{host}:6379']
+    node = nodes.get(f'{host}:6379')
 
     logger.info(f'Shutting down {host}')
     client.config_set('appendonly', 'no')
@@ -188,17 +194,21 @@ def main():
 
     time.sleep(5)
 
-    logger.info(f'Forgetting {host}...')
-    for neighbour in [v.split(':')[0] for v in nodes.keys()]:
-        if neighbour == host:
-            continue
-        client = Redis(host=neighbour, decode_responses=True)
-        logger.info(f'Forgetting from {neighbour}...')
-        try:
-            client.execute_command('CLUSTER FORGET', node['node_id'])
-        except RedisError:
-            logger.exception('Forget failed')
-            pass
+    # If we're in a normal state, try to make other nodes forget.
+    # Stale entries will get cleaned up by `redis-manage`, so this step
+    # failing or being skipped isn't a critical issue.
+    if node:
+        logger.info(f'Forgetting {host}...')
+        for neighbour in [v.split(':')[0] for v in nodes.keys()]:
+            if neighbour == host:
+                continue
+            client = Redis(host=neighbour, decode_responses=True)
+            logger.info(f'Forgetting from {neighbour}...')
+            try:
+                client.execute_command('CLUSTER FORGET', node['node_id'])
+            except RedisError:
+                logger.exception('Forget failed')
+                pass
 
 
 if __name__ == '__main__':
