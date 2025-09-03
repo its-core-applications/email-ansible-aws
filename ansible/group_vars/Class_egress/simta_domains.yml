@@ -42,4 +42,3 @@ simta_delivery_domains:
   - name: yahoo.com
     tls: true
     max_messages: 5
-    max_rcpts: 1
