@@ -38,6 +38,9 @@ simta_ldap_domains_mapped:
     prefix: chrt
   - domain: connectedcancercare.org
     prefix: connectedcancercare
+  - domain: currenttogether.org
+    prefix: currenttogether
+    control_group: currenttogether domain control group
   - domain: datasifter.org
     prefix: datasifter
   - domain: elmuseodelnorte.org
