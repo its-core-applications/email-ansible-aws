@@ -96,7 +96,12 @@ def parse_mech(mech, domain):
     elif mech == 'mx':
         resolve_mx(value if value else domain)
     elif mech == 'ip4' or mech == 'ip6':
-        ip_list.append(netaddr.IPNetwork(value))
+        try:
+            ip_list.append(netaddr.IPNetwork(value))
+        except netaddr.core.AddrFormatError as e:
+            if strict:
+                print(e)
+                sys.exit(1)
     elif mech == 'ptr':
         unresolvable_mechs.append('ptr:' + (value if value else domain))
     elif mech == 'exists':
