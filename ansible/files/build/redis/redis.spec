@@ -4,7 +4,7 @@
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 Name:              redis
-Version:           7.0.11
+Version:           7.2.11
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 License:           BSD
@@ -19,7 +19,6 @@ Source6:           %{name}.init
 Source7:           %{name}-shutdown
 Source8:           %{name}-limit-systemd
 Source9:           %{name}-limit-init
-Patch0:            redis-6.0.5-use-system-jemalloc.patch
 BuildRequires:     jemalloc-devel
 %if 0%{?with_tests}
 BuildRequires:     procps-ng
@@ -41,20 +40,6 @@ sorted sets.
 
 %prep
 %setup -q
-rm -frv deps/jemalloc
-%patch0 -p1
-
-# No hidden build.
-sed -i -e 's|\t@|\t|g' deps/lua/src/Makefile
-sed -i -e 's|$(QUIET_CC)||g' src/Makefile
-sed -i -e 's|$(QUIET_LINK)||g' src/Makefile
-sed -i -e 's|$(QUIET_INSTALL)||g' src/Makefile
-# Ensure deps are built with proper flags
-sed -i -e 's|$(CFLAGS)|%{optflags}|g' deps/Makefile
-sed -i -e 's|OPTIMIZATION?=-O3|OPTIMIZATION=%{optflags}|g' deps/hiredis/Makefile
-sed -i -e 's|$(LDFLAGS)|%{?__global_ldflags}|g' deps/hiredis/Makefile
-sed -i -e 's|$(CFLAGS)|%{optflags}|g' deps/linenoise/Makefile
-sed -i -e 's|$(LDFLAGS)|%{?__global_ldflags}|g' deps/linenoise/Makefile
 
 %build
 make %{?_smp_mflags} \
