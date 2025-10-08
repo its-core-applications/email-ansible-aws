@@ -180,9 +180,8 @@ rbldnsd_updater:
   - 141.211.7.108 # boostergold.dsc.umich.edu
   - 141.211.4.56  # gotham.dsc.umich.edu
 
-trusted_external_ips:
-  - 141.211.12.0/24
-  - 141.211.125.0/24
+# for security groups
+trusted_external_ips: []
 
 ops_email: blackops@{{ tld }}
 ops_rootmail: blackops.{{ (aws_status == 'prod') | ternary('root', 'nonprod') }}@{{ tld }}
