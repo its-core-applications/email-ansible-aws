@@ -151,6 +151,16 @@ receive {
             list = iia-deny-from.dnsbl;
             algorithm = sha1;
         }
+        acl {
+            action = log_only;
+            list = dbl.dnsbl;
+            domain_only = true;
+        }
+        acl {
+            action = log_only;
+            list = uri.dnsbl;
+            domain_only = true;
+        }
     }
     rcpt_to {
         max_failures = 3;
