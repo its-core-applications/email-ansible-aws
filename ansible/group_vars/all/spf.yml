@@ -498,6 +498,12 @@ spf_thirdparty:
       - ip4:184.175.191.45
       - include:_spf.createsend.com
 
+  # 2025-10-10: hanesjl / Law Library / TDx9283828
+  - names:
+      - umlawjournals
+    record:
+      - ip4:3.219.14.196
+
   # 2017-05-30
   - names:
       - umpark
