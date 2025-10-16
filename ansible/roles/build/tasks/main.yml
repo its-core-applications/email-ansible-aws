@@ -54,6 +54,14 @@
     - ansible.builtin.import_role:
         name: build_rpm_git
       tags:
+        - ejq
+      vars:
+        build_name: ejq
+        build_repo: https://github.com/flowerysong/ejq.git
+
+    - ansible.builtin.import_role:
+        name: build_rpm_git
+      tags:
         - denser
         - simta
       vars:
