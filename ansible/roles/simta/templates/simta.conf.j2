@@ -168,9 +168,15 @@ receive {
             action = log_only;
             list = dbl.dnsbl;
             domain_only = true;
+            # other returns are abused legitimate domains, which
+            # should not be blocked outright.
+            127.0.1.2 = block;  # low reputation
+            127.0.1.4 = block;  # phishing
+            127.0.1.5 = block;  # malware
+            127.0.1.6 = block;  # botnet C&C
         }
         acl {
-            action = log_only;
+            action = block;
             list = uri.dnsbl;
             domain_only = true;
         }
