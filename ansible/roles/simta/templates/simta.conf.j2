@@ -149,6 +149,17 @@ receive {
     mail_from {
         max_failures = 3;
         acl {
+            action = accept;
+            list = accept-from.dnsal;
+            algorithm = sha1;
+        }
+        acl {
+            action = accept;
+            list = accept-from.dnsal;
+            domain_only = true;
+            algorithm = sha1;
+        }
+        acl {
             action = block;
             list = deny-from.dnsbl;
             algorithm = sha1;

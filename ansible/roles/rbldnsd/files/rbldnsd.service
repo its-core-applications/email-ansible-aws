@@ -23,6 +23,7 @@ ExecStart=/sbin/rbldnsd -n -w /var/lib/rbldnsd -q -a \
     spamassassin-reject.dnsbl:ip4set:umich/spamassassin-reject \
     ual.dnsal:dnset:umich/ual \
     ubl.dnsbl:dnset:umich/ubl \
+    accept-from.dnsbl:dnset:umich/accept-from \
     deny-from.dnsbl:dnset:umich/deny-from \
     drop-from.dnsbl:dnset:umich/drop-from \
     relay-deny-from.dnsbl:dnset:umich/relay-deny-from \
