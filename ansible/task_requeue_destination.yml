@@ -70,3 +70,6 @@
           ansible.builtin.file:
             dest: "{{ simqtmp }}.lock"
             state: absent
+
+        - name: Remove remote copies of messages
+          command: rm -rf /var/tmp/{{ target_destination }}.requeued.{{ ansible_facts.date_time.iso8601 }}
