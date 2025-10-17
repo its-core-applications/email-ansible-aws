@@ -34,7 +34,7 @@ fi
 touch $lockfile || exit 1
 trap 'rm -f $lockfile ; exit 1' 1 2 3 15
 
-readarray -t hosts < <(ansible --list-hosts "Class_${class/-/_}:&Status_production" 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
+readarray -t hosts < <(ansible --list-hosts "Class_${class/-/_}"':&Status_production:!simta_requeue_disabled' 2>/dev/null | sed -e '0,/hosts (/d; s/ //g')
 
 for qhost in ${hosts[@]}; do
     [[ -s ${workdir}/{$qhost}.tar ]] && echo "Stale ${workdir}/{$qhost}.tar" >> $tmpfile

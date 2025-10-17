@@ -6,6 +6,7 @@ compose:
 
 groups:
   redis: tags.redis == 'yes'
+  simta_requeue_disabled: tags.simta_requeue | default('') == 'disabled'
 
 keyed_groups:
   - prefix: Class
