@@ -464,6 +464,11 @@ spf_thirdparty:
       - rosscareerservices
     record: include:mbafocus.com
 
+  # 2025-10-23: kjgates / Ross Career Development Office / TDx 9357150
+  - names:
+      - rosscdo
+    record: ip4:168.245.25.116
+
   # 2024-01-31: wwight / Michigan Medicine / TDx 5778158
   - names:
       - singlecellspatialanalysis
