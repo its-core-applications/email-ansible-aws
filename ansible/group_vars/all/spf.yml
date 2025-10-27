@@ -185,6 +185,12 @@ spf_thirdparty:
       - nbbickel
     record: include:vocsmail.com
 
+  # 2025-10-27: mrio / Library IT / TDx 9352707
+  - names:
+      - circulation.services
+    record:
+      - include:spf-na.exlibrisgroup.com
+
   # 2017-06-16
   # host at a2webhosting.com
   - names:
