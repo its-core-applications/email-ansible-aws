@@ -1,5 +1,7 @@
 - tags:
     - seshet
+  vars:
+    seshet_redis_region: "{{ (aws_layout[aws_status].values() | selectattr('services', 'defined') | selectattr('services', 'contains', 'seshet')).0.region }}"
   block:
     - ansible.builtin.import_role:
         name: geolite2
@@ -13,14 +15,22 @@
           - netaddr
           - redis
         venv_wrappers:
-          - name: seshet
-            target: seshet
-          - name: seshet-record
+          - name: seshet-domains
+            target: seshet-domains
+          - name: seshet-ips
+            target: seshet-ips
+          - name: seshet-record-domain
             target: python
-            extra_args: /usr/local/venv/seshet/bin/seshet-record
-          - name: seshet-retrieve
+            extra_args: /usr/local/venv/seshet/bin/seshet-record-domain
+          - name: seshet-record-ip
             target: python
-            extra_args: /usr/local/venv/seshet/bin/seshet-retrieve
+            extra_args: /usr/local/venv/seshet/bin/seshet-record-ip
+          - name: seshet-retrieve-domains
+            target: python
+            extra_args: /usr/local/venv/seshet/bin/seshet-retrieve-domains
+          - name: seshet-retrieve-ips
+            target: python
+            extra_args: /usr/local/venv/seshet/bin/seshet-retrieve-ips
 
     - name: Install seshet
       ansible.builtin.copy:
@@ -30,15 +40,25 @@
         group: root
         mode: "0755"
       loop:
-        - seshet
-        - seshet-record
-        - seshet-retrieve
+        - seshet-domains
+        - seshet-ips
+        - seshet-record-domain
+        - seshet-record-ip
+        - seshet-retrieve-domains
+        - seshet-retrieve-ips
 
-    - name: Schedule seshet runs
+    - name: Schedule seshet IP recording runs
       cron:
         name: seshet
         minute: "*/5"
-        job: seshet -H pink.{{ aws_region }}.{{ subd }} -d '--heartbeat syslog --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
+        job: seshet-ips -H pink.{{ seshet_redis_region }}.{{ subd }} -d '--heartbeat syslog --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
+
+    - name: Schedule seshet domain recording runs
+      cron:
+        name: seshet_domain
+        minute: "16"
+        hour: "0"
+        job: seshet-domains -H pink.{{ seshet_redis_region }}.{{ subd }} -d '--heartbeat syslog --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
 
     - name: Install simta-authn-log-filter
       ansible.builtin.copy:

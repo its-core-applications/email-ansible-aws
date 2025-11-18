@@ -1,0 +1,37 @@
+#!/bin/bash
+
+PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+
+redis_host=pink.us-east-2.x.mail.umich.edu
+workdir=/var/cache/seshet
+
+while getopts d:H:w: opt; do
+    case $opt in
+    d)  datastore_args=$OPTARG
+        ;;
+    H)  redis_host=$OPTARG
+        ;;
+    esac
+done
+
+(
+    flock -n 9 || exit 1
+    [[ -e $workdir ]] || mkdir $workdir
+    cd $workdir
+    if [[ ! -s simta.conf ]]; then
+        cat >simta.conf <<EOF
+receive dmarc {
+    public_suffix_file = /etc/mail/public_suffix_list.dat;
+}
+EOF
+    fi
+
+    yesterday=$(date -d yesterday +%Y%m%d)
+    zstdcat /var/log/remote/*.mx.*/mail-${yesterday}.zst | grep -E "Receive .*: env <.*>: From <.+@.+>: Accepted" | sed -e 's/.*@//; s/>:.*//' | tr A-Z a-z | sort -u | xargs simorgdomain -f simta.conf | sort -u | seshet-record-domain -H $redis_host
+    # seshet-retrieve-domains -H $redis_host >| seshet
+    # if [[ $? -eq 0 ]]; then
+    #    datastore-upload $datastore_args seshet dnsl/umich/seshet
+    # fi
+)9>>/run/seshet-domains.lock
+
+exit 0

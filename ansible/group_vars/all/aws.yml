@@ -62,6 +62,7 @@ aws_layout:
       services:
         - efs
         - lambda
+        - seshet
         - simta_reports
       classes:
         authn-relay:
@@ -119,6 +120,7 @@ aws_layout:
         - route53_spfd
         - route53_subd
         - s3
+        - seshet
         - sns
         - vault
         - wiki

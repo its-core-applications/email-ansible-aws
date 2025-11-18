@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+
+from datetime import date
+
+from redis import RedisCluster
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--date')
+parser.add_argument('-H', '--host', default='localhost')
+parser.add_argument('-P', '--port', default='6379')
+parser.add_argument('-v', '--verbose', action='store_true')
+args = parser.parse_args()
+
+red = RedisCluster(
+    host=args.host,
+    port=args.port,
+    decode_responses=True,
+)
+
+ts = args.date
+if not ts:
+    ts = date.today().strftime('%F')
+
+for domain in sys.stdin:
+    key = f'seshet:known_domain:{domain}'
+    if args.verbose:
+        print(f'Recording {domain}')
+    red.hsetnx(key, "added", ts)
+    red.hset(key, "last_seen", ts)
+    if args.verbose:
+        print(red.hgetall(key))
