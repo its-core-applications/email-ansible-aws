@@ -103,7 +103,6 @@
         group: root
         mode: "0644"
         force: true
-      when: not simta_localmail
       notify: Restart simta
 
     - name: Configure OpenLDAP defaults
