@@ -25,7 +25,7 @@ os=rhel9
 echo "Building $class image for $os in $AWS_STATUS $AWS_DEFAULT_REGION"
 
 owner='309956199498'
-filter='Name=name,Values=RHEL-9.4.*_HVM-202*-x86_64*Access*'
+filter='Name=name,Values=RHEL-9.6.*_HVM-202*-x86_64*Access*'
 root='/dev/sda1'
 
 if [[ $class = 'base' ]] || [[ $class = 'vdc_relay' ]]; then
