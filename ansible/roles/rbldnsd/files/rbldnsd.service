@@ -29,6 +29,7 @@ ExecStart=/sbin/rbldnsd -n -w /var/lib/rbldnsd -q -a \
     test1.dnsbl:ip4set:umich/testrbl1 \
     test2.dnsbl:ip4set:umich/testrbl2 \
     test3.dnsbl:ip4set:umich/testrbl3 \
+    blocklistde.dnsbl:ip4set:blocklist_de/all \
     sip.dnsbl:ip4tset:invaluement/sip \
     sip24.dnsbl:ip4set:invaluement/sip24 \
     uri.dnsbl:dnset:invaluement/uri \

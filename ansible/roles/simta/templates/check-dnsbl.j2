@@ -29,7 +29,7 @@ for bl in \
     sip.dnsbl \
     sip24.dnsbl \
     xbl.dnsbl \
-    bl.blocklist.de
+    blocklistde.dnsbl
 do
     if ! simrbl -q -l $bl $ip ; then
         echo "$ip is listed on $bl"
