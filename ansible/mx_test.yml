@@ -20,7 +20,7 @@
         name: clamav_filter
 
     - ansible.builtin.import_role:
-        name: rspamd_filter
+        name: rspamd_inbound
 
     - ansible.builtin.import_role:
         name: redis

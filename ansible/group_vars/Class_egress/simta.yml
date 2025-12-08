@@ -1,7 +1,7 @@
 simta_config: egress.{{ subd | replace('.' ~ tld, '') }}
 simta_relay: true
 simta_egress: true
-simta_filters: false
+simta_filters: true
 simta_dkim: true
 simta_connlimit: 0
 simta_ldap: true
