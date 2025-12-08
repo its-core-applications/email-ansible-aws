@@ -6,3 +6,6 @@
 
     - ansible.builtin.import_role:
         name: egress
+
+    - ansible.builtin.import_role:
+        name: rspamd_outbound

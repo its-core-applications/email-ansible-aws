@@ -15,7 +15,6 @@
         group: root
         mode: "0644"
       loop:
-        - local.d/actions.conf
         - local.d/aliases.conf
         - local.d/arc.conf
         - local.d/dkim.conf

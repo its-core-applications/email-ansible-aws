@@ -753,6 +753,7 @@
         interval: 60
         publish: true
         subscriptions:
+          - Class_egress
           - Class_mx
         handlers:
           - default
@@ -762,10 +763,25 @@
       loop:
         - name: rspamd
           command: check-process -p rspamd
-        - name: rspamd-greylist
-          command: check-rspamd-greylist
         - name: rspamd-gtube
           command: check-rspamd-gtube
+
+    - name: Monitor rspamd on mx
+      sensu.sensu_go.check:
+        name: "{{ item.name }}"
+        command: "{{ item.command }}"
+        interval: 60
+        publish: true
+        subscriptions:
+          - Class_mx
+        handlers:
+          - default
+        annotations:
+          fatigue_check/occurrences: 5
+        <<: *sensu_auth
+      loop:
+        - name: rspamd-greylist
+          command: check-rspamd-greylist
 
     - name: Monitor clamd
       sensu.sensu_go.check:

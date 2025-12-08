@@ -1,0 +1,31 @@
+- tags:
+    - rspamd
+  block:
+    - ansible.builtin.import_role:
+        name: rspamd
+
+    - name: Configure rspamd settings
+      ansible.builtin.copy:
+        dest: /etc/rspamd/local.d/{{ item }}.conf
+        src: "{{ item }}.conf"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - actions
+        - hfilter
+      register: result
+
+    - name: Restart rspamd
+      ansible.builtin.systemd_service:
+        name: rspamd
+        state: restarted
+      when: result is changed
+
+    - name: Install rspamd filter
+      ansible.builtin.copy:
+        dest: /etc/mail/filters/79_rspamd
+        src: 80_rspamd
+        owner: root
+        group: root
+        mode: "0755"
