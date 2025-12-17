@@ -25,6 +25,8 @@ spf_main:
       - ip4:141.214.17.0/24
       # UMD
       - ip4:141.215.69.0/24
+      # 2025-12-17: Proofpoint for Michigan Medicine
+      - ip4:66.159.251.45 ip4:66.159.249.74
 
 spf_thirdparty:
   - names:
