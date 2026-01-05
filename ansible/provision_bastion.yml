@@ -1,7 +1,7 @@
 - hosts: localhost
   become: false
   vars:
-    bastion_hostname: "{{ aws_layout[aws_status][aws_profile].bastion }}.{{ subd }}"
+    bastion_hostname: "{{ aws_layout[aws_status][aws_profile].classes.bastion.hostnames.0 }}.{{ subd }}"
   tasks:
     - ansible.builtin.import_role:
         name: ec2_find_subnets
@@ -23,7 +23,7 @@
         launch_tags:
           CustomDNSName: "{{ bastion_hostname }}"
         launch_count: "{{ (bastion_hostname in hostvars) | ternary(0, 1) }}"
-        launch_wait: false
+        launch_elastic_ip: true
         bootstrap: true
 
     - name: Set CNAMEs for vhosts
@@ -79,7 +79,7 @@
 - hosts: localhost
   become: false
   vars:
-    bastion_hostname: "{{ aws_layout[aws_status][aws_profile].bastion }}.{{ subd }}"
+    bastion_hostname: "{{ aws_layout[aws_status][aws_profile].classes.bastion.hostnames.0 }}.{{ subd }}"
   tasks:
     - name: Attach EBS home volume
       ec2_vol:

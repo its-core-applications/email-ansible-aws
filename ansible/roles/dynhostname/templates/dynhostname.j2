@@ -90,9 +90,10 @@ done
 
 # Fetch an existing DNS name, if set
 fqdn=$(echo $tags | jq -r '.Tags[] | select(.Key == "CustomDNSName") | .Value')
+manage_dns=$(echo $tags | jq -r '.Tags[] | select(.Key == "ManageDNS") | .Value')
 
 if [[ $fqdn ]]; then
-    route53update
+    [[ $manage_dns != 'false' ]] && route53update
     sethostname $fqdn
     exit 0
 fi

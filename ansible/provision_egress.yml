@@ -15,24 +15,19 @@
           - redis
         launch_tags:
           redis: 'yes'
+        launch_elastic_ip: true
 
 - hosts: Class_egress:&Status_spinup
-  serial: 1
   tasks:
     - ansible.builtin.meta: end_host
       when: region != aws_region
       tags: always
 
+    # Should already have been assigned by ec2_launch, but we need to be sure.
     - ansible.builtin.import_role:
         name: ec2_eip
       vars:
         eip_class: egress
-
-- hosts: Class_egress:&Status_spinup
-  tasks:
-    - ansible.builtin.meta: end_host
-      when: region != aws_region
-      tags: always
 
     - name: Set status to production
       ec2_tag:

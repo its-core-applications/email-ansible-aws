@@ -13,7 +13,6 @@ aws_layout:
     umcollab:
       region: us-west-2
       account: '236262816615'
-      bastion: mogo
       default_instance: m7i-flex.large
       mx_names:
         - mx1
@@ -42,8 +41,17 @@ aws_layout:
         egress:
           count: 3
           size: m7i-flex.2xlarge
+          hostnames:
+            - vampire
+            - faun
+            - kirin
+            - spriggan
+            - dullahan
+            - shinigami
         bastion:
           autocycle: false
+          hostnames:
+            - mogo
         mx:
           count: 6
           size: m7i-flex.xlarge
@@ -55,7 +63,6 @@ aws_layout:
     vdc-prod:
       region: us-east-2
       account: '023382427380'
-      bastion: ego
       default_instance: m7i-flex.large
       mx_names:
         - mx2
@@ -78,16 +85,32 @@ aws_layout:
         egress:
           count: 3
           size: m7i-flex.2xlarge
+          hostnames:
+            - sylph
+            - centaur
+            - lamia
+            - jinn
+            - lutin
+            - golem
         jail:
           size: t3.large
         bastion:
           autocycle: false
+          hostnames:
+            - ego
         mx:
           count: 6
           size: m7i-flex.xlarge
           cycle_method: spinup
         relay-egress:
           count: 3
+          hostnames:
+            - ghoul
+            - dragon
+            - gorgon
+            - kodama
+            - yurei
+            - basilisk
         syslog:
           autocycle: false
           size: m7i.2xlarge
@@ -105,7 +128,6 @@ aws_layout:
     vdc-nonprod:
       region: us-east-2
       account: '440653842962'
-      bastion: pandora
       default_instance: t3.small
       mx_names:
         - mx1
@@ -143,15 +165,29 @@ aws_layout:
           count: 2
         egress:
           count: 2
+          hostnames:
+            - hoko
+            - amabie
+            - sarugami
+            - omukade
+            - kotobuki
+            - byakko
         jail: {}
         bastion:
           autocycle: false
           size: t3.large
+          hostnames:
+            - pandora
         mx:
           count: 3
           size: t3.medium
           cycle_method: spinup
-        relay-egress: {}
+        relay-egress:
+          hostnames:
+            - haimushi
+            - kuzunoha
+            - ikuchi
+            - gyukan
         syslog:
           size: t3.medium
 

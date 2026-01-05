@@ -49,6 +49,20 @@
     - ansible.builtin.import_role:
         name: ec2_find_subnets
 
+    - when: launch_elastic_ip
+      block:
+        - name: Fetch available EIPs
+          amazon.aws.ec2_eip_info:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile }}"
+            filters:
+              "tag:Class": "{{ launch_class }}"
+          register: eips
+
+        - name: Shuffle available EIPs
+          set_fact:
+            launch_eips: "{{ eips.addresses | rejectattr('association_id', 'defined') | rejectattr('tags.CustomDNSName', 'in', groups.Status_spinup) | shuffle }}"
+
     - name: Create {{ launch_class }} instance(s)
       ec2_instance:
         region: "{{ aws_region }}"
@@ -62,7 +76,7 @@
             delete_on_termination: true
         image_id: "{{ find_ami.image_id }}"
         instance_role: "{{ aws_resource_prefix }}_{{ launch_profile | default('standard') }}"
-        tags: "{{ launch_tags_default | combine(launch_tags) }}"
+        tags: "{{ launch_tags_default | combine(launch_tags_elastic) | combine(launch_tags) }}"
         filters:
           "tag:Name": We never want to match an existing instance, and this should ensure that.
         wait: false
@@ -73,23 +87,61 @@
           Class: "{{ launch_class }}"
           Status: spinup
           BusinessOwner: "{{ aws_resource_owner }}"
+        launch_tags_elastic: "{{ {'CustomDNSName': launch_eips[item].tags.CustomDNSName, 'ManageDNS': 'false'} if launch_elastic_ip else {} }}"
       loop: "{{ range(launch_count | default(launch_count_default) | int) }}"
       ignore_errors: true
       register: ec2
 
-    - name: Wait for launched instances to have hostnames
-      ec2_instance_info:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile }}"
-        instance_ids: "{{ ec2_instances }}"
-      vars:
+    - vars:
         ec2_instances: "{{ ec2.results | selectattr('instance_ids', 'defined') | map(attribute='instance_ids') | flatten }}"
-      when: ec2_instances | length
-      ignore_errors: true
-      register: result
-      until: (result.instances | default([]) | map(attribute='tags.CustomDNSName') | select('defined') | length) == (ec2_instances | length)
-      retries: 20
-      delay: 15
+      block:
+        - name: Wait for launched instances to be running
+          amazon.aws.ec2_instance_info:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile }}"
+            instance_ids: "{{ ec2_instances }}"
+          when: ec2_instances | length
+          ignore_errors: true
+          register: result
+          until: (result.instances | default([]) | map(attribute='state.name') | select('==', 'running') | length) == (ec2_instances | length)
+          retries: 20
+          delay: 15
+
+        - name: Mark laggard instances as spundown
+          amazon.aws.ec2_tag:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile }}"
+            resource: "{{ item.instance_id }}"
+            tags:
+              Status: spundown
+          loop: "{{ result.instances | default([]) | rejectattr('state.name', '==', 'running') }}"
+          loop_control:
+            label: "{{ item.instance_id }}"
+
+        - name: Assign EIP
+          amazon.aws.ec2_eip:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile }}"
+            device_id: "{{ item.instance_ids.0 }}"
+            public_ip: "{{ launch_eips[item.item].public_ip }}"
+          when: launch_elastic_ip
+          loop: "{{ ec2.results }}"
+          loop_control:
+            label: "{{ item.instance_ids }}"
+
+        - name: Wait for launched instances to have hostnames
+          amazon.aws.ec2_instance_info:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile }}"
+            instance_ids: "{{ ec2_instances }}"
+          vars:
+            ec2_instances: "{{ ec2.results | selectattr('instance_ids', 'defined') | map(attribute='instance_ids') | flatten }}"
+          when: ec2_instances | length
+          ignore_errors: true
+          register: result
+          until: (result.instances | default([]) | map(attribute='tags.CustomDNSName') | select('defined') | length) == (ec2_instances | length)
+          retries: 20
+          delay: 15
 
     - name: Mark laggard instances as spundown
       ec2_tag:
@@ -117,8 +169,6 @@
         delay: 2
         sleep: 2
         timeout: 300
-      when: launch_wait | default(true)
       loop: "{{ result.instances | default([]) | selectattr('tags.CustomDNSName', 'defined') }}"
       loop_control:
         label: "{{ item.instance_id }}"
-

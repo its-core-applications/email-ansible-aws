@@ -5,7 +5,7 @@
   become: false
   block:
     - name: Fetch existing {{ eip_class }} EIPs
-      ec2_eip_info:
+      amazon.aws.ec2_eip_info:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         filters:
@@ -13,7 +13,7 @@
       register: result
 
     - name: Fix tags on existing EIPs
-      ec2_tag:
+      amazon.aws.ec2_tag:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         resource: "{{ item.allocation_id }}"
@@ -23,7 +23,7 @@
       loop: "{{ result.addresses }}"
 
     - name: Create new EIPs for {{ eip_class }}
-      ec2_eip:
+      amazon.aws.ec2_eip:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         in_vpc: true
@@ -32,10 +32,28 @@
           Name: "{{ eip_class }}"
         state: present
       loop: "{{ range(aws_layout[aws_status][aws_profile]['classes'][eip_class].count | default(1) - (result.addresses | length)) }}"
-      register: result
 
     - name: Re-fetch {{ eip_class }} EIPs
-      ec2_eip_info:
+      amazon.aws.ec2_eip_info:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        filters:
+          "tag:Class": "{{ eip_class }}"
+      register: result
+
+    - name: Set EIP hostnames
+      amazon.aws.ec2_tag:
+        region: "{{ aws_region }}"
+        profile: "{{ aws_profile }}"
+        resource: "{{ item.allocation_id }}"
+        tags:
+          CustomDNSName: "{{ (aws_layout[aws_status][aws_profile]['classes'][eip_class].hostnames | difference(result.addresses | selectattr('tags.CustomDNSName', 'defined') | map(attribute='tags.CustomDNSName')) | difference(hostname_result | default({})))[ansible_loop.index0] }}.{{ eip_class }}.{{ subd }}"
+      loop: "{{ result.addresses | rejectattr('tags.CustomDNSName', 'defined') }}"
+      loop_control:
+        extended: true
+
+    - name: Re-fetch {{ eip_class }} EIPs
+      amazon.aws.ec2_eip_info:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
         filters:
@@ -43,7 +61,7 @@
       register: result
 
     - name: Set {{ eip_host }}
-      route53:
+      amazon.aws.route53:
         profile: "{{ aws_profile_subd }}"
         command: create
         overwrite: true
@@ -53,10 +71,34 @@
         ttl: 60
         value: "{{ result.addresses | map(attribute='public_ip') }}"
 
+    - name: Set up forward DNS for EIPs
+      amazon.aws.route53:
+        profile: "{{ aws_profile_subd }}"
+        command: create
+        overwrite: true
+        zone: "{{ subd }}"
+        record: "{{ item.tags.CustomDNSName }}"
+        type: A
+        ttl: 1800
+        value: "{{ item.public_ip }}"
+      loop: "{{ result.addresses }}"
+
     - name: Set up reverse DNS for EIPs
       flowerysong.melange.ec2_eip_attribute:
         profile: "{{ aws_profile }}"
         region: "{{ aws_region }}"
         allocation_id: "{{ item.allocation_id }}"
-        domain_name: "{{ eip_host }}"
+        domain_name: "{{ item.tags.CustomDNSName }}"
+      loop: "{{ result.addresses }}"
+
+    - name: Set up SPF for EIPs
+      amazon.aws.route53:
+        profile: "{{ aws_profile_subd }}"
+        command: create
+        overwrite: true
+        zone: "{{ subd }}"
+        record: "{{ item.tags.CustomDNSName }}"
+        type: TXT
+        ttl: 1800
+        value: '"v=spf1 ip4:{{ item.public_ip }} ~all"'
       loop: "{{ result.addresses }}"

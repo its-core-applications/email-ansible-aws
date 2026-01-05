@@ -2,7 +2,10 @@
 
 token=$(curl -fs -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
 
-if [[ $(dig +short CNAME $(hostname)) != $(curl -fs -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/meta-data/public-hostname). && $(dig +short A $(hostname)) != $(curl -fs -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/meta-data/local-ipv4) ]]; then
-    exit 1
+if [[ $(dig +short CNAME $(hostname)) != $(curl -fs -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/meta-data/public-hostname). ]]; then
+    arecord=$(dig +short A $(hostname))
+    if [[ $arecord != $(curl -fs -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/meta-data/public-ipv4) && $arecord != $(curl -fs -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/meta-data/local-ipv4) ]]; then
+        exit 1
+    fi
 fi
 exit 0

@@ -4,29 +4,26 @@
   delegate_to: localhost
   become: false
   block:
-    - name: Fetch available EIPs
-      ec2_eip_info:
-        region: "{{ aws_region }}"
-        profile: "{{ aws_profile_ec2 }}"
-        filters:
-          "tag:Class": "{{ eip_class }}"
-      register: eips
+    - delegate_to: localhost
+      block:
+        - name: Fetch available EIPs
+          amazon.aws.ec2_eip_info:
+            region: "{{ aws_region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            filters:
+              "tag:Class": "{{ eip_class }}"
+          register: eips
 
-    - name: Make sure we have a free EIP
-      ansible.builtin.assert:
-        that: eips.addresses | rejectattr('association_id', 'defined') | length > 0
-        msg: No available {{ eip_class }} EIPs
-
-    - name: Assign elastic IP
-      ec2_eip:
-        region: "{{ region }}"
-        profile: "{{ aws_profile_ec2 }}"
-        device_id: "{{ instance_id }}"
-        public_ip: "{{ (eips.addresses | rejectattr('association_id', 'defined') | shuffle | first).public_ip }}"
-      register: eip
+        - name: Assign elastic IP
+          amazon.aws.ec2_eip:
+            region: "{{ region }}"
+            profile: "{{ aws_profile_ec2 }}"
+            device_id: "{{ instance_id }}"
+            public_ip: "{{ (eips.addresses | selectattr('tags.CustomDNSName', '==', tags.CustomDNSName)).0.public_ip }}"
+          register: eip
 
     - name: Wait for elastic IP
-      wait_for:
-        host: "{{ eip.public_ip }}"
-        port: 22
-        search_regex: OpenSSH
+      ansible.builtin.wait_for_connection:
+        delay: 2
+        sleep: 2
+        timeout: 300
