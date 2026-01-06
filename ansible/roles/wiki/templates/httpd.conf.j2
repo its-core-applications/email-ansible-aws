@@ -31,20 +31,11 @@
 
     <Location />
         AuthType openid-connect
-        AuthLDAPURL "ldap://{{ ldap_host }}/{{ ldap_base }}?mail"
 
-        <Limit GET>
-            <RequireAll>
-                Require claim hd:{{ tld }}
-                Require ldap-group {{ ldap_group_read }}
-            </RequireAll>
-        </Limit>
-        <LimitExcept GET>
-            <RequireAll>
-                Require claim hd:{{ tld }}
-                Require ldap-group {{ ldap_group }}
-            </RequireAll>
-        </LimitExcept>
+        <RequireAll>
+            Require claim hd:{{ tld }}
+            Require user {{ user_accounts | map(attribute='name') | map('regex_replace', '$', '@' ~ tld) | join(' ') }}
+        </RequireAll>
     </Location>
 
     ProxyPass / http://localhost:8087/

@@ -18,7 +18,6 @@
       ansible.builtin.dnf:
         name:
           - mod_auth_openidc
-          - mod_ldap
         state: latest
 
     - ansible.builtin.import_role:

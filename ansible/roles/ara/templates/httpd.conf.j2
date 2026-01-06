@@ -31,10 +31,9 @@
 
     <Location />
         AuthType openid-connect
-        AuthLDAPURL "ldap://{{ ldap_host }}/{{ ldap_base }}?mail"
         <RequireAll>
             Require claim hd:{{ tld }}
-            Require ldap-group {{ ldap_group_read }}
+            Require user {{ user_accounts | map(attribute='name') | map('regex_replace', '$', '@' ~ tld) | join(' ') }}
         </RequireAll>
     </Location>
 
