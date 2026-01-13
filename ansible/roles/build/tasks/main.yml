@@ -1,16 +1,16 @@
 - tags:
     - build
   block:
-    - gather_facts:
-      when: ansible_facts.date_time is not defined
+    - tags: always
+      block:
+        - gather_facts:
+          when: ansible_facts.date_time is not defined
 
-    - ansible.builtin.import_role:
-        name: rpmbuild
-      tags: always
+        - ansible.builtin.import_role:
+            name: rpmbuild
 
-    - ansible.builtin.import_role:
-        name: localrepo
-      tags: always
+        - ansible.builtin.import_role:
+            name: localrepo
 
     - ansible.builtin.import_role:
         name: build_rpm_spec
