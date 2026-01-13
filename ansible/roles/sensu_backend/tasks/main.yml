@@ -40,6 +40,15 @@
           - 4567/tcp  # API
           - 8081/tcp  # transport
 
+    - name: Authorize users
+      ansible.builtin.copy:
+        dest: /etc/sensu/blackops
+        owner: root
+        group: root
+        mode: "0644"
+        content: "{{ user_accounts | map(attribute='name') | join('\n') }}\n"
+      tags: testing
+
     - ansible.builtin.import_role:
         name: sns2slack
 

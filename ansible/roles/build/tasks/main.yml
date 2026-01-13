@@ -141,7 +141,7 @@
         build_repo: https://github.com/its-core-applications/sensu-go.git
         build_path: github.com/sensu/sensu-go
         build_flags: '-ldflags ''-X "github.com/sensu/sensu-go/version.Version={{ build_version }}" -X "github.com/sensu/sensu-go/version.BuildDate={{ ansible_facts.date_time.date }}"'''
-        build_version: 5.20.1.1
+        build_version: 5.20.1.2
 
     - ansible.builtin.import_role:
         name: build_rpm_archive
