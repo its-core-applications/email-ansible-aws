@@ -21,7 +21,6 @@
         - hostname-suffixes-authn-relay
         - hostname-suffixes-authz-relay
         - hostname-suffixes-builder
-        - hostname-suffixes-egress
         - hostname-suffixes-mx
 
     - name: Install script
