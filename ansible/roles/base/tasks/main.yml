@@ -30,6 +30,7 @@
               - cryptography
               - influxdb
               - netaddr
+              - packaging
               - pyyaml
               - redis
               - requests
