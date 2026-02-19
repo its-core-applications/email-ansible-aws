@@ -539,6 +539,7 @@ spf_thirdparty:
 
   # 2019-08-06: aslewis / DSA Central Administration (University Unions) / INC1737112
   # 2024-07-26: xwilson / Unions-Administration / TDx 6641590
+  # 2026-02-19: mdpauhl / Student Life Technology Solutions / TDx 10002000
   # OPERA
   - names:
       - uuis-innleague
@@ -549,6 +550,7 @@ spf_thirdparty:
       - ip4:147.154.9.86
       - ip4:138.1.52.50
       - ip4:147.154.25.123
+      - include:oracleindustry.com
 
   # 2023-11-14: tsapp / College of Engineering / TDx 5320257
   # Hivebrite
