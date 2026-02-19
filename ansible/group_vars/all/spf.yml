@@ -376,6 +376,15 @@ spf_thirdparty:
       - lsastewardship
     record: include:mail.mythoshq.com
 
+  # 2026-02-19 lvamossy / Flint Nursing/ TDx 10023389
+  # Benchworks
+  - names:
+      - lvamossy
+      - racgonza
+    record:
+      - ip4:54.240.121.247
+      - ip4:54.240.121.248
+
   # 2017-05-30
   # No MCommunity entry for the name, but it looks kind of legitimate.
   - names:
