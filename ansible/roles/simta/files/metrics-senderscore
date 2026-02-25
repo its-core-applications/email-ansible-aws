@@ -1,0 +1,25 @@
+#!/bin/bash
+
+while getopts i: opt; do
+    case $opt in
+    i)  ip=$OPTARG
+        ;;
+    esac
+done
+
+if [[ -z $ip ]]; then
+    token=$(curl -fs -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 600")
+    ip=$(curl -fs -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/meta-data/public-ipv4)
+fi
+if [[ -z $ip ]]; then
+    echo "No IP to check."
+    exit 3
+fi
+
+retval=0
+
+ts=$(date +%s)
+score=$(simrbl -l score.senderscore.com $ip | awk '/found in/{split($5, x, "."); score=x[4]}; END { print score + 0 }')
+echo "sender_score score=$score $ts"
+
+exit $retval

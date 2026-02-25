@@ -626,7 +626,6 @@
           - influxdb_event
         <<: *sensu_auth
 
-
     - name: Monitor IP reputation
       sensu.sensu_go.check:
         name: dnsbl
@@ -641,6 +640,20 @@
           - default
         <<: *sensu_auth
       when: aws_status == 'prod'
+
+    - name: Monitor IP Sender Score
+      sensu.sensu_go.check:
+        name: sender-score
+        command: metrics-senderscore
+        interval: 3600
+        timeout: 240
+        publish: true
+        subscriptions:
+          - Class_egress
+          - Class_relay_egress
+        handlers:
+          - default
+        <<: *sensu_auth
 
     - name: Extra monitoring for inbound hosts
       vars:

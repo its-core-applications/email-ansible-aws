@@ -273,12 +273,13 @@
         state: started
 
     - name: Install custom monitoring scripts
-      ansible.builtin.template:
+      ansible.builtin.copy:
         dest: /usr/local/bin/{{ item }}
-        src: "{{ item }}.j2"
+        src: "{{ item }}"
         owner: collaborate
         group: collaborate
         mode: "0755"
       loop:
         - check-dnsbl
         - check-dnsl
+        - metrics-senderscore
