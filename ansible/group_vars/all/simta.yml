@@ -131,6 +131,9 @@ simta_ldap_domains_mapped:
     prefix: stonesoup
   - domain: teachingworks.org
     prefix: teachingworks
+  - domain: thrivetrack.study
+    prefix: thrivetrack
+    control_group: thrivetrack domain control group
   - domain: ums.org
     prefix: ums
   - domain: wcbn.org
