@@ -278,6 +278,14 @@ spf_thirdparty:
       - ip4:38.106.32.22
       - ip4:38.106.32.46
 
+  # 2026-03-23: ezekielh
+  # Test entry
+  - names:
+      - flowerysong
+    record:
+      - ip4:45.79.218.81
+      - ip6:2600:3c02::f03c:91ff:feb0:2735
+
   # 2017-02-17: Library Information Technology
   # Servers in .umdl.umich.edu (on an Indiana University IP range)
   - names:
