@@ -103,9 +103,11 @@
 
     - name: Check for false positives
       command: clamscan --database {{ clamav_sigdir }} {{ clamav_msgdir }}/ham
+      changed_when: false
 
     - name: Check for false negatives
       command: clamscan --database {{ clamav_sigdir }} {{ clamav_msgdir }}/nam
+      changed_when: false
       failed_when: false
       register: result
 
