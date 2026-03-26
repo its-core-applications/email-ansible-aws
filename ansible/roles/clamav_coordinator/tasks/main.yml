@@ -6,6 +6,15 @@
       vars:
         s3_hostname: clamav.{{ subd }}
 
+    - name: Install prerequisites
+      ansible.builtin.dnf:
+        name:
+          - clamav
+          - clamav-update
+          - perl-Digest-SHA
+          - perl-Time-Piece
+        state: latest
+
     - name: Create signature cache directories
       ansible.builtin.file:
         dest: "{{ item }}"
@@ -16,15 +25,6 @@
       loop:
         - "{{ clamav_sigdir }}"
         - "{{ clamav_tmpdir }}"
-
-    - name: Install prerequisites
-      ansible.builtin.dnf:
-        name:
-          - clamav
-          - clamav-update
-          - perl-Digest-SHA
-          - perl-Time-Piece
-        state: latest
 
     - name: Install processing scripts
       ansible.builtin.copy:
