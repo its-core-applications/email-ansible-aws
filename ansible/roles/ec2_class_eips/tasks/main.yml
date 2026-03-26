@@ -47,7 +47,7 @@
         profile: "{{ aws_profile }}"
         resource: "{{ item.allocation_id }}"
         tags:
-          CustomDNSName: "{{ (aws_layout[aws_status][aws_profile]['classes'][eip_class].hostnames | difference(result.addresses | selectattr('tags.CustomDNSName', 'defined') | map(attribute='tags.CustomDNSName')) | difference(hostname_result | default({})))[ansible_loop.index0] }}.{{ eip_class }}.{{ subd }}"
+          CustomDNSName: "{{ (aws_layout[aws_status][aws_profile]['classes'][eip_class].hostnames | difference(result.addresses | selectattr('tags.CustomDNSName', 'defined') | map(attribute='tags.CustomDNSName')) | difference(hostname_result | default({})))[ansible_loop.index0] }}{{ ('.' ~ eip_class) if eip_class != 'bastion' else '' }}.{{ subd }}"
       loop: "{{ result.addresses | rejectattr('tags.CustomDNSName', 'defined') }}"
       loop_control:
         extended: true
