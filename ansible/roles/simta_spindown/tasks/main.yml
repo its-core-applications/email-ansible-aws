@@ -22,7 +22,7 @@
       wait_for:
         path: "{{ simqtmp_base }}.lock"
         state: absent
-      when: tags.Class == simta_queue_type
+      when: ec2_tags.Class == simta_queue_type
 
     - name: Stop simta
       systemd:
