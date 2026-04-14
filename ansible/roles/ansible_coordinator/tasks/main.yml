@@ -41,7 +41,7 @@
       ansible.builtin.cron:
         name: ansible-build-amis
         user: "{{ ansible_user }}"
-        minute: 19
+        minute: "{{ 19 + (10 * (aws_layout[aws_status] | list | sort).index(aws_profile)) }}"
         hour: 18
         weekday: 4
         job: . ~/ansible-aws/env-setup.sh && ~/ansible-aws/rebuild-all &>/dev/null
