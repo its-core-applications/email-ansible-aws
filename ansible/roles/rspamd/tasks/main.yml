@@ -16,6 +16,7 @@
         mode: "0644"
       loop:
         - local.d/actions.conf
+        - local.d/aliases.conf
         - local.d/arc.conf
         - local.d/dkim.conf
         - local.d/dmarc.conf
@@ -32,13 +33,13 @@
       register: config_result
 
     - name: Enable rspamd
-      systemd:
+      ansible.builtin.systemd_service:
         name: rspamd
         enabled: true
         daemon_reload: true
 
     - name: Start rspamd
-      systemd:
+      ansible.builtin.systemd_service:
         name: rspamd
         state: "{{ (install_result is changed or config_result is changed) | ternary('restarted', 'started') }}"
 
