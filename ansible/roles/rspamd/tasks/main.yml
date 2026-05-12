@@ -1,10 +1,18 @@
 - tags:
     - rspamd
   block:
+    - name: Install rspamd repo
+      ansible.builtin.copy:
+        src: rspamd.repo
+        dest: /etc/yum.repos.d/rspamd.repo
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Install rspamd
       ansible.builtin.dnf:
-        name: rspamd
-        state: latest
+        name: rspamd-4.0.1
+        state: present
       register: install_result
 
     - name: Local rspamd configuration
@@ -15,6 +23,7 @@
         group: root
         mode: "0644"
       loop:
+        - local.d/aliases.conf
         - local.d/arc.conf
         - local.d/dkim.conf
         - local.d/dmarc.conf

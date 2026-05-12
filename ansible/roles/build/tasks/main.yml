@@ -209,15 +209,6 @@
           - urcl-devel
 
     - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags:
-        - hyperscan
-        - ragel
-        - rspamd
-      vars:
-        build_name: ragel
-
-    - ansible.builtin.import_role:
         name: build_rpm_prebuilt
       tags: influxdb
       vars:
@@ -233,29 +224,6 @@
         build_name: redis
         build_deps:
           - jemalloc-devel
-
-    - ansible.builtin.import_role:
-        name: build_rpm_spec
-      tags: rspamd
-      vars:
-        build_name: rspamd
-        build_deps:
-          - fann-devel
-          - file-devel
-          - glib2-devel
-          - hyperscan-devel
-          - jemalloc-devel
-          - libarchive-devel
-          - libevent-devel
-          - libicu-devel
-          - libsodium-devel
-          - luajit-devel
-          - openssl-devel
-          - pcre2-devel
-          - perl
-          - perl-Digest-MD5
-          - ragel-6.10
-          - sqlite-devel
 
     - ansible.builtin.import_role:
         name: build_rpm_spec
