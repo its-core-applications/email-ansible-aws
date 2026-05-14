@@ -2,8 +2,6 @@
 
 import argparse
 
-import netaddr
-
 from datetime import date, timedelta
 
 from redis import RedisCluster

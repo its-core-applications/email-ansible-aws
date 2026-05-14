@@ -26,6 +26,7 @@ if not ts:
     ts = date.today().strftime('%F')
 
 for domain in sys.stdin:
+    domain = domain.strip()
     key = f'seshet:known_domain:{domain}'
     if args.verbose:
         print(f'Recording {domain}')
