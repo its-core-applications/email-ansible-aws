@@ -59,6 +59,15 @@
       ansible.builtin.command:
         cmd: grubby --update-kernel=ALL --args="selinux=0"
 
+    - name: Block loading of unnecessary modules
+      ansible.builtin.copy:
+        src: modprobe-umich-deny.conf
+        dest: /etc/modprobe.d/umich-deny.conf
+        owner: root
+        group: root
+        mode: "0644"
+      tags: rollout
+
     - ansible.builtin.import_role:
         name: base_packages
 
