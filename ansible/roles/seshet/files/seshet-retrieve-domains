@@ -23,5 +23,6 @@ threshold = (date.today() - timedelta(days=args.threshold)).strftime('%F')
 
 for key in red.scan_iter(match='seshet:known_domain:*', count=1000):
     added = red.hget(key, 'added')
-    if added <= threshold:
-        print(key.replace('seshet:known_domain:', ''))
+    if added and added <= threshold:
+        domain = key.replace('seshet:known_domain:', '')
+        print(domain)

@@ -58,7 +58,7 @@
         name: seshet_domain
         minute: "16"
         hour: "0"
-        job: seshet-domains -H pink.{{ seshet_redis_region }}.{{ subd }} -d '--heartbeat syslog --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
+        job: seshet-domains -H pink.{{ seshet_redis_region }}.{{ subd }} -d '--s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
 
     - name: Install simta-authn-log-filter
       ansible.builtin.copy:
