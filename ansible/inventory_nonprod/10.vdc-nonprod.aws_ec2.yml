@@ -1,5 +1,5 @@
 plugin: flowerysong.melange.aws_ec2
-boto_profile: vdc-nonprod
+profile: vdc-nonprod
 filters:
   instance-state-name:
     - running

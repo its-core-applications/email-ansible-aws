@@ -1,5 +1,5 @@
 plugin: flowerysong.melange.aws_ec2
-boto_profile: umcollab
+profile: umcollab
 filters:
   instance-state-name:
     - running
