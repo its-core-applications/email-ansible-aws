@@ -19,7 +19,7 @@
             region: "{{ region }}"
             profile: "{{ aws_profile_ec2 }}"
             device_id: "{{ instance_id }}"
-            public_ip: "{{ (eips.addresses | selectattr('tags.CustomDNSName', '==', ec2_tags.CustomDNSName)).0.public_ip }}"
+            public_ip: "{{ (eips.addresses | selectattr('tags.CustomDNSName', '==', tags.CustomDNSName)).0.public_ip }}"
           register: eip
 
     - name: Wait for elastic IP

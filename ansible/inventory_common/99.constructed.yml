@@ -5,14 +5,14 @@ compose:
   region: placement.availability_zone[:-1]
 
 groups:
-  redis: ec2_tags.redis == 'yes'
-  simta_requeue_disabled: ec2_tags.simta_requeue | default('') == 'disabled'
+  redis: tags.redis == 'yes'
+  simta_requeue_disabled: tags.simta_requeue | default('') == 'disabled'
 
 keyed_groups:
   - prefix: Class
-    key: ec2_tags.Class
+    key: tags.Class
   - prefix: Status
-    key: ec2_tags.Status
+    key: tags.Status
   - prefix: az
     key: placement.availability_zone
   - prefix: region
