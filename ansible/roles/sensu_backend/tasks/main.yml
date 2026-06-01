@@ -359,11 +359,12 @@
             - Class_loadbalancer
             - Status_production
         <<: *sensu_auth
-      loop: "{{ mx_lbs | union(authn_lbs) | union(authz_lbs) }}"
+      loop: "{{ mx_lbs | union(authn_lbs) | union(authz_lbs) | union(vdc_lbs) }}"
       vars:
         mx_lbs: "{{ aws_layout[aws_status][aws_profile_ec2].mx_names | map('regex_replace', '$', '.' ~ subd) }}"
         authn_lbs: "{{ ('authn-relay' in aws_layout[aws_status][aws_profile_ec2].classes) | ternary(['authn-relay' ~ elbd, 'authn-relay-vpn' ~ elbd], []) }}"
         authz_lbs: "{{ ('authz-relay' in aws_layout[aws_status][aws_profile_ec2].classes) | ternary(['authz-relay' ~ elbd, 'authz-relay-vpn' ~ elbd], []) }}"
+        vdc_lbs: "{{ ((aws_layout[aws_status] | dict2items | selectattr('value.classes', 'contains', 'vdc-relay')).0.value.controller == aws_profile_ec2) | ternary(['vdc-relay' ~ elbd], []) }}"
         elbd: ".{{ aws_region }}.{{ subd }}"
 
     - name: Monitor Sensu metrics
