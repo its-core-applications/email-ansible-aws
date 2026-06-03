@@ -13,6 +13,7 @@
         mode: "0755"
       loop:
         - 21_drop_from
+        - 30_zrd
 
     - name: Install ingress-specific templated filters
       ansible.builtin.template:
