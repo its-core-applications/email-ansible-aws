@@ -1,0 +1,41 @@
+#!/bin/bash
+
+PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+
+redis_host=pink.us-east-2.x.mail.umich.edu
+workdir=/var/cache/seshet
+
+while getopts d:H:w: opt; do
+    case $opt in
+    d)  datastore_args=$OPTARG
+        ;;
+    H)  redis_host=$OPTARG
+        ;;
+    esac
+done
+
+(
+    flock -n 9 || exit 1
+    [[ -e $workdir ]] || mkdir $workdir
+    cd $workdir
+
+    retval=1
+    startts=$(date +%s%N)
+
+    msg=$(seshet-retrieve-domains -H $redis_host >| seshet-domains)
+    if [[ $? -eq 0 ]]; then
+        msg=$(datastore-upload $datastore_args seshet-domains filter_data/mx/domain.known)
+        retval=0
+    fi
+
+    duration=$(( $(date +%s%N) - startts ))
+
+    jq -n -r \
+        --arg status $retval \
+        --arg duration $(( duration / 1000000000 )).$(( duration % 1000000000 /1000000 )) \
+        --arg msg "$msg" \
+        '{ check: { metadata: { name: "seshet-domains-upload", annotations: { "fatigue_check/occurrences": "2" }}, ttl: 93600, duration: $duration | tonumber, status: $status | tonumber, output: $msg }}' | curl -X POST -H 'Content-Type: application/json' -d @- http://127.0.0.1:3031/events
+
+)9>>/run/seshet-domains-upload.lock
+
+exit 0

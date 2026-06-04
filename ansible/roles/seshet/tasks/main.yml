@@ -17,6 +17,8 @@
         venv_wrappers:
           - name: seshet-domains
             target: seshet-domains
+          - name: seshet-domains-upload
+            target: seshet-domains-upload
           - name: seshet-ips
             target: seshet-ips
           - name: seshet-record-domain
@@ -41,6 +43,7 @@
         mode: "0755"
       loop:
         - seshet-domains
+        - seshet-domains-upload
         - seshet-ips
         - seshet-record-domain
         - seshet-record-ip
@@ -48,17 +51,24 @@
         - seshet-retrieve-ips
 
     - name: Schedule seshet IP recording runs
-      cron:
+      ansible.builtin.cron:
         name: seshet
         minute: "*/5"
         job: seshet-ips -H pink.{{ seshet_redis_region }}.{{ subd }} -d '--heartbeat syslog --s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
 
     - name: Schedule seshet domain recording runs
-      cron:
+      ansible.builtin.cron:
         name: seshet_domain
         minute: "16"
         hour: "0"
-        job: seshet-domains -H pink.{{ seshet_redis_region }}.{{ subd }} -d '--s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
+        job: seshet-domains -H pink.{{ seshet_redis_region }}.{{ subd }}
+
+    - name: Schedule seshet domain list upload
+      ansible.builtin.cron:
+        name: seshet_domain_upload
+        minute: "49"
+        job: seshet-domains-upload -H pink.{{ seshet_redis_region }}.{{ subd }} -d '--s3-bucket datastore.{{ subd }} --s3-region {{ aws_layout[aws_status][aws_profile_s3].region }}'
+      when: "'seshet' in aws_layout[aws_status][aws_profile_ec2].services"
 
     - name: Install simta-authn-log-filter
       ansible.builtin.copy:
