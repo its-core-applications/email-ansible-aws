@@ -60,14 +60,10 @@
           - zstd
         state: present
 
-    - when: bootstrap == false  # These rely on the local yum repo existing
-      block:
-        - name: Install less-basic QoL packages
-          ansible.builtin.dnf:
-            name:
-              - amazon-ec2-utils
-              - vault
-            state: present
-
-        - ansible.builtin.import_role:
-            name: falcon_sensor
+    - name: Install less-basic QoL packages
+      ansible.builtin.dnf:
+        name:
+          - amazon-ec2-utils
+          - vault
+        state: present
+      when: bootstrap == false
