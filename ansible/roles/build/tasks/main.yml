@@ -217,6 +217,28 @@
         rpm_url: https://repos.influxdata.com/rhel/9/x86_64/stable/{{ rpm }}
         rpm_checksum: sha512:beb7cef44d664951cd7b271571341238a64ebd137aac8a085828e5931952e17656f179381f765ac6cb59549dc65e8d1db7c3c56ae0258d8d49e2e255b04e86b4
 
+    - tags:
+        - okta
+        - pam_okta
+      vars:
+        build_version: 0.5.0
+      block:
+        - ansible.builtin.import_role:
+            name: build_rpm_prebuilt
+          vars:
+            build_name: pam_okta
+            rpm: pam_okta-{{ build_version }}-1.el9.x86_64.rpm
+            rpm_url: https://github.com/umich-iam/pam_okta/releases/download/v{{ build_version }}/{{ rpm }}
+            rpm_checksum: sha256:70a5042f9f3def961e4dc912e8a37318c83aad6d03604eec9836800e9467f3d6
+
+        - ansible.builtin.import_role:
+            name: build_rpm_prebuilt
+          vars:
+            build_name: pam_okta-selinux
+            rpm: pam_okta-selinux-{{ build_version }}-1.el9.noarch.rpm
+            rpm_url: https://github.com/umich-iam/pam_okta/releases/download/v{{ build_version }}/{{ rpm }}
+            rpm_checksum: sha256:7f903ddc68724b78bb93219cdc51f217293760e23b050734e9d71ca2ef67859c
+
     - ansible.builtin.import_role:
         name: build_rpm_spec
       tags: redis
