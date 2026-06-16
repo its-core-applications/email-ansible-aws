@@ -1,0 +1,3 @@
+host = "umich.okta.com"
+client_id = "{{ lookup('flowerysong.hvault.kv', 'okta/ssh').cid }}"
+client_secret = "{{ lookup('flowerysong.hvault.kv', 'okta/ssh').secret }}"

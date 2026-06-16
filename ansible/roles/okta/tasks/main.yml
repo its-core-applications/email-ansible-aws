@@ -1,25 +1,23 @@
 - tags:
-    - duo
+    - okta
   block:
-    - name: Install duo_unix
+    - name: Install pam_okta
       ansible.builtin.dnf:
-        name:
-          - duo_unix
-          - pam_duo
+        name: pam_okta
         state: latest
 
-    - name: Configure pam_duo
+    - name: Configure pam_okta
       ansible.builtin.template:
-        dest: /etc/duo/pam_duo.conf
-        src: pam_duo.conf.j2
+        src: pam_okta.toml.j2
+        dest: /etc/security/pam_okta.toml
         owner: root
         group: root
         mode: "0600"
 
     - name: Configure PAM for sshd
       ansible.builtin.copy:
-        dest: /etc/pam.d/sshd
         src: sshd.pam
+        dest: /etc/pam.d/sshd
         owner: root
         group: root
         mode: "0644"

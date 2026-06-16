@@ -45,7 +45,7 @@
         name: people
 
     - ansible.builtin.import_role:
-        name: duo
+        name: okta
 
     - ansible.builtin.import_role:
         name: email_dnsbl-update
