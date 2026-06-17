@@ -469,6 +469,11 @@ spf_thirdparty:
       - umich.procurement
     record: include:sciquest.com
 
+  # 2026-06-17: johnbjr / Space Analysis & Property Control / TDx 10736702
+  - names:
+      - property.control
+    record: include:spf.protection.outlook.com
+
   # 2017-02-08: Office of Student Publications
   - names:
       - pubstoreowners
