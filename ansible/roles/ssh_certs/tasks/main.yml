@@ -14,9 +14,9 @@
       register: result
 
     - name: Sign host keys
-      flowerysong.hvault.write:
+      flowerysong.openbao.write:
         vault_addr: "{{ lookup('env', 'VAULT_ADDR') }}"
-        token: "{{ ansible_hvault_token }}"
+        token: "{{ ansible_openbao_token }}"
         path: ssh-host-signer/sign/host
         data:
           public_key: "{{ item.content | b64decode }}"

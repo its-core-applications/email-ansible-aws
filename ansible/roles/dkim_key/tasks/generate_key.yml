@@ -16,8 +16,8 @@
       register: result_public
 
     - name: Store key
-      flowerysong.hvault.kv:
-        token: "{{ ansible_hvault_token }}"
+      flowerysong.openbao.kv:
+        token: "{{ ansible_openbao_token }}"
         key: dkim/{{ dkim_key }}-{{ 0 if not dkim_key_active else (dkim_keys.index(dkim_key_active) + 1) % 3 }}
         value:
           private_key: "{{ result_private.privatekey }}"

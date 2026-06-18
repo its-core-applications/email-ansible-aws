@@ -284,7 +284,7 @@
         name: opsgenie
         command: sensu-opsgenie-handler --withLabels
         env_vars:
-          OPSGENIE_AUTHTOKEN: "{{ lookup('flowerysong.hvault.kv', 'opsgenie/sensu').apikey }}"
+          OPSGENIE_AUTHTOKEN: "{{ lookup('flowerysong.openbao.kv', 'opsgenie/sensu').apikey }}"
           OPSGENIE_TEAM: ITS DISC - Core Applications
           OPSGENIE_APIURL: https://api.opsgenie.com
         runtime_assets:
@@ -604,7 +604,7 @@
         interval: 60
         publish: true
         env_vars:
-          SMTP_PASSWORD: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
+          SMTP_PASSWORD: "{{ lookup('flowerysong.openbao.kv', 'simta/ldap_password').value }}"
         subscriptions:
           - Class_authn_relay
         handlers:
@@ -619,7 +619,7 @@
         interval: 60
         publish: true
         env_vars:
-          SMTP_PASSWORD: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
+          SMTP_PASSWORD: "{{ lookup('flowerysong.openbao.kv', 'simta/ldap_password').value }}"
         subscriptions:
           - Class_authn_relay
         handlers:

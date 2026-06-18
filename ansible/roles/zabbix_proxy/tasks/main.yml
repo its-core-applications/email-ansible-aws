@@ -17,7 +17,7 @@
         description: Proxy for {{ aws_profile }}
         status: active
         tls_accept: PSK
-        tls_psk: "{{ lookup('flowerysong.hvault.kv', 'zabbix/psk').value }}"
+        tls_psk: "{{ lookup('flowerysong.openbao.kv', 'zabbix/psk').value }}"
         tls_psk_identity: "{{ aws_region }}.{{ subd }}"
       delegate_to: "{{ zabbix_server }}"
 

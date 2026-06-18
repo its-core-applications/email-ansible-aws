@@ -165,7 +165,7 @@ allow_sign_up = false
 allow_org_create = false
 
 # Set to true to automatically assign new users to the default organization (id 1)
-auto_assign_org = true
+auto_assign_org = false
 
 # Default role new users will be automatically assigned (if disabled above is set to true)
 auto_assign_org_role = Viewer
@@ -177,86 +177,26 @@ auto_assign_org_role = Viewer
 default_theme = dark
 
 [auth]
-# Set to true to disable (hide) the login form, useful if you use OAuth, defaults to false
 disable_login_form = true
+oauth_allow_insecure_email_lookup = true
 
-#################################### Anonymous Auth ##########################
-[auth.anonymous]
-# enable anonymous access
-;enabled = true
-
-# specify organization name that should be used for unauthenticated users
-org_name = Main Org.
-
-# specify role for unauthenticated users
-org_role = Viewer
-
-#################################### Github Auth ##########################
-[auth.github]
-;enabled = false
-;allow_sign_up = true
-;client_id = some_id
-;client_secret = some_secret
-;scopes = user:email,read:org
-;auth_url = https://github.com/login/oauth/authorize
-;token_url = https://github.com/login/oauth/access_token
-;api_url = https://api.github.com/user
-;team_ids =
-;allowed_organizations =
-
-#################################### Google Auth ##########################
-[auth.google]
-enabled = true
-allow_sign_up = true
-client_id = {{ lookup('flowerysong.hvault.kv', 'google/grafana/id').value }}
-client_secret = {{ lookup('flowerysong.hvault.kv', 'google/grafana/secret').value }}
-scopes = https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
-auth_url = https://accounts.google.com/o/oauth2/auth
-token_url = https://accounts.google.com/o/oauth2/token
-api_url = https://www.googleapis.com/oauth2/v1/userinfo
-allowed_domains = {{ tld }}
-
-#################################### Generic OAuth ##########################
 [auth.generic_oauth]
-;enabled = false
-;name = OAuth
-;allow_sign_up = true
-;client_id = some_id
-;client_secret = some_secret
-;scopes = user:email,read:org
-;auth_url = https://foo.bar/login/oauth/authorize
-;token_url = https://foo.bar/login/oauth/access_token
-;api_url = https://foo.bar/user
-;team_ids =
-;allowed_organizations =
-
-#################################### Grafana.net Auth ####################
-[auth.grafananet]
-;enabled = false
-;allow_sign_up = true
-;client_id = some_id
-;client_secret = some_secret
-;scopes = user:email
-;allowed_organizations =
-
-#################################### Auth Proxy ##########################
-[auth.proxy]
-;enabled = false
-;header_name = X-WEBAUTH-USER
-;header_property = username
-;auto_sign_up = true
-;ldap_sync_ttl = 60
-;whitelist = 192.168.1.1, 192.168.2.1
-
-#################################### Basic Auth ##########################
-[auth.basic]
-;enabled = true
-
-#################################### Auth LDAP ##########################
-[auth.ldap]
-;enabled = false
-;config_file = /etc/grafana/ldap.toml
-;allow_sign_up = true
+enabled = true
+name = Okta
+auto_login = true
+allow_sign_up = true
+client_id = {{ lookup('flowerysong.openbao.kv', 'okta/grafana').cid }}
+client_secret = {{ lookup('flowerysong.openbao.kv', 'okta/grafana').secret }}
+use_pkce = true
+scopes = openid profile email edumember
+auth_url = https://okta.umich.edu/oauth2/default/v1/authorize
+token_url = https://okta.umich.edu/oauth2/default/v1/token
+api_url = https://okta.umich.edu/oauth2/default/v1/userinfo
+login_attribute_path = preferred_username
+groups_attribute_path = edumember_ismemberof
+role_attribute_path = contains(edumember_ismemberof[*], 'ITS Core Infrastructure and Automation') && 'Admin' || contains(edumember_ismemberof[*], 'ITS AllStaff') && 'Viewer' || 'None'
+role_attribute_strict = true
+allow_assign_grafana_admin = true
 
 #################################### SMTP / Emailing ##########################
 [smtp]

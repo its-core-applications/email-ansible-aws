@@ -11,7 +11,7 @@
         lambda_reqs: requests
         lambda_handler: sns2slack.handler
         lambda_env:
-          WEBHOOK_URL: "{{ lookup('flowerysong.hvault.kv', 'slack').value }}"
+          WEBHOOK_URL: "{{ lookup('flowerysong.openbao.kv', 'slack').value }}"
 
     - name: Create Lambda policy for SNS
       lambda_policy:

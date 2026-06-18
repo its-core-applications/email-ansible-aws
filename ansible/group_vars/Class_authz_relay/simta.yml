@@ -6,7 +6,7 @@ simta_dkim: true
 simta_dkim_selector: relay{{ aws_status_suffix }}
 simta_dkim_level: ALWAYS
 simta_ldap: true
-simta_ldap_password: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
+simta_ldap_password: "{{ lookup('flowerysong.openbao.kv', 'simta/ldap_password').value }}"
 simta_certificate_sans:
   - authz-relay.{{ aws_region }}.{{ subd }}
   - authz-relay-vpn.{{ aws_region }}.{{ subd }}

@@ -1,4 +1,4 @@
-sensu_password: "{{ lookup('flowerysong.hvault.kv', 'sensu/api').value }}"
+sensu_password: "{{ lookup('flowerysong.openbao.kv', 'sensu/api').value }}"
 
 sensu_sns:
   - name: oncall

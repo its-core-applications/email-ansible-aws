@@ -5,7 +5,7 @@ simta_filters: true
 simta_dkim: true
 simta_connlimit: 0
 simta_ldap: true
-simta_ldap_password: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
+simta_ldap_password: "{{ lookup('flowerysong.openbao.kv', 'simta/ldap_password').value }}"
 simta_bitbucket: "{{ aws_status == 'nonprod' }}"
 simta_srs: true
-simta_srs_secret: "{{ lookup('flowerysong.hvault.kv', 'simta/srs_secret').value }}"
+simta_srs_secret: "{{ lookup('flowerysong.openbao.kv', 'simta/srs_secret').value }}"

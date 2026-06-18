@@ -107,10 +107,10 @@
       block:
         - name: Install GitHub deploy keys for root
           ansible.builtin.copy:
-            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ item).value }}\n"
+            content: "{{ lookup('flowerysong.openbao.kv', 'ssh/' ~ item).value }}\n"
             dest: /root/.ssh/id_ed25519.{{ item }}
             mode: "0400"
-          loop: "{{ [] if bootstrap else (query('flowerysong.hvault.list', 'secret/ssh/') | select('match', 'github.')) }}"
+          loop: "{{ [] if bootstrap else (query('flowerysong.openbao.list', 'secret/ssh/') | select('match', 'github.')) }}"
 
         - name: Configure SSH for root
           ansible.builtin.template:

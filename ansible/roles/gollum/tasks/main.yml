@@ -32,7 +32,7 @@
         - name: Install SSH private key
           ansible.builtin.copy:
             dest: ~/.ssh/id_ed25519
-            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/gollum').value }}"
+            content: "{{ lookup('flowerysong.openbao.kv', 'ssh/gollum').value }}"
             mode: "0400"
           no_log: true
 

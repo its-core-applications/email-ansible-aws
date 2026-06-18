@@ -5,9 +5,9 @@ simta_dkim: true
 simta_ldap: true
 simta_ldap_red: RE
 simta_ldap_host: umod-dev.mc.itd.umich.edu
-simta_ldap_password: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
+simta_ldap_password: "{{ lookup('flowerysong.openbao.kv', 'simta/ldap_password').value }}"
 simta_srs: true
-simta_srs_secret: "{{ lookup('flowerysong.hvault.kv', 'simta/srs_secret').value }}"
+simta_srs_secret: "{{ lookup('flowerysong.openbao.kv', 'simta/srs_secret').value }}"
 simta_redis_host: localhost
 simta_vacationhost: autoreply-test.mail.umich.edu
 

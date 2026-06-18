@@ -1,7 +1,7 @@
 - tags:
     - certificate
   vars:
-    cert_data: "{{ lookup('flowerysong.hvault.kv', 'certificate/' ~ certificate) }}"
+    cert_data: "{{ lookup('flowerysong.openbao.kv', 'certificate/' ~ certificate) }}"
   block:
     - import_role:
         name: certificate_incommon

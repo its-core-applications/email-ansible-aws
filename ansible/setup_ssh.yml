@@ -35,9 +35,9 @@
             label: "{{ item.key }}"
 
         - name: Save key to Vault
-          flowerysong.hvault.kv:
+          flowerysong.openbao.kv:
             vault_addr: "{{ lookup('env', 'VAULT_ADDR') }}"
-            token: "{{ ansible_hvault_token }}"
+            token: "{{ ansible_openbao_token }}"
             key: ssh/ec2-user.{{ public_key_hash }}
             value:
               public: "{{ public_key }}"

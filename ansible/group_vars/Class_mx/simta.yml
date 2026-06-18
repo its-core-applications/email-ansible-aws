@@ -3,9 +3,9 @@ simta_arc: true
 simta_dkim: true
 simta_ldap: true
 simta_ldap_red: RE
-simta_ldap_password: "{{ lookup('flowerysong.hvault.kv', 'simta/ldap_password').value }}"
+simta_ldap_password: "{{ lookup('flowerysong.openbao.kv', 'simta/ldap_password').value }}"
 simta_srs: true
-simta_srs_secret: "{{ lookup('flowerysong.hvault.kv', 'simta/srs_secret').value }}"
+simta_srs_secret: "{{ lookup('flowerysong.openbao.kv', 'simta/srs_secret').value }}"
 
 simta_certificate_sans:
   - mx1.{{ subd }}

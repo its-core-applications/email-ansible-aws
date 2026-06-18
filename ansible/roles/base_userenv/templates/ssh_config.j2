@@ -2,7 +2,7 @@ Host gitlab.umich.edu
     IdentityFile ~/.ssh/id_ed25519.git
     User git
 
-{% for deploykey in query('flowerysong.hvault.list', 'secret/ssh/') | select('match', 'github.') %}
+{% for deploykey in query('flowerysong.openbao.list', 'secret/ssh/') | select('match', 'github.') %}
 Host {{ deploykey | split('.') | last }}.github.com
     HostName github.com
     IdentityFile ~/.ssh/id_ed25519.{{ deploykey }}
@@ -10,7 +10,7 @@ Host {{ deploykey | split('.') | last }}.github.com
 
 {% endfor %}
 Host *.{{ subd }}
-{% for keypair in query('flowerysong.hvault.list', 'secret/ssh/') | select('match', ansible_user) %}
+{% for keypair in query('flowerysong.openbao.list', 'secret/ssh/') | select('match', ansible_user) %}
     IdentityFile ~/.ssh/id_ed25519.{{ keypair }}
 {% endfor %}
     User {{ ansible_user }}

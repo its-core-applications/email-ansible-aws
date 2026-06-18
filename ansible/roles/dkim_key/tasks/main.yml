@@ -2,9 +2,9 @@
     - dkim
   vars:
     dkim_keys:
-      - "{{ lookup('flowerysong.hvault.kv', 'dkim/' ~ dkim_key ~ '-0', errors='ignore') }}"
-      - "{{ lookup('flowerysong.hvault.kv', 'dkim/' ~ dkim_key ~ '-1', errors='ignore') }}"
-      - "{{ lookup('flowerysong.hvault.kv', 'dkim/' ~ dkim_key ~ '-2', errors='ignore') }}"
+      - "{{ lookup('flowerysong.openbao.kv', 'dkim/' ~ dkim_key ~ '-0', errors='ignore') }}"
+      - "{{ lookup('flowerysong.openbao.kv', 'dkim/' ~ dkim_key ~ '-1', errors='ignore') }}"
+      - "{{ lookup('flowerysong.openbao.kv', 'dkim/' ~ dkim_key ~ '-2', errors='ignore') }}"
     dkim_key_active: "{{ dkim_keys | select | sort(attribute='date') | last | default(none) }}"
   block:
     - ansible.builtin.include_tasks:

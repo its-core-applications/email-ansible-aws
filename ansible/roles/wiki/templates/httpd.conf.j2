@@ -17,13 +17,13 @@
     SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
     SSLHonorCipherOrder on
 
-    OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration
-    OIDCClientID {{ lookup('flowerysong.hvault.kv', 'google/wiki').id }}
-    OIDCClientSecret {{ lookup('flowerysong.hvault.kv', 'google/wiki').secret }}
-    OIDCCryptoPassphrase {{ lookup('flowerysong.hvault.kv', 'google/wiki').passphrase }}
-    OIDCRedirectURI https://wiki.{{ subd }}/login/google
-    OIDCScope "openid email profile"
-    OIDCRemoteUserClaim email
+    OIDCProviderMetadataURL https://okta.umich.edu/oauth2/default/.well-known/openid-configuration
+    OIDCClientID {{ lookup('flowerysong.openbao.kv', 'okta/wiki').cid }}
+    OIDCClientSecret {{ lookup('flowerysong.openbao.kv', 'okta/wiki').secret }}
+    OIDCCryptoPassphrase "exec:/bin/bash -c \"head -c 48 /dev/urandom | base64\""
+    OIDCRedirectURI https://wiki.{{ subd }}/login/okta
+    OIDCScope "openid email profile edumember"
+    OIDCRemoteUserClaim preferred_username
     OIDCCacheType file
     OIDCCacheDir /var/cache/httpd/mod_auth_openidc/cache
     OIDCCacheFileCleanInterval 300
@@ -32,10 +32,13 @@
     <Location />
         AuthType openid-connect
 
-        <RequireAll>
-            Require claim hd:{{ tld }}
-            Require user {{ user_accounts | map(attribute='name') | map('regex_replace', '$', '@' ~ tld) | join(' ') }}
-        </RequireAll>
+        <Limit GET>
+            Require claim "edumember_ismemberof:{{ okta_group_readonly }}"
+        </Limit>
+
+        <LimitExcept GET>
+            Require claim "edumember_ismemberof:{{ okta_group }}"
+        </LimitExcept>
     </Location>
 
     ProxyPass / http://localhost:8087/

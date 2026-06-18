@@ -1,0 +1,29 @@
+ui = true
+
+backend "file" {
+    path = "/home/vault"
+}
+
+listener "tcp" {
+    address = "0.0.0.0:8200"
+    tls_cert_file = "/etc/pki/collab/private/vault.{{ subd }}.crt"
+    tls_key_file = "/etc/pki/collab/private/vault.{{ subd }}.key"
+}
+
+plugin_directory = "/home/vault/plugins"
+plugin_auto_download = true
+plugin_auto_register = true
+
+plugin "auth" "aws" {
+    image       = "ghcr.io/openbao/openbao-plugin-auth-aws"
+    version     = "v0.1.1"
+    binary_name = "openbao-plugin-auth-aws"
+    sha256sum   = "7a77057e62973c1aae6035f52110e3302605a47b622756d954915b7b55eca10c"
+}
+
+plugin "secret" "aws" {
+    image       = "ghcr.io/openbao/openbao-plugin-secrets-aws"
+    version     = "v0.3.0-beta20260326"
+    binary_name = "openbao-plugin-secrets-aws"
+    sha256sum   = "9aaa8f2597f1bfa98a727a6230d9c7f62f096e1d25607fab3a9f9cc8ce48af7a"
+}

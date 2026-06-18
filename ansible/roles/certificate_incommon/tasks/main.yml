@@ -3,8 +3,8 @@
     - incommon
   vars:
     cert_directory: /etc/pki/acme
-    acme_key: "{{ lookup('flowerysong.hvault.kv', 'certificate/incommon', errors='ignore').rsa_key }}"
-    cert_existing: "{{ lookup('flowerysong.hvault.kv', 'certificate/' ~ certificate, errors='ignore') }}"
+    acme_key: "{{ lookup('flowerysong.openbao.kv', 'certificate/incommon', errors='ignore').rsa_key }}"
+    cert_existing: "{{ lookup('flowerysong.openbao.kv', 'certificate/' ~ certificate, errors='ignore') }}"
     cert_subject_alt_names: "{{ [certificate] | union(certificate_sans | default([])) | map('regex_replace', '^', 'DNS:') }}"
   module_defaults:
     community.crypto.acme_certificate:
@@ -35,8 +35,8 @@
       no_log: true
 
     - name: Store account key
-      flowerysong.hvault.kv:
-        token: "{{ ansible_hvault_token }}"
+      flowerysong.openbao.kv:
+        token: "{{ ansible_openbao_token }}"
         key: certificate/incommon
         value:
           rsa_key: "{{ result.privatekey }}"
@@ -51,8 +51,8 @@
         acme_version: 2
         external_account_binding:
           alg: HS256
-          key: "{{ lookup('flowerysong.hvault.kv', 'acme/incommon').key }}"
-          kid: "{{ lookup('flowerysong.hvault.kv', 'acme/incommon').id }}"
+          key: "{{ lookup('flowerysong.openbao.kv', 'acme/incommon').key }}"
+          kid: "{{ lookup('flowerysong.openbao.kv', 'acme/incommon').id }}"
         contact:
           - mailto:letsencrypt@devnull.mail.umich.edu
       when: result is not skipped
@@ -127,8 +127,8 @@
       register: ecc_result
 
     - name: Store new certificates for {{ certificate }}
-      flowerysong.hvault.kv:
-        token: "{{ ansible_hvault_token }}"
+      flowerysong.openbao.kv:
+        token: "{{ ansible_openbao_token }}"
         key: certificate/{{ certificate }}
         value: "{{ cert_existing | default({}, true) | combine({item.type ~ '_key': new_key, item.type ~ '_cert': new_cert}) }}"
       loop:

@@ -8,15 +8,23 @@
         certificate: vault.{{ subd }}
         certificate_services: "{{ bootstrap | ternary([], ['vault']) }}"
 
-    - name: Install vault
+    - name: Set up OpenBao repository
+      ansible.builtin.copy:
+        src: openbao.repo
+        dest: /etc/yum.repos.d/openbao.repo
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Install OpenBao
       ansible.builtin.dnf:
-        name: vault
+        name: openbao
         state: latest
 
-    - name: Configure vault server
+    - name: Configure OpenBao
       ansible.builtin.template:
-        dest: /etc/vault.hcl
-        src: vault.hcl.j2
+        dest: /etc/bao.hcl
+        src: bao.hcl.j2
         owner: root
         group: root
         mode: "0644"

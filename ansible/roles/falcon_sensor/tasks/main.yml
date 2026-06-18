@@ -9,7 +9,7 @@
 
     - name: Set sensor options
       ansible.builtin.command:
-        cmd: /opt/CrowdStrike/falconctl -s -f --cloud=us-1 --cid={{ lookup('flowerysong.hvault.kv', 'crowdstrike').cid }}
+        cmd: /opt/CrowdStrike/falconctl -s -f --cloud=us-1 --cid={{ lookup('flowerysong.openbao.kv', 'crowdstrike').cid }}
 
     - name: Generate AID
       ansible.builtin.command:

@@ -1,0 +1,45 @@
+- hosts: Class_bastion
+  environment:
+    VAULT_ADDR: "{{ lookup('env', 'VAULT_ADDR') }}"
+  tasks:
+    - when: "'vault' in aws_layout[aws_status][aws_profile].services"
+      become: false
+      block:
+        - name: mount auth/okta/
+          flowerysong.openbao.auth_method:
+            path: okta
+            type: jwt
+            listing_visibility: unauth
+          register: result
+
+        - name: Create okta user role
+          flowerysong.openbao.jwt_role_oidc:
+            mount_point: okta
+            name: user
+            user_claim: preferred_username
+            groups_claim: edumember_ismemberof
+            bound_claims:
+              edumember_ismemberof: "{{ okta_group_readonly }}"
+            allowed_redirect_uris: "https://vault.x.mail.umich.edu/ui/vault/auth/okta/oidc/callback"
+            oidc_scopes:
+              - profile
+              - edumember
+
+        - name: Configure okta authentication
+          flowerysong.openbao.jwt_config:
+            mount_point: okta
+            oidc_discovery_url: 'https://okta.umich.edu/oauth2/default'
+            oidc_client_id: "{{ lookup('flowerysong.openbao.kv', 'okta/vault').cid }}"
+            oidc_client_secret: "{{ lookup('flowerysong.openbao.kv', 'okta/vault').secret }}"
+            default_role: user
+
+        - name: Create a user group
+          flowerysong.openbao.group_external:
+            name: blackops
+            policies: blackops
+
+        - name: Create group alias
+          flowerysong.openbao.group_alias:
+            name: "{{ okta_group }}"
+            group_name: blackops
+            mount_accessor: "{{ result.mount.accessor }}"

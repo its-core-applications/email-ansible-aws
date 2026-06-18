@@ -46,31 +46,31 @@
         - "'Class_bastion' in group_names"
         - not bootstrap
       vars:
-        ssh_keys_vault: "{{ [] if bootstrap else (query('flowerysong.hvault.list', 'secret/ssh/') | select('match', ansible_user)) }}"
+        ssh_keys_vault: "{{ [] if bootstrap else (query('flowerysong.openbao.list', 'secret/ssh/') | select('match', ansible_user)) }}"
         ssh_key_dirs:
           - ~/.ssh
           - ~/ansible-aws
       block:
         - name: Install SSH private keys
           ansible.builtin.copy:
-            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ item.1).value }}\n"
+            content: "{{ lookup('flowerysong.openbao.kv', 'ssh/' ~ item.1).value }}\n"
             dest: "{{ item.0 }}/id_ed25519.{{ item.1 }}"
             mode: "0400"
           loop: "{{ ssh_key_dirs | product(ssh_keys_vault) }}"
 
         - name: Install SSH public keys
           ansible.builtin.copy:
-            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ item.1).public }}\n"
+            content: "{{ lookup('flowerysong.openbao.kv', 'ssh/' ~ item.1).public }}\n"
             dest: "{{ item.0 }}/id_ed25519.{{ item.1 }}.pub"
             mode: "0644"
           loop: "{{ ssh_key_dirs | product(ssh_keys_vault) }}"
 
         - name: Install GitHub deploy keys
           ansible.builtin.copy:
-            content: "{{ lookup('flowerysong.hvault.kv', 'ssh/' ~ item).value }}\n"
+            content: "{{ lookup('flowerysong.openbao.kv', 'ssh/' ~ item).value }}\n"
             dest: ~/.ssh/id_ed25519.{{ item }}
             mode: "0400"
-          loop: "{{ [] if bootstrap else (query('flowerysong.hvault.list', 'secret/ssh/') | select('match', 'github.')) }}"
+          loop: "{{ [] if bootstrap else (query('flowerysong.openbao.list', 'secret/ssh/') | select('match', 'github.')) }}"
 
     - name: Configure git
       ansible.builtin.copy:

@@ -6,34 +6,15 @@
       become: false
       block:
         - name: Mount secret/
-          flowerysong.hvault.engine:
+          flowerysong.openbao.engine:
             path: secret
             # FIXME: can we upgrade these to use the new backend name?
             type: generic
             #options:
             #  version: 1
 
-        - name: Mount auth/ldap/
-          flowerysong.hvault.auth_method:
-            path: ldap
-            type: ldap
-            listing_visibility: unauth
-
-        # ldap.umich.edu has limits on how large of a result it will return;
-        # since we don't currently care about other groups and will need to
-        # change authentication methods soon anyway, the controlling group
-        # name is hardcoded in the group filter.
-        - name: Configure LDAP authentication
-          flowerysong.hvault.ldap_config:
-            url: ldaps://ldap.umich.edu
-            userdn: ou=People,dc=umich,dc=edu
-            userattr: uid
-            groupdn: ou=User Groups,ou=Groups,dc=umich,dc=edu
-            groupfilter: !unsafe (&(cn=blackops)(member={{.UserDN}}))
-            groupattr: cn
-
         - name: Create blackops policy
-          flowerysong.hvault.policy:
+          flowerysong.openbao.policy:
             name: blackops
             policy:
               identity/*: [read, list]
@@ -48,15 +29,8 @@
               sys/capabilities-self: [read, list, update]
               sys: [list]
 
-        - name: Bind blackops policy to the blackops group
-          flowerysong.hvault.ldap_group:
-            name: blackops
-            policies:
-              - default
-              - blackops
-
         - name: Mount SSH signers
-          flowerysong.hvault.engine:
+          flowerysong.openbao.engine:
             path: "{{ item }}"
             type: ssh
           loop:
@@ -67,7 +41,7 @@
         #vault write ssh-client-signer/config/ca generate_signing_key=true
 
         - name: Configure SSH host key signer
-          flowerysong.hvault.ssh_role:
+          flowerysong.openbao.ssh_role:
             mount_point: ssh-host-signer
             name: host
             allow_host_certificates: true
@@ -78,7 +52,7 @@
             ttl: 315360000
 
         - name: Configure SSH signer for ec2-user
-          flowerysong.hvault.ssh_role:
+          flowerysong.openbao.ssh_role:
             mount_point: ssh-client-signer
             name: ec2-user
             allow_user_certificates: true
@@ -92,11 +66,11 @@
             max_ttl: 1800
 
         - name: Fetch mount info
-          flowerysong.hvault.auth_method_info:
+          flowerysong.openbao.auth_method_info:
           register: result
 
         - name: Configure SSH signer for individual users
-          flowerysong.hvault.ssh_role:
+          flowerysong.openbao.ssh_role:
             mount_point: ssh-client-signer
             name: personal
             allow_user_certificates: true
@@ -111,12 +85,17 @@
             allowed_t: !unsafe "{{identity.entity.aliases.accessor.name}}"
 
         - name: Mount auth/aws/
-          flowerysong.hvault.auth_method:
+          flowerysong.openbao.auth_method:
             path: aws
             type: aws
+            plugin_version: v0.1.1
+
+        - name: Configure client settings for auth/aws/
+          flowerysong.openbao.aws_auth_config_client:
+            use_sts_region_from_client: true
 
         - name: Create bastion policy
-          flowerysong.hvault.policy:
+          flowerysong.openbao.policy:
             name: bastion
             policy:
               identity/*: [read, list]
@@ -131,14 +110,14 @@
               ssh-client-signer: [list]
 
         - name: Create ec2 policy
-          flowerysong.hvault.policy:
+          flowerysong.openbao.policy:
             name: ec2
             policy:
               ssh-host-signer/*: [list]
               ssh-host-signer/sign/host: [read, update, list]
 
         - name: Create AWS auth roles
-          flowerysong.hvault.aws_auth_role:
+          flowerysong.openbao.aws_auth_role:
             name: "{{ aws_resource_prefix }}_{{ item.name }}"
             bound_iam_principal_arn: "{{ aws_layout[aws_status] | dict2items | map(attribute='value.account') | unique | map('regex_replace', '^', 'arn:aws:iam::') | map('regex_replace', '$', ':role/' + aws_resource_prefix + '_' + item.name) }}"
             resolve_aws_unique_ids: false
@@ -152,12 +131,12 @@
               policies: ec2
 
         - name: Mount auth/approle/
-          flowerysong.hvault.auth_method:
+          flowerysong.openbao.auth_method:
             path: approle
             type: approle
 
         - name: Create s3_datastore policy
-          flowerysong.hvault.policy:
+          flowerysong.openbao.policy:
             name: s3_datastore
             policy:
               aws/sts/s3_datastore: [read, update, list]
@@ -165,7 +144,7 @@
               secret/mysql/*: [read]
 
         - name: Create dnsbl AppRole role
-          flowerysong.hvault.approle_role:
+          flowerysong.openbao.approle_role:
             name: dnsbl
             bind_secret_id: false
             token_policies: s3_datastore
@@ -178,12 +157,13 @@
             token_bound_cidrs: "{{ rbldnsd_updater }}"
 
         - name: Mount aws/
-          flowerysong.hvault.engine:
+          flowerysong.openbao.engine:
             path: aws
             type: aws
+            plugin_version: v0.3.0-beta20260326
 
         - name: Create AWS s3_datastore role
-          flowerysong.hvault.aws_secret_role_sts:
+          flowerysong.openbao.aws_secret_role_sts:
             name: s3_datastore
             role_arns: arn:aws:iam::{{ aws_layout[aws_status][aws_profile].account }}:role/{{ aws_resource_prefix }}_S3_ds
 
