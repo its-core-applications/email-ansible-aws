@@ -11,14 +11,6 @@
         group: root
         mode: "0755"
 
-    - name: Clone function
-      git:
-        repo: "{{ lambda_git_repo }}"
-        dest: "{{ lambda_cache_dir }}/pkg"
-        separate_git_dir: "{{ lambda_cache_dir }}/git"
-      when: lambda_git_repo
-      register: clone_result
-
     - name: Copy function
       ansible.builtin.copy:
         src: lambda/{{ lambda_name }}.py
@@ -26,8 +18,7 @@
         owner: root
         group: root
         mode: "0644"
-      when: clone_result is skipped
-      register: copy_result
+      register: result
 
     - name: Install function dependencies
       pip:
@@ -36,8 +27,8 @@
         executable: pip3
         extra_args: -t {{ lambda_cache_dir }}/pkg
       when:
-        - lambda_reqs | default(False)
-        - clone_result is changed or copy_result is changed
+        - lambda_reqs | default([]) | length > 0
+        - result is changed
 
     - name: Create zip archive
       archive:

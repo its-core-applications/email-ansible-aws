@@ -73,5 +73,5 @@
       ansible.builtin.systemd:
         name: "{{ item }}"
         state: restarted
-      when: "[result_key, result_cert] | select('changed')"
+      when: "[result_key, result_cert] | select('changed') | length > 0"
       loop: "{{ certificate_services | default([]) }}"

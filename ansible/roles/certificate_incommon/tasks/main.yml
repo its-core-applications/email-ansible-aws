@@ -86,7 +86,7 @@
         content: "{{ cert_existing[item ~ '_cert'] | default('') }}"
         mode: "0755"
       when:
-        - cert_existing[item ~ '_cert'] | default(false)
+        - cert_existing[item ~ '_cert'] | default('') | length > 0
         - (cert_existing[item ~ '_cert'] | community.crypto.x509_certificate_info).subject_alt_name | ansible.builtin.symmetric_difference(cert_subject_alt_names) | length == 0
       loop:
         - rsa

@@ -22,7 +22,11 @@
         scheme: "{{ nlb_scheme }}"
         cross_zone_load_balancing: true
         subnets: "{{ nlb_subnets }}"
-        listeners: "[ {% for port in nlb_ports %}{'Port': {{ port }}, 'Protocol': 'TCP', 'DefaultActions': [{'Type': 'forward', 'TargetGroupName': '{{ aws_resource_prefix }}-tg-{{ nlb_name }}-{{ port }}'}]},{% endfor %} ]"
+        listeners: "{% set res = [] %}\
+          {% for port in nlb_ports %}\
+          {% set _ = res.append({'Port': port, 'Protocol': 'TCP', 'DefaultActions': [{'Type': 'forward', 'TargetGroupName': [aws_resource_prefix, 'tg', nlb_name, port] | join('-')}]}) %}\
+          {% endfor %}\
+          {{ res }}"
       register: result
 
     - name: Set pretty DNS name for {{ nlb_name }} loadbalancer

@@ -88,7 +88,7 @@
           Status: spinup
           BusinessOwner: "{{ aws_resource_owner }}"
         launch_tags_elastic: "{{ {'CustomDNSName': launch_eips[item].tags.CustomDNSName, 'ManageDNS': 'false'} if launch_elastic_ip else {} }}"
-      loop: "{{ range(launch_count | default(launch_count_default) | int) }}"
+      loop: "{{ range(launch_count | default(launch_count_default) | int) | list }}"
       ignore_errors: true
       register: ec2
 
@@ -100,7 +100,7 @@
             region: "{{ aws_region }}"
             profile: "{{ aws_profile }}"
             instance_ids: "{{ ec2_instances }}"
-          when: ec2_instances | length
+          when: ec2_instances | length > 0
           ignore_errors: true
           register: result
           until: (result.instances | default([]) | map(attribute='state.name') | select('==', 'running') | length) == (ec2_instances | length)
@@ -136,7 +136,7 @@
             instance_ids: "{{ ec2_instances }}"
           vars:
             ec2_instances: "{{ ec2.results | selectattr('instance_ids', 'defined') | map(attribute='instance_ids') | flatten }}"
-          when: ec2_instances | length
+          when: ec2_instances | length > 0
           ignore_errors: true
           register: result
           until: (result.instances | default([]) | map(attribute='tags.CustomDNSName') | select('defined') | length) == (ec2_instances | length)

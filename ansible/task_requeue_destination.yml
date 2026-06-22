@@ -53,7 +53,7 @@
             state: touch
 
         - name: Save queue
-          ansible.posix.synchronize:
+          flowerysong.melange.synchronize:
             mode: pull
             archive: true
             src: "{{ item.path }}/"

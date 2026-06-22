@@ -56,7 +56,7 @@
         state: touch
 
     - name: Save queue
-      synchronize:
+      flowerysong.melange.synchronize:
         mode: pull
         archive: true
         src: /var/spool/simta/slow/
