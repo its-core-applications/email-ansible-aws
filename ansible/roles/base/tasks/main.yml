@@ -232,6 +232,9 @@
           value: 2
         - name: vm.overcommit_memory
           value: 1
+        - name: user.max_user_namespaces
+          value: 0
+      tags: rollout
 
     - name: Raise corefile limits
       ansible.builtin.copy:
