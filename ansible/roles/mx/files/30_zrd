@@ -1,7 +1,7 @@
 #!/bin/dash
 # tempfail based on lack of domain reputation
 
-if [ -s /etc/mail/domain.known -a "x$SIMTA_SMTP_MAIL_FROM" != 'x' -a "x$SIMTA_SPF_DOMAIN" != 'x' ]; then
+if [ -s /etc/mail/domain.known -a "x$SIMTA_SMTP_MAIL_FROM" != 'x' -a "x$SIMTA_SPF_DOMAIN" != 'x' -a "x$SIMTA_ACL_RESULT" = 'x' ]; then
     orgd=$(simorgdomain $SIMTA_SPF_DOMAIN)
     # Exclude high-profile known domains from even being checked
     if [ $? -eq 0 -a "$orgd" != '' -a "${orgd##*.}" != 'edu' -a "$orgd" != 'gmail.com' -a "$orgd" != 'yahoo.com' -a "$orgd" != 'outlook.com' -a "$orgd" != 'hotmail.com' ]; then
