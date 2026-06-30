@@ -27,7 +27,7 @@ EOF
     startts=$(date +%s%N)
 
     yesterday=$(date -d yesterday +%Y%m%d)
-    zstdcat /var/log/remote/*.mx.*/mail-${yesterday}.zst | grep -E "Receive .*: env <.*>: From <.+@.+>: Accepted" | sed -e 's/.*@//; s/>:.*//' | tr A-Z a-z | sort -u | xargs simorgdomain -f simta.conf | sort -u | seshet-record-domain -H $redis_host
+    zstdcat /var/log/remote/*.mx.*/mail-${yesterday}.zst | grep -E "Receive .*: env <.*>: From <.+@.+>: Accepted" | sed -e 's/.*@//; s/>:.*//' | tr A-Z a-z | sort -u | xargs simorgdomain -f simta.conf | sort -u | seshet-record-domain -H $redis_host -d $(date -d yesterday +%F)
 
     duration=$(( $(date +%s%N) - startts ))
 
