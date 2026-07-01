@@ -4,12 +4,17 @@
 if [ -s /etc/mail/domain.known -a "x$SIMTA_SMTP_MAIL_FROM" != 'x' -a "x$SIMTA_SPF_DOMAIN" != 'x' -a "x$SIMTA_ACL_RESULT" = 'x' ]; then
     orgd=$(simorgdomain $SIMTA_SPF_DOMAIN)
     # Exclude high-profile known domains from even being checked
-    if [ $? -eq 0 -a "$orgd" != '' -a "${orgd##*.}" != 'edu' -a "$orgd" != 'gmail.com' -a "$orgd" != 'yahoo.com' -a "$orgd" != 'outlook.com' -a "$orgd" != 'hotmail.com' ]; then
-        grep -qxF $orgd /etc/mail/domain.known
-        if [ $? -eq 1 ]; then
-            log "30_zrd: tempfailing zero_reputation_domain=$orgd zero_reputation_fulldomain=$SIMTA_SPF_DOMAIN"
-            echo "mscan.tempfail.zrd:1|c" | socat -ly -t 0 STDIN UDP:localhost:8125 >/dev/null 2>&1
-            filter_exit $MESSAGE_TEMPFAIL
+    if [ $? -eq 0 -a "$orgd" != '' ]; then
+        topd="${orgd##*.}"
+        subd="${orgd%.*}"
+        subd="${subd##*.}"
+        if [ "$topd" != 'edu' -a "$subd" != 'edu' -a "$topd" != 'gov' -a "$subd" != 'gov' -a "$topd" != 'mil' -a "$subd" != 'ac' -a "$orgd" != 'gmail.com' -a "$orgd" != 'yahoo.com' -a "$orgd" != 'outlook.com' -a "$orgd" != 'hotmail.com' ]; then
+            grep -qxF $orgd /etc/mail/domain.known
+            if [ $? -eq 1 ]; then
+                log "30_zrd: tempfailing zero_reputation_domain=$orgd zero_reputation_fulldomain=$SIMTA_SPF_DOMAIN"
+                echo "mscan.tempfail.zrd:1|c" | socat -ly -t 0 STDIN UDP:localhost:8125 >/dev/null 2>&1
+                filter_exit $MESSAGE_TEMPFAIL
+            fi
         fi
     fi
 fi
