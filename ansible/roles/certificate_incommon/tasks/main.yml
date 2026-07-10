@@ -3,7 +3,7 @@
     - incommon
   vars:
     cert_directory: /etc/pki/acme
-    acme_key: "{{ lookup('flowerysong.hvault.kv', 'certificate/incommon', errors='ignore').rsa_key }}"
+    acme_key: "{{ lookup('flowerysong.hvault.kv', 'certificate/certinext', errors='ignore').rsa_key }}"
     cert_existing: "{{ lookup('flowerysong.hvault.kv', 'certificate/' ~ certificate, errors='ignore') }}"
     cert_subject_alt_names: "{{ [certificate] | union(certificate_sans | default([])) | map('regex_replace', '^', 'DNS:') }}"
   module_defaults:
@@ -11,7 +11,10 @@
       # Need to have a default so that initial setup is possible;
       # module_defaults are evaluated even when they're not used...
       account_key_content: "{{ acme_key | default('placeholder') }}"
-      acme_directory: https://acme.sectigo.com/v2/InCommonRSAOV
+      acme_directory: https://acme-us.certinext.io/v1/directory
+      terms_agreed: true
+      # CertiNext is too slow for the default of 10 seconds
+      request_timeout: 40
       modify_account: false
       acme_version: 2
       challenge: dns-01
@@ -37,7 +40,7 @@
     - name: Store account key
       flowerysong.hvault.kv:
         token: "{{ ansible_hvault_token }}"
-        key: certificate/incommon
+        key: certificate/certinext
         value:
           rsa_key: "{{ result.privatekey }}"
       when: result is not skipped
@@ -47,12 +50,13 @@
       community.crypto.acme_account:
         state: present
         account_key_content: "{{ acme_key }}"
-        acme_directory: https://acme.sectigo.com/v2/InCommonRSAOV
+        acme_directory: https://acme-us.certinext.io/v1/directory
+        terms_agreed: true
         acme_version: 2
         external_account_binding:
           alg: HS256
-          key: "{{ lookup('flowerysong.hvault.kv', 'acme/incommon').key }}"
-          kid: "{{ lookup('flowerysong.hvault.kv', 'acme/incommon').id }}"
+          key: "{{ lookup('flowerysong.hvault.kv', 'acme/certinext').key }}"
+          kid: "{{ lookup('flowerysong.hvault.kv', 'acme/certinext').kid }}"
         contact:
           - mailto:letsencrypt@devnull.mail.umich.edu
       when: result is not skipped
@@ -99,45 +103,33 @@
         state: absent
       loop: "{{ result.results | select('skipped') | map(attribute='item') }}"
 
-    # These can't be looped because it needs to go order -> get -> order -> get
-    - name: Order RSA certificate for {{ certificate }}
+    - name: Order certificates for {{ certificate }}
       community.crypto.acme_certificate:
-        csr_content: "{{ (csr_result.results | selectattr('item', '==', 'rsa')).0.csr }}"
-        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.rsa.crt"
+        csr_content: "{{ item.csr }}"
+        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.{{ item.item }}.crt"
+      loop: "{{ csr_result.results }}"
       register: acme_data
 
-    - name: Get RSA certificate for {{ certificate }}
+    - name: Get certificates for {{ certificate }}
       community.crypto.acme_certificate:
-        csr_content: "{{ (csr_result.results | selectattr('item', '==', 'rsa')).0.csr }}"
-        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.rsa.crt"
-        data: "{{ acme_data }}"
-      register: rsa_result
-
-    - name: Order ECC certificate for {{ certificate }}
-      community.crypto.acme_certificate:
-        csr_content: "{{ (csr_result.results | selectattr('item', '==', 'ecc')).0.csr }}"
-        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.ecc.crt"
-      register: acme_data
-
-    - name: Get ECC certificate for {{ certificate }}
-      community.crypto.acme_certificate:
-        csr_content: "{{ (csr_result.results | selectattr('item', '==', 'ecc')).0.csr }}"
-        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.ecc.crt"
-        data: "{{ acme_data }}"
-      register: ecc_result
+        csr_content: "{{ item.item.csr }}"
+        fullchain_dest: "{{ cert_directory }}/{{ certificate }}.{{ item.item.item }}.crt"
+        data: "{{ item }}"
+      register: result
+      loop: "{{ acme_data.results }}"
+      # The order might not be ready immediately, retry with a short delay
+      retries: 3
+      delay: 10
 
     - name: Store new certificates for {{ certificate }}
       flowerysong.hvault.kv:
         token: "{{ ansible_hvault_token }}"
         key: certificate/{{ certificate }}
-        value: "{{ cert_existing | default({}, true) | combine({item.type ~ '_key': new_key, item.type ~ '_cert': new_cert}) }}"
-      loop:
-        - type: rsa
-          result: "{{ rsa_result }}"
-        - type: ecc
-          result: "{{ ecc_result }}"
-      when: item.result is changed
+        value: "{{ cert_existing | default({}, true) | combine({new_type ~ '_key': new_key, new_type ~ '_cert': new_cert}) }}"
+      loop: "{{ result.results }}"
+      when: item is changed
       no_log: true
       vars:
-        new_cert: "{{ lookup('file', cert_directory ~ '/' ~ certificate ~ '.' ~ item.type ~ '.crt') }}"
-        new_key: "{{ (key_result.results | selectattr('item.type', '==', item.type)).0.privatekey }}"
+        new_type: "{{ item.item.item.item }}"
+        new_cert: "{{ lookup('file', cert_directory ~ '/' ~ certificate ~ '.' ~ new_type ~ '.crt') }}"
+        new_key: "{{ (key_result.results | selectattr('item.type', '==', new_type)).0.privatekey }}"
