@@ -6,6 +6,15 @@
         name: clamav-update
         state: latest
 
+    - name: Correct permissions on signature directory
+      # https://bugzilla.redhat.com/show_bug.cgi?id=2499753
+      ansible.builtin.file:
+        dest: /var/lib/clamav
+        state: directory
+        owner: clamupdate
+        group: clamupdate
+        mode: "0755"
+
     - name: Configure freshclam
       ansible.builtin.template:
         dest: /etc/freshclam.conf
