@@ -296,9 +296,9 @@
       tags: splunk
       vars:
         build_name: splunk
-        rpm: splunkforwarder-9.4.1-e3bdab203ac8.x86_64.rpm
-        rpm_url: https://download.splunk.com/products/universalforwarder/releases/9.4.1/linux/splunkforwarder-9.4.1-e3bdab203ac8.x86_64.rpm
-        rpm_checksum: md5:c15bac479c12232e547e157ddd0b1f39
+        rpm: splunkforwarder-10.4.1-5a009d941268.x86_64.rpm
+        rpm_url: https://download.splunk.com/products/universalforwarder/releases/10.4.1/linux/splunkforwarder-10.4.1-5a009d941268.x86_64.rpm
+        rpm_checksum: sha512:d5a66f218aabddc4f50bbdf04732ec96267644d40b7298727630bca0edf95cb866e2ce746f4fe79ea062b962b0f228be270db434cc72a61601d067a216526e4c
 
     - ansible.builtin.import_role:
         name: s3repo_upload
