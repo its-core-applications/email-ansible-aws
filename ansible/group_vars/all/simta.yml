@@ -51,6 +51,9 @@ simta_ldap_domains_mapped:
     prefix: entertainmewell
   - domain: environmentreport.org
     prefix: environmentreport
+  - domain: finance.umich.edu
+    prefix: finance
+    control_group: finance domain control group
   - domain: giftstudy.org
     prefix: giftstudy
   - domain: glrc.org
