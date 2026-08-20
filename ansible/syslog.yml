@@ -33,4 +33,10 @@
 
     - ansible.builtin.import_role:
         name: dmarc
-      when: "'dmarc_reports' in aws_layout[aws_status][aws_profile].services"
+      when: "'dmarc_reports' in aws_layout[aws_status][aws_profile_ec2].services"
+
+    - ansible.builtin.import_role:
+        name: simta_reports
+      when: "'simta_reports' in aws_layout[aws_status][aws_profile_ec2].services"
+      vars:
+        simta_report_csv: true

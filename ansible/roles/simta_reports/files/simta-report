@@ -1,5 +1,6 @@
 #!/usr/local/venv/system/bin/python3
 
+import argparse
 import sys
 
 import requests
@@ -12,13 +13,14 @@ hosts = [
     'influxdb.us-west-2.a.mail.umich.edu',
 ]
 
-report_class = 'mx'
-if len(sys.argv) > 1:
-    report_class = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument('--csv', action='store_true')
+parser.add_argument('--period', default='7d')
+parser.add_argument('report_class', default='mx', nargs='?')
+args = parser.parse_args()
 
-period = '7d'
-if len(sys.argv) > 2:
-    period = sys.argv[2]
+report_class = args.report_class
+period = args.period
 
 
 def raw_query(host, query):
@@ -109,8 +111,16 @@ def print_col(name, val):
     print(f'{name:<22}{val}')
 
 
+def c_perc(value, total):
+    # no division by zero
+    if total == 0:
+        return 100
+
+    return value / total * 100
+
+
 def f_perc(value, total):
-    return f'{value:>11,} ({value / total * 100:.1f}%)'
+    return f'{value:>11,} ({c_perc(value, total):.1f}%)'
 
 
 def human_bytes(value):
@@ -122,22 +132,32 @@ def human_bytes(value):
     return f'{value:.1f} {units[idx]}B'
 
 
+# Get basic statistics
 conn_total = get_sum('receive.connection.attempted.value')
 conn_accepted = get_sum('receive.connection.accepted.value')
-print_col('Connections Accepted:', f'{conn_accepted:>11,} ({conn_accepted / conn_total * 100:.1f}%) of {conn_total:,} attempted')
 
 msg_total = get_sum('receive.smtp_command.MAIL.count')
 msg_accepted = get_sum('receive.message.accepted.value')
 
-print_col('Messages Accepted:', f'{msg_accepted:>11,} ({msg_accepted / msg_total * 100:.1f}%) of {msg_total:,} attempted')
+# Output a CSV with the basic stats?
+if args.csv:
+    print('connections_total,connections_accepted,messages_total,messages_accepted')
+    print(f'{conn_total},{conn_accepted},{msg_total},{msg_accepted}')
+    sys.exit(0)
+
+# Otherwise, do a human-readable report with full data
+print_col('Connections Accepted:', f'{conn_accepted:>11,} ({c_perc(conn_accepted, conn_total):.1f}%) of {conn_total:,} attempted')
+
+print_col('Messages Accepted:', f'{msg_accepted:>11,} ({c_perc(msg_accepted, msg_total):.1f}%) of {msg_total:,} attempted')
 
 bounces = get_sum('bounce.messages.value')
 if bounces > 0:
     print_col('Messages Bounced:', f'{bounces:>11,}')
 
 data_sessions = get_sum('receive.smtp_command.DATA.count')
-data_size = get_sum('receive.message_data.value')
-print_col('Average Message Size:', f'{human_bytes(data_size / data_sessions):>11} ({human_bytes(data_size)} in {data_sessions:,} data sessions)')
+if data_sessions > 0:
+    data_size = get_sum('receive.message_data.value')
+    print_col('Average Message Size:', f'{human_bytes(data_size / data_sessions):>11} ({human_bytes(data_size)} in {data_sessions:,} data sessions)')
 
 msg_peak = get_peak('receive.smtp_command.MAIL.count')
 if msg_peak:
@@ -160,7 +180,7 @@ if punished > 0:
 
 
 rdns_total = 0
-rdns = metric_query('/receive\.rdns\..+\.value/').get(report_class, {})
+rdns = metric_query('/receive\\.rdns\\..+\\.value/').get(report_class, {})
 for k, v in rdns.items():
     rdns_total += v
 print()
@@ -169,7 +189,7 @@ for k, v in rdns.items():
     print_col(k.split('.')[-2] + ':', f_perc(v, rdns_total))
 
 
-raw_acls = metric_query('/acl\..+\.value/').get(report_class, {})
+raw_acls = metric_query('/acl\\..+\\.value/').get(report_class, {})
 acls = {}
 for k, v in raw_acls.items():
     action = k.split('.')[2]
@@ -195,7 +215,7 @@ for k, v in acls.items():
             print_col(k + ':', f_perc(v, total))
 
 scanned_total = get_sum('receive.content_filter.count')
-raw_filters = metric_query('/.+\.value/', 'mscan').get(report_class, {})
+raw_filters = metric_query('/.+\\.value/', 'mscan').get(report_class, {})
 filters = {}
 for k, v in raw_filters.items():
     action = k.split('.')[0][4:]

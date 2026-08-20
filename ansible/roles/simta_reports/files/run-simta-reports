@@ -1,6 +1,8 @@
 #!/usr/local/venv/system/bin/python3
 
+import argparse
 import datetime
+import os
 import smtplib
 import subprocess
 
@@ -9,9 +11,9 @@ from email.mime.text import MIMEText
 
 sender = 'its.core.applications@umich.edu'
 dest = 'blackops.root@umich.edu'
-errors = ''
+relay_host = 'vdc-relay.mail.umich.edu'
 
-for cls in [
+classes = frozenset({
     'mx',
     'authn-relay',
     'authz-relay',
@@ -19,9 +21,21 @@ for cls in [
     'vdc-relay',
     'egress',
     'relay-egress',
-]:
+})
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--daily-csv', action='store_true')
+args = parser.parse_args()
+
+errors = ''
+
+script_args = []
+if args.daily_csv:
+    script_args.extend(['--csv', '--period=1d'])
+
+for cls in classes:
     report = subprocess.run(
-        ['/usr/local/bin/simta-report', cls],
+        ['/usr/local/bin/simta-report', *script_args, cls],
         capture_output=True,
         text=True,
     )
@@ -31,15 +45,19 @@ for cls in [
         errors += report.stderr;
         continue
 
-    msg = MIMEText(report.stdout)
-    msg['Subject'] = f'{cls} simta report {(datetime.date.today() - datetime.timedelta(days=7)).isoformat()} to {(datetime.date.today() - datetime.timedelta(days=1)).isoformat()}'
-    msg['From'] = sender
-    msg['To'] = dest
-    smtplib.SMTP('vdc-relay.mail.umich.edu').sendmail(sender, dest, msg.as_string())
+    if args.daily_csv:
+        with open(os.path.expanduser(f'~/simta-reports/{cls}.csv'), 'w') as f:
+            f.write(report.stdout)
+    else:
+        msg = MIMEText(report.stdout)
+        msg['Subject'] = f'{cls} simta report {(datetime.date.today() - datetime.timedelta(days=7)).isoformat()} to {(datetime.date.today() - datetime.timedelta(days=1)).isoformat()}'
+        msg['From'] = sender
+        msg['To'] = dest
+        smtplib.SMTP(relay_host).sendmail(sender, dest, msg.as_string())
 
 if errors:
     msg = MIMEText(errors)
     msg['Subject'] = f'simta report errors {datetime.date.today().isoformat()}'
     msg['From'] = sender
-    msg['To'] = 'ezekielh@umich.edu'
-    smtplib.SMTP('vdc-relay.mail.umich.edu').sendmail(sender, 'ezekielh@umich.edu', msg.as_string())
+    msg['To'] = dest
+    smtplib.SMTP(relay_host).sendmail(sender, dest, msg.as_string())

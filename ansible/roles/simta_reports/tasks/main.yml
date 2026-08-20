@@ -13,11 +13,30 @@
         - simta-report
         - run-simta-reports
 
-    - name: Schedule simta reports
-      cron:
+    - name: Schedule weekly simta reports
+      ansible.builtin.cron:
         name: simta-reports
         user: "{{ ansible_user }}"
         minute: 8
         hour: 0
         weekday: 1
         job: /usr/local/bin/run-simta-reports
+      when: not simta_report_csv
+
+    - when: simta_report_csv
+      block:
+        - name: Create directory to store CSV reports
+          ansible.builtin.file:
+            dest: ~{{ ansible_user }}/simta-reports
+            state: directory
+            owner: "{{ ansible_user }}"
+            group: "{{ ansible_user }}"
+            mode: "0755"
+
+        - name: Schedule daily simta reports
+          ansible.builtin.cron:
+            name: simta-reports
+            user: "{{ ansible_user }}"
+            minute: 8
+            hour: 0
+            job: /usr/local/bin/run-simta-reports --daily-csv
