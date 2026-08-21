@@ -19,6 +19,9 @@ if which ara-manage &>/dev/null && [[ -d /home/ara ]]; then
     export ARA_API_CLIENT=http
     export ARA_API_SERVER=http://127.0.0.1:8082
     export ARA_BASE_URL=https://ara.us-west-2.a.mail.umich.edu/
+    if [[ $SUDO_USER ]]; then
+        export ARA_RECORD_USER_NAME="$SUDO_USER"
+    fi
 fi
 
 if [[ -s $hacking_dir/localenv ]]; then
