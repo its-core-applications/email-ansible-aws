@@ -166,11 +166,6 @@ receive {
         }
         acl {
             action = log_only;
-            list = dbl.dnsbl;
-            domain_only = true;
-        }
-        acl {
-            action = log_only;
             list = uri.dnsbl;
             domain_only = true;
         }
