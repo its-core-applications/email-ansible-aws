@@ -27,7 +27,7 @@
       block:
         - name: Create directory to store CSV reports
           ansible.builtin.file:
-            dest: ~{{ ansible_user }}/simta-reports
+            dest: /var/log/simta-reports
             state: directory
             owner: "{{ ansible_user }}"
             group: "{{ ansible_user }}"

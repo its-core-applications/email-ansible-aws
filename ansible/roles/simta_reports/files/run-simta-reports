@@ -2,7 +2,6 @@
 
 import argparse
 import datetime
-import os
 import smtplib
 import subprocess
 
@@ -46,7 +45,7 @@ for cls in classes:
         continue
 
     if args.daily_csv:
-        with open(os.path.expanduser(f'~/simta-reports/{cls}.csv'), 'w') as f:
+        with open(f'/var/log/simta-reports/{cls}.csv'), 'w') as f:
             f.write(report.stdout)
     else:
         msg = MIMEText(report.stdout)
