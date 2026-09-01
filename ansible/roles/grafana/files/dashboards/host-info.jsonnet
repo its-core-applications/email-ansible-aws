@@ -36,7 +36,7 @@ grafana.dashboard.new(
       '$col',
     )
   ),
-  {x: 0, y: 0, w: 12, h: 10},
+  { x: 0, y: 0, w: 12, h: 10 },
 ).addPanel(
   grafana.graphPanel.new(
     'Network traffic',
@@ -48,7 +48,7 @@ grafana.dashboard.new(
       'SELECT difference(max(/eth0.*bytes/)) FROM "net" WHERE ("sensu_entity_name" = \'$entity\') AND $timeFilter GROUP BY time($__interval) fill(none)',
     )
   ),
-  {x: 12, y: 0, w: 12, h: 10},
+  { x: 12, y: 0, w: 12, h: 10 },
 ).addPanel(
   grafana.graphPanel.new(
     'CPU statistics',
@@ -57,7 +57,7 @@ grafana.dashboard.new(
     stack=true,
     percentage=true,
     min=0,
-    max=100,
+    max=1,
     lines=false,
     bars=true,
   ).addTarget(
@@ -65,7 +65,7 @@ grafana.dashboard.new(
       'SELECT difference(mean(*)) FROM "cpu" WHERE ("sensu_entity_name" = \'$entity\') AND $timeFilter GROUP BY time($__interval) fill(none)',
     )
   ),
-  {x: 0, y: 10, w: 12, h: 10},
+  { x: 0, y: 10, w: 12, h: 10 },
 ).addPanel(
   grafana.graphPanel.new(
     'Processes',
@@ -75,7 +75,7 @@ grafana.dashboard.new(
       'SELECT mean("value") FROM /procs_.*/ WHERE ("sensu_entity_name" = \'$entity\') AND $timeFilter GROUP BY time($__interval) fill(none)',
     )
   ),
-  {x: 12, y: 10, w: 12, h: 10},
+  { x: 12, y: 10, w: 12, h: 10 },
 ).addPanel(
   grafana.graphPanel.new(
     'Disks',
@@ -90,5 +90,5 @@ grafana.dashboard.new(
       '$tag_mountpoint',
     )
   ),
-  {x: 0, y: 20, w: 12, h: 10},
+  { x: 0, y: 20, w: 12, h: 10 },
 )

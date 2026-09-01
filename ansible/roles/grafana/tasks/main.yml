@@ -11,8 +11,8 @@
 
     - name: Install grafana
       ansible.builtin.dnf:
-        # >=9.4.0 breaks InfluxDB sources
-        name: grafana < 9.4.0
+        # latest tested version is 13.2.0
+        name: grafana < 14.0
         state: latest
       notify: Restart grafana
 

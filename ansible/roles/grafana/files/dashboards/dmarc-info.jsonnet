@@ -41,7 +41,7 @@ grafana.dashboard.new(
     lines=false,
     bars=true,
     percentage=true,
-    max=100,
+    max=1,
     stack=true,
     aliasColors={ 'false': 'red', 'true': 'green' },
   ).addTarget(
@@ -60,7 +60,7 @@ grafana.dashboard.new(
     lines=false,
     bars=true,
     percentage=true,
-    max=100,
+    max=1,
     stack=true,
     aliasColors={ 'false': 'red', 'true': 'green' },
   ).addTarget(
@@ -79,7 +79,7 @@ grafana.dashboard.new(
     lines=false,
     bars=true,
     percentage=true,
-    max=100,
+    max=1,
     stack=true,
     aliasColors={ 'false': 'red', 'true': 'green' },
   ).addTarget(

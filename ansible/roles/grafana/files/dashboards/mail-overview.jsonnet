@@ -5,12 +5,13 @@ local regions = std.extVar('regions');
 local regionTargets(
   query,
   alias=null,
-) = [
+      ) = [
   grafana.influxdb.target(
     query,
     if alias != null then region + '.' + alias,
     region + ' InfluxDB',
-  ) for region in regions
+  )
+  for region in regions
 ];
 
 local regionQueryPanel(
@@ -20,7 +21,7 @@ local regionQueryPanel(
   min=0,
   max=null,
   decimals=0,
-) = grafana.graphPanel.new(
+      ) = grafana.graphPanel.new(
   name,
   datasource='-- Mixed --',
   legend_show=false,
@@ -44,16 +45,6 @@ grafana.dashboard.new(
   uid='mail-overview',
   time_from='now-3h',
   refresh='5s',
-).addAnnotations(
-  [
-    grafana.annotation.datasource(
-      region + ' plasticman scale events',
-      region + ' InfluxDB'
-    ) {
-      query: "SELECT * FROM plasticman WHERE phase = 'end'",
-      tagsColumn: 'action,region',
-    } for region in regions
-  ]
 ).addPanel(
   regionQueryPanel(
     'Average load average',
