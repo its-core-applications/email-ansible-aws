@@ -64,9 +64,11 @@
             launch_eips: "{{ eips.addresses | rejectattr('association_id', 'defined') | rejectattr('tags.CustomDNSName', 'in', groups.Status_spinup) | shuffle }}"
 
     - name: Create {{ launch_class }} instance(s)
-      ec2_instance:
+      amazon.aws.ec2_instance:
         region: "{{ aws_region }}"
         profile: "{{ aws_profile }}"
+        metadata_options:
+          http_tokens: required
         security_groups: "{{ launch_groups_default | union(launch_groups) | map('regex_replace', '^', aws_resource_prefix ~ ' ') }}"
         key_name: "{{ aws_ssh_key }}"
         instance_type: "{{ aws_layout[aws_status][aws_profile]['classes'][launch_class].size | default(aws_layout[aws_status][aws_profile].default_instance) }}"
