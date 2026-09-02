@@ -41,7 +41,13 @@ receive {
         rdns {
             check = chillaxed;
         }
-{%  if not simta_egress %}
+{% if simta_egress %}
+        limits {
+            global = 10k;
+            per_host = 1k;
+            per_host_throttle = 250;
+        }
+{% else %}{# not simta_egress #}
         acl {
             action = trust;
             list = relay-trust.dnsal;
