@@ -252,9 +252,9 @@
       tags: rspamd
       vars:
         build_name: rspamd
-        rpm: rspamd-4.1.1-1.el9.x86_64.rpm
+        rpm: rspamd-4.1.5-1.el9.x86_64.rpm
         rpm_url: https://rspamd.com/rpm-stable/centos-9/x86_64/{{ rpm }}
-        rpm_checksum: sha512:87ae0c629180fbcc7552e5bbd628422278d6125c2edfe522def247554bb5a6a25de462334d2c4a73bca76abd059bc6f34f6b19c4eb843118c09147c70fe6b9ae
+        rpm_checksum: sha512:52930868afc61b9cad4e47f49e0340a38c030e07c7761db26f3bb921059c40165f57bae0ec6ae16e076a8fd414b2e7e2a14677ee4df620ad2f12f8e21664a735
 
     - ansible.builtin.import_role:
         name: build_rpm_spec
