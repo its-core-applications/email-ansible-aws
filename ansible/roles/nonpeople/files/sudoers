@@ -1,2 +1,3 @@
 sensu       ALL=(ALL)   NOPASSWD: /bin/systemctl restart *
 sensu       ALL=(ALL)   NOPASSWD: /bin/systemctl try-restart *
+sensu       ALL=(ALL)   NOPASSWD: /usr/local/bin/try-restart-simta

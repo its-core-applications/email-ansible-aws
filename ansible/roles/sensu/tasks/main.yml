@@ -73,6 +73,7 @@
         - check-statuspage
         - check-tls
         - metrics-ec2
+        - try-restart-simta
 
     - name: Configure static labels
       ansible.builtin.template:

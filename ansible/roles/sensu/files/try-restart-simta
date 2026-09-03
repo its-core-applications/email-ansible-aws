@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+ts_now=$(date +%s)
+ts_start=$(systemctl show -P ActiveEnterTimestamp --timestamp=unix simta | tr -d @)
+
+# Only restart if it was started more than 90 minutes ago
+if [[ -n $ts_start ]] && [[ $(( ts_now - ts_start )) -gt 5400 ]]; then
+    systemctl try-restart simta
+fi
