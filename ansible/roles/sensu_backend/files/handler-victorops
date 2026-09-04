@@ -1,0 +1,50 @@
+#!/usr/local/venv/sensu/bin/python3
+
+import argparse
+import json
+import os
+import socket
+import sys
+
+import requests
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--datacenter', help='datacenter that this alert is from')
+parser.add_argument('-u', '--url', help='Sensu web UI url')
+args = parser.parse_args()
+
+dc = args.datacenter
+
+event = json.load(sys.stdin)
+
+if event['check']['status'] == 0:
+    status = 'RECOVERY'
+elif event['check']['status'] == 1:
+    status = 'WARNING'
+elif event['check']['status'] == 2:
+    status = 'CRITICAL'
+else:
+    status = 'UNKNOWN'
+
+check_name = f'{event["entity"]["metadata"]["name"]}/{event["check"]["metadata"]["name"]}'
+
+subject = f'{dc} - {check_name} {status}'
+
+url = f'{args.url}/n/{event["entity"]["metadata"]["namespace"]}/events/{event["entity"]["metadata"]["name"]}/{event["check"]["metadata"]["name"]}'
+
+msg = {
+    'message_type': status,
+    'entity_id': f'{dc}/{check_name}',
+    'entity_display_name': f'{check_name} {event["check"]["output"].split("\n")[0]}',
+    'state_message': event['check']['output'],
+    'monitoring_tool': 'sensu',
+    'monitor_name': socket.gethostname(),
+    'vo_annotate.u.Check': url,
+    'raw_event': event,
+}
+
+requests.post(
+    os.environ['VICTOROPS_URL'],
+    json=msg,
+)

@@ -81,6 +81,7 @@
         mode: "0755"
       loop:
         - handler-sns
+        - handler-victorops
         - mutator-metric-check
         - mutator-metric-labels
 
@@ -297,6 +298,20 @@
           - critical
         <<: *sensu_auth
 
+    - name: Create the Splunk On-Call handler
+      sensu.sensu_go.pipe_handler:
+        name: splunk
+        command: handler-victorops -d {{ aws_status }}/{{ aws_region }} -u https://dashboard.{{ aws_region }}.{{ subd }}
+        env_vars:
+          VICTOROPS_URL: "{{ lookup('flowerysong.openbao.kv', 'splunk/oncall_url').value }}"
+        filters:
+          - not_silenced
+          - is_incident
+          - occurrences
+          - production
+          - critical
+        <<: *sensu_auth
+
     - name: Create the default handler set
       sensu.sensu_go.handler_set:
         name: default
@@ -311,6 +326,7 @@
         extra_handlers:
           prod:
             - opsgenie
+            - splunk
           nonprod: []
 
     # Sensu Go hardcodes the handler name for keepalive events
