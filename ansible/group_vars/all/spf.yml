@@ -306,6 +306,12 @@ spf_thirdparty:
       -  hsg-hio-desk
     record: include:mail.zendesk.com
 
+  # 2026-09-15: dgarthwa / Continuing Legal Education / TDx 11265878
+  # HubSpot
+  - names:
+      - icle
+    record: include:46388690.spf05.hubspotemail.net
+
   # 2023-11-14: danno / ICPSR / TDx 5379334
   - names:
       -  icpsr-help
