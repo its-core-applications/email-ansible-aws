@@ -428,6 +428,14 @@ spf_thirdparty:
       - ip4:64.91.241.212
       - ip4:67.225.165.182
 
+  # 2026-09-18 vuocolom / Dental School IT / TDx 11248184
+  # Epic
+  - names:
+      - mychart-donotreply
+    record:
+      - include:spf.protection.outlook.com
+      - include:spf-003c4103.pphosted.com
+
   # 2024-04-04: ncapul / Dearborn University Center / TDx5856766
   # CollegeNET 25Live
   - names:
