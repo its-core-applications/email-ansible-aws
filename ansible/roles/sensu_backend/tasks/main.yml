@@ -303,7 +303,7 @@
         name: splunk
         command: handler-victorops -d {{ aws_status }}/{{ aws_region }} -u https://dashboard.{{ aws_region }}.{{ subd }}
         env_vars:
-          VICTOROPS_URL: "{{ lookup('flowerysong.openbao.kv', 'splunk/oncall_url').value }}"
+          VICTOROPS_URL: "{{ lookup('flowerysong.hvault.kv', 'splunk/oncall_url').value }}"
         filters:
           - not_silenced
           - is_incident
