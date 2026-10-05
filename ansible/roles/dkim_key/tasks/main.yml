@@ -9,7 +9,7 @@
   block:
     - ansible.builtin.include_tasks:
         file: generate_key.yml
-      when: not dkim_key_active or ((now() - (dkim_key_active.date | to_datetime('%Y-%m-%d'))).days > 90)
+      when: not dkim_key_active or ((now() - (dkim_key_active.date | to_datetime('%Y-%m-%d'))).days > 180)
 
     - name: Save name of active key
       ansible.builtin.set_fact:
