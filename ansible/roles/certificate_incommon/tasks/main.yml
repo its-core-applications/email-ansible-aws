@@ -108,6 +108,8 @@
         csr_content: "{{ item.csr }}"
         fullchain_dest: "{{ cert_directory }}/{{ certificate }}.{{ item.item }}.crt"
       loop: "{{ csr_result.results }}"
+      loop_control:
+        label: "{{ item.item }}"
       register: acme_data
 
     - name: Get certificates for {{ certificate }}
@@ -117,6 +119,8 @@
         data: "{{ item }}"
       register: result
       loop: "{{ acme_data.results }}"
+      loop_control:
+        label: "{{ item.item.item }}"
       # The order might not be ready immediately, retry with a short delay
       retries: 3
       delay: 10
@@ -127,6 +131,8 @@
         key: certificate/{{ certificate }}
         value: "{{ cert_existing | default({}, true) | combine({new_type ~ '_key': new_key, new_type ~ '_cert': new_cert}) }}"
       loop: "{{ result.results }}"
+      loop_control:
+        label: "{{ new_type }}"
       when: item is changed
       no_log: true
       vars:
