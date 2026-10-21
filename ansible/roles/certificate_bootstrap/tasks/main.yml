@@ -35,7 +35,7 @@
       when: "[key_result, cnf_result] | select('changed')"
 
     - name: Get ACME challenge for {{ certificate }}
-      acme_certificate:
+      community.crypto.acme_certificate:
         account_email: letsencrypt@devnull.mail.umich.edu
         account_key: /etc/pki/collab/private/letsencrypt_account.key
         acme_directory: https://acme-v02.api.letsencrypt.org/directory
@@ -64,7 +64,7 @@
       when: acme_data is changed
 
     - name: Get certificate for {{ certificate }}
-      acme_certificate:
+      community.crypto.acme_certificate:
         account_key: /etc/pki/collab/private/letsencrypt_account.key
         acme_directory: https://acme-v02.api.letsencrypt.org/directory
         terms_agreed: true

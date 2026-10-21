@@ -1,11 +1,104 @@
 - tags:
     - certificate
+    - letsencrypt
+  vars:
+    cert_directory: /etc/pki/acme
+    acme_key: "{{ lookup('flowerysong.openbao.kv', 'certificate/letsencrypt', errors='ignore').rsa_key }}"
+    cert_existing: "{{ lookup('flowerysong.openbao.kv', 'certificate/' ~ certificate, errors='ignore') }}"
+    cert_subject_alt_names: "{{ [certificate] | union(certificate_sans | default([])) | map('regex_replace', '^', 'DNS:') }}"
+  module_defaults:
+    group/community.crypto.acme:
+      # Need to have a default so that initial setup is possible;
+      # module_defaults are evaluated even when they're not used...
+      account_key_content: "{{ acme_key | default('placeholder') }}"
+      acme_directory: https://acme-v02.api.letsencrypt.org/directory
+      acme_version: 2
+    community.crypto.acme_certificate:
+      modify_account: false
+      challenge: dns-01
+    # Not part of the acme group, so the basic settings have to be repeated
+    community.crypto.acme_certificate_renewal_info:
+      acme_directory: https://acme-v02.api.letsencrypt.org/directory
+      acme_version: 2
+      ari_algorithm: start
+      remaining_days: 20
+  delegate_to: localhost
+  run_once: true
+  become: false
+  block:
+    - name: Create certificate storage directory
+      ansible.builtin.file:
+        dest: "{{ cert_directory }}"
+        owner: "{{ lookup('env', 'USER') }}"
+        mode: "0700"
+        state: directory
+      become: true
+
+    - name: Create account key
+      community.crypto.openssl_privatekey_pipe:
+      register: result
+      when: not (acme_key | default(false))
+      no_log: true
+
+    - name: Store account key
+      flowerysong.openbao.kv:
+        token: "{{ ansible_openbao_token }}"
+        key: certificate/letsencrypt
+        value:
+          rsa_key: "{{ result.privatekey }}"
+      when: result is not skipped
+      no_log: true
+
+    - name: Register ACME account
+      community.crypto.acme_account:
+        state: present
+        account_key_content: "{{ acme_key }}"
+        terms_agreed: true
+        contact:
+          - mailto:letsencrypt@devnull.mail.umich.edu
+      when: result is not skipped
+
+    - name: Copy existing certificates for {{ certificate }}
+      ansible.builtin.copy:
+        dest: "{{ cert_directory }}/{{ certificate }}.{{ item }}.crt"
+        content: "{{ cert_existing[item ~ '_cert'] | default('') }}"
+        mode: "0755"
+      when:
+        - cert_existing[item ~ '_cert'] | default('') | length > 0
+        - (cert_existing[item ~ '_cert'] | community.crypto.x509_certificate_info).subject_alt_name | ansible.builtin.symmetric_difference(cert_subject_alt_names) | length == 0
+      loop:
+        - rsa
+        - ecc
+      register: result
+
+    - name: Delete stale certificates for {{ certificate }}
+      ansible.builtin.file:
+        dest: "{{ cert_directory }}/{{ certificate }}.{{ item }}.crt"
+        state: absent
+      loop: "{{ result.results | select('skipped') | map(attribute='item') }}"
+
+    - name: Check whether the certificate is due for renewal
+      community.crypto.acme_certificate_renewal_info:
+        certificate_path: "{{ cert_directory }}/{{ certificate }}.{{ item }}.crt"
+      failed_when: false
+      changed_when: acme_renewal_due.should_renew | default(true)
+      loop:
+        - rsa
+        - ecc
+      register: acme_renewal_due
+
+    - ansible.builtin.include_tasks:
+        file: order.yml
+      loop: "{{ acme_renewal_due.results | select('changed') | map(attribute='item') }}"
+      loop_control:
+        loop_var: cert_type
+
+
+- tags:
+    - certificate
   vars:
     cert_data: "{{ lookup('flowerysong.hvault.kv', 'certificate/' ~ certificate) }}"
   block:
-    - import_role:
-        name: certificate_incommon
-
     - name: "{{ certificate }} : Get private key info"
       community.crypto.openssl_privatekey_info:
         content: "{{ cert_data[item ~ '_key'] }}"

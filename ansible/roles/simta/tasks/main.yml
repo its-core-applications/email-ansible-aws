@@ -246,7 +246,7 @@
       loop: "{{ simta_delivery_domains | default([]) }}"
 
     - ansible.builtin.import_role:
-        name: certificate
+        name: certificate_legacy
       vars:
         certificate: "{{ simta_config }}.{{ tld }}"
         certificate_sans: "{{ simta_certificate_sans | default([]) }}"

@@ -1,0 +1,76 @@
+- vars:
+    cert_dest: "{{ cert_directory }}/{{ certificate }}.{{ cert_type }}.crt"
+  block:
+    - name: Create {{ cert_type | upper }} key for {{ certificate }}
+      community.crypto.openssl_privatekey_pipe:
+        type: "{{ cert_type | upper }}"
+        size: "{{ omit if cert_type == 'ecc' else 4096 }}"
+        curve: "{{ 'secp256r1' if cert_type == 'ecc' else omit }}"
+      register: key_result
+      no_log: true
+
+    - name: Generate CSR for {{ cert_type | upper }} {{ certificate }}
+      community.crypto.openssl_csr_pipe:
+        common_name: "{{ certificate }}"
+        subject_alt_name: "{{ cert_subject_alt_names }}"
+        privatekey_content: "{{ key_result.privatekey }}"
+      register: csr_result
+
+    - name: Order {{ cert_type | upper }} certificate for {{ certificate }}
+      community.crypto.acme_certificate:
+        csr_content: "{{ csr_result.csr }}"
+        fullchain_dest: "{{ cert_dest }}"
+        force: true
+      register: acme_data
+
+    - name: Answer challenges for {{ cert_type | upper }} {{ certificate }}
+      amazon.aws.route53:
+        profile: "{{ aws_profile_subd }}"
+        state: present
+        overwrite: true
+        wait: true
+        zone: "{{ subd }}"
+        record: "{{ item.key }}"
+        type: TXT
+        value: "{{ item.value }}"
+        ttl: 30
+      loop: "{{ acme_data.challenge_data | flowerysong.melange.acme_authz(domain_map) | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+      vars:
+        # We can't easily update challenges directly in BlueCat, but we can
+        # CNAME the _acme-challenge from there to a domain in Route 53 and then
+        # map it here.
+        domain_map:
+          relay.mail.umich.edu: authz-relay.us-east-2.a.mail.umich.edu
+          relay-private.mail.umich.edu: authz-relay-vpn.us-east-2.a.mail.umich.edu
+          relay-public.mail.umich.edu: authz-relay.us-east-2.a.mail.umich.edu
+          smtp.mail.umich.edu: authn-relay.us-east-2.a.mail.umich.edu
+          smtp-private.mail.umich.edu: authn-relay-vpn.us-east-2.a.mail.umich.edu
+          smtp-public.mail.umich.edu: authn-relay.us-east-2.a.mail.umich.edu
+          vdc-relay.mail.umich.edu: vdc-relay.us-east-2.a.mail.umich.edu
+          relay-nonprod.mail.umich.edu: authz-relay.us-east-2.x.mail.umich.edu
+          relay-nonprod-private.mail.umich.edu: authz-relay-vpn.us-east-2.x.mail.umich.edu
+          relay-nonprod-public.mail.umich.edu: authz-relay.us-east-2.x.mail.umich.edu
+          smtp-nonprod.mail.umich.edu: authn-relay.us-east-2.x.mail.umich.edu
+          smtp-nonprod-public.mail.umich.edu: authn-relay.us-east-2.x.mail.umich.edu
+          smtp-nonprod-private.mail.umich.edu: authn-relay-vpn.us-east-2.x.mail.umich.edu
+          vdc-relay-nonprod.mail.umich.edu: vdc-relay.us-east-2.x.mail.umich.edu
+
+    - name: Get {{ cert_type | upper }} certificate for {{ certificate }}
+      community.crypto.acme_certificate:
+        csr_content: "{{ csr_result.csr }}"
+        fullchain_dest: "{{ cert_dest }}"
+        force: true
+        data: "{{ acme_data }}"
+        deactivate_authzs: true
+        include_renewal_cert_id: always
+      register: result
+
+    - name: Store new {{ cert_type | upper }} certificate for {{ certificate }}
+      flowerysong.openbao.kv:
+        token: "{{ ansible_openbao_token }}"
+        key: certificate/{{ certificate }}
+        value: "{{ cert_existing | default({}, true) | combine({cert_type ~ '_key': key_result.privatekey, cert_type ~ '_cert': lookup('file', cert_dest)}) }}"
+      when: result is changed
+      no_log: true
