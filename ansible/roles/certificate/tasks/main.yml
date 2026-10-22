@@ -3,8 +3,8 @@
     - letsencrypt
   vars:
     cert_directory: /etc/pki/acme
-    acme_key: "{{ lookup('flowerysong.openbao.kv', 'certificate/letsencrypt', errors='ignore').rsa_key }}"
-    cert_existing: "{{ lookup('flowerysong.openbao.kv', 'certificate/' ~ certificate, errors='ignore') }}"
+    acme_key: "{{ lookup('flowerysong.hvault.kv', 'certificate/letsencrypt', errors='ignore').rsa_key }}"
+    cert_existing: "{{ lookup('flowerysong.hvault.kv', 'certificate/' ~ certificate, errors='ignore') }}"
     cert_subject_alt_names: "{{ [certificate] | union(certificate_sans | default([])) | map('regex_replace', '^', 'DNS:') }}"
   module_defaults:
     group/community.crypto.acme:
@@ -41,8 +41,8 @@
       no_log: true
 
     - name: Store account key
-      flowerysong.openbao.kv:
-        token: "{{ ansible_openbao_token }}"
+      flowerysong.hvault.kv:
+        token: "{{ ansible_hvault_token }}"
         key: certificate/letsencrypt
         value:
           rsa_key: "{{ result.privatekey }}"

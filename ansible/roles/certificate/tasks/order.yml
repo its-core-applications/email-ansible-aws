@@ -68,8 +68,8 @@
       register: result
 
     - name: Store new {{ cert_type | upper }} certificate for {{ certificate }}
-      flowerysong.openbao.kv:
-        token: "{{ ansible_openbao_token }}"
+      flowerysong.hvault.kv:
+        token: "{{ ansible_hvault_token }}"
         key: certificate/{{ certificate }}
         value: "{{ cert_existing | default({}, true) | combine({cert_type ~ '_key': key_result.privatekey, cert_type ~ '_cert': lookup('file', cert_dest)}) }}"
       when: result is changed
