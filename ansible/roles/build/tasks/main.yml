@@ -25,6 +25,13 @@
     - ansible.builtin.import_role:
         name: build_rpm_spec
       tags:
+        - amazon-ec2-net-utils
+      vars:
+        build_name: amazon-ec2-net-utils
+
+    - ansible.builtin.import_role:
+        name: build_rpm_spec
+      tags:
         - sasl
         - libsnet
         - simta

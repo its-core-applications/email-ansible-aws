@@ -16,6 +16,12 @@
       when: region != aws_region
       tags: always
 
+    # FIXME: should this just be a standard part of the build?
+    - name: Use standard AWS package for automagically handling routing
+      ansible.builtin.dnf:
+        name: amazon-ec2-net-utils
+        state: latest
+
     - ansible.builtin.import_role:
         name: tcpd_update
 
