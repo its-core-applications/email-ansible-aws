@@ -64,7 +64,6 @@
         force: true
         data: "{{ acme_data }}"
         deactivate_authzs: true
-        include_renewal_cert_id: always
       register: result
 
     - name: Store new {{ cert_type | upper }} certificate for {{ certificate }}

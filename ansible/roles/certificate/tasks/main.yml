@@ -16,6 +16,7 @@
     community.crypto.acme_certificate:
       modify_account: false
       challenge: dns-01
+      include_renewal_cert_id: always
     # Not part of the acme group, so the basic settings have to be repeated
     community.crypto.acme_certificate_renewal_info:
       acme_directory: https://acme-v02.api.letsencrypt.org/directory
