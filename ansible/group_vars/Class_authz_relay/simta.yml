@@ -12,3 +12,5 @@ simta_certificate_sans:
   - authz-relay-vpn.{{ aws_region }}.{{ subd }}
   - relay{{ aws_status_suffix }}-public.mail.umich.edu
   - relay{{ aws_status_suffix }}-private.mail.umich.edu
+  - relay{{ aws_status_suffix }}-static.mail.umich.edu
+  - mail-relay.itd.umich.edu
