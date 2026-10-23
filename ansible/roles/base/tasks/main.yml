@@ -270,6 +270,20 @@
         - openssl.cnf
         - openssl-san.cnf
 
+    - name: Add UMROOT CA
+      ansible.builtin.copy:
+        dest: /etc/pki/ca-trust/source/anchors/University_of_Michigan_Root_CA_UMROOT.pem
+        src: University_of_Michigan_Root_CA_UMROOT.pem
+        owner: root
+        group: root
+        mode: "0644"
+      tags: ca
+
+    - name: Update trust
+      ansible.builtin.command:
+        cmd: update-ca-trust
+      tags: ca
+
     - ansible.builtin.import_role:
         name: dynhostname
 
