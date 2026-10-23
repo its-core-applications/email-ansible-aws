@@ -140,15 +140,19 @@ class CallbackModule(CallbackBase):
         msg_lambda = '```\n{}\n```'.format(msg_default)
 
         if HAS_ARA and self.ara_base:
-            client = ara_client_utils.active_client()
-            play = client.get('/api/v1/plays?uuid={}'.format(self.playbook_uuid))
-            playbook_id = play['results'][0]['playbook']
-            ara_url = '{}/playbooks/{}.html'.format(
-                self.ara_base,
-                playbook_id,
-            )
-            msg_default += '\n{}'.format(ara_url)
-            msg_lambda += '\n<{}|Detailed report>'.format(ara_url)
+            try:
+                client = ara_client_utils.active_client()
+                play = client.get('/api/v1/plays?uuid={}'.format(self.playbook_uuid))
+                playbook_id = play['results'][0]['playbook']
+                ara_url = '{}/playbooks/{}.html'.format(
+                    self.ara_base,
+                    playbook_id,
+                )
+                msg_default += '\n{}'.format(ara_url)
+                msg_lambda += '\n<{}|Detailed report>'.format(ara_url)
+            except Exception:
+                # We still want to notify even if something went weird with ARA
+                pass
 
         msg = {
             'default': msg_default,
