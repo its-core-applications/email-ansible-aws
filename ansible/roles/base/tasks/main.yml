@@ -66,7 +66,6 @@
         owner: root
         group: root
         mode: "0644"
-      tags: rollout
 
     - ansible.builtin.import_role:
         name: base_packages
@@ -234,7 +233,6 @@
           value: 1
         - name: user.max_user_namespaces
           value: 0
-      tags: rollout
 
     - name: Raise corefile limits
       ansible.builtin.copy:
@@ -277,12 +275,10 @@
         owner: root
         group: root
         mode: "0644"
-      tags: ca
 
     - name: Update trust
       ansible.builtin.command:
         cmd: update-ca-trust
-      tags: ca
 
     - ansible.builtin.import_role:
         name: dynhostname
